@@ -29,6 +29,9 @@ MAXLEN=$(cfg pod/max_model_len)
 QWEN=$(cfg models/qwen3-8b/hf_id)
 REFORM=$(cfg models/reform-8b/hf_id)
 LOGS="$WORK/logs"
+port() { cfg "models/$1/base_url" | sed -E 's#.*:([0-9]+)/.*#\1#'; }
+QPORT=$(port qwen3-8b)
+RPORT=$(port reform-8b)
 
 run "mkdir -p $LOGS"
 # --no-cache-dir: the pod may have only its 50 GB container disk (no separate volume).
@@ -41,16 +44,18 @@ HF=huggingface-cli
 run "$HF download $QWEN > $LOGS/download_qwen.log 2>&1"
 run "$HF download $REFORM > $LOGS/download_reform.log 2>&1"
 # Two servers share one H100: each gets a fixed share of GPU memory.
-run "nohup vllm serve $QWEN --served-model-name qwen3-8b --port 8000 --gpu-memory-utilization $MEM --max-model-len $MAXLEN > $LOGS/vllm_qwen.log 2>&1 &"
-run "nohup vllm serve $REFORM --served-model-name reform-8b --port 8001 --gpu-memory-utilization $MEM --max-model-len $MAXLEN > $LOGS/vllm_reform.log 2>&1 &"
+run "nohup vllm serve $QWEN --served-model-name qwen3-8b --port $QPORT --gpu-memory-utilization $MEM --max-model-len $MAXLEN > $LOGS/vllm_qwen.log 2>&1 &"
+run "nohup vllm serve $REFORM --served-model-name reform-8b --port $RPORT --gpu-memory-utilization $MEM --max-model-len $MAXLEN > $LOGS/vllm_reform.log 2>&1 &"
 
 if [ "$DRY" = 1 ]; then
-  echo "+ wait for http://localhost:8000/v1/models and http://localhost:8001/v1/models (up to 20 min)"
+  echo "+ wait until http://localhost:$QPORT/v1/models serves qwen3-8b and http://localhost:$RPORT/v1/models serves reform-8b (up to 20 min)"
   exit 0
 fi
-for port in 8000 8001; do
+# Check the served model name, not just a reply: something else (RunPod's proxy) may answer on a port.
+for pair in "$QPORT qwen3-8b" "$RPORT reform-8b"; do
+  set -- $pair; port=$1; name=$2
   for i in $(seq 1 120); do
-    if curl -sf "http://localhost:$port/v1/models" > /dev/null; then echo "server on $port is up"; break; fi
+    if curl -sf "http://localhost:$port/v1/models" | grep -q "\"id\":\"$name\""; then echo "$name on $port is up"; break; fi
     if [ "$i" = 120 ]; then echo "server on $port did not come up; see $LOGS" >&2; exit 1; fi
     sleep 10
   done

@@ -63,7 +63,7 @@ models:
     enable_thinking: false     # decide in pilot
   reform-8b:
     hf_id: GuoxinChen/ReForm-8B
-    base_url: http://localhost:8001/v1
+    base_url: http://localhost:8010/v1   # not 8001: RunPod's nginx proxy listens there
   smoke:                       # chunk 3 live smoke call only: same client code through Together
     served_name: Qwen/Qwen3.5-9B
     base_url: https://api.together.xyz/v1
