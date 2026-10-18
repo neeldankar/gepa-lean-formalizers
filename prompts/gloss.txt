@@ -1,0 +1,9 @@
+Explain in plain English what this Lean 4 theorem statement says, for a reader who knows the mathematics but not Lean. Spell out every variable and its type, every hypothesis, and the conclusion, in order. Point out anything easy to miss: number types (ℕ, ℤ, ℚ, ℝ, ℂ), coercions, quantifier order, implicit arguments. Ignore the proof (`sorry`).
+
+Describe only this statement. Do not say whether it is correct, faithful, or a good formalization of anything.
+
+```lean4
+{statement}
+```
+
+Reply with the explanation only, at most 120 words.

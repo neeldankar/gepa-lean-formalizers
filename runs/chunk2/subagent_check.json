@@ -1,0 +1,289 @@
+{
+ "minif2f": {
+  "raw_rows": 244,
+  "compile_rows": 244,
+  "compile_ids_eq_raw": true,
+  "usable": 243,
+  "dropped": 1,
+  "dropped_ids": {
+   "minif2f_amc12a_2020_p15": "-:8:4-8:15: error(lean.unknownIdentifier): Unknown constant `Complex.abs`\n"
+  },
+  "binder_regex": 31,
+  "binder_eq_flag": true,
+  "binder_regex_minus_flag": [],
+  "flag_minus_regex": [],
+  "binder_usable": 31,
+  "processed_rows": 243,
+  "processed_dupes": 0,
+  "processed_eq_usable": true,
+  "stmt_mismatches": []
+ },
+ "ref_autoimplicit_off": {
+  "total": 367,
+  "ok": 363,
+  "failures": [
+   [
+    "pnv_025",
+    "lean_error",
+    "-:7:70-7:71: error(lean.unknownIdentifier): Unknown identifier `F`"
+   ],
+   [
+    "pnv_207",
+    "lean_error",
+    "-:7:71-7:72: error(lean.unknownIdentifier): Unknown identifier `F`"
+   ],
+   [
+    "pnv_208",
+    "lean_error",
+    "-:7:70-7:71: error(lean.unknownIdentifier): Unknown identifier `F`"
+   ],
+   [
+    "pnv_280",
+    "lean_error",
+    "-:8:8-8:11: error(lean.unknownIdentifier): Unknown identifier `f_a`"
+   ]
+  ]
+ },
+ "golden": {
+  "cases": 14,
+  "passed": 14,
+  "rows": [
+   {
+    "case": "exact copy",
+    "item": "pnv_075",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "a < b written as b > a",
+    "item": "pnv_029",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "reordered hypotheses",
+    "item": "pnv_063",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "hypothesis dropped",
+    "item": "pnv_029",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "ℕ where the text says integers",
+    "item": "pnv_086",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "swapped quantifier",
+    "item": "pnv_029",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "comment claiming faithfulness",
+    "item": "pnv_086",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "does not compile",
+    "item": "pnv_075",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "invented dotted name Nat.IsGoodPrime",
+    "item": "pnv_086",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "invented plain name (autoImplicit off)",
+    "item": "pnv_086",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "long ReForm-style output",
+    "item": "pnv_075",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "no Lean in the output",
+    "item": "pnv_011",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "true but unrelated statement",
+    "item": "pnv_011",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   },
+   {
+    "case": "string literal with -- survives stripping",
+    "item": "pnv_011",
+    "pass_": true,
+    "logged": true,
+    "logged_ok_consistent": true,
+    "in_train": true,
+    "in_val_or_test": false
+   }
+  ],
+  "all_train_only": true
+ },
+ "stripper": {
+  "cases": 14,
+  "ours_passed": 14,
+  "axle_passed": 13,
+  "axle_failures": [
+   "single primed name then comment"
+  ],
+  "ours_failures": [],
+  "logged_flags_disagree": []
+ },
+ "costs": {
+  "rows": 49,
+  "usd_total": 0.0296398,
+  "paid_calls": 49,
+  "by_purpose": {
+   "opt_judge": {
+    "calls": 10,
+    "usd": 0.0030421499999999995,
+    "usd_per_call": 0.00030421499999999993
+   },
+   "ref_judge": {
+    "calls": 10,
+    "usd": 0.007506,
+    "usd_per_call": 0.0007505999999999999
+   },
+   "probe": {
+    "calls": 3,
+    "usd": 0.00034335,
+    "usd_per_call": 0.00011445
+   },
+   "gloss": {
+    "calls": 26,
+    "usd": 0.0187483,
+    "usd_per_call": 0.0007210884615384615
+   }
+  },
+  "models": {
+   "openai/gpt-oss-120b": 10,
+   "deepseek-ai/DeepSeek-V4.1-Flash": 10,
+   "zai-org/GLM-5.3-Flash": 29
+  },
+  "price_mismatches": []
+ },
+ "memorization": {
+  "ProofNet-Verified": {
+   "rows": 367,
+   "index_counts": {
+    "rows": 367,
+    "keys": 367
+   }
+  },
+  "ProofNet#": {
+   "rows": 371,
+   "index_counts": {
+    "rows": 371,
+    "keys": 371
+   }
+  },
+  "ProofNet-lean4 (6deae98)": {
+   "rows": 374,
+   "non_theorem": 14,
+   "rows_minus_non_theorem": 360,
+   "non_theorem_names": [
+    "Herstein_exercise_2_1_21",
+    "Herstein_exercise_2_2_3",
+    "Herstein_exercise_2_2_5",
+    "Herstein_exercise_2_5_37",
+    "Herstein_exercise_2_5_43",
+    "Herstein_exercise_2_8_12",
+    "Herstein_exercise_2_8_15",
+    "Herstein_exercise_4_1_34",
+    "Herstein_exercise_4_2_5",
+    "Dummit_Foote_exercise_1_6_11",
+    "Dummit_Foote_exercise_4_5_28",
+    "Dummit_Foote_exercise_7_1_15",
+    "Dummit_Foote_exercise_11_1_13",
+    "Artin_exercise_2_8_6"
+   ],
+   "index_counts": {
+    "rows": 374,
+    "keys": 360
+   }
+  },
+  "ProofNet (Lean 4.28 port)": {
+   "rows": 367,
+   "non_theorem": 14,
+   "rows_minus_non_theorem": 353,
+   "non_theorem_names": [
+    "Dummit_Foote_exercise_4_5_28",
+    "Dummit_Foote_exercise_7_1_15",
+    "Herstein_exercise_2_1_21",
+    "Herstein_exercise_2_2_5",
+    "Herstein_exercise_2_5_37",
+    "Herstein_exercise_2_8_12",
+    "Herstein_exercise_4_2_5",
+    "Artin_exercise_2_8_6",
+    "Dummit_Foote_exercise_1_6_11",
+    "Dummit_Foote_exercise_11_1_13",
+    "Herstein_exercise_2_2_3",
+    "Herstein_exercise_2_5_43",
+    "Herstein_exercise_2_8_15",
+    "Herstein_exercise_4_1_34"
+   ],
+   "index_counts": {
+    "rows": 367,
+    "keys": 353
+   }
+  }
+ }
+}

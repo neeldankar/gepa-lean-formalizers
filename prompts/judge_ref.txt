@@ -1,0 +1,22 @@
+You check whether a candidate Lean 4 theorem statement is a faithful formalization of a math problem written in English. You also get a reference formalization that experts have verified as faithful. The candidate does not need to match the reference's wording, names or style; it must mean the same thing as the English. Use the reference to understand the intended meaning and the Mathlib conventions.
+
+Faithful means: same objects and types, same hypotheses, same quantifiers, same conclusion. Nothing missing, nothing added, nothing weakened or strengthened. Ignore the proofs; they are always `sorry`.
+
+English:
+{english}
+
+Reference (verified faithful):
+```lean4
+{reference}
+```
+
+Candidate:
+```lean4
+{candidate}
+```
+
+If the candidate is unfaithful, pick the one error type that fits best:
+{tags}
+
+Reply with only a JSON object, no other text:
+{{"verdict": "faithful" or "unfaithful", "reason": "one or two sentences", "error_tag": one of the error types above as a string, or null if faithful}}

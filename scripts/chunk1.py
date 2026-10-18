@@ -21,6 +21,9 @@ RUN_DIR = ROOT / "runs/chunk1"
 def compile_all(checker, items, path):
     results = checker.check_many([proofnet.reference_content(it) for it in items], progress_every=50)
     rows = [{"id": it["id"], "status": r.status, "errors": r.errors} for it, r in zip(items, results)]
+    for it, row in zip(items, rows):
+        if "binder_rewrite" in it:
+            row["binder_rewrite"] = it["binder_rewrite"]
     proofnet.write_jsonl(path, rows)
     return rows
 
@@ -66,6 +69,8 @@ def main():
         "minif2f_reference_compile": compile_summary(mf_rows),
         "minif2f_usable": len(ok_ids),
         "minif2f_dropped": len(mf_rows) - len(ok_ids),
+        "minif2f_binder_rewritten": sum(it["binder_rewrite"] for it in mf_items),
+        "minif2f_binder_rewritten_usable": sum(it["binder_rewrite"] for it in mf_items if it["id"] in ok_ids),
         "axle_api_calls_this_run": checker.api_calls,
     }
     (RUN_DIR / "summary.json").write_text(json.dumps(summary, indent=1) + "\n")
@@ -87,7 +92,8 @@ def report():
     print("\n| Textbook | Total | Train | Val | Test |\n| --- | --- | --- | --- | --- |")
     for tb, r in s["split"]["per_textbook"].items():
         print(f"| {tb} | {r['total']} | {r['train']} | {r['val']} | {r['test']} |")
-    print(f"\n- miniF2F: {s['minif2f_usable']} usable, {s['minif2f_dropped']} dropped of {mf['total']} ({mf['by_status']})")
+    print(f"\n- miniF2F: {s['minif2f_usable']} usable, {s['minif2f_dropped']} dropped of {mf['total']} ({mf['by_status']}); "
+          f"binder rewrite applied to {s['minif2f_binder_rewritten']}, of which {s['minif2f_binder_rewritten_usable']} now compile")
     reasons = Counter(f["first_error"].split("error")[-1].strip(" :")[:50] for f in mf["failures"])
     for reason, n in reasons.most_common():
         print(f"  - {n} items: {reason!r}")

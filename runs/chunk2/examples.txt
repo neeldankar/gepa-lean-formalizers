@@ -1,0 +1,41 @@
+5 random golden examples (seed 0):
+
+[string literal with -- survives stripping | pnv_011 | compile: ok | truth from: certificate]
+normalized: theorem candidate :
+  Irreducible (12 + 6 * X + X ^ 3 : Polynomial ℚ) ∧ "a--b".length = 4 := by
+  sorry
+opt judge: {'verdict': 'unfaithful', 'reason': 'The Lean statement adds an unrelated conjunct (`"a--b".length = 4`) that is not present in the English problem, thus it does not faithfully capture the original statement.'}
+ref judge: {'verdict': 'unfaithful', 'reason': 'The candidate adds an unrelated conjunct requiring "a--b".length = 4, which is not part of the original theorem.', 'error_tag': 'Adding extra conclusion'}
+certificate: {'c2r': ['intros; simp_all', 'intros; aesop', 'intros; tauto'], 'r2c': ['intros; aesop', 'intros; tauto']}
+
+[comment claiming faithfulness | pnv_086 | compile: ok | truth from: ref_judge]
+normalized: theorem candidate {p : ℕ} (hp : Nat.Prime p) (hp1 : Odd p) : 
+  ∀ (a b : ℕ), (a / b : ℚ) = ∑ i ∈ Finset.range (p-1), (1 / (i + 1) : ℚ) → p ∣ a := by
+  sorry
+opt judge: {'verdict': 'unfaithful', 'reason': 'The Lean theorem quantifies universally over all natural numbers a, b satisfying the equality, whereas the English statement only asserts the existence of integers a, b with that property; it also restricts a and b to ℕ instead of ℤ, adding stronger requirements not present in the English description.'}
+ref judge: {'verdict': 'unfaithful', 'reason': 'The candidate restricts a and b to natural numbers, while the English statement and reference allow arbitrary integers. This omits cases where a or b is negative, so the formalization is weaker than intended.', 'error_tag': 'Misunderstanding of informal statement'}
+certificate: {'c2r': [], 'r2c': []}
+
+[true but unrelated statement | pnv_011 | compile: ok | truth from: ref_judge]
+normalized: theorem candidate :
+  (2 : ℕ) + 2 = 4 := by
+  sorry
+opt judge: {'verdict': 'unfaithful', 'reason': 'The Lean statement proves a simple arithmetic equality about natural numbers, not the irreducibility of the polynomial $x^3 + 6x + 12$ over ℚ.'}
+ref judge: {'verdict': 'unfaithful', 'reason': 'The candidate states a trivial arithmetic fact about natural numbers, not the irreducibility of the polynomial x^3 + 6x + 12 over Q.', 'error_tag': 'Misunderstanding of informal statement'}
+certificate: {'c2r': [], 'r2c': []}
+
+[exact copy | pnv_075 | compile: ok | truth from: certificate]
+normalized: theorem candidate {a n : ℕ} (h : a > 1) :
+  n ∣ (a ^ n - 1).totient := by
+  sorry
+opt judge: {'verdict': 'faithful', 'reason': 'The Lean theorem quantifies over natural numbers a and n, assumes a > 1, and concludes n divides the totient of a^n - 1, exactly matching the English statement.'}
+ref judge: {'verdict': 'faithful', 'reason': 'The candidate is identical to the verified reference, so it has the same objects, hypotheses, and conclusion.', 'error_tag': None}
+certificate: {'c2r': ['exact hcert', 'intros; simp_all', 'intros; aesop', 'intros; tauto'], 'r2c': ['exact hcert', 'intros; simp_all', 'intros; aesop', 'intros; tauto']}
+
+[ℕ where the text says integers | pnv_086 | compile: ok | truth from: ref_judge]
+normalized: theorem candidate {p : ℕ} (hp : Nat.Prime p) (hp1 : Odd p) :
+  ∀ (a b : ℕ), (a / b : ℚ) = ∑ i ∈ Finset.range (p-1), (1 / (i + 1) : ℚ) → p ∣ a := by
+  sorry
+opt judge: {'verdict': 'unfaithful', 'reason': 'The Lean statement uses natural numbers for a and b and quantifies universally over all a, b satisfying the equality, whereas the English statement refers to integers a, b (existentially given) and does not require the universal quantifier.'}
+ref judge: {'verdict': 'unfaithful', 'reason': 'The English statement allows a and b to be any integers, but the candidate restricts them to natural numbers, so it does not formalize the same quantifier domain.', 'error_tag': 'Misunderstanding of informal statement'}
+certificate: {'c2r': [], 'r2c': []}

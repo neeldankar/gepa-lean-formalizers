@@ -55,3 +55,27 @@ def test_minif2f_raw_file():
     assert len(rows) == 244
     items = [minif2f.to_item(r) for r in rows]
     assert len({it["id"] for it in items}) == 244
+
+
+def test_binder_rewrite():
+    assert minif2f.rewrite_binders("∑ k in S, f k") == "∑ k ∈ S, f k"
+    assert minif2f.rewrite_binders("∏ x in Finset.range n, (x + 1)") == "∏ x ∈ Finset.range n, (x + 1)"
+    assert minif2f.rewrite_binders("(∑ k in Finset.Icc (1 : ℕ) 35, k) % 4") == "(∑ k ∈ Finset.Icc (1 : ℕ) 35, k) % 4"
+    assert minif2f.rewrite_binders("∑ i in Finset.range k, ∑ j in s, i * j") == "∑ i ∈ Finset.range k, ∑ j ∈ s, i * j"
+
+
+def test_binder_rewrite_leaves_other_in_alone():
+    for text in [
+        "set_option maxHeartbeats 400 in\ntheorem t : True := by\n  sorry",
+        "open Real in\ntheorem t (x : ℝ) : x = x := rfl",
+        "theorem t (min inj : ℕ) (h : ∀ x ∈ S, x = min) : inj = inj := rfl",
+        "theorem t : ∑ k ∈ S, f k = 0 := by",
+    ]:
+        assert minif2f.rewrite_binders(text) == text
+
+
+def test_binder_rewrite_covers_every_raw_occurrence():
+    import re
+    for row in read_jsonl(minif2f.RAW_PATH):
+        item = minif2f.to_item(row)
+        assert not re.search(r"[∑∏][^,]*?\s+in\s+", item["formal_stmt"]), item["id"]

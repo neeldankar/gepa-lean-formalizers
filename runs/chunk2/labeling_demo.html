@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faithfulness labels</title>
+<style>
+:root { --bg:#fff; --fg:#1d1d1f; --muted:#5f6368; --card:#f6f7f9; --line:#d9dce1; --accent:#2457c5; --chosen:#dfe8fb; }
+@media (prefers-color-scheme: dark) { :root { --bg:#16181c; --fg:#e8eaed; --muted:#9aa0a6; --card:#1f2228; --line:#353a42; --accent:#8ab4f8; --chosen:#253552; } }
+body { background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, sans-serif; margin:0 auto; max-width:1100px; padding:16px; }
+header { position:sticky; top:0; background:var(--bg); padding:8px 0; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px 16px; margin:16px 0; }
+.pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:700px) { .pair { grid-template-columns:1fr; } }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:8px; font-size:14px; }
+.gloss { color:var(--muted); font-size:14px; }
+h2 { font-size:14px; color:var(--muted); margin:0; } h3 { font-size:15px; margin:8px 0 4px; }
+button { font:inherit; padding:6px 14px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); cursor:pointer; }
+button.chosen { background:var(--chosen); border-color:var(--accent); }
+</style></head><body>
+<header><strong>Faithfulness labels</strong><span id="progress"></span><button id="export">Export labels.csv</button></header>
+
+<section class="card" data-id="demo-08">
+  <h2>demo-08</h2>
+  <h3>English</h3><p class="english">If $a &gt; 1$ is an integer, show that $n \mid \varphi(a^n - 1)$, where $\phi$ is the Euler $\varphi$-function.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {a n : ℕ} (h : a &gt; 1) :
+  n ∣ (a ^ n - 1).totient := by
+  sorry</pre><p class="gloss">Both `a` and `n` are natural numbers (ℕ), declared as implicit arguments (curly braces), inferred rather than written; the hypothesis `h : a &gt; 1` forces `a ≥ 2` but says nothing about `n` (`n = 0` is allowed). The conclusion uses ℕ divisibility: `n ∣ m` means `m = n·k` for some natural `k`. `a ^ n - 1` uses truncated natural subtraction; since `a ^ n ≥ 1` always, nothing wraps around, and if `n = 0` this is `0`. Dot notation makes `(a ^ n - 1).totient` Euler&#x27;s totient `Nat.totient` on ℕ. In words: for all naturals `a`, `n` with `a ≥ 2`, `n` divides φ(aⁿ − 1).</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {a n : ℕ} (h : a &gt; 1) :
+  n ∣ (a ^ n - 1).totient := by
+  sorry</pre><p class="gloss">Both `a` and `n` are natural numbers (ℕ), declared as implicit arguments (curly braces), inferred rather than written; the hypothesis `h : a &gt; 1` forces `a ≥ 2` but says nothing about `n` (`n = 0` is allowed). The conclusion uses ℕ divisibility: `n ∣ m` means `m = n·k` for some natural `k`. `a ^ n - 1` uses truncated natural subtraction; since `a ^ n ≥ 1` always, nothing wraps around, and if `n = 0` this is `0`. Dot notation makes `(a ^ n - 1).totient` Euler&#x27;s totient `Nat.totient` on ℕ. In words: for all naturals `a`, `n` with `a ≥ 2`, `n` divides φ(aⁿ − 1).</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-09">
+  <h2>demo-09</h2>
+  <h3>English</h3><p class="english">Prove that $x^3 + 6x + 12$ is irreducible in $\mathbb{Q}$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate :
+  Irreducible (12 + 6 * X + X ^ 3 : Polynomial ℚ) := by
+  sorry</pre><p class="gloss">The statement asserts that a single specific polynomial is irreducible.
+
+There are no quantified variables or hypotheses. The object is the polynomial 12 + 6·X + X³, where X is the polynomial indeterminate (Polynomial.X) and the exponent 3 is a natural number. The type ascription `: Polynomial ℚ` forces the whole expression to live in the ring of polynomials with rational coefficients; the constants 12 and 6 are numerals coerced into ℚ (and then embedded into the polynomial ring), so they are rationals, not integers or naturals.
+
+`Irreducible` is Mathlib&#x27;s general notion for a commutative ring with cancellation: the polynomial is nonzero, not a unit, and in every factorization into two factors, one factor is a unit.
+
+So the claim: X³ + 6X + 12 is irreducible in ℚ[X].</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate :
+  (2 : ℕ) + 2 = 4 := by
+  sorry</pre><p class="gloss">This theorem has no variables, hypotheses, or quantifiers — it is a bare proposition.
+
+**Statement:** `(2 : ℕ) + 2 = 4`
+
+- The first `2` carries an explicit type ascription `(2 : ℕ)`, so it is the natural number 2 (a term of type `ℕ`).
+- The second `2` and the `4` have no ascriptions, but Lean&#x27;s elaborator unifies them with the same `ℕ` type (the `+` here is addition on `ℕ`), so all three numerals are natural numbers.
+- There are no coercions between number types, no `ℤ`, `ℚ`, `ℝ`, or `ℂ` involved, and no implicit arguments to track.
+
+**Conclusion:** the natural number 2 plus the natural number 2 equals the natural number 4.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-02">
+  <h2>demo-02</h2>
+  <h3>English</h3><p class="english">Prove that for all $n&gt;1$ that $\mathbb{Z}/n\mathbb{Z}$ is not a group under multiplication of residue classes.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate (n : ℕ) (hn : 1 &lt; n) :
+  ¬ (∀ x : ZMod n, ∃ y : ZMod n, x * y = (1 : ZMod n) ∧ y * x = 1) := by
+  sorry</pre><p class="gloss">n is a natural number; hn : 1 &lt; n says n &gt; 1 (that 1 is a ℕ). The conclusion negates a statement about ZMod n, the integers modulo n: for every x in ZMod n there is y in ZMod n with x * y = 1 and y * x = 1. Each 1 is the multiplicative identity of ZMod n — (1 : ZMod n) annotates the first; the second is inferred to live in ZMod n, not ℕ or ℤ. So: for n &gt; 1, not every residue class mod n is two-sidedly invertible. Quantifier order: ∀ x before ∃ y; the ¬ applies to the whole ∀∃. n and hn are explicit.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (n : ℕ) (hn : n &gt; 1) :
+  ¬ (∀ x : ZMod n, ∃ y : ZMod n, x * y = (1 : ZMod n) ∧ y * x = 1) := by
+  sorry</pre><p class="gloss">**Variables:** `n : ℕ` — a natural number. `hn : n &gt; 1` — hypothesis that n ≥ 2. `x` and `y` are elements of `ZMod n`, Lean&#x27;s type of residue classes of integers modulo n (a finite ring, defined for natural-number moduli).
+
+**Statement:** The negation of: &quot;for every x in ZMod n there exists a y in ZMod n with x·y = 1 and y·x = 1.&quot; So the conclusion says: not every element of ZMod n is invertible — some element lacks a two-sided multiplicative inverse.
+
+**Easy to miss:**
+- `(1 : ZMod n)` is a type ascription: the multiplicative identity *of that modular ring*, not the integer 1.
+- Both x·y = 1 and y·x = 1 are required (two-sidedness); in this commutative ring they&#x27;re redundant but stated.
+- Quantifier order: ∀ x first, then ∃ y — y may depend on x.
+- x ranges over *all* elements, including 0.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-06">
+  <h2>demo-06</h2>
+  <h3>English</h3><p class="english">Prove that for all $n&gt;1$ that $\mathbb{Z}/n\mathbb{Z}$ is not a group under multiplication of residue classes.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate (n : ℕ) (hn : 1 &lt; n) :
+  ¬ (∀ x : ZMod n, ∃ y : ZMod n, x * y = (1 : ZMod n) ∧ y * x = 1) := by
+  sorry</pre><p class="gloss">n is a natural number; hn : 1 &lt; n says n &gt; 1 (that 1 is a ℕ). The conclusion negates a statement about ZMod n, the integers modulo n: for every x in ZMod n there is y in ZMod n with x * y = 1 and y * x = 1. Each 1 is the multiplicative identity of ZMod n — (1 : ZMod n) annotates the first; the second is inferred to live in ZMod n, not ℕ or ℤ. So: for n &gt; 1, not every residue class mod n is two-sidedly invertible. Quantifier order: ∀ x before ∃ y; the ¬ applies to the whole ∀∃. n and hn are explicit.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (n : ℕ) (hn : 1 &lt; n) :
+  ¬ (∃ y : ZMod n, ∀ x : ZMod n, x * y = (1 : ZMod n) ∧ y * x = 1) := by
+  sorry</pre><p class="gloss">**Setup:** `n` is a natural number (type ℕ). Hypothesis `hn : 1 &lt; n` says n exceeds 1 — this comparison is between naturals, so that `1` is ℕ&#x27;s one.
+
+**Conclusion:** the negation of: &quot;there exists `y : ZMod n` (an element of the integers mod n) such that for every `x : ZMod n`, both `x * y = 1` and `y * x = 1`.&quot;
+
+**Easy to miss:**
+- `ZMod n` is ℤ/nℤ; n stays a natural number — `ZMod` takes ℕ directly, no coercion.
+- The `1`s in the equations are `ZMod n`&#x27;s multiplicative identity: the first is explicitly annotated `(1 : ZMod n)`, the second is inferred from `y * x`.
+- Quantifier order: ∃ y comes before ∀ x, and ∀ x scopes over the whole conjunction — so y must be a simultaneous two-sided inverse of *every* x, far stronger than y merely being invertible.
+- `n` is explicit; there are no implicit arguments.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-04">
+  <h2>demo-04</h2>
+  <h3>English</h3><p class="english">Prove that for all $n&gt;1$ that $\mathbb{Z}/n\mathbb{Z}$ is not a group under multiplication of residue classes.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate (n : ℕ) (hn : 1 &lt; n) :
+  ¬ (∀ x : ZMod n, ∃ y : ZMod n, x * y = (1 : ZMod n) ∧ y * x = 1) := by
+  sorry</pre><p class="gloss">n is a natural number; hn : 1 &lt; n says n &gt; 1 (that 1 is a ℕ). The conclusion negates a statement about ZMod n, the integers modulo n: for every x in ZMod n there is y in ZMod n with x * y = 1 and y * x = 1. Each 1 is the multiplicative identity of ZMod n — (1 : ZMod n) annotates the first; the second is inferred to live in ZMod n, not ℕ or ℤ. So: for n &gt; 1, not every residue class mod n is two-sidedly invertible. Quantifier order: ∀ x before ∃ y; the ¬ applies to the whole ∀∃. n and hn are explicit.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (n : ℕ) :
+  ¬ (∀ x : ZMod n, ∃ y : ZMod n, x * y = (1 : ZMod n) ∧ y * x = 1) := by
+  sorry</pre><p class="gloss">For any natural number `n` (no restrictions — it can be 0 or 1), the claim is:
+
+**Conclusion:** It is *not* true that every element of `ZMod n` (the integers modulo `n`; note `ZMod 0` is ℤ) has a two-sided multiplicative inverse.
+
+Unpacking the negated statement: &quot;for all `x` in `ZMod n` there exists `y` in `ZMod n` with `x * y = 1` and `y * x = 1`.&quot; Here `x` and `y` are residue classes mod `n`, and the two equations say `y` is a left and right inverse of `x`.
+
+Easy to miss: the `1` is explicitly typed as `(1 : ZMod n)`, the multiplicative identity of that ring (the second `1` gets its type by inference). The negation flips quantifiers: it asserts *some* `x` has no such `y`.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-05">
+  <h2>demo-05</h2>
+  <h3>English</h3><p class="english">Let $p$ be an odd prime and let $1 + \frac{1}{2} + ... + \frac{1}{p - 1} = \frac{a}{b}$, where $a, b$ are integers. Show that $p \mid a$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {p : ℕ} (hp : Nat.Prime p) (hp1 : Odd p) :
+  ∀ (a b : ℤ), (a / b : ℚ) = ∑ i ∈ Finset.range (p-1), (1 / (i + 1) : ℚ) → ↑p ∣ a := by
+  sorry</pre><p class="gloss">**Variables:** `p` is an *implicit* parameter of type ℕ (natural number), inferred from usage. `a`, `b` are universally quantified integers (ℤ).
+
+**Hypotheses:** `hp : Nat.Prime p` says p is prime; `hp1 : Odd p` says p is odd (p = 2k+1 for some k).
+
+**Claim:** For all integers a, b: *if* the rational number a/b equals ∑ over i ∈ Finset.range (p−1) of 1/(i+1) in ℚ, *then* ↑p divides a (integer divisibility).
+
+**Easy to miss:**
+- a/b is rational division after coercing a, b from ℤ to ℚ; division is total, so b = 0 is permitted.
+- The sum index i ranges over naturals 0,…,p−2 (truncated ℕ subtraction); each term 1/(i+1) coerces naturals into ℚ, giving 1/1 + 1/2 + ⋯ + 1/(p−1).
+- ↑p is ℕ→ℤ coercion; the divisibility conclusion is inside the ∀ over a, b.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {p : ℕ} (hp : Nat.Prime p) (hp1 : Odd p) :
+  ∀ (a b : ℕ), (a / b : ℚ) = ∑ i ∈ Finset.range (p-1), (1 / (i + 1) : ℚ) → p ∣ a := by
+  sorry</pre><p class="gloss">**Variables:** `p` is an *implicit* argument of type ℕ (inferred from usage). Hypotheses: `hp` says `p` is prime; `hp1` says `p` is odd, i.e. p = 2k+1 for some k.
+
+**Claim:** For all natural numbers `a`, `b` (quantified *before* the hypothesis), if the rational number a/b — with `a`, `b` coerced from ℕ into ℚ — equals the sum over `i ∈ Finset.range (p−1)`, i.e. i = 0, 1, …, p−2, of the rational 1/(i+1) (with `i+1` also coerced to ℚ), then `p ∣ a`, i.e. p divides `a` in ℕ.
+
+**Easy to miss:** every division is in ℚ, not ℕ; the sum is 1/1 + 1/2 + ⋯ + 1/(p−1), with p−1 terms; ℚ-division is total, so b = 0 is permitted (yielding 0).</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-03">
+  <h2>demo-03</h2>
+  <h3>English</h3><p class="english">Let $N$ be a positive integer. Let $M$ be an integer relatively prime to $N$ and let $d$ be an integer relatively prime to $\varphi(N)$, where $\varphi$ denotes Euler&#x27;s $\varphi$-function. Prove that if $M_{1} \equiv M^{d} \pmod N$ then $M \equiv M_{1}^{d^{\prime}} \pmod N$ where $d^{\prime}$ is the inverse of $d \bmod \varphi(N)$: $d d^{\prime} \equiv 1 \pmod {\varphi(N)}$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {N : ℕ} (hN : N &gt; 0) {M M&#x27;: ℤ} {d : ℕ}
+  (hMN : M.gcd N = 1) (hMd : d.gcd N.totient = 1)
+  (hM&#x27; : M&#x27; ≡ M^d [ZMOD N]) :
+  ∃ d&#x27; : ℕ, d&#x27; * d ≡ 1 [ZMOD N.totient] ∧
+  M ≡ M&#x27;^d&#x27; [ZMOD N] := by
+  sorry</pre><p class="gloss">**Variables:** N : ℕ, M, M&#x27; : ℤ, d : ℕ — all four are *implicit* arguments, inferred from the hypotheses; only d&#x27; is explicitly quantified.
+
+**Hypotheses, in order:**
+1. hN : N &gt; 0.
+2. hMN : gcd(M, N) = 1 — integer gcd, so N is coerced ℕ → ℤ.
+3. hMd : gcd(d, φ(N)) = 1, where φ is Euler&#x27;s totient on ℕ (Nat.totient); this gcd is on ℕ.
+4. hM&#x27; : M&#x27; ≡ M^d (mod N) — an integer congruence (ZMOD), N coerced to ℤ; it&#x27;s a congruence, not equality, and the exponent d stays a natural number.
+
+**Conclusion:** there exists d&#x27; : ℕ with d&#x27;·d ≡ 1 (mod φ(N)) and M ≡ (M&#x27;)^{d&#x27;} (mod N), all congruences via ℤ-coercions. This is the RSA decryption-exponent claim.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {N : ℕ} (hN : N &gt; 0) {M M&#x27;: ℤ} {d : ℕ}
+  (hM&#x27; : M&#x27; ≡ M^d [ZMOD N]) (hMd : d.gcd N.totient = 1) (hMN : M.gcd N = 1) :
+  ∃ d&#x27; : ℕ, d&#x27; * d ≡ 1 [ZMOD N.totient] ∧
+  M ≡ M&#x27;^d&#x27; [ZMOD N] := by
+  sorry</pre><p class="gloss">All of N : ℕ, M, M&#x27; : ℤ, d : ℕ are implicit (in braces), inferred from the hypotheses. Explicit hypotheses, in order: hN : N &gt; 0. hM&#x27; : M&#x27; ≡ M^d [ZMOD N] — M&#x27; is congruent to M raised to the natural power d, modulo N. hMd : gcd(d, N.totient) = 1, where N.totient is Euler&#x27;s totient, computed in ℕ. hMN : gcd(M, N) = 1 — integer gcd, so N is coerced ℕ→ℤ and the gcd value is the natural 1. Conclusion: there exists d&#x27; : ℕ such that d&#x27;·d ≡ 1 [ZMOD N.totient] and M ≡ (M&#x27;)^{d&#x27;} [ZMOD N]. Easy to miss: N is coerced to ℤ inside [ZMOD N]; exponents d, d&#x27; are naturals while bases are integers; d&#x27; comes first in the product.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-01">
+  <h2>demo-01</h2>
+  <h3>English</h3><p class="english">If $a &gt; 1$ is an integer, show that $n \mid \varphi(a^n - 1)$, where $\phi$ is the Euler $\varphi$-function.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {a n : ℕ} (h : a &gt; 1) :
+  n ∣ (a ^ n - 1).totient := by
+  sorry</pre><p class="gloss">Both `a` and `n` are natural numbers (ℕ), declared as implicit arguments (curly braces), inferred rather than written; the hypothesis `h : a &gt; 1` forces `a ≥ 2` but says nothing about `n` (`n = 0` is allowed). The conclusion uses ℕ divisibility: `n ∣ m` means `m = n·k` for some natural `k`. `a ^ n - 1` uses truncated natural subtraction; since `a ^ n ≥ 1` always, nothing wraps around, and if `n = 0` this is `0`. Dot notation makes `(a ^ n - 1).totient` Euler&#x27;s totient `Nat.totient` on ℕ. In words: for all naturals `a`, `n` with `a ≥ 2`, `n` divides φ(aⁿ − 1).</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {a n : ℕ} (h : a &gt; 1) :
+  n ∣ (a ^ n - 1).totient := by
+  sorry</pre><p class="gloss">Both `a` and `n` are natural numbers (ℕ), declared as implicit arguments (curly braces), inferred rather than written; the hypothesis `h : a &gt; 1` forces `a ≥ 2` but says nothing about `n` (`n = 0` is allowed). The conclusion uses ℕ divisibility: `n ∣ m` means `m = n·k` for some natural `k`. `a ^ n - 1` uses truncated natural subtraction; since `a ^ n ≥ 1` always, nothing wraps around, and if `n = 0` this is `0`. Dot notation makes `(a ^ n - 1).totient` Euler&#x27;s totient `Nat.totient` on ℕ. In words: for all naturals `a`, `n` with `a ≥ 2`, `n` divides φ(aⁿ − 1).</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-10">
+  <h2>demo-10</h2>
+  <h3>English</h3><p class="english">Prove that $x^3 + 6x + 12$ is irreducible in $\mathbb{Q}$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate :
+  Irreducible (12 + 6 * X + X ^ 3 : Polynomial ℚ) := by
+  sorry</pre><p class="gloss">The statement asserts that a single specific polynomial is irreducible.
+
+There are no quantified variables or hypotheses. The object is the polynomial 12 + 6·X + X³, where X is the polynomial indeterminate (Polynomial.X) and the exponent 3 is a natural number. The type ascription `: Polynomial ℚ` forces the whole expression to live in the ring of polynomials with rational coefficients; the constants 12 and 6 are numerals coerced into ℚ (and then embedded into the polynomial ring), so they are rationals, not integers or naturals.
+
+`Irreducible` is Mathlib&#x27;s general notion for a commutative ring with cancellation: the polynomial is nonzero, not a unit, and in every factorization into two factors, one factor is a unit.
+
+So the claim: X³ + 6X + 12 is irreducible in ℚ[X].</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate :
+  Irreducible (12 + 6 * X + X ^ 3 : Polynomial ℚ) ∧ &quot;a--b&quot;.length = 4 := by
+  sorry</pre><p class="gloss">The theorem `candidate` has no hypotheses or variables; its statement is a single conjunction (∧) of two claims.
+
+First claim: the polynomial 12 + 6·X + X³, viewed as an element of ℚ[X] via the type ascription `: Polynomial ℚ` (the numerals 12 and 6 are interpreted as rationals; the exponent 3 is a natural number), is `Irreducible` — not a product of two non-units in that ring. Here `X` is the polynomial variable.
+
+Second claim: the string &quot;a--b&quot; (characters a, -, -, b) has `length` equal to 4; `String.length` returns a natural number, so this is equality in ℕ.
+
+There are no quantifiers; the only implicit argument is the ring type in `Irreducible`, inferred as `Polynomial ℚ`.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="demo-07">
+  <h2>demo-07</h2>
+  <h3>English</h3><p class="english">Let $p$ be an odd prime and let $1 + \frac{1}{2} + ... + \frac{1}{p - 1} = \frac{a}{b}$, where $a, b$ are integers. Show that $p \mid a$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {p : ℕ} (hp : Nat.Prime p) (hp1 : Odd p) :
+  ∀ (a b : ℤ), (a / b : ℚ) = ∑ i ∈ Finset.range (p-1), (1 / (i + 1) : ℚ) → ↑p ∣ a := by
+  sorry</pre><p class="gloss">**Variables:** `p` is an *implicit* parameter of type ℕ (natural number), inferred from usage. `a`, `b` are universally quantified integers (ℤ).
+
+**Hypotheses:** `hp : Nat.Prime p` says p is prime; `hp1 : Odd p` says p is odd (p = 2k+1 for some k).
+
+**Claim:** For all integers a, b: *if* the rational number a/b equals ∑ over i ∈ Finset.range (p−1) of 1/(i+1) in ℚ, *then* ↑p divides a (integer divisibility).
+
+**Easy to miss:**
+- a/b is rational division after coercing a, b from ℤ to ℚ; division is total, so b = 0 is permitted.
+- The sum index i ranges over naturals 0,…,p−2 (truncated ℕ subtraction); each term 1/(i+1) coerces naturals into ℚ, giving 1/1 + 1/2 + ⋯ + 1/(p−1).
+- ↑p is ℕ→ℤ coercion; the divisibility conclusion is inside the ∀ over a, b.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {p : ℕ} (hp : Nat.Prime p) (hp1 : Odd p) : 
+  ∀ (a b : ℕ), (a / b : ℚ) = ∑ i ∈ Finset.range (p-1), (1 / (i + 1) : ℚ) → p ∣ a := by
+  sorry</pre><p class="gloss">**Variables:** `p` is an implicit parameter of type ℕ (inferred from usage, never written). Hypotheses: `hp` says `p` is prime (`Nat.Prime`, primality on ℕ); `hp1` says `p` is odd.
+
+**Claim:** for all `a, b : ℕ`, if the rational number `a/b` — with `a` and `b` coerced from ℕ to ℚ, so genuine rational division — equals the sum over `i ∈ Finset.range (p−1)`, i.e. `i = 0, 1, …, p−2` (ℕ subtraction), of the rationals `1/(i+1)` (with `i+1` coerced to ℚ), then `p ∣ a`, divisibility in ℕ.
+
+In words: if `a/b = 1 + 1/2 + … + 1/(p−1)` in ℚ, then `p` divides `a`.
+
+**Easy to miss:** `a`, `b`, `i` are all ℕ; every division happens in ℚ via coercions; `b = 0` is permitted (rational division by zero is defined as 0); the conclusion is ℕ-divisibility, not ℚ.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+<script>
+const KEY = "labels:chunk2-demo";
+let labels = {};
+try { labels = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+const cards = [...document.querySelectorAll(".card")];
+function render() {
+  for (const c of cards) for (const b of c.querySelectorAll("button"))
+    b.classList.toggle("chosen", labels[c.dataset.id] === b.dataset.label);
+  document.getElementById("progress").textContent = Object.keys(labels).length + " / " + cards.length + " labeled";
+}
+for (const c of cards) for (const b of c.querySelectorAll("button")) b.onclick = () => {
+  labels[c.dataset.id] = b.dataset.label;
+  try { localStorage.setItem(KEY, JSON.stringify(labels)); } catch (e) {}
+  render();
+};
+document.getElementById("export").onclick = () => {
+  const rows = ["label_id,label", ...cards.map(c => c.dataset.id + "," + (labels[c.dataset.id] || ""))];
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([rows.join("\n") + "\n"], {type: "text/csv"}));
+  a.download = "labels.csv"; a.click();
+};
+render();
+</script></body></html>

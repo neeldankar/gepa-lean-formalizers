@@ -23,3 +23,30 @@ axle:
   outage_retries: 3            # our own retries on top of the client's
   outage_backoff_seconds: 30   # doubles each retry
   cache_dir: cache/axle
+
+budget:
+  total_usd: 300
+  chunk_caps_usd: {1: 0, 2: 10, 3: 3, 4: 30, 5: 180, 6: 5, 7: 5}
+
+llm:
+  base_url: https://api.together.xyz/v1
+  cache_dir: cache/llm
+  retries: 4
+  backoff_seconds: 5
+  timeout_seconds: 300
+  prices:  # USD per 1M tokens (Together model list, 2026-10-17)
+    openai/gpt-oss-120b: {input: 0.15, output: 0.6}
+    deepseek-ai/DeepSeek-V4.1-Flash: {input: 0.3, output: 1.2}
+    zai-org/GLM-5.3-Flash: {input: 0.15, output: 0.5}
+
+# Placeholders until the pilot (chunk 4): two different non-Qwen families.
+judges:
+  optimization: openai/gpt-oss-120b
+  reference: deepseek-ai/DeepSeek-V4.1-Flash
+  gloss: zai-org/GLM-5.3-Flash
+  max_tokens: 4000
+  gloss_max_tokens: 8000
+
+scoring:
+  stripper: ours  # set by the chunk 2 contest: AXLE remove_comments only if it passes every strip.CASES entry
+  certificates: true

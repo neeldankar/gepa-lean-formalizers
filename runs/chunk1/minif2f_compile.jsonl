@@ -1,244 +1,244 @@
-{"id": "minif2f_mathd_algebra_478", "status": "ok", "errors": []}
-{"id": "minif2f_numbertheory_4x3m7y3neq2003", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1983_p1", "status": "ok", "errors": []}
-{"id": "minif2f_amc12_2001_p5", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_141", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_3", "status": "lean_error", "errors": ["-:7:35-7:38: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_imo_1969_p2", "status": "lean_error", "errors": ["-:8:24-8:27: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_209", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_1124", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1983_p6", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_237", "status": "lean_error", "errors": ["-:7:37-7:40: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_33", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2021_p3", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_299", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2020_p2", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_sqineq_unitcircatbpabsamblt1", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1977_p6", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_419", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2020_p10", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1960_p2", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_427", "status": "lean_error", "errors": ["-:7:52-7:55: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_numbertheory_x5neqy2p4", "status": "ok", "errors": []}
-{"id": "minif2f_imosl_2007_algebra_p6", "status": "lean_error", "errors": ["-:7:57-7:60: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_398", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1963_p5", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_430", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_459", "status": "ok", "errors": []}
-{"id": "minif2f_induction_12dvd4expnp1p20", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_320", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_137", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1997_p5", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_277", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_559", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_160", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_24", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_176", "status": "ok", "errors": []}
-{"id": "minif2f_induction_nfactltnexpnm1ngt3", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_208", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_353", "status": "lean_error", "errors": ["-:7:52-7:55: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_numbertheory_notequiv2i2jasqbsqdiv8", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_156", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_12", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_345", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_447", "status": "lean_error", "errors": ["-:8:8-8:11: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_numbertheory_328", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_451", "status": "lean_error", "errors": ["-:11:69-11:72: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_aime_1997_p9", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_sqineq_at2malt1", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_apbmpcneq0_aeq0anbeq0anceq0", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_171", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_227", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_188", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_765", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1959_p1", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_175", "status": "ok", "errors": []}
-{"id": "minif2f_induction_sumkexp3eqsumksq", "status": "lean_error", "errors": ["-:8:8-8:11: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_numbertheory_fxeq4powxp6powxp9powx_f2powmdvdf2pown", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1992_p1", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1982_p1", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1987_p5", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_346", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_487", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_728", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_184", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_552", "status": "lean_error", "errors": ["-:9:8-9:11: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_amc12b_2021_p9", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1994_p3", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_44", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_215", "status": "lean_error", "errors": ["-:8:8-8:11: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_numbertheory_293", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_769", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_452", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_5", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_207", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_342", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_483", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2020_p21", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2003_p5", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_495", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_296", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_abpbcpcageq3_sumaonsqrtapbgeq3onsqrt2", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_2varlineareq_fp3zeq11_3tfm1m5zeqn68_feqn10_zeq7", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_247", "status": "ok", "errors": []}
-{"id": "minif2f_induction_pord1p1on2powklt5on2", "status": "lean_error", "errors": ["-:8:7-8:10: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_107", "status": "ok", "errors": []}
-{"id": "minif2f_numbertheory_2pownm1prime_nprime", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_412", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2013_p4", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_392", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_314", "status": "ok", "errors": []}
-{"id": "minif2f_induction_prod1p1onk3le3m1onn", "status": "lean_error", "errors": ["-:8:7-8:10: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_numbertheory_343", "status": "lean_error", "errors": ["-:7:37-7:40: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_756", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2002_p7", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_80", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_457", "status": "ok", "errors": []}
-{"id": "minif2f_amc12_2000_p12", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_135", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_275", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_388", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2020_p7", "status": "lean_error", "errors": ["-:9:7-9:10: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_imo_1981_p6", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_263", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_34", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_764", "status": "lean_error", "errors": ["-:8:8-8:11: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_amc12b_2021_p4", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1962_p2", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_170", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_432", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_598", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_bleqa_apbon2msqrtableqambsqon8b", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_276", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p14", "status": "lean_error", "errors": ["-:8:9-8:12: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_algebra_sum1onsqrt2to1onsqrt10000lt198", "status": "lean_error", "errors": ["-:8:8-8:11: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_numbertheory_618", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2020_p4", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2020_p6", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_435", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_others_exirrpowirrrat", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_427", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_76", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_99", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_9onxpypzleqsum2onxpy", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_233", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_absapbon1pabsapbleqsumabsaon1pabsa", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1984_p6", "status": "ok", "errors": []}
-{"id": "minif2f_imo_2001_p6", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_321", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_17", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_153", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_sqineq_unitcircatbpamblt1", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p18", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_329", "status": "ok", "errors": []}
-{"id": "minif2f_induction_pprime_pdvdapowpma", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p9", "status": "lean_error", "errors": ["-:7:29-7:32: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_aime_1984_p1", "status": "lean_error", "errors": ["-:8:14-8:17: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_amc12a_2021_p22", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_229", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_100", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_313", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2002_p4", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2002_p6", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2003_p23", "status": "lean_error", "errors": ["-:8:52-8:55: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_129", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2021_p18", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_484", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_551", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_304", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p8", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_ineq_nto1onlt2m1on", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2002_p19", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_341", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_711", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2020_p22", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_113", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2020_p9", "status": "ok", "errors": []}
-{"id": "minif2f_amc12_2000_p1", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p19", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_amgm_sumasqdivbgeqsuma", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_212", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_320", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_125", "status": "ok", "errors": []}
-{"id": "minif2f_induction_1pxpownlt1pnx", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_148", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2019_p12", "status": "ok", "errors": []}
-{"id": "minif2f_induction_11div10tonmn1ton", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_amgm_sum1toneqn_prod1tonleq1", "status": "lean_error", "errors": ["-:8:14-8:17: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_imo_1985_p6", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2020_p15", "status": "lean_error", "errors": ["-:8:4-8:15: error(lean.unknownIdentifier): Unknown constant `Complex.abs`\n"]}
-{"id": "minif2f_mathd_algebra_332", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_cubrtrp1oncubrtreq3_rcubp1onrcubeq5778", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_293", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_440", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_254", "status": "ok", "errors": []}
-{"id": "minif2f_amc12_2000_p6", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1988_p8", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_114", "status": "ok", "errors": []}
-{"id": "minif2f_imo_2019_p1", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_513", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_143", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_354", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1984_p7", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_246", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1983_p3", "status": "lean_error", "errors": ["-:9:37-9:40: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_numbertheory_3pow2pownm1mod2pownp3eq2pownp2", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_85", "status": "ok", "errors": []}
-{"id": "minif2f_amc12_2001_p21", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_239", "status": "lean_error", "errors": ["-:7:37-7:40: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_amc12b_2002_p2", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_196", "status": "lean_error", "errors": ["-:8:8-8:11: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_342", "status": "lean_error", "errors": ["-:7:46-7:49: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_numbertheory_517", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2009_p7", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_270", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p12", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_362", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_521", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2002_p13", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1964_p2", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_289", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p3", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2008_p25", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_apbpceq2_abpbcpcaeq1_aleq1on3anbleq1ancleq4on3", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_66", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2021_p1", "status": "ok", "errors": []}
-{"id": "minif2f_algebra_apbon2pownleqapownpbpowon2", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1968_p5_1", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1990_p15", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_235", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2020_p13", "status": "ok", "errors": []}
-{"id": "minif2f_amc12b_2021_p13", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_234", "status": "ok", "errors": []}
-{"id": "minif2f_numbertheory_aoddbdiv4asqpbsqmod8eq1", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_222", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1999_p11", "status": "lean_error", "errors": ["-:8:14-8:17: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_algebra_359", "status": "ok", "errors": []}
-{"id": "minif2f_imo_1965_p2", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_288", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_127", "status": "lean_error", "errors": ["-:7:37-7:40: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_imo_1974_p3", "status": "lean_error", "errors": ["-:8:12-8:15: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_aime_1991_p9", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2009_p6", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_158", "status": "lean_error", "errors": ["-:8:13-8:16: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_algebra_absxm1pabsxpabsxp1eqxp2_0leqxleq1", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1990_p4", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_541", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_314", "status": "ok", "errors": []}
-{"id": "minif2f_amc12_2000_p20", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_302", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1983_p2", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_139", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2021_p25", "status": "ok", "errors": []}
-{"id": "minif2f_amc12a_2020_p25", "status": "lean_error", "errors": ["-:8:69-8:72: error: unexpected token 'in'; expected ','\n"]}
-{"id": "minif2f_mathd_numbertheory_150", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1989_p8", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_296", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_142", "status": "ok", "errors": []}
-{"id": "minif2f_numbertheory_exk2powkeqapb2mulbpa2_aeq1", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_400", "status": "ok", "errors": []}
-{"id": "minif2f_aime_1995_p7", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_185", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_441", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_numbertheory_582", "status": "ok", "errors": []}
-{"id": "minif2f_mathd_algebra_338", "status": "ok", "errors": []}
+{"id": "minif2f_mathd_algebra_478", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_numbertheory_4x3m7y3neq2003", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1983_p1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12_2001_p5", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_141", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_3", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_imo_1969_p2", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_209", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_1124", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1983_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_237", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_33", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2021_p3", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_299", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2020_p2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_sqineq_unitcircatbpabsamblt1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1977_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_419", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2020_p10", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1960_p2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_427", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_numbertheory_x5neqy2p4", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imosl_2007_algebra_p6", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_398", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1963_p5", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_430", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_459", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_12dvd4expnp1p20", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_320", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_137", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1997_p5", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_277", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_559", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_160", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_24", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_176", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_nfactltnexpnm1ngt3", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_208", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_353", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_numbertheory_notequiv2i2jasqbsqdiv8", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_156", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_12", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_345", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_447", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_numbertheory_328", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_451", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_aime_1997_p9", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_sqineq_at2malt1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_apbmpcneq0_aeq0anbeq0anceq0", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_171", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_227", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_188", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_765", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1959_p1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_175", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_sumkexp3eqsumksq", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_numbertheory_fxeq4powxp6powxp9powx_f2powmdvdf2pown", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1992_p1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1982_p1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1987_p5", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_346", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_487", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_728", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_184", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_552", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_amc12b_2021_p9", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1994_p3", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_44", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_215", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_numbertheory_293", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_769", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_452", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_5", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_207", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_342", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_483", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2020_p21", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2003_p5", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_495", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_296", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_abpbcpcageq3_sumaonsqrtapbgeq3onsqrt2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_2varlineareq_fp3zeq11_3tfm1m5zeqn68_feqn10_zeq7", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_247", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_pord1p1on2powklt5on2", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_107", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_numbertheory_2pownm1prime_nprime", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_412", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2013_p4", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_392", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_314", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_prod1p1onk3le3m1onn", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_numbertheory_343", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_756", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2002_p7", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_80", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_457", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12_2000_p12", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_135", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_275", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_388", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2020_p7", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_imo_1981_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_263", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_34", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_764", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_amc12b_2021_p4", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1962_p2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_170", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_432", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_598", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_bleqa_apbon2msqrtableqambsqon8b", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_276", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p14", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_algebra_sum1onsqrt2to1onsqrt10000lt198", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_numbertheory_618", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2020_p4", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2020_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_435", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_others_exirrpowirrrat", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_427", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_76", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_99", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_9onxpypzleqsum2onxpy", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_233", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_absapbon1pabsapbleqsumabsaon1pabsa", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1984_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_2001_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_321", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_17", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_153", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_sqineq_unitcircatbpamblt1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p18", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_329", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_pprime_pdvdapowpma", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p9", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_aime_1984_p1", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_amc12a_2021_p22", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_229", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_100", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_313", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2002_p4", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2002_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2003_p23", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_129", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2021_p18", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_484", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_551", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_304", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p8", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_ineq_nto1onlt2m1on", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2002_p19", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_341", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_711", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2020_p22", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_113", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2020_p9", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12_2000_p1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p19", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_amgm_sumasqdivbgeqsuma", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_212", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_320", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_125", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_1pxpownlt1pnx", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_148", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2019_p12", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_induction_11div10tonmn1ton", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_amgm_sum1toneqn_prod1tonleq1", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_imo_1985_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2020_p15", "status": "lean_error", "errors": ["-:8:4-8:15: error(lean.unknownIdentifier): Unknown constant `Complex.abs`\n"], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_332", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_cubrtrp1oncubrtreq3_rcubp1onrcubeq5778", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_293", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_440", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_254", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12_2000_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1988_p8", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_114", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_2019_p1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_513", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_143", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_354", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1984_p7", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_246", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1983_p3", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_numbertheory_3pow2pownm1mod2pownp3eq2pownp2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_85", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12_2001_p21", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_239", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_amc12b_2002_p2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_196", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_342", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_numbertheory_517", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2009_p7", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_270", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p12", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_362", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_521", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2002_p13", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1964_p2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_289", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p3", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2008_p25", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_apbpceq2_abpbcpcaeq1_aleq1on3anbleq1ancleq4on3", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_66", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2021_p1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_algebra_apbon2pownleqapownpbpowon2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1968_p5_1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1990_p15", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_235", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2020_p13", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12b_2021_p13", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_234", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_numbertheory_aoddbdiv4asqpbsqmod8eq1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_222", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1999_p11", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_algebra_359", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_imo_1965_p2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_288", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_127", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_imo_1974_p3", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_aime_1991_p9", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2009_p6", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_158", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_algebra_absxm1pabsxpabsxp1eqxp2_0leqxleq1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1990_p4", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_541", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_314", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12_2000_p20", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_302", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1983_p2", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_139", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2021_p25", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_amc12a_2020_p25", "status": "ok", "errors": [], "binder_rewrite": true}
+{"id": "minif2f_mathd_numbertheory_150", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1989_p8", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_296", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_142", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_numbertheory_exk2powkeqapb2mulbpa2_aeq1", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_400", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_aime_1995_p7", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_185", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_441", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_numbertheory_582", "status": "ok", "errors": [], "binder_rewrite": false}
+{"id": "minif2f_mathd_algebra_338", "status": "ok", "errors": [], "binder_rewrite": false}
