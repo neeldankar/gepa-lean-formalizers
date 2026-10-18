@@ -1,0 +1,259 @@
+{
+ "proofnet_reference_compile": {
+  "total": 367,
+  "compiled": 367,
+  "by_status": {
+   "ok": 367
+  },
+  "failures": []
+ },
+ "split": {
+  "seed": 0,
+  "sizes": {
+   "train": 50,
+   "val": 70,
+   "test": 247
+  },
+  "kept_together": [
+   [
+    "pnv_168",
+    "pnv_351"
+   ]
+  ],
+  "per_textbook": {
+   "Artin": {
+    "total": 28,
+    "train": 4,
+    "val": 5,
+    "test": 19
+   },
+   "Axler": {
+    "total": 26,
+    "train": 3,
+    "val": 5,
+    "test": 18
+   },
+   "Dummit Foote": {
+    "total": 87,
+    "train": 12,
+    "val": 17,
+    "test": 58
+   },
+   "Herstein": {
+    "total": 47,
+    "train": 6,
+    "val": 9,
+    "test": 32
+   },
+   "Ireland Rosen": {
+    "total": 21,
+    "train": 3,
+    "val": 4,
+    "test": 14
+   },
+   "Munkres": {
+    "total": 60,
+    "train": 8,
+    "val": 11,
+    "test": 41
+   },
+   "Pugh": {
+    "total": 14,
+    "train": 2,
+    "val": 3,
+    "test": 9
+   },
+   "Putnam": {
+    "total": 12,
+    "train": 2,
+    "val": 2,
+    "test": 8
+   },
+   "Rudin": {
+    "total": 56,
+    "train": 8,
+    "val": 11,
+    "test": 37
+   },
+   "Shakarchi": {
+    "total": 16,
+    "train": 2,
+    "val": 3,
+    "test": 11
+   }
+  }
+ },
+ "minif2f_reference_compile": {
+  "total": 244,
+  "compiled": 212,
+  "by_status": {
+   "ok": 212,
+   "lean_error": 32
+  },
+  "failures": [
+   {
+    "id": "minif2f_mathd_numbertheory_3",
+    "status": "lean_error",
+    "first_error": "-:7:35-7:38: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_imo_1969_p2",
+    "status": "lean_error",
+    "first_error": "-:8:24-8:27: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_237",
+    "status": "lean_error",
+    "first_error": "-:7:37-7:40: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_427",
+    "status": "lean_error",
+    "first_error": "-:7:52-7:55: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_imosl_2007_algebra_p6",
+    "status": "lean_error",
+    "first_error": "-:7:57-7:60: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_353",
+    "status": "lean_error",
+    "first_error": "-:7:52-7:55: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_447",
+    "status": "lean_error",
+    "first_error": "-:8:8-8:11: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_451",
+    "status": "lean_error",
+    "first_error": "-:11:69-11:72: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_induction_sumkexp3eqsumksq",
+    "status": "lean_error",
+    "first_error": "-:8:8-8:11: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_552",
+    "status": "lean_error",
+    "first_error": "-:9:8-9:11: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_algebra_215",
+    "status": "lean_error",
+    "first_error": "-:8:8-8:11: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_induction_pord1p1on2powklt5on2",
+    "status": "lean_error",
+    "first_error": "-:8:7-8:10: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_induction_prod1p1onk3le3m1onn",
+    "status": "lean_error",
+    "first_error": "-:8:7-8:10: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_343",
+    "status": "lean_error",
+    "first_error": "-:7:37-7:40: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_amc12a_2020_p7",
+    "status": "lean_error",
+    "first_error": "-:9:7-9:10: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_764",
+    "status": "lean_error",
+    "first_error": "-:8:8-8:11: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_amc12a_2021_p14",
+    "status": "lean_error",
+    "first_error": "-:8:9-8:12: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_algebra_sum1onsqrt2to1onsqrt10000lt198",
+    "status": "lean_error",
+    "first_error": "-:8:8-8:11: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_amc12a_2021_p9",
+    "status": "lean_error",
+    "first_error": "-:7:29-7:32: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_aime_1984_p1",
+    "status": "lean_error",
+    "first_error": "-:8:14-8:17: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_amc12a_2003_p23",
+    "status": "lean_error",
+    "first_error": "-:8:52-8:55: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_algebra_amgm_sum1toneqn_prod1tonleq1",
+    "status": "lean_error",
+    "first_error": "-:8:14-8:17: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_amc12a_2020_p15",
+    "status": "lean_error",
+    "first_error": "-:8:4-8:15: error(lean.unknownIdentifier): Unknown constant `Complex.abs`\n"
+   },
+   {
+    "id": "minif2f_aime_1983_p3",
+    "status": "lean_error",
+    "first_error": "-:9:37-9:40: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_239",
+    "status": "lean_error",
+    "first_error": "-:7:37-7:40: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_algebra_196",
+    "status": "lean_error",
+    "first_error": "-:8:8-8:11: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_algebra_342",
+    "status": "lean_error",
+    "first_error": "-:7:46-7:49: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_aime_1999_p11",
+    "status": "lean_error",
+    "first_error": "-:8:14-8:17: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_numbertheory_127",
+    "status": "lean_error",
+    "first_error": "-:7:37-7:40: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_imo_1974_p3",
+    "status": "lean_error",
+    "first_error": "-:8:12-8:15: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_mathd_algebra_158",
+    "status": "lean_error",
+    "first_error": "-:8:13-8:16: error: unexpected token 'in'; expected ','\n"
+   },
+   {
+    "id": "minif2f_amc12a_2020_p25",
+    "status": "lean_error",
+    "first_error": "-:8:69-8:72: error: unexpected token 'in'; expected ','\n"
+   }
+  ]
+ },
+ "minif2f_usable": 212,
+ "minif2f_dropped": 32,
+ "axle_api_calls_this_run": 611
+}

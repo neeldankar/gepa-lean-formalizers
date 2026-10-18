@@ -1,0 +1,41 @@
+5 random raw train examples (seed 0):
+
+[pnv_187 | Artin | train | compile: ok]
+English: Let $V$ be a vector space over an infinite field $F$. Prove that $V$ is not the union of finitely many proper subspaces.
+theorem Artin_exercise_3_7_2 {K V : Type*} [Field K] [Infinite K] [AddCommGroup V]
+  [Module K V] {ι : Type*} [Fintype ι] (γ : ι → Submodule K V)
+  (h : ∀ i : ι, γ i ≠ ⊤) :
+  (⋃ (i : ι), (γ i : Set V)) ≠ ⊤ := by
+  sorry
+
+[pnv_360 | Shakarchi | train | compile: ok]
+English: Suppose that $f$ is holomorphic in an open set $\Omega$. Prove that if $\text{Im}(f)$ is constant, then $f$ is constant.
+theorem Shakarchi_exercise_1_13b {f : ℂ → ℂ} {Ω : Set ℂ}
+    (hΩ : IsOpen Ω) (hConn : IsPreconnected Ω)
+    (hf : DifferentiableOn ℂ f Ω)
+    (hc : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :
+    ∀ a b : Ω, f a = f b := by
+  sorry
+
+[pnv_213 | Dummit Foote | train | compile: ok]
+English: Prove that $(a_1a_2\dots a_n)^{-1} = a_n^{-1}a_{n-1}^{-1}\dots a_1^{-1}$ for all $a_1, a_2, \dots, a_n\in G$.
+theorem Dummit_Foote_exercise_1_1_15 {G : Type*} [Group G] (as : List G) :
+  as.prod⁻¹ = (as.reverse.map (λ x => x⁻¹)).prod := by
+  sorry
+
+[pnv_018 | Axler | train | compile: ok]
+English: Suppose $p \in \mathcal{P}(\mathbf{C})$ has degree $m$. Prove that $p$ has $m$ distinct roots if and only if $p$ and its derivative $p^{\prime}$ have no roots in common.
+theorem Axler_exercise_4_4 (p : Polynomial ℂ) (m : ℕ) (hp : p ≠ 0) (hm : m = p.degree) :
+    @card (p.rootSet ℂ) (rootSetFintype p ℂ) = m ↔
+    Disjoint (p.rootSet ℂ) ((Polynomial.derivative p).rootSet ℂ) := by
+  sorry
+
+[pnv_111 | Munkres | train | compile: ok]
+English: A map $f: X \rightarrow Y$ is said to be an open map if for every open set $U$ of $X$, the set $f(U)$ is open in $Y$. Show that $\pi_{1}: X \times Y \rightarrow X$ and $\pi_{2}: X \times Y \rightarrow Y$ are open maps.
+theorem Munkres_exercise_16_4 {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  (π₁ : X × Y → X)
+  (π₂ : X × Y → Y)
+  (h₁ : π₁ = Prod.fst)
+  (h₂ : π₂ = Prod.snd) :
+  IsOpenMap π₁ ∧ IsOpenMap π₂ := by
+  sorry

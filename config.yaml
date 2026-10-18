@@ -1,0 +1,25 @@
+# Every knob for the study lives here.
+
+seed: 0
+
+split:
+  train: 50
+  val: 70
+  test: 247
+
+data:
+  proofnet_verified:
+    repo: marcusm117/ProofNet-Verified
+    commit: 160414332dc196583f6c37c310b420d2a3b07c58
+  minif2f:
+    repo: AI-MO/minif2f_test
+    revision: 5def318348521dfc34875045a9ecddf729a2b49f
+
+axle:
+  environment: lean-4.28.0
+  timeout_seconds: 120         # Lean time budget per check; exceeding it is a timeout (a failure)
+  max_concurrency: 16
+  client_timeout_seconds: 300  # how long the axle client keeps retrying 503/429 inside one attempt
+  outage_retries: 3            # our own retries on top of the client's
+  outage_backoff_seconds: 30   # doubles each retry
+  cache_dir: cache/axle
