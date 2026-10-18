@@ -144,7 +144,8 @@ Each confirmatory result has a pre-stated reading, so a null result is a finding
 | --- | --- | --- | --- |
 | Q1: truth gain, Qwen3-8B (A to B), in points | +8 points | 50 | 2026-10-18 |
 | Q2: truth gain, ReForm-8B (C to D), in points | +0 points | 70 | 2026-10-18 |
-| Q3: judge gain minus truth gain, per model | Qwen3-8B +4 points, ReForm-8B +2 points | 40 | 2026-10-18 |
+| Q3 (descriptive gap): judge gain minus truth gain, per model | Qwen3-8B +4 points, ReForm-8B +2 points | 40 | 2026-10-18 |
+| Q3 (confirmatory): judge false-positive rate change, B minus A and D minus C, in points | Qwen3-8B +0 points, ReForm-8B +2 points | 50 | 2026-10-18 |
 | Which error type GEPA fixes most | Missing premise | 50 | 2026-10-18 |
 | Does GEPA break ReForm-8B's format? | No | 60 | 2026-10-18 |
 
