@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_107",
+        "sample": 0,
+        "output": "```lean4\ntheorem unique_smallest_topology (X : Type*) (T_family : Set (Set X) \u2192 Prop) :\n  \u2203! T : Set (Set X), is_topology X T \u2227 \u2200 \u03b1, T_family \u03b1 \u2192 T \u2287 T \u03b1 :=\n  by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem unique_smallest_topology (X : Type*) (T_family : Set (Set X) \u2192 Prop) :\n  \u2203! T : Set (Set X), is_topology X T \u2227 \u2200 \u03b1, T_family \u03b1 \u2192 T \u2287 T \u03b1 :=\n  by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:13:64-13:65: error: Application type mismatch: The argument\n  \u03b1\nhas type\n  Set (Set X)\nbut is expected to have type\n  Set X\nin the application\n  T \u03b1\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

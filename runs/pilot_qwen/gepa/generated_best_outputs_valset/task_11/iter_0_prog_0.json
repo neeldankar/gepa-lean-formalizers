@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_048",
+        "sample": 0,
+        "output": "```lean4\ntheorem Dummit_Foote_exercise_1_3_12 (G : Type) [Infinite G] (A : Set G) [Finite A] [IsPermGroup G A] (hA : A \u2260 \u2205) (hTrans : IsTransitive G A) :\n  \u2203 \u03c3 \u2208 G, \u2200 a \u2208 A, \u03c3 a \u2260 a := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_1_3_12 (G : Type) [Infinite G] (A : Set G) [Finite A] [IsPermGroup G A] (hA : A \u2260 \u2205) (hTrans : IsTransitive G A) :\n  \u2203 \u03c3 \u2208 G, \u2200 a \u2208 A, \u03c3 a \u2260 a := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:66-7:77: error(lean.unknownIdentifier): Unknown identifier `IsPermGroup`\n\nNote: It is not possible to treat `IsPermGroup` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

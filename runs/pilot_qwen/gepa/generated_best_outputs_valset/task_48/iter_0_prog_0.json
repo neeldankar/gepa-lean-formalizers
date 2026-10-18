@@ -1,0 +1,30 @@
+[
+    {
+        "item_id": "pnv_257",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_abelian_from_consecutive_powers (G : Type) [Group G] (i : \u2124)\n  (h1 : (a * b) ^ (i) = a ^ i * b ^ i)\n  (h2 : (a * b) ^ (i + 1) = a ^ (i + 1) * b ^ (i + 1))\n  (h3 : (a * b) ^ (i + 2) = a ^ (i + 2) * b ^ (i + 2)) :\n  Abelian G := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_abelian_from_consecutive_powers (G : Type) [Group G] (i : \u2124)\n  (h1 : (a * b) ^ (i) = a ^ i * b ^ i)\n  (h2 : (a * b) ^ (i + 1) = a ^ (i + 1) * b ^ (i + 1))\n  (h3 : (a * b) ^ (i + 2) = a ^ (i + 2) * b ^ (i + 2)) :\n  Abelian G := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:9-8:10: error(lean.unknownIdentifier): Unknown identifier `a`\n\nNote: It is not possible to treat `a` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:13-8:14: error(lean.unknownIdentifier): Unknown identifier `b`\n\nNote: It is not possible to treat `b` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:24-8:25: error(lean.unknownIdentifier): Unknown identifier `a`\n\nNote: It is not possible to treat `a` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:32-8:33: error(lean.unknownIdentifier): Unknown identifier `b`\n\nNote: It is not possible to treat `b` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:9-9:10: error(lean.unknownIdentifier): Unknown identifier `a`\n\nNote: It is not possible to treat `a` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:13-9:14: error(lean.unknownIdentifier): Unknown identifier `b`\n\nNote: It is not possible to treat `b` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:28-9:29: error(lean.unknownIdentifier): Unknown identifier `a`\n\nNote: It is not possible to treat `a` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:42-9:43: error(lean.unknownIdentifier): Unknown identifier `b`\n\nNote: It is not possible to treat `b` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:10:9-10:10: error(lean.unknownIdentifier): Unknown identifier `a`\n\nNote: It is not possible to treat `a` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:10:13-10:14: error(lean.unknownIdentifier): Unknown identifier `b`\n\nNote: It is not possible to treat `b` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:10:28-10:29: error(lean.unknownIdentifier): Unknown identifier `a`\n\nNote: It is not possible to treat `a` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:10:42-10:43: error(lean.unknownIdentifier): Unknown identifier `b`\n\nNote: It is not possible to treat `b` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:11:2-11:9: error(lean.unknownIdentifier): Unknown identifier `Abelian`\n\nNote: It is not possible to treat `Abelian` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

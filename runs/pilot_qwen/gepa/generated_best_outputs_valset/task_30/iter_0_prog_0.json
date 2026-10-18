@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_148",
+        "sample": 0,
+        "output": "```lean4\ntheorem irrational_add_rational (r : \u211a) (x : \u211d) (hr : r \u2260 0) (hx : \u00ac(\u2203 q : \u211a, x = q)) : \u00ac(\u2203 q : \u211a, r + x = q) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem irrational_add_rational (r : \u211a) (x : \u211d) (hr : r \u2260 0) (hx : \u00ac(\u2203 q : \u211a, x = q)) : \u00ac(\u2203 q : \u211a, r + x = q) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean statement assumes r : \u211a with r \u2260 0 and x : \u211d with no rational representation (irrational), and concludes that r + x has no rational representation, exactly matching the English claim."
+        },
+        "score": 1
+    }
+]

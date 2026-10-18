@@ -1,0 +1,23 @@
+[
+    {
+        "item_id": "pnv_241",
+        "sample": 0,
+        "output": "```lean4\ntheorem rotman_exercise_5_3 (G : Type _) [Group G] (p : \u2115) (hp : Nat.Prime p) (P : Subgroup G) (H : Subgroup G)\n  (normal_P : IsNormal P) (P_Sylow : SylowSubgroup P p) (H_subgroup : H \u2264 G) :\n  IsSylowSubgroup (P \u2229 H) p \u2227 \u2200 Q : Subgroup G, Q \u2264 H \u2192 IsSylowSubgroup Q p \u2192 Q = P \u2229 H := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem rotman_exercise_5_3 (G : Type _) [Group G] (p : \u2115) (hp : Nat.Prime p) (P : Subgroup G) (H : Subgroup G)\n  (normal_P : IsNormal P) (P_Sylow : SylowSubgroup P p) (H_subgroup : H \u2264 G) :\n  IsSylowSubgroup (P \u2229 H) p \u2227 \u2200 Q : Subgroup G, Q \u2264 H \u2192 IsSylowSubgroup Q p \u2192 Q = P \u2229 H := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:14-8:22: error(lean.unknownIdentifier): Unknown identifier `IsNormal`\n\nNote: It is not possible to treat `IsNormal` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:37-8:50: error(lean.unknownIdentifier): Unknown identifier `SylowSubgroup`\n\nNote: It is not possible to treat `SylowSubgroup` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:70-8:75: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  LE (Type ?u.2)\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:9:2-9:17: error(lean.unknownIdentifier): Unknown identifier `IsSylowSubgroup`\n\nNote: It is not possible to treat `IsSylowSubgroup` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:56-9:71: error(lean.unknownIdentifier): Unknown identifier `IsSylowSubgroup`\n\nNote: It is not possible to treat `IsSylowSubgroup` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:82-9:87: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Inter (Subgroup G)\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

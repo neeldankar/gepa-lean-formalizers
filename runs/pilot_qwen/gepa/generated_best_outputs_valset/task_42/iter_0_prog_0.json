@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_222",
+        "sample": 0,
+        "output": "```lean4\ntheorem Dummit_Foote_exercise_1_3_12 (G : Type _) [Group G] [Fintype G] (H : Subgroup G) (hH : H \u2260 \u22a4) :\n  \u2203 (M : Subgroup G), M \u2260 \u22a4 \u2227 H \u2264 M \u2227 \u2200 (K : Subgroup G), H \u2264 K \u2192 K = H \u2228 K = \u22a4 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_1_3_12 (G : Type _) [Group G] [Fintype G] (H : Subgroup G) (hH : H \u2260 \u22a4) :\n  \u2203 (M : Subgroup G), M \u2260 \u22a4 \u2227 H \u2264 M \u2227 \u2200 (K : Subgroup G), H \u2264 K \u2192 K = H \u2228 K = \u22a4 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement\u2019s maximality condition quantifies over subgroups containing H (\u2227 H \u2264 K \u2192 K = H \u2228 K = \u22a4) instead of those containing M, so it does not capture the definition of a maximal subgroup containing H."
+        },
+        "score": 0
+    }
+]

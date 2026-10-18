@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_304",
+        "sample": 0,
+        "output": "```lean4\ntheorem quotient_map_connectedness (X Y : TopologicalSpace) (p : X \u2192 Y) [IsQuotientMap p] \n  (h_connected_Y : Connected Y) \n  (h_connected_fiber : \u2200 y : Y, Connected (p\u207b\u00b9' {y})) : Connected X := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem quotient_map_connectedness (X Y : TopologicalSpace) (p : X \u2192 Y) [IsQuotientMap p] \n  (h_connected_Y : Connected Y) \n  (h_connected_fiber : \u2200 y : Y, Connected (p\u207b\u00b9' {y})) : Connected X := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:6:25-6:41: error: type expected, got\n  (TopologicalSpace : Type ?u.2 \u2192 Type ?u.2)\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

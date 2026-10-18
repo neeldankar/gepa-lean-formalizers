@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_158",
+        "sample": 0,
+        "output": "```lean4\ntheorem convergence_implies_absolute_convergence (s : \u2115 \u2192 \u211d) (h : Filter.Tendsto s (atTop) (nhds 0)) :\n  Filter.Tendsto (fun n => abs (s n)) (atTop) (nhds 0) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem convergence_implies_absolute_convergence (s : \u2115 \u2192 \u211d) (h : Filter.Tendsto s (atTop) (nhds 0)) :\n  Filter.Tendsto (fun n => abs (s n)) (atTop) (nhds 0) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement uses real sequences converging to 0, while the English problem concerns complex sequences with arbitrary limits; it also omits the complex modulus and general limit, so it does not match the English statement."
+        },
+        "score": 0
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_286",
+        "sample": 0,
+        "output": "```lean4\ntheorem wilson_theorem_extension (p : \u2115) (hp : Nat.Prime p) (k : \u2115) :\n  (Finset.sum (Finset.range p) fun n => n^k) \u2261 0 [ZMOD p] \u2194 \u00ac (p - 1) \u2223 k :=\n  by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem wilson_theorem_extension (p : \u2115) (hp : Nat.Prime p) (k : \u2115) :\n  (Finset.sum (Finset.range p) fun n => n^k) \u2261 0 [ZMOD p] \u2194 \u00ac (p - 1) \u2223 k :=\n  by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement only relates the sum being 0 mod p to \u00ac(p\u20111 \u2223 k) and omits the case where the sum should be -1 mod p when p\u20111 \u2223 k; moreover it sums over `Finset.range p` (including 0) whereas the English sum runs from 1 to p\u20111."
+        },
+        "score": 0
+    }
+]

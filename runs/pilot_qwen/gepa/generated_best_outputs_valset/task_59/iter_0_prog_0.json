@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_305",
+        "sample": 0,
+        "output": "```lean4\ntheorem Brouwer_fixed_point_theorem (f : I \u2192 I) (hf : Continuous f) : \u2203 x \u2208 I, f x = x := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Brouwer_fixed_point_theorem (f : I \u2192 I) (hf : Continuous f) : \u2203 x \u2208 I, f x = x := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:9:63-9:64: error: Application type mismatch: The argument\n  x\nhas type\n  \u211d\nbut is expected to have type\n  \u2191I\nin the application\n  f x\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

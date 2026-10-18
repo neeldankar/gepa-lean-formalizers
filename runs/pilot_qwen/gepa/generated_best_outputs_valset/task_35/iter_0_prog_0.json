@@ -1,0 +1,23 @@
+[
+    {
+        "item_id": "pnv_179",
+        "sample": 0,
+        "output": "```lean4\ntheorem primitives_differ_by_constant {\u03a9 : Set \u2102} (h\u03a9 : IsOpen \u03a9) (f : \u03a9 \u2192 \u2102)\n  (F G : \u03a9 \u2192 \u2102) (hF : DifferentiableOn \u03a9 F) (hG : DifferentiableOn \u03a9 G)\n  (hFG : \u2200 x \u2208 \u03a9, Deriv F x = Deriv G x) : \u2203 c : \u2102, \u2200 x \u2208 \u03a9, F x = G x + c := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem primitives_differ_by_constant {\u03a9 : Set \u2102} (h\u03a9 : IsOpen \u03a9) (f : \u03a9 \u2192 \u2102)\n  (F G : \u03a9 \u2192 \u2102) (hF : DifferentiableOn \u03a9 F) (hG : DifferentiableOn \u03a9 G)\n  (hFG : \u2200 x \u2208 \u03a9, Deriv F x = Deriv G x) : \u2203 c : \u2102, \u2200 x \u2208 \u03a9, F x = G x + c := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:22-8:42: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  NontriviallyNormedField \u2191\u03a9\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:8:50-8:70: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  NontriviallyNormedField \u2191\u03a9\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:9:18-9:23: error(lean.unknownIdentifier): Unknown identifier `Deriv`\n\nNote: It is not possible to treat `Deriv` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:30-9:35: error(lean.unknownIdentifier): Unknown identifier `Deriv`\n\nNote: It is not possible to treat `Deriv` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:63-9:64: error: Application type mismatch: The argument\n  x\nhas type\n  \u2102\nbut is expected to have type\n  \u2191\u03a9\nin the application\n  F x\n",
+            "-:9:69-9:70: error: Application type mismatch: The argument\n  x\nhas type\n  \u2102\nbut is expected to have type\n  \u2191\u03a9\nin the application\n  G x\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

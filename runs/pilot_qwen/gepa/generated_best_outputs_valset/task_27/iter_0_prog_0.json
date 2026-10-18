@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_140",
+        "sample": 0,
+        "output": "```lean4\ntheorem sqrt_n_plus_1_minus_sqrt_n_tends_to_zero : Filter.Tendsto (\u03bb n : \u2115, \u221a(n + 1) - \u221an) atTop (nhds 0) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem sqrt_n_plus_1_minus_sqrt_n_tends_to_zero : Filter.Tendsto (\u03bb n : \u2115, \u221a(n + 1) - \u221an) atTop (nhds 0) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:43-7:44: error: unexpected token ','; expected '\u21a6', '=>'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

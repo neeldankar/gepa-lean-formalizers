@@ -1,11 +1,11 @@
 {
  "pod": {
-  "container_start": "2026-10-18T19:52:05+00:00",
+  "container_start": "2026-10-18T21:13:07+00:00",
   "gpu_type": "H100 SXM 80GB",
   "usd_per_hour": 3.99,
-  "setup_hours": 0.5122222222222222
+  "setup_hours": 0.1438888888888889
  },
- "setup_hours": 0.5122222222222222,
+ "setup_hours": 0.1438888888888889,
  "gpu_balances": [
   {
    "until": "2026-10-18T18:30:45.888251+00:00",
@@ -69,6 +69,20 @@
    "added_hours": 0.00410425944444448,
    "total_hours": 0.6622222222222223,
    "total_usd": 2.642266666666667
+  },
+  {
+   "until": "2026-10-18T21:23:27.144580+00:00",
+   "logged_hours_before": 0,
+   "added_hours": 0.17226238333333335,
+   "total_hours": 0.17226238333333335,
+   "total_usd": 0.6873269095000001
+  },
+  {
+   "until": "2026-10-18T21:23:58.353488+00:00",
+   "logged_hours_before": 0.17226238333333335,
+   "added_hours": 0.008669141111111084,
+   "total_hours": 0.18093152444444444,
+   "total_usd": 0.7219167825333334
   }
  ],
  "gen_timing": {
@@ -100,6 +114,13 @@
    "gen_seconds": 15.084738803096116,
    "completion_tokens": 2811,
    "tokens_per_second": 186.3472769858665,
+   "workers": 16
+  },
+  "qwen_a3": {
+   "items": 30,
+   "gen_seconds": 18.38965569809079,
+   "completion_tokens": 1991,
+   "tokens_per_second": 108.26738861710744,
    "workers": 16
   }
  },
@@ -264,6 +285,32 @@
     "(lean.invalidField) Invalid field": 1,
     "(lean.unknownIdentifier) Unknown constant": 1
    }
+  },
+  "qwen_a3": {
+   "outputs": 30,
+   "compile_failures": 24,
+   "patterns_in_failures": {
+    "old big-operator binder (∑/∏ x in s)": 1,
+    "Lean 3 lambda (λ x, or fun x,)": 2,
+    "Lean 3 snake_case Mathlib names (at_top, is_..., ...)": 0,
+    "Lean 3 norm bars (∥x∥)": 0,
+    "`variable` lines in the answer block (dropped: one theorem per answer)": 0
+   },
+   "failures_with_any_pattern": 3,
+   "compile_status": {
+    "ok": 6,
+    "lean_error": 24
+   },
+   "first_error_kinds": {
+    "(lean.unknownIdentifier) Unknown identifier": 8,
+    " unexpected token": 5,
+    " type expected, got": 4,
+    " Application type mismatch: The argument": 2,
+    " expected token": 1,
+    "(lean.synthInstanceFailed) failed to synthesize instance of type class": 1,
+    "(lean.invalidField) Invalid field": 1,
+    " Function expected at": 1
+   }
   }
  },
  "costs": {
@@ -376,18 +423,35 @@
    "tokens_max": 230,
    "api_usd_per_output": 0.000130995,
    "outages": 0
+  },
+  "qwen_a3": {
+   "outputs": 30,
+   "compile_rate": 20.0,
+   "format_failures": 0,
+   "truth_faithful_rate": 6.666666666666667,
+   "judge_score_rate": 6.666666666666667,
+   "certified": 0,
+   "exact_match_rate": 0.0,
+   "hit_length_cap": 0,
+   "tokens_mean": 66.36666666666666,
+   "tokens_median": 64,
+   "tokens_max": 133,
+   "api_usd_per_output": 0.000206285,
+   "outages": 0
   }
  },
  "go_partial": {
   "qwen_truth_faithful_rate": {
    "qwen_nothink": 6.666666666666667,
    "qwen_think": 0.0,
-   "qwen_a2": 3.3333333333333335
+   "qwen_a2": 3.3333333333333335,
+   "qwen_a3": 6.666666666666667
   },
   "qwen_go_10_to_70": {
    "qwen_nothink": false,
    "qwen_think": false,
-   "qwen_a2": false
+   "qwen_a2": false,
+   "qwen_a3": false
   },
   "exact_match_rate_max": 0.0,
   "not_measured": [
@@ -407,6 +471,12 @@
    "gpu_type": "H100 SXM 80GB",
    "usd_per_hour": 3.99,
    "setup_hours": 0.5122222222222222
+  },
+  {
+   "container_start": "2026-10-18T21:13:07+00:00",
+   "gpu_type": "H100 SXM 80GB",
+   "usd_per_hour": 3.99,
+   "setup_hours": 0.1438888888888889
   }
  ],
  "rerun": {
@@ -428,5 +498,31 @@
    "Axler_exercise_4_4"
   ],
   "path": "prompts/fewshot.txt"
+ },
+ "rerun_qwen_a3": {
+  "config": "qwen_a3",
+  "prompt": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
+  "prompt_sha256": "504fed9912b42f6faec26268670c336b62c4b7ee619514353c33fb59aab4de6e",
+  "fewshot_sha256": "f5ea642b48d75e0c2a471ead37f68688a13dbdfc110327ac7dfc40cea747a4a7"
+ },
+ "label": {
+  "n": 20,
+  "by_config": {
+   "qwen_nothink": 1,
+   "qwen_think": 0,
+   "reform": 10,
+   "qwen_a2": 3,
+   "qwen_a3": 6
+  }
+ },
+ "gepa_launch": {
+  "run_id": "pilot_qwen",
+  "model": "qwen3-8b",
+  "seed": 0,
+  "seed_prompt": "prompts/arm_A.txt",
+  "fewshot": "prompts/fewshot.txt",
+  "max_metric_calls": 150,
+  "enable_thinking": false,
+  "started": "2026-10-18T21:28:43+00:00"
  }
 }

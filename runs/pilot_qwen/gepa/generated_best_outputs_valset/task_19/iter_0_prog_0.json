@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_097",
+        "sample": 0,
+        "output": "```lean4\ntheorem there_are_infinitely_many_primes_congruent_to_minus_one_mod_6 : Infinite { p : \u2115 | Nat.Prime p \u2227 p % 6 = 5 } := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem there_are_infinitely_many_primes_congruent_to_minus_one_mod_6 : Infinite { p : \u2115 | Nat.Prime p \u2227 p % 6 = 5 } := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean statement asserts that the set of natural numbers that are prime and have remainder 5 modulo 6 (i.e., congruent to -1 mod 6) is infinite, exactly matching the English claim."
+        },
+        "score": 1
+    }
+]

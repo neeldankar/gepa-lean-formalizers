@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_355",
+        "sample": 0,
+        "output": "```lean4\ntheorem f_constant_under_quadratic_difference (f : \u211d \u2192 \u211d) (h : \u2200 (x y : \u211d), |f x - f y| \u2264 (x - y) ^ 2) : \u2200 (x y : \u211d), f x = f y := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem f_constant_under_quadratic_difference (f : \u211d \u2192 \u211d) (h : \u2200 (x y : \u211d), |f x - f y| \u2264 (x - y) ^ 2) : \u2200 (x y : \u211d), f x = f y := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies a function f : \u211d \u2192 \u211d, assumes the same Lipschitz\u2011type inequality for all real x, y, and concludes that f x = f y for all x, y, which precisely states that f is constant."
+        },
+        "score": 1
+    }
+]

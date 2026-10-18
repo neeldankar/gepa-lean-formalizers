@@ -1,0 +1,22 @@
+[
+    {
+        "item_id": "pnv_294",
+        "sample": 0,
+        "output": "```lean4\ntheorem subspace_topology_inheritance (X : TopologicalSpace \u03b1) (Y : Set \u03b1) (A : Set \u03b1) :\n  A \u2286 Y \u2192 TopologicalSpace.subspaceTopology Y X A = TopologicalSpace.subspaceTopology X A := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem subspace_topology_inheritance (X : TopologicalSpace \u03b1) (Y : Set \u03b1) (A : Set \u03b1) :\n  A \u2286 Y \u2192 TopologicalSpace.subspaceTopology Y X A = TopologicalSpace.subspaceTopology X A := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:40-7:41: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:52-7:53: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:64-7:65: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:10-8:43: error(lean.unknownIdentifier): Unknown constant `TopologicalSpace.subspaceTopology`\n",
+            "-:8:52-8:85: error(lean.unknownIdentifier): Unknown constant `TopologicalSpace.subspaceTopology`\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

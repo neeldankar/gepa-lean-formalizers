@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faithfulness labels</title>
+<style>
+:root { --bg:#fff; --fg:#1d1d1f; --muted:#5f6368; --card:#f6f7f9; --line:#d9dce1; --accent:#2457c5; --chosen:#dfe8fb; }
+@media (prefers-color-scheme: dark) { :root { --bg:#16181c; --fg:#e8eaed; --muted:#9aa0a6; --card:#1f2228; --line:#353a42; --accent:#8ab4f8; --chosen:#253552; } }
+body { background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, sans-serif; margin:0 auto; max-width:1100px; padding:16px; }
+header { position:sticky; top:0; background:var(--bg); padding:8px 0; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px 16px; margin:16px 0; }
+.pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:700px) { .pair { grid-template-columns:1fr; } }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:8px; font-size:14px; }
+.gloss { color:var(--muted); font-size:14px; }
+h2 { font-size:14px; color:var(--muted); margin:0; } h3 { font-size:15px; margin:8px 0 4px; }
+button { font:inherit; padding:6px 14px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); cursor:pointer; }
+button.chosen { background:var(--chosen); border-color:var(--accent); }
+</style></head><body>
+<header><strong>Faithfulness labels</strong><span id="progress"></span><button id="export">Export labels.csv</button></header>
+
+<section class="card" data-id="P01">
+  <h2>P01</h2>
+  <h3>English</h3><p class="english">Suppose $U$ is a subspace of $V$. Prove that $U^{\perp}=\{0\}$ if and only if $U=V$</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {K V : Type*} [RCLike K] [NormedAddCommGroup V]
+  [InnerProductSpace K V] [CompleteSpace V] {U : Submodule K V}
+  (hU : IsClosed (U : Set V)) :
+  U.orthogonal = ⊥ ↔ U = ⊤ := by
+  sorry</pre><p class="gloss">K and V are implicit type parameters: K is the scalar type, required to be RCLike (essentially ℝ or ℂ); V is a normed abelian group, an inner product space over K, and complete — so a real or complex Hilbert space. U is an implicit variable ranging over K-linear submodules of V. The hypothesis hU says that U, coerced from a submodule to a subset of V, is topologically closed. The conclusion is an iff: U.orthogonal (the orthogonal complement submodule) equals ⊥, the zero submodule, exactly when U equals ⊤, the whole-space submodule. Here ⊥ and ⊤ are the least and greatest elements in the lattice of submodules, not numbers. All arguments are implicit except hU.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V] (U : Submodule ℝ V) :
+  U.orthogonal = ⊥ ↔ U = ⊤ := by
+  sorry</pre><p class="gloss">**Variables:** `V` is a type (any universe). `U` is a real linear subspace of `V`, of type `Submodule ℝ V`.
+
+**Hypotheses:** The bracketed arguments are implicit instance arguments: `V` carries a normed abelian group structure (`NormedAddCommGroup`) and a real inner product structure (`InnerProductSpace ℝ`), so everything lives over the scalars ℝ; no number literal appears.
+
+**Statement:** `U.orthogonal` is the orthogonal complement of `U`, itself a submodule of `V`. Here `⊥` and `⊤` are not numbers but the bottom and top submodules: `⊥` is the zero subspace {0}, `⊤` is all of `V`.
+
+**Conclusion:** The biconditional says: `U.orthogonal = ⊥` (the orthogonal complement of `U` is only the zero vector) **if and only if** `U = ⊤` (`U` is the whole space).
+
+Easy to miss: no completeness or finite-dimensionality assumption is included.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P02">
+  <h2>P02</h2>
+  <h3>English</h3><p class="english">Prove that $\cos 1^{\circ}$  is algebraic over $\mathbb{Q}$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>set_option maxRecDepth 2048 in
+theorem candidate : IsAlgebraic ℚ (cos (Real.pi / 180)) := by
+  sorry</pre><p class="gloss">**Statement:** `IsAlgebraic ℚ (cos (Real.pi / 180))` asserts that the real number cos(π/180) is algebraic over ℚ.
+
+- `Real.pi` is π as a real number (type ℝ).
+- `Real.pi / 180` divides π by 180; the literal `180` is silently coerced from ℕ to ℝ, so this is π/180 radians, i.e., one degree.
+- `cos` is the real cosine function, ℝ → ℝ, so the argument has type ℝ.
+- `IsAlgebraic ℚ x` means x is a root of some nonzero polynomial with rational coefficients. Its ring arguments (ℚ, ℝ) and algebra instances are implicit, hence invisible.
+
+There are no hypotheses, no quantifiers, and no variables to introduce — it&#x27;s a closed statement: cos(1°) is algebraic over ℚ.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate : IsAlgebraic ℚ (Real.cos (Real.pi / 180)) := by
+  sorry</pre><p class="gloss">The theorem asserts a single proposition with no hypotheses and no quantified variables: the real number cos(π/180) — cosine of one degree in radians — is algebraic over ℚ.
+
+Details:
+- `Real.pi` is π as an element of ℝ; dividing by 180 uses a coercion of the natural number 180 into ℝ, giving π/180 ∈ ℝ.
+- `Real.cos` is the real cosine function, so the argument is the real number cos(π/180).
+- `IsAlgebraic ℚ x` means: there exists a nonzero polynomial with rational coefficients having x as a root. Here ℚ is only the coefficient field; the number x itself lives in ℝ, viewed as a ℚ-algebra.
+
+Easy to miss: the claim is algebraicity over the rationals, not that cos(π/180) is itself rational.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P03">
+  <h2>P03</h2>
+  <h3>English</h3><p class="english">For $x$ an element in $G$ show that $x$ and $x^{-1}$ have the same order.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {G : Type*} [Group G] {x : G} :
+  orderOf x = orderOf x⁻¹ := by
+  sorry</pre><p class="gloss">This theorem says: in any group, an element and its inverse have the same order.
+
+Variables, in order of appearance:
+- `G : Type*` — an implicit argument: a type `G` in some unspecified universe.
+- `[Group G]` — a hypothesis-like instance: `G` carries a group structure (multiplication, identity, inverses).
+- `x : G` — another implicit argument: an element `x` of the group.
+
+Conclusion:
+- `orderOf x = orderOf x⁻¹` — the order of `x` equals the order of its inverse `x⁻¹` (the inverse from the group structure, not a reciprocal).
+
+Easy to miss:
+- Both `G` and `x` are implicit, so they&#x27;re inferred from context when the theorem is used.
+- `orderOf` returns a natural number (ℕ), so this is an equality of ℕ values, not integers or reals.
+- There are no explicit hypotheses; the only assumption is the group structure.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (G : Type*) [Group G] (x : G) : orderOf x = orderOf (x⁻¹) := by
+  sorry</pre><p class="gloss">This theorem says: **the order of an element equals the order of its inverse.**
+
+- `G : Type*` — an arbitrary type `G` (the `*` means the universe level is a variable, so `G` lives in any universe).
+- `[Group G]` — an instance-implicit hypothesis: `G` is equipped with a group structure. Being in brackets, it&#x27;s inferred automatically, not written by the user.
+- `(x : G)` — an explicit variable: any element `x` of the group `G`.
+- Conclusion: `orderOf x = orderOf (x⁻¹)`.
+
+`orderOf` is Mathlib&#x27;s function giving the order of a group element; its output is a natural number (ℕ), though that type isn&#x27;t shown here. `x⁻¹` is the group inverse of `x`. There are no coercions, no other quantifiers, and no numeric hypotheses — just a single universally quantified equality.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P04">
+  <h2>P04</h2>
+  <h3>English</h3><p class="english">Prove that in $\mathbb{C}$, convergence of $\left\{s_{n}\right\}$ implies convergence of $\left\{\left|s_{n}\right|\right\}$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate
+  (f : ℕ → ℂ)
+  (h : ∃ (a : ℂ), Tendsto (λ (n : ℕ) =&gt; f n) atTop (𝓝 a))
+  : ∃ (a : ℝ), Tendsto (λ (n : ℕ) =&gt; ‖f n‖) atTop (𝓝 a) := by
+  sorry</pre><p class="gloss">**Variables:** `f` is a function from ℕ to ℂ — a sequence of complex numbers.
+
+**Hypothesis `h`:** There exists a complex number `a` such that `f n` tends to `a` as `n → ∞`. Formally, `Tendsto (λ n =&gt; f n) atTop (𝓝 a)`: the sequence, indexed by ℕ, converges along the filter `atTop` (n → ∞) to the neighborhood filter `𝓝 a` in ℂ. So the sequence converges in ℂ.
+
+**Conclusion:** There exists a **real** number `a` such that the sequence of norms `‖f n‖` — each norm is a real number (ℝ-valued, no coercion needed) — converges to `a` as `n → ∞`, now in ℝ.
+
+**Easy to miss:** The two `a`s are unrelated bound variables; the first is complex, the second real. `Tendsto`&#x27;s space arguments are implicit, inferred as ℂ then ℝ. Quantifier order: convergence hypothesis first, real-limit conclusion second.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (s : ℕ → ℝ) (h : Filter.Tendsto s (atTop) (nhds 0)) :
+  Filter.Tendsto (fun n =&gt; abs (s n)) (atTop) (nhds 0) := by
+  sorry</pre><p class="gloss">**Claim:** If a real-valued sequence converges to 0, then the sequence of its absolute values also converges to 0.
+
+**Variables:** `s : ℕ → ℝ` — a sequence indexed by natural numbers, taking real values.
+
+**Hypothesis `h`:** `Filter.Tendsto s atTop (nhds 0)` — as `n → ∞` (the `atTop` filter on ℕ), the values `s n` converge to the real number 0 (the neighborhood filter of 0 in ℝ).
+
+**Conclusion:** The function `fun n =&gt; abs (s n)`, i.e., `n ↦ |s n|` with `abs` the *real* absolute value, also tends to 0 as `n → ∞`.
+
+**Easy to miss:** The index type is ℕ, but the values and the limit 0 live in ℝ — no coercion occurs. There are no explicit quantifiers; `s` and `h` are just named hypotheses, and `Filter.Tendsto`&#x27;s type arguments are implicit, inferred from context.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P05">
+  <h2>P05</h2>
+  <h3>English</h3><p class="english">Show that $\int_{0}^{\infty} \frac{\sin x}{x} d x=\frac{\pi}{2}$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate :
+    Tendsto (fun y =&gt; ∫ x in (0 : ℝ)..y, Real.sin x / x) atTop (𝓝 (Real.pi / 2)) := by
+  sorry</pre><p class="gloss">**Claim:** The function that sends a real number y to the integral ∫₀^y (sin x)/x dx converges to π/2 as y → +∞.
+
+**In order:**
+- The integrand&#x27;s variable x is a real number (x : ℝ); the integrand is Real.sin x / x, i.e., sin(x)/x with real sine and real division.
+- The integral is taken over the interval from 0 to y, written `(0 : ℝ)..y`. The `(0 : ℝ)` is a type ascription forcing the left endpoint to be the real number 0 (not, say, a natural or integer). The `..` notation denotes the half-open interval (0, y], so the endpoint 0 — where sin(x)/x is undefined — is excluded.
+- The bound variable y is a real number; the anonymous function y ↦ this integral has type ℝ → ℝ.
+- `Tendsto f atTop (𝓝 (Real.pi / 2))` means: as y tends to +∞ (the filter `atTop` on ℝ), the integral tends to the real number π/2 (`𝓝 c` is the neighborhood filter at c).
+
+**Hypotheses:** none. **Conclusion:** the limit statement above. No implicit arguments appear beyond the usual ones; no coercions beyond the `(0 : ℝ)` ascription.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate : ∫ x in Set.Ioi 0, (Real.sin x) / x = Real.pi / 2 := by
+  sorry</pre><p class="gloss">This states the Dirichlet integral: ∫₀^∞ sin(x)/x dx = π/2.
+
+- **x** is a real variable (ℝ), bound by the integral notation.
+- **Set.Ioi 0** is the open interval (0, ∞) as a set of reals — 0 is excluded, though the integrand has a removable singularity there.
+- The integrand **(Real.sin x) / x** is real division of reals; no coercions occur.
+- The integral is the Lebesgue (measure-theoretic) integral with respect to the default volume measure, taken over an unbounded set — i.e., the improper integral.
+- **Real.pi** is π as a real number.
+- There are **no hypotheses**; the claim is a single equation between real numbers: the integral equals π/2.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P06">
+  <h2>P06</h2>
+  <h3>English</h3><p class="english">A uniformly continuous function of a uniformly continuous function is uniformly continuous.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate
+  {α β γ : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
+  {f : α → β} {g : β → γ}
+  (hf : UniformContinuous f) (hg : UniformContinuous g) :
+  UniformContinuous (g ∘ f) := by
+  sorry</pre><p class="gloss">This theorem says: the composition of two uniformly continuous maps is uniformly continuous.
+
+In order: α, β, γ are arbitrary types (implicit, from any universe — `Type*`), each equipped with a uniform structure (the bracketed `[UniformSpace …]` arguments, also implicit). Then f : α → β and g : β → γ are implicit function arguments. The explicit hypotheses are hf : f is uniformly continuous (relative to the given uniform structures on α and β) and hg : g is uniformly continuous (β to γ). The conclusion: g ∘ f is uniformly continuous as a map α → γ, using the structures on α and γ.
+
+Easy to miss: no numbers appear — no ℕ, ℝ, etc.; continuity is with respect to the chosen uniform structures, not metrics; only hf and hg are explicit.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {f g : ℝ → ℝ} (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (g ∘ f) := by
+  sorry</pre><p class="gloss">The statement says: the composition of two uniformly continuous real functions is uniformly continuous.
+
+- **f, g** are functions from ℝ to ℝ (real-valued, real-argument). They are *implicit* arguments (braces `{}`), so they aren&#x27;t written when applying the theorem; Lean infers them from context.
+- **hf** is the hypothesis that f is uniformly continuous (as a function ℝ → ℝ).
+- **hg** is the hypothesis that g is uniformly continuous.
+- **Conclusion**: the composite function g ∘ f (apply f first, then g) is uniformly continuous.
+
+Everything lives in ℝ — no ℕ, ℤ, or coercions. There are no explicit quantifiers; the hypotheses are fixed, given functions. The proof is omitted (`sorry`).</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P07">
+  <h2>P07</h2>
+  <h3>English</h3><p class="english">Suppose $f$ is a real function defined on $\mathbb{R}$ which satisfies $\lim_{h \rightarrow 0} f(x + h) - f(x - h) = 0$ for every $x \in \mathbb{R}$. Show that $f$ does not need to be continuous.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate
+  : ∃ (f : ℝ → ℝ), (∀ (x : ℝ), Tendsto (λ y =&gt; f (x + y) - f (x - y)) (𝓝 0) (𝓝 0)) ∧ ¬ Continuous f := by
+  sorry</pre><p class="gloss">**Claim:** There exists a function f from the reals to the reals (∃ f : ℝ → ℝ) satisfying two conditions simultaneously:
+
+1. **For every real x** (∀ x : ℝ), the function of y given by f(x + y) − f(x − y) tends to 0 as y tends to 0. Formally, `Tendsto (λ y =&gt; f (x + y) - f (x - y)) (𝓝 0) (𝓝 0)`: the map y ↦ f(x+y) − f(x−y) converges to 0 along the neighborhood filter 𝓝 0 of 0 in ℝ — i.e., its limit at y = 0 is 0.
+
+2. **f is not continuous** (¬ Continuous f).
+
+**Easy to miss:** The ∀ x sits *inside* the existence, so one single f must work for all x. Everything is ℝ — no ℕ/ℤ/ℚ, no coercions. No implicit arguments appear.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate : ∃ f : ℝ → ℝ, 
+  (∀ x : ℝ, Filter.Tendsto (fun h =&gt; f (x + h) - f (x - h)) (nhds 0) (nhds 0)) ∧ 
+  ¬Continuous f := by
+  sorry</pre><p class="gloss">**Claim:** There exists a function f from the reals to the reals with two properties at once:
+
+1. **For every real number x** (a `∀ x : ℝ` inside the existence), the function sending a real increment h to f(x + h) − f(x − h) tends to 0 as h tends to 0. Formally, `Filter.Tendsto ... (nhds 0) (nhds 0)`: the map h ↦ f(x+h) − f(x−h) sends the neighborhood filter of 0 in ℝ to the neighborhood filter of 0 in ℝ — i.e., the symmetric difference f(x+h) − f(x−h) → 0.
+
+2. **f is not continuous** (`¬ Continuous f`): f fails to be continuous with respect to the standard topology on ℝ, i.e., it is discontinuous at at least one point (not necessarily everywhere).
+
+**Easy to miss:** All numbers are ℝ — the two 0&#x27;s in `nhds 0` are real 0, no ℕ/ℤ coercions. Quantifier order: ∃ f first, then ∀ x. The limit condition is on the *difference* f(x+h) − f(x−h), not on f itself.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P08">
+  <h2>P08</h2>
+  <h3>English</h3><p class="english">If $x$ is an element of infinite order in $G$, prove that the elements $x^{n}, n \in \mathbb{Z}$ are all distinct.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {G : Type*} [Group G] {x : G}
+  (hx_inf : orderOf x = 0) (n m : ℤ) (hnm : n ≠ m) :
+  x ^ n ≠ x ^ m := by
+  sorry</pre><p class="gloss">**Claim:** In any group `G` (an arbitrary type `G` equipped with a `Group` structure), if `x` is an element of `G` of infinite order, then distinct integer exponents give distinct powers of `x`.
+
+**Variables:** `G` is an implicit type parameter (any universe); the `[Group G]` bracket supplies the group structure; `x : G` is an implicit element of the group. `n, m : ℤ` are explicit integers.
+
+**Hypotheses:** `hx_inf : orderOf x = 0` — `orderOf` returns a natural number (ℕ), and by convention `0` means &quot;infinite order.&quot; `hnm : n ≠ m` — the exponents differ.
+
+**Conclusion:** `x ^ n ≠ x ^ m`. Since `n, m : ℤ`, this is the group&#x27;s *integer* power operation (zpow), not natural-number exponentiation.
+
+**Easy to miss:** `G` and `x` are implicit (inferred from context); the `0` in `hx_inf` is a ℕ, while the exponents are ℤ.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {G : Type} [Group G] {x : G} (h : ∀ n : ℤ, x ^ n ≠ 1) : ∀ m n : ℤ, m ≠ n → x ^ m ≠ x ^ n := by
+  sorry</pre><p class="gloss">**Claim:** In any group, an element none of whose integer powers equals the identity has pairwise distinct integer powers.
+
+**Variables:**
+- `G : Type` — implicit; a type (inferred from context).
+- `[Group G]` — instance argument: `G` is equipped with a group structure.
+- `x : G` — implicit; a fixed element of the group.
+
+**Hypothesis `h`:** For every integer `n : ℤ`, `x ^ n ≠ 1`. Here `x ^ n` is *integer* exponentiation (Lean&#x27;s `zpow`, since the exponent is `ℤ`, not `ℕ`), and `1` denotes the group&#x27;s identity element (via the `One G` instance), not the integer 1.
+
+**Conclusion:** For all integers `m, n : ℤ`, if `m ≠ n` (as integers), then `x ^ m ≠ x ^ n` (as group elements).
+
+Easy to miss: exponents are ℤ throughout; `G` and `x` are implicit; `h` is explicit; `≠` is negated equality.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P09">
+  <h2>P09</h2>
+  <h3>English</h3><p class="english">Let $I, J$ be ideals of a ring $R$ such that $I+J=R$. Prove that $I J=I \cap J$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {R : Type*} [CommRing R]
+  (I J : Ideal R) (hIJ : I + J = ⊤) : I * J = I ⊓ J := by
+  sorry</pre><p class="gloss">For any type `R` (an implicit argument, filled in later) that carries a `CommRing R` structure — a commutative ring with 1, per Mathlib&#x27;s convention — and for any two ideals `I, J` of `R` (both of type `Ideal R`), if the hypothesis `hIJ` holds, namely `I + J = ⊤`, then `I * J = I ⊓ J`.
+
+Here `+`, `*`, `⊓`, `⊤` are all operations on ideals, not on ring elements: `I + J` is the sum ideal, `⊤` is the top ideal (all of `R`), `I * J` is the product ideal, and `I ⊓ J` is the meet in the ideal lattice, i.e., the intersection. So: if `I` and `J` are comaximal (their sum is the whole ring), then their product equals their intersection.
+
+No numeric types or coercions appear; the only quantification is over `R`, `I`, `J`.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (R : Type*) [Ring R] (I J : Ideal R) 
+  (h : I + J = ⊤) : I * J = I ⊓ J := by
+  sorry</pre><p class="gloss">For any type `R` (in any universe) equipped with a ring structure — supplied as an instance argument `[Ring R]`, so it&#x27;s implicit and inferred, and note Mathlib&#x27;s `Ring` need not be commutative — and for any two ideals `I, J : Ideal R` of that ring:
+
+**Hypothesis:** `h : I + J = ⊤` — the sum ideal `I + J` (the ideal generated by their union) equals `⊤`, the top element of the ideal lattice, i.e. the whole ring `R` itself. Such ideals are called comaximal.
+
+**Conclusion:** `I * J = I ⊓ J` — the product ideal equals their intersection.
+
+Nothing is quantified inside the statement; all generality comes from the leading arguments `R`, `I`, `J`. No numeric types or coercions appear.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P10">
+  <h2>P10</h2>
+  <h3>English</h3><p class="english">Prove that if $|G|=2907$ then $G$ is not simple.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {G : Type*} [Fintype G] [Group G]
+  (hG : card G = 2907) : ¬ IsSimpleGroup G := by
+  sorry</pre><p class="gloss">G is an implicit variable ranging over types (in any universe). Two instance arguments equip G: [Fintype G] says G is finite, and [Group G] says G carries a group structure. The explicit hypothesis hG : card G = 2907 says G has exactly 2907 elements; card G is a natural number (ℕ), and 2907 is a ℕ literal — no coercions or other number types appear. The conclusion is ¬ IsSimpleGroup G: G is not simple, i.e., it is not a nontrivial group whose only normal subgroups are the trivial subgroup and G itself. Quantifier order: G (implicit), then the two instances, then the size hypothesis, then the negated conclusion. There are no further quantifiers.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (G : Type*) [Group G] [Fintype G] 
+  (h : Fintype.card G = 2907) : 
+  ∃ (H : Subgroup G), H.Normal ∧ H ≠ ⊥ ∧ H ≠ ⊤ := by
+  sorry</pre><p class="gloss">**Setup:** `G` is a type (in any universe), equipped — via implicit instance arguments in square brackets, filled automatically — with a group structure (`[Group G]`) and a finiteness structure (`[Fintype G]`).
+
+**Hypothesis:** `h : Fintype.card G = 2907` says the cardinality of `G` equals 2907. Note `Fintype.card` returns a **natural number** (ℕ), so 2907 is a ℕ literal, not an integer or real.
+
+**Conclusion:** There exists an `H : Subgroup G` (an element of the lattice of subgroups of `G`) such that all three hold simultaneously:
+- `H.Normal`: `H` is a normal subgroup;
+- `H ≠ ⊥`: `H` is not the bottom element, i.e., not the trivial subgroup;
+- `H ≠ ⊤`: `H` is not the top element, i.e., not all of `G`.
+
+In words: a finite group of order 2907 has a normal subgroup that is neither trivial nor the whole group. The existential is the outer quantifier; the three conditions are conjoined.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P11">
+  <h2>P11</h2>
+  <h3>English</h3><p class="english">If $G_1$ and $G_2$ are cyclic groups of orders $m$ and $n$, respectively, prove that $G_1 \times G_2$ is cyclic if and only if $m$ and $n$ are relatively prime.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {G H : Type*} [Fintype G] [Fintype H] [Group G]
+  [Group H] (hG : IsCyclic G) (hH : IsCyclic H) :
+  IsCyclic (G × H) ↔ (card G).Coprime (card H) := by
+  sorry</pre><p class="gloss">G and H are implicit type parameters (inferred from context), each carrying a group structure and a `Fintype` structure, so both groups are finite. Two explicit hypotheses follow: `hG` says G is cyclic, `hH` says H is cyclic. The conclusion is a biconditional: the direct product G × H — with the pointwise product group structure, supplied automatically — is cyclic if and only if `(card G).Coprime (card H)` holds. Here `card G` is `Fintype.card G`, the number of elements of G, a natural number (ℕ); `Coprime` is `Nat.Coprime`, meaning gcd(|G|, |H|) = 1. Easy to miss: finiteness, the group operations, and the group structure on G × H all enter through instance arguments, invisible in the statement itself.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (G₁ G₂ : Type*) [Group G₁] [Group G₂] [Fintype G₁] [Fintype G₂]
+  (m n : ℕ) (h₁ : Fintype.card G₁ = m) (h₂ : Fintype.card G₂ = n)
+  (hG₁ : IsCyclic G₁) (hG₂ : IsCyclic G₂) :
+  IsCyclic (G₁ × G₂) ↔ Nat.Coprime m n := by
+  sorry</pre><p class="gloss">**Variables:** `G₁`, `G₂` are arbitrary types (in any universe). The bracketed `[Group G₁]`, `[Group G₂]` are implicit typeclass arguments: each type comes equipped with a group structure. `[Fintype G₁]`, `[Fintype G₂]` say both groups are finite. `m`, `n` are natural numbers (ℕ).
+
+**Hypotheses:** `h₁` and `h₂` say the cardinalities of `G₁` and `G₂` equal `m` and `n` respectively (`Fintype.card` returns a ℕ, matching `m`, `n`&#x27;s type). `hG₁`, `hG₂` say each group is cyclic.
+
+**Conclusion:** the direct product group `G₁ × G₂` (product type with its induced product group structure) is cyclic **if and only if** `m` and `n` are coprime (`Nat.Coprime`, i.e., gcd = 1).
+
+**Easy to miss:** everything before the colon is universally quantified; the bracketed instances are inferred, never written; `m`, `n` are only meaningful via `h₁`, `h₂`; the biconditional is a proposition-level ↔, not an implication.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P12">
+  <h2>P12</h2>
+  <h3>English</h3><p class="english">Prove that $\lim_{n \rightarrow \infty} \sum_{i &lt; n} a_i = \infty$, where $a_i = \sqrt{i + 1} -\sqrt{i}$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate
+: Tendsto (λ (n : ℕ) =&gt; (∑ i ∈ range n, g i)) atTop atTop := by
+  sorry</pre><p class="gloss">The theorem asserts: the sequence of partial sums of `g` diverges to infinity.
+
+- `g` is a fixed function from the surrounding context (its type isn&#x27;t stated here; its values must live in some ordered type like ℝ, since the codomain filter `atTop` requires an order).
+- `λ (n : ℕ) =&gt; ∑ i ∈ range n, g i` is the map sending a natural number `n` to the sum of `g 0, g 1, …, g (n−1)` (since `range n` = {0, …, n−1}).
+- `Tendsto f atTop atTop` means: as `n` tends to infinity along ℕ (first `atTop`), the partial sums eventually exceed every bound (second `atTop`), i.e., they tend to +∞.
+
+Easy to miss: there are **no hypotheses** — nothing constrains `g`, and no quantifiers appear; the claim is about whatever `g` happens to be in scope.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate : Tendsto (fun n =&gt; ∑ i ∈ Finset.range n, g i) atTop atTop := by
+  sorry</pre><p class="gloss">**What it says:** For a function `g` (an implicit argument, universally quantified; its type is inferred — domain ℕ, codomain some ordered, summable type like ℝ), the sequence of partial sums sₙ = g(0) + g(1) + ⋯ + g(n−1) diverges to +∞ as n → ∞.
+
+**Details, in order:**
+- `n` is a natural number (ℕ), since `Finset.range n` = {0, 1, …, n−1}.
+- The sum `∑ i ∈ Finset.range n, g i` adds the first n terms of `g`.
+- The first `atTop` is the filter &quot;as n → ∞&quot; on the domain ℕ.
+- The second `atTop` is the conclusion: the values tend to the top of the codomain&#x27;s order, i.e., +∞.
+
+**Easy to miss:** There are no hypotheses at all — nothing is assumed about `g`. Both `g` and `n` are quantified implicitly.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P13">
+  <h2>P13</h2>
+  <h3>English</h3><p class="english">If $r$ is rational $(r \neq 0)$ and $x$ is irrational, prove that $r+x$ is irrational.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate
+  (x : ℝ) (y : ℚ) (hy : y ≠ 0) :
+  ( Irrational x ) -&gt; Irrational ( x + y ) := by
+  sorry</pre><p class="gloss">Variables in order: x : ℝ (a real number); y : ℚ (a rational number); hy : y ≠ 0, i.e. ¬(y = 0). Conclusion: Irrational x → Irrational (x + y): if x is irrational, then x + y is irrational. Universally quantified: for all real x and rational y with y ≠ 0, x irrational implies x + y irrational. Easy to miss: y has type ℚ, so in x + y it is silently coerced into ℝ — real addition of x and the embedded y. hy precedes the implication: a standing assumption, not part of it. The claim is curried: given x, y, hy, one must still supply a proof of Irrational x.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (r : ℚ) (x : ℝ) (hr : r ≠ 0) (hx : ¬(∃ q : ℚ, x = q)) : ¬(∃ q : ℚ, r + x = q) := by
+  sorry</pre><p class="gloss">The theorem, named `candidate`, takes two explicit inputs and two hypotheses:
+
+- `r : ℚ` — a rational number.
+- `x : ℝ` — a real number.
+- `hr : r ≠ 0` — r is nonzero.
+- `hx : ¬(∃ q : ℚ, x = q)` — there is no rational q equal to x; i.e., x is irrational.
+
+Conclusion: `¬(∃ q : ℚ, r + x = q)` — there is no rational q with r + x = q; i.e., r + x is irrational.
+
+Easy to miss: in `r + x`, the rational `r` is silently coerced (via the ℚ → ℝ embedding) into ℝ, so the addition happens in ℝ. The existentially quantified `q` ranges over ℚ, not ℝ, in both the hypothesis and conclusion. All arguments are explicit.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P14">
+  <h2>P14</h2>
+  <h3>English</h3><p class="english">Show that there are infinitely many primes congruent to $-1$ modulo 6 .</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate : Infinite {p : Nat.Primes // p ≡ -1 [ZMOD 6]} := by
+  sorry</pre><p class="gloss">The theorem asserts: **there are infinitely many primes congruent to −1 modulo 6** (equivalently, primes ≡ 5 mod 6).
+
+- `Nat.Primes` is Mathlib&#x27;s type of prime natural numbers — a subtype of ℕ.
+- `{p : Nat.Primes // ...}` forms a subtype: the collection of primes `p` satisfying the stated property.
+- `p ≡ -1 [ZMOD 6]` is Mathlib&#x27;s congruence notation, defined on ℤ: it means `p − (−1) = p + 1` is divisible by 6. Easy to miss: `p` is a natural number (coerced from the subtype into ℕ, then into ℤ), while `−1` is the integer −1; for a natural `p` this is just `p ≡ 5 (mod 6)`.
+- `Infinite` is the predicate that a type has infinitely many elements.
+
+There are no hypotheses or quantifiers — a single closed claim. `sorry` is a placeholder proof.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate : Infinite { p : ℕ | Nat.Prime p ∧ p % 6 = 5 } := by
+  sorry</pre><p class="gloss">The theorem has no hypotheses; it asserts one conclusion: the set of natural numbers that are prime **and** leave remainder 5 when divided by 6 is infinite.
+
+- `p : ℕ` — p ranges over natural numbers.
+- `Nat.Prime p` — p is a prime number (in ℕ, so 2, 3, 5, …).
+- `p % 6 = 5` — p mod 6 equals 5, i.e., p ≡ 5 (mod 6), like 5, 11, 17, 23, …
+- `{ p : ℕ | … }` — set-builder notation forming a `Set ℕ`.
+- `Infinite` — applied to that set, meaning it has infinitely many elements.
+
+Easy to miss: the set is silently coerced to a type (`↥s`) so `Infinite` applies — a coercion hidden in the notation. Everything is in ℕ; no ℤ, ℚ, ℝ, ℂ, quantifiers, or implicit arguments appear.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P15">
+  <h2>P15</h2>
+  <h3>English</h3><p class="english">Show that if $U$ is open in $X$ and $A$ is closed in $X$, then $U-A$ is open in $X$, and $A-U$ is closed in $X$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {X : Type*} [TopologicalSpace X]
+  (U A : Set X) (hU : IsOpen U) (hA : IsClosed A) :
+  IsOpen (U \ A) ∧ IsClosed (A \ U) := by
+  sorry</pre><p class="gloss">For a topological space X (an implicit type parameter, so X is inferred rather than written by the caller, and it carries a topology supplied as an unnamed instance argument), take two subsets U and A of X. Hypotheses: U is open (hU) and A is closed (hA). Conclusion: a conjunction of two facts — the set difference U \ A (points of U not in A) is open, and the set difference A \ U (points of A not in U) is closed.
+
+Easy to miss: X is implicit; the topology is an instance argument with no name; U and A live in the same space; `\` is set difference, not subtraction; the claim is two statements joined by ∧, not one; no numeric types or coercions appear.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate {X : Type} [TopologicalSpace X] {U : Set X} {A : Set X} 
+  (hU : IsOpen U) (hA : IsClosed A) : IsClosed (A \ U) := by
+  sorry</pre><p class="gloss">**Claim:** In any topological space, the difference of a closed set and an open set is closed.
+
+**Variables (all implicit, inferred from usage):**
+- `X : Type` — an arbitrary type (not a number type; no ℕ, ℤ, ℝ etc. appear).
+- `[TopologicalSpace X]` — an instance-implicit assumption that X is equipped with a topology.
+- `U : Set X` — a subset of X.
+- `A : Set X` — another subset of X.
+
+**Hypotheses (explicit):**
+- `hU : IsOpen U` — U is open.
+- `hA : IsClosed A` — A is closed.
+
+**Conclusion:** `IsClosed (A \ U)` — the set difference A \ U (elements of A not in U) is closed.
+
+**Easy to miss:** `\` is set difference, not subtraction; the topology enters as a bracketed instance argument; X, U, A are never written by the user.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P16">
+  <h2>P16</h2>
+  <h3>English</h3><p class="english">Let $E$ be a nonempty subset of a total ordered set; suppose $\alpha$ is a lower bound of $E$ and $\beta$ is an upper bound of $E$. Prove that $\alpha \leq \beta$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate
+(α : Type*) [LinearOrder α]
+(s : Set α)
+(x y : α)
+(h₀ : Set.Nonempty s)
+(h₁ : x ∈ lowerBounds s)
+(h₂ : y ∈ upperBounds s)
+: x ≤ y := by
+  sorry</pre><p class="gloss">α is an arbitrary type (any universe, via `Type*`) carrying a total order, supplied as a typeclass instance `[LinearOrder α]`. Then `s : Set α` and `x, y : α`. Hypotheses, in order: h₀: s is nonempty; h₁: x ∈ lowerBounds s, meaning every z ∈ s satisfies x ≤ z; h₂: y ∈ upperBounds s, meaning every z ∈ s satisfies z ≤ y. Conclusion: x ≤ y — any lower bound of a nonempty set is at most any upper bound. Easy to miss: no number types—α needn&#x27;t be ℕ, ℤ, ℚ, or ℝ; no coercions. LinearOrder is total, not merely partial. h₀ is essential: for empty s both bound conditions hold vacuously, so x ≤ y could fail.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (S : Type*) [LinearOrder S] (E : Set S) (hE : E.Nonempty) 
+  (α β : S) (hα : ∀ x ∈ E, α ≤ x) (hβ : ∀ x ∈ E, x ≤ β) : α ≤ β := by
+  sorry</pre><p class="gloss">**Claim:** In any linearly ordered type, every lower bound of a nonempty set is ≤ every upper bound of that set.
+
+- `S : Type*` — an arbitrary type (any universe), not a number type like ℝ or ℤ.
+- `[LinearOrder S]` — an implicit instance argument: S carries a total order with `≤`.
+- `E : Set S` — a subset of S.
+- `hE : E.Nonempty` — E contains at least one element.
+- `α, β : S` — two elements of S (not required to lie in E).
+- `hα : ∀ x ∈ E, α ≤ x` — α is a lower bound of E.
+- `hβ : ∀ x ∈ E, x ≤ β` — β is an upper bound of E.
+- **Conclusion:** `α ≤ β`.
+
+Easy to miss: `≤` is the abstract order on S, not arithmetic; `x ∈ E` is set membership; nonemptiness is essential (with E empty, α ≤ β could fail).</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P17">
+  <h2>P17</h2>
+  <h3>English</h3><p class="english">Let $f \colon X \rightarrow X$ be continuous. Show that if $X = [0, 1]$, there is a point $x$ such that $f(x) = x$. (The point $x$ is called a fixed point of $f$.)</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate (f : I → I) (hf : Continuous f) :
+  ∃ (x : I), f x = x := by
+  sorry</pre><p class="gloss">The theorem takes two arguments:
+
+- `f : I → I` — a function `f` from `I` to itself, where `I` is some pre-existing type (likely an interval, e.g. a subtype of `ℝ`).
+- `hf : Continuous f` — a hypothesis that `f` is continuous. This only type-checks because `I` carries a topology instance (e.g. inherited from `ℝ`); the topology is supplied implicitly and never named.
+
+Conclusion: `∃ (x : I), f x = x` — there exists a point `x` of type `I` such that `f x = x`, i.e. `f` has a fixed point.
+
+Easy to miss: `I` is not defined here, so its exact nature (ℝ? a closed interval as a subtype?) is hidden; the equality is on elements of `I`, not reals directly; there are no numeric literals or coercions, and the existential is the only quantifier.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (f : ℝ → ℝ) (hf_cont : ContinuousOn f (Set.Icc 0 1)) 
+  (hf_maps : ∀ x ∈ Set.Icc 0 1, f x ∈ Set.Icc 0 1) : 
+  ∃ x ∈ Set.Icc 0 1, f x = x := by
+  sorry</pre><p class="gloss">This is the one-dimensional fixed-point theorem.
+
+**Variables:** `f` is a function from the real numbers to the real numbers (ℝ → ℝ).
+
+**Hypotheses:**
+1. `hf_cont`: `f` is continuous on the closed interval [0, 1] (written `Set.Icc 0 1`, meaning all reals x with 0 ≤ x ≤ 1, endpoints included).
+2. `hf_maps`: for every real number x, *if* x lies in [0, 1], *then* f(x) also lies in [0, 1] — the interval is mapped into itself.
+
+**Conclusion:** There exists a real number x in [0, 1] such that f(x) = x (a fixed point).
+
+**Easy to miss:** The `0` and `1` are real numbers, not naturals — Lean infers this from f&#x27;s type, so no coercions occur. Both quantifiers are bounded to the interval; the continuity hypothesis is only on [0, 1], not all of ℝ.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P18">
+  <h2>P18</h2>
+  <h3>English</h3><p class="english">Let $G$ be a group such that all subgroups of $G$ are normal in $G$. If $a, b \in G$, prove that $ba = a^jb$ for some $j$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {G : Type*} [Group G]
+  (hG : ∀ (H : Subgroup G), H.Normal) (a b : G) :
+  ∃ (j : ℤ) , b*a = a^j * b := by
+  sorry</pre><p class="gloss">Let G be a type (implicit) equipped with a group structure (supplied implicitly as a typeclass instance). The hypothesis hG says: for every subgroup H of G (H : Subgroup G), H is normal (H.Normal). Then a and b are fixed elements of G. The conclusion asserts: there exists an integer j (j : ℤ, not a natural number) such that b * a = a^j * b, where multiplication is the group operation and a^j is integer exponentiation — Lean uses a special integer-power operation here (with j possibly negative, interpreted via a⁻¹), not the usual natural-number power. Note the quantifier order: normality of all subgroups is assumed first, a and b are fixed, and only then is j existentially chosen. The proof is omitted (sorry).</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (G : Type) [Group G] (a b : G) :
+  ∃ j : ℕ, b * a = a ^ j * b := by
+  sorry</pre><p class="gloss">The theorem takes a type `G` equipped with a group structure (the bracketed `[Group G]` is an implicit instance argument supplying multiplication, identity, and inverses). It also takes two elements `a, b : G`. These are implicitly universally quantified: the claim must hold for every group and all pairs of elements.
+
+The conclusion is an existential: there exists a natural number `j : ℕ` such that `b * a = a ^ j * b`.
+
+Points easy to miss:
+- `j` ranges over ℕ, not ℤ, so only nonnegative powers of `a` are allowed.
+- `a ^ j` denotes `a` multiplied by itself `j` times (`a ^ 0` is the identity); the exponent is a natural number coerced into the group&#x27;s power operation.
+- The multiplication order matters: `b * a` on the left, `a ^ j * b` on the right.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P19">
+  <h2>P19</h2>
+  <h3>English</h3><p class="english">Let $G$ be a group in which $(a b)^{n}=a^{n} b^{n}$ for some fixed integer $n&gt;1$ for all $a, b \in G$. For all $a, b \in G$, prove that $\left(a b a^{-1} b^{-1}\right)^{n(n-1)}=e$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {G : Type*} [Group G] {n : ℕ} (hn : n &gt; 1)
+  (h : ∀ (a b : G), (a * b) ^ n = a ^ n * b ^ n) :
+  ∀ (a b : G), (a * b * a⁻¹ * b⁻¹) ^ (n * (n - 1)) = 1 := by
+  sorry</pre><p class="gloss">**Setup (implicit):** `G` is any type (inferred from context), equipped with a group structure `[Group G]`, so `*`, `⁻¹`, and `1` are the group operations, inverse, and identity. `n` is a natural number (ℕ), also implicit.
+
+**Hypotheses:**
+- `hn : n &gt; 1` — the exponent n is at least 2.
+- `h : ∀ a b : G, (a * b) ^ n = a ^ n * b ^ n` — raising to the n-th power is multiplicative for every pair of group elements.
+
+**Conclusion:** For all `a b : G`, the commutator `(a * b * a⁻¹ * b⁻¹)`, raised to the power `n * (n - 1)` (natural-number exponent; `n - 1` is truncated ℕ subtraction, harmless since n &gt; 1), equals `1`, the group identity element.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (G : Type) [Group G] (n : ℕ) (h : n &gt; 1) :
+  ∀ a b : G, (a * b * a⁻¹ * b⁻¹) ^ (n * (n - 1)) = 1 := by
+  sorry</pre><p class="gloss">**Setup:** `G` is a type, equipped with a group structure (the bracketed `[Group G]` is an implicit instance argument Lean fills automatically). `n` is a natural number (ℕ), with hypothesis `h : n &gt; 1`, i.e. n ≥ 2.
+
+**Claim:** For all elements `a, b` of `G`, the product `a * b * a⁻¹ * b⁻¹` (a commutator written in this order) raised to the power `n * (n - 1)` equals `1`.
+
+**Easy to miss:**
+- The exponent `n * (n - 1)` is computed in ℕ; `n - 1` is truncated subtraction, though harmless since n ≥ 2.
+- The power is iterated group multiplication (ℕ-exponent power), not real exponentiation.
+- `1` here is the group identity element of `G`, not a number.
+- The `∀ a b : G` comes after all the hypotheses.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+
+<section class="card" data-id="P20">
+  <h2>P20</h2>
+  <h3>English</h3><p class="english">If $p=2^{n}+1$ is a Fermat prime, show that 3 is a primitive root modulo $p$.</p>
+  <div class="pair">
+    <div><h3>Reference</h3><pre>theorem candidate {p n : ℕ} (hp : p.Prime) (hpn : p = 2 ^ n + 1)
+    (hn : 2 ≤ n) :
+    IsPrimitiveRoot (3 : ZMod p) (p - 1) := by
+  sorry</pre><p class="gloss">**Variables:** `p` and `n` are natural numbers (ℕ), declared *implicit* — Lean infers them from the hypotheses rather than your writing them.
+
+**Hypotheses, in order:**
+- `hp : p.Prime` — p is prime.
+- `hpn : p = 2 ^ n + 1` — p equals 2ⁿ + 1, using ℕ exponentiation and addition (a Fermat-type prime).
+- `hn : 2 ≤ n` — n is at least 2.
+
+**Conclusion:** `IsPrimitiveRoot (3 : ZMod p) (p - 1)` — the element 3, living in ZMod p (integers mod p, a field since p is prime), is a primitive root: its multiplicative order is p − 1, so it generates all nonzero elements.
+
+**Easy to miss:** the literal 3 is a ℕ coerced into ZMod p; `p - 1` is truncated ℕ subtraction (harmless since p ≥ 2); the order argument `p - 1` is a natural number.</p></div>
+    <div><h3>Candidate</h3><pre>theorem candidate (n : ℕ) (h : 2^n + 1 = 17) : IsPrimitiveRoot 3 (2^n + 1) := by
+  sorry</pre><p class="gloss">**Variables:** `n : ℕ` — a natural number, universally quantified (an implicit `∀ n`).
+
+**Hypothesis:** `h : 2^n + 1 = 17` — the equation `2ⁿ + 1 = 17`, computed in ℕ. Since `n` is a natural number, this hypothesis pins `n` down to exactly 4 (2⁴ + 1 = 17); no other `n` satisfies it.
+
+**Conclusion:** `IsPrimitiveRoot 3 (2^n + 1)` — the element `3` is a primitive root of unity of order `2ⁿ + 1` (i.e., 17): its 17th power is 1, and no smaller positive power is 1.
+
+**Easy to miss:**
+- `IsPrimitiveRoot` takes the exponent as a `ℕ`; here it&#x27;s the expression `2^n + 1`, not literally `17` — the link to 17 comes only via `h`.
+- The base `3` is a bare numeral; its type (ℕ, ℤ, ℚ, …) is whatever monoid `IsPrimitiveRoot` is instantiated at, fixed by unification, not written. No explicit coercions appear, but numeral interpretation is implicit.
+- Quantifier order: `n` first, hypothesis second, conclusion last.</p></div>
+  </div>
+  <div class="buttons">
+    <button data-label="faithful">Faithful</button>
+    <button data-label="unfaithful">Unfaithful</button>
+    <button data-label="unsure">Unsure</button>
+  </div>
+</section>
+<script>
+const KEY = "labels:chunk4-pilot";
+let labels = {};
+try { labels = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+const cards = [...document.querySelectorAll(".card")];
+function render() {
+  for (const c of cards) for (const b of c.querySelectorAll("button"))
+    b.classList.toggle("chosen", labels[c.dataset.id] === b.dataset.label);
+  document.getElementById("progress").textContent = Object.keys(labels).length + " / " + cards.length + " labeled";
+}
+for (const c of cards) for (const b of c.querySelectorAll("button")) b.onclick = () => {
+  labels[c.dataset.id] = b.dataset.label;
+  try { localStorage.setItem(KEY, JSON.stringify(labels)); } catch (e) {}
+  render();
+};
+document.getElementById("export").onclick = () => {
+  const rows = ["label_id,label", ...cards.map(c => c.dataset.id + "," + (labels[c.dataset.id] || ""))];
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([rows.join("\n") + "\n"], {type: "text/csv"}));
+  a.download = "labels.csv"; a.click();
+};
+render();
+</script></body></html>

@@ -1,0 +1,542 @@
+[
+  {
+    "i": 0,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      1,
+      33,
+      36
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          1,
+          33,
+          36
+        ]
+      }
+    ]
+  },
+  {
+    "i": 1,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      0,
+      20,
+      23
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          0,
+          20,
+          23
+        ]
+      }
+    ]
+  },
+  {
+    "i": 2,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      14,
+      12,
+      7
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          14,
+          12,
+          7
+        ]
+      }
+    ]
+  },
+  {
+    "i": 3,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      28,
+      44,
+      24
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          28,
+          44,
+          24
+        ]
+      }
+    ]
+  },
+  {
+    "i": 4,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      46,
+      5,
+      42
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          46,
+          5,
+          42
+        ]
+      }
+    ]
+  },
+  {
+    "i": 5,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      11,
+      21,
+      27
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          11,
+          21,
+          27
+        ]
+      }
+    ]
+  },
+  {
+    "i": 6,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      15,
+      10,
+      45
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          15,
+          10,
+          45
+        ]
+      }
+    ]
+  },
+  {
+    "i": 7,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      3,
+      9,
+      4
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          3,
+          9,
+          4
+        ]
+      }
+    ]
+  },
+  {
+    "i": 8,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      39,
+      29,
+      38
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          39,
+          29,
+          38
+        ]
+      }
+    ]
+  },
+  {
+    "i": 9,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      17,
+      35,
+      41
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          17,
+          35,
+          41
+        ]
+      }
+    ]
+  },
+  {
+    "i": 10,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      40,
+      6,
+      34
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          40,
+          6,
+          34
+        ]
+      }
+    ]
+  },
+  {
+    "i": 11,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      18,
+      8,
+      43
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          18,
+          8,
+          43
+        ]
+      }
+    ]
+  },
+  {
+    "i": 12,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      13,
+      37,
+      22
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          13,
+          37,
+          22
+        ]
+      }
+    ]
+  },
+  {
+    "i": 13,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      30,
+      19,
+      25
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          30,
+          19,
+          25
+        ]
+      }
+    ]
+  },
+  {
+    "i": 14,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      31,
+      32,
+      16
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          31,
+          32,
+          16
+        ]
+      }
+    ]
+  },
+  {
+    "i": 15,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      2,
+      26,
+      26
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          2,
+          26,
+          26
+        ]
+      }
+    ]
+  },
+  {
+    "i": 16,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      38,
+      27,
+      17
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          38,
+          27,
+          17
+        ]
+      }
+    ]
+  },
+  {
+    "i": 17,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      3,
+      44,
+      12
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          3,
+          44,
+          12
+        ]
+      }
+    ]
+  },
+  {
+    "i": 18,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      33,
+      22,
+      30
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          33,
+          22,
+          30
+        ]
+      }
+    ]
+  },
+  {
+    "i": 19,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      25,
+      46,
+      11
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          25,
+          46,
+          11
+        ]
+      }
+    ]
+  },
+  {
+    "i": 20,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      23,
+      0,
+      14
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          23,
+          0,
+          14
+        ]
+      }
+    ]
+  },
+  {
+    "i": 21,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      16,
+      4,
+      29
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          16,
+          4,
+          29
+        ]
+      }
+    ]
+  },
+  {
+    "i": 22,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      2,
+      15,
+      8
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          2,
+          15,
+          8
+        ]
+      }
+    ]
+  },
+  {
+    "i": 23,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      37,
+      42,
+      1
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          37,
+          42,
+          1
+        ]
+      }
+    ]
+  },
+  {
+    "i": 24,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      26,
+      43,
+      45
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          26,
+          43,
+          45
+        ]
+      }
+    ]
+  },
+  {
+    "i": 25,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      9,
+      39,
+      36
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          9,
+          39,
+          36
+        ]
+      }
+    ]
+  },
+  {
+    "i": 26,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      10,
+      24,
+      5
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          10,
+          24,
+          5
+        ]
+      }
+    ]
+  }
+]
