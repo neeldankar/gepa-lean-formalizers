@@ -114,19 +114,29 @@ def gen(cfg, summary, argv=()):
     items = pilot_items(cfg)
     checker = AxleChecker(cfg["axle"])
     workers = cfg["generation"]["workers"]
-    rows, timing = [], {}
+    # A rerun finds earlier generations in the cache, so a configuration is timed only once: its timing
+    # is saved as soon as it is measured, or read back from an earlier run's log (--timing-log).
+    timing = summary.setdefault("gen_timing", {})
+    if "--timing-log" in argv:
+        for line in open(argv[argv.index("--timing-log") + 1]):
+            name, _, rest = line.strip().partition(" ")
+            if name in CONFIGS and rest.startswith("{"):
+                timing[name] = {**json.loads(rest), "source": "earlier run's log"}
+    rows = []
     for name, (model_key, prompt, _) in CONFIGS.items():
         c = config_cfg(cfg, name)
         instructions = load_instructions(prompt)
         genc = formalizer_client(c, model_key, CHUNK, run_id=f"pilot_{name}")
         judge = LLMClient(c, CHUNK, run_id=f"pilot_{name}")
-        t0 = time.monotonic()  # generation alone, all items at `workers` concurrency
-        with ThreadPoolExecutor(workers) as pool:
-            outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it), items))
-        seconds = time.monotonic() - t0
-        tokens = sum((o.get("usage") or {}).get("completion_tokens") or 0 for o in outs)
-        timing[name] = {"items": len(items), "gen_seconds": seconds, "completion_tokens": tokens,
-                        "tokens_per_second": tokens / seconds if seconds else None, "workers": workers}
+        if name not in timing:
+            t0 = time.monotonic()  # generation alone, all items at `workers` concurrency
+            with ThreadPoolExecutor(workers) as pool:
+                outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it), items))
+            seconds = time.monotonic() - t0
+            tokens = sum((o.get("usage") or {}).get("completion_tokens") or 0 for o in outs)
+            timing[name] = {"items": len(items), "gen_seconds": seconds, "completion_tokens": tokens,
+                            "tokens_per_second": tokens / seconds if seconds else None, "workers": workers}
+            save_summary(summary)
         with ThreadPoolExecutor(workers) as pool:  # generations now come from the cache
             rs = list(pool.map(lambda it: score_row(c, name, model_key, None, None, "val", instructions, it, 0,
                                                     genc, judge, checker), items))
