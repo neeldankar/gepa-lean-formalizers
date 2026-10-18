@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 stopped at the go check a second time (labels, GEPA pilot run and freeze not done)
-- **Status:** pod paused (stopped, not terminated). With Neel's Lean 4 syntax block in arm A, Qwen3-8B (thinking off) is truth-faithful on 3.3% of the 30 pilot items (first run 6.7%), under Neel's 10% line.
-- **Next:** Neel decides how to proceed, then "Continue chunk 4" on the paused pod
-- **Spent so far:** $5.85 of $300
-- **Waiting on Neel:** the go-check decision (chunk 4 rerun entry); the Q3 prereg draft (`runs/chunk4/prereg_q3_draft.md`)
+- **Chunk:** 4 of 7 in progress: few-shot rerun done, labeling page out, GEPA pilot run failed (reflection model down); freeze not done
+- **Status:** pod stopped by the GEPA job. With the few-shot seed, Qwen3-8B (thinking off) is truth-faithful on 6.7% of the 30 pilot items (compile 20.0%). The GEPA pilot made no new candidate: Together no longer serves Kimi-K2.6 serverless.
+- **Next:** Neel labels the 20 items and picks a reflection model; a pod for the GEPA pilot rerun (about 10 min setup)
+- **Spent so far:** $7.07 of $300
+- **Waiting on Neel:** labels (`~/Desktop/chunk4_labeling.html`); reflection and arm F model; both prereg drafts (`runs/chunk4/prereg_q3_draft.md`, `runs/chunk4/prereg_fewshot_draft.md`)
 - **Parked ideas:** see the chunk 1 to 4 entries
 
 ## Entries
@@ -23,6 +23,35 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-18 · chunk 4 · few-shot rerun, labeling page, GEPA pilot run failed (reflection model down)
+
+- **Did:**
+  - Neel's last arm A change before the freeze: the syntax block removed from arms A and E; a fixed few-shot block (`prompts/fewshot.txt`) of 3 train examples, each laid out like a real query (English, its context block, the answer). Drawn with seed 0 from the 43 train items without helpers whose reference compiles with autoImplicit off: pnv_218, pnv_226, pnv_018. Attached by config to arms A, E, F and the B and pilot GEPA runs; GEPA edits the instruction text only, and every GEPA run (B and D) trains on the other 47 train items (commit fbbdd38). Prereg change drafted, not applied (`runs/chunk4/prereg_fewshot_draft.md`).
+  - Neel's dated predictions for the false-positive Q3 (commit 03c80a8).
+  - Fourth pod (fresh deploy, H100 80GB HBM3, $3.99/hr). Setup with the servers started one after the other: both healthy, 16.15 GiB KV cache each.
+- **Run pilot_a3** (2026-10-18, pod, val only): Qwen3-8B, thinking off, arm A's instruction line plus the few-shot block, same 30 pilot items, `generation` unchanged. Outcome: complete. Output `runs/chunk4/pilot_a3.jsonl.gz`.
+- **Numbers** (from `runs/chunk4/summary.json`, steps `stats`, `diagnose`, `costs`; subagent check: pending, with the labels and GEPA numbers):
+
+  | Qwen3-8B, thinking off | First arm A | Syntax block | Few-shot seed |
+  | --- | --- | --- | --- |
+  | Compile | 16.7% (5/30) | 10.0% (3/30) | 20.0% (6/30) |
+  | Truth faithful | 6.7% (2/30) | 3.3% (1/30) | 6.7% (2/30) |
+  | Judge score | 6.7% (2/30) | 0.0% (0/30) | 6.7% (2/30) |
+  | Certified | 1 | 1 | 0 |
+  | Exact matches | 0.0% | 0.0% | 0.0% |
+  | Tokens mean / max | 93 / 175 | 94 / 230 | 66 / 133 |
+
+  - Few-shot compile failures (24), first Lean error: unknown identifier 8, unexpected or expected token 6, type expected 4, the rest type and instance errors. Lean 3 habits or `variable` lines in 3 of 24 (9 of 27 with the syntax block). No output reused an example's theorem name.
+  - 108 tokens/s at 16 workers (shorter outputs); setup 0.14 h.
+- **Labeling page:** 20 compiled outputs on distinct items, 10 ReForm-8B and 10 Qwen3-8B (6 few-shot, 3 syntax block, 1 first run), glosses for all 40 statements; copied to `~/Desktop/chunk4_labeling.html`. No arm or model name on the page.
+- **Run pilot_qwen** (2026-10-18 21:28 to 21:31 UTC, pod, via `run_job.sh`): GEPA 0.1.4, Qwen3-8B thinking off, seed arm A + few-shot, 150 metric calls, seed 0, 47 train / 70 val, reflection `moonshotai/Kimi-K2.6`. Outcome: **failed, discarded.** All 27 reflection calls returned HTTP 400 "No deployments are ready to serve this endpoint" (Together no longer serves Kimi-K2.6 serverless). GEPA caught each error and went on, so the run used 151 metric calls on the seed alone (val score 0.043, 3 of 70), produced 1 candidate, and our runner wrote DONE. Results pushed (commit 8b4c1ee), pod stopped by the job.
+- **Bugs found and fixed:**
+  - The runner marked a GEPA run DONE although every reflection call failed. A reflection error that survives the client's retries now stops the run with a STOPPED marker (no DONE, no best prompt), like an AXLE outage; a rerun resumes from GEPA's state. New test.
+  - My first chunk 4 plan had a live smoke call to the reflection model and arm F's model before any GPU time. I never ran it; it would have caught Kimi-K2.6 being down.
+- **Probe of reflection candidates** (Together, 8 output tokens each): live: `moonshotai/Kimi-K3` ($3 / $15 per 1M tokens in / out), `zai-org/GLM-5.3` ($1.40 / $4.40), `MiniMaxAI/MiniMax-M3` ($0.30 / $1.20). Not serverless: `moonshotai/Kimi-K2.6` (the placeholder for reflection and arm F), `moonshotai/Kimi-K2.5-fp4`, `nvidia/nemotron-3-ultra-550b-a55b`.
+- **Cost:** $1.22 this entry (GPU $1.19, gloss $0.02, judges and probes under $0.01), chunk 4 $7.04, total $7.07.
+- **Next:** labels; Neel picks the reflection model (and arm F's); GEPA pilot rerun on a new pod.
 
 ### 2026-10-18 · chunk 4 · rerun with the Lean 4 syntax block, stopped at the go check again
 

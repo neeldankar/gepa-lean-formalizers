@@ -165,3 +165,18 @@ def test_run_gepa_passes_the_47_item_trainset(tmp_path, monkeypatch, fewshot):
     run(tmp_path, cfg, MockPosts())
     assert [it["id"] for it in seen["trainset"]] == [it["id"] for it in runner.gepa_trainset(cfg)]
     assert len(seen["trainset"]) == 47 and len(seen["valset"]) == 70
+
+
+def test_failed_reflection_stops_the_run_without_done(tmp_path):
+    """GEPA swallows reflection errors; our runner must not mark such a run DONE (chunk 4 pilot bug)."""
+    cfg = make_cfg(budget=150)
+    cfg["llm"]["retries"] = 0
+    posts = MockPosts()
+    def down(body):
+        raise runner.ReflectionFailed("HTTP 400: endpoint_not_ready")  # what the client raises, here from the mock
+    posts.reflection = down
+    result, _ = run(tmp_path, cfg, posts)
+    out = tmp_path / "runs/T_s0"
+    assert result["status"] == "stopped" and "reflection" in result["reason"]
+    assert (out / "STOPPED").exists() and not (out / "DONE").exists() and not (out / "best_prompt.txt").exists()
+    assert result["metric_calls"] < 150  # it stops at the first evaluation after the failure, not at the budget

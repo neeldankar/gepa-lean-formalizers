@@ -83,6 +83,13 @@
    "added_hours": 0.008669141111111084,
    "total_hours": 0.18093152444444444,
    "total_usd": 0.7219167825333334
+  },
+  {
+   "until": "2026-10-18T21:31:04+00:00",
+   "logged_hours_before": 0.22008948775988332,
+   "added_hours": 0.07907717890678337,
+   "total_hours": 0.2991666666666667,
+   "total_usd": 1.1936750000000003
   }
  ],
  "gen_timing": {
@@ -314,17 +321,17 @@
   }
  },
  "costs": {
-  "usd_total": 5.816755500000001,
+  "usd_total": 7.0390944499999994,
   "by_chunk": {
    "4": {
-    "calls": 190,
-    "usd": 5.816755500000001
+    "calls": 409,
+    "usd": 7.0390944499999994
    }
   },
   "by_run": {
    "pod_session": {
-    "calls": 9,
-    "usd": 5.755574999999999
+    "calls": 12,
+    "usd": 6.793009726371398
    },
    "pilot_qwen_nothink": {
     "calls": 41,
@@ -341,28 +348,52 @@
    "pilot_qwen_a2": {
     "calls": 36,
     "usd": 0.00392985
+   },
+   "pilot_qwen_a3": {
+    "calls": 42,
+    "usd": 0.00618855
+   },
+   "pilot_label": {
+    "calls": 40,
+    "usd": 0.01823805
+   },
+   "pilot_qwen": {
+    "calls": 131,
+    "usd": 0.1599553236286013
+   },
+   "pilot_probe": {
+    "calls": 3,
+    "usd": 0.0005223
    }
   },
   "by_purpose": {
    "gpu": {
-    "calls": 9,
-    "usd": 5.755574999999999
+    "calls": 41,
+    "usd": 6.949249999999999
    },
    "generate": {
-    "calls": 120,
+    "calls": 238,
     "usd": 0.0
    },
    "opt_judge": {
-    "calls": 30,
-    "usd": 0.0079899
+    "calls": 50,
+    "usd": 0.012992999999999998
    },
    "ref_judge": {
-    "calls": 31,
-    "usd": 0.0531906
+    "calls": 37,
+    "usd": 0.0580911
+   },
+   "gloss": {
+    "calls": 40,
+    "usd": 0.01823805
+   },
+   "probe": {
+    "calls": 3,
+    "usd": 0.0005223
    }
   }
  },
- "costs_all_chunks_usd": 5.850389730000001,
+ "costs_all_chunks_usd": 7.072728680000001,
  "stats": {
   "qwen_nothink": {
    "outputs": 30,

@@ -459,3 +459,7 @@
 {"time": "2026-10-18T21:31:03+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.0001289045485047003, "hours": 3.2306904387142926e-05}
 {"time": "2026-10-18T21:31:03+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.00012762020773564775, "hours": 3.1985014470087156e-05}
 {"time": "2026-10-18T21:31:04+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.000135938253129522, "hours": 3.406973762644662e-05}
+{"time": "2026-10-18T21:33:07+00:00", "chunk": 4, "run_id": "pilot_probe", "purpose": "probe", "model": "moonshotai/Kimi-K3", "prompt_tokens": 92, "completion_tokens": 8, "usd": 0.000396}
+{"time": "2026-10-18T21:33:08+00:00", "chunk": 4, "run_id": "pilot_probe", "purpose": "probe", "model": "zai-org/GLM-5.3", "prompt_tokens": 19, "completion_tokens": 8, "usd": 6.18e-05}
+{"time": "2026-10-18T21:33:08+00:00", "chunk": 4, "run_id": "pilot_probe", "purpose": "probe", "model": "MiniMaxAI/MiniMax-M3", "prompt_tokens": 183, "completion_tokens": 8, "usd": 6.45e-05}
+{"time": "2026-10-18T21:31:04+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.31551794383806564, "hours": 0.07907717890678337}

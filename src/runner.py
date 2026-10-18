@@ -1,7 +1,9 @@
 """One GEPA run: gepa.optimize with library defaults, our adapter, our reflection client.
 
 Writes runs/<run_id>/: gepa/ (GEPA's own state; it resumes from here after a crash),
-best_prompt.txt, candidates.json and DONE. A budget stop or AXLE outage leaves no DONE marker.
+best_prompt.txt, candidates.json and DONE. A budget stop, an AXLE outage or a failed reflection call
+leaves no DONE marker. GEPA itself catches reflection errors and carries on with the same candidate, so
+without the check below a run whose reflection model is down would end "done" with only the seed.
 """
 import copy
 import json
@@ -15,17 +17,27 @@ from src.llm import BudgetExceeded
 from src.prompting import load_fewshot, load_instructions
 
 
+class ReflectionFailed(RuntimeError):
+    """A reflection call failed after the client's retries; the run stops (and resumes later)."""
+
+
 class ReflectionLM:
-    """GEPA's LanguageModel protocol, `(str | list[dict]) -> str`, through our cached, cost-logged client."""
+    """GEPA's LanguageModel protocol, `(str | list[dict]) -> str`, through our cached, cost-logged client.
+    Failures are recorded, because GEPA swallows the exception."""
 
     def __init__(self, client, model, max_tokens):
         self.client, self.model, self.max_tokens = client, model, max_tokens
         self.calls = 0
+        self.failures = []
 
     def __call__(self, prompt):
         messages = [{"role": "user", "content": prompt}] if isinstance(prompt, str) else prompt
         self.calls += 1
-        return self.client.chat(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
+        try:
+            return self.client.chat(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
+        except Exception as e:
+            self.failures.append(f"{type(e).__name__}: {e}"[:500])
+            raise
 
 
 def gepa_trainset(cfg):
@@ -42,9 +54,16 @@ def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, 
         cfg["models"][spec["model"]]["enable_thinking"] = spec["enable_thinking"]
     out_dir = runs_dir / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
-    adapter = FormalizerAdapter(cfg, spec["model"], gen_client, judge_client, checker, on_batch=on_batch,
-                                fewshot=load_fewshot(spec.get("fewshot")))
     reflection = ReflectionLM(reflection_client, cfg["gepa"]["reflection_model"], cfg["gepa"]["reflection_max_tokens"])
+
+    def batch_done():  # runs after every evaluation, where an exception does reach us
+        if reflection.failures:
+            raise ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
+        if on_batch:
+            on_batch()
+
+    adapter = FormalizerAdapter(cfg, spec["model"], gen_client, judge_client, checker, on_batch=batch_done,
+                                fewshot=load_fewshot(spec.get("fewshot")))
     try:
         result = gepa.optimize(
             seed_candidate={COMPONENT: load_instructions(spec["seed_prompt"])},
@@ -56,10 +75,14 @@ def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, 
             seed=spec["seed"],
             run_dir=str(out_dir / "gepa"),
         )
-    except (BudgetExceeded, AxleOutage) as e:
+    except (BudgetExceeded, AxleOutage, ReflectionFailed) as e:
         (out_dir / "STOPPED").write_text(f"{type(e).__name__}: {e}\n")
         return {"run_id": run_id, "status": "stopped", "reason": str(e), "metric_calls": adapter.metric_calls}
 
+    if reflection.failures:  # a failure in the last iteration, after the last evaluation
+        e = ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
+        (out_dir / "STOPPED").write_text(f"ReflectionFailed: {e}\n")
+        return {"run_id": run_id, "status": "stopped", "reason": str(e), "metric_calls": adapter.metric_calls}
     best = result.best_candidate[COMPONENT]
     (out_dir / "best_prompt.txt").write_text(best + "\n")
     (out_dir / "candidates.json").write_text(json.dumps({
