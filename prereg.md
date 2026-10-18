@@ -16,6 +16,7 @@ This file is the spec. If it differs from the design doc saved in the claude.ai 
 6. **Arm E's prompt and Neel's predictions are written before the pilot's short GEPA run**, so neither can be shaped by GEPA output.
 7. **Comment stripping uses our own tested stripper.** The design doc said AXLE ships a `remove_comments` helper; AXLE's current docs list none. AXLE's `normalize` can turn docstrings into plain comments first.
 8. **Contingencies.** If the equivalence certificate layer can't pass its golden test cases by the end of chunk 2, it is dropped before the pilot, and the truth label becomes the reference judge's verdict on every compiled item, checked by the hand-check. miniF2F items that don't compile as they are in `lean-4.28.0` are dropped and counted, never hand-fixed.
+9. **No existing GEPA pipeline.** GEPA comes from the open-source `gepa` library, pinned to version 0.1.4, through a small custom adapter built in chunk 3. Everything not set here uses the library's defaults (Pareto candidate selection, reflection minibatches of 3, no merging). The reflection model becomes a pilot decision.
 
 ## Summary
 
@@ -68,7 +69,7 @@ Both models share Qwen3-8B-Base, so the general vs specialist comparison isn't a
 | Specialist | [ReForm-8B](https://huggingface.co/GuoxinChen/ReForm-8B): fine-tuned from Qwen3-8B-Base for formalization, Apache-2.0. Its example uses up to 32,768 new tokens, so outputs are long. The output length cap is set in the pilot and applies to every arm. | Decide cap in pilot |
 | Lean checking | AXLE `check` in the `lean-4.28.0` environment, matching ProofNet-Verified | Fixed |
 | Optimization judge | A cheap reference-free LLM judge from a different model family than the truth judge | Decide in pilot |
-| GEPA | Neel's existing GEPA pipeline. Same metric-call budget per run, same reflection model, 3 seeds per arm. GEPA's score is 1 only if the output compiles and the judge says faithful. Its feedback text is Lean's errors plus the judge's verdict and reason. | Fixed |
+| GEPA | The open-source `gepa` library (0.1.4) with a custom adapter, library defaults otherwise. Same metric-call budget per run, same reflection model, 3 seeds per arm. GEPA's score is 1 only if the output compiles and the judge says faithful. Its feedback text is Lean's errors plus the judge's verdict and reason. | Fixed; reflection model decided in pilot |
 | Sampling | Same temperature and sample count in every arm, set in the pilot | Decide in pilot |
 
 **Diagram: GEPA only sees the judge; the truth score is computed once, at the end.**
@@ -204,7 +205,7 @@ The pilot (chunk 4) tests the risky parts on small slices before real money is s
 3. Run the memorization check on those outputs.
 4. Run the full truth-score pipeline on 20 items, hand-label them blind, and measure agreement.
 5. With arm E's prompt and Neel's predictions already committed, do one short GEPA run on Qwen3-8B, about 150 metric calls, to confirm the loop works and the judge score moves.
-6. Fix the open choices (thinking mode, sampling, output cap, both judges, arm F's model, GEPA budget), confirm the threshold, and tag the frozen plan before any full run.
+6. Fix the open choices (thinking mode, sampling, output cap, both judges, the reflection model, arm F's model, GEPA budget), confirm the threshold, and tag the frozen plan before any full run.
 
 **Go if all of these hold:**
 

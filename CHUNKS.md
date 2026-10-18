@@ -6,7 +6,7 @@ Seven chunks, each run in one fresh Claude Code session (chunk 5 uses two: launc
 | --- | --- | --- | --- | --- |
 | 1 | Setup and data | 45 min | ~2 h | $0 |
 | 2 | Scoring | 20 min | 3-5 h | $10 |
-| 3 | Runner | 15 min | 2-4 h | $3 |
+| 3 | Runner | 15 min | 3-5 h | $3 |
 | 4 | Pilot and freeze (GPU) | ~2 h | 3-4 h | $30 |
 | 5 | Full runs (GPU, overnight) | 10 min | 8-12 h | $180 |
 | 6 | Hand-check and analysis | 5-7 h | ~1 h | $5 |
@@ -18,7 +18,7 @@ Caps add up to $233, under the $300 limit.
 
 ## Chunk 1: Setup and data
 
-**Neel does first:** create a private GitHub repo containing `CLAUDE.md`, `CHUNKS.md`, `LOG.md` and `prereg.md`, and clone it on the laptop. Create `.env` with `AXLE_API_KEY` (from the AXLE console), `TOGETHER_API_KEY`, and whatever keys the existing GEPA pipeline uses. Tell Claude where the GEPA pipeline lives and, if he still has it, where the old `lean-gepa` grader code is.
+**Neel does first:** create a private GitHub repo containing `CLAUDE.md`, `CHUNKS.md`, `LOG.md` and `prereg.md`, and clone it on the laptop. Create `.env` with `AXLE_API_KEY` (from the AXLE console), `TOGETHER_API_KEY`, and keys for any other model APIs he plans to use. Tell Claude where the old `lean-gepa` grader code is, if he still has it.
 
 **Build:**
 
@@ -81,12 +81,17 @@ Plus unit tests for extraction, the comment stripper (line, nested block and doc
 
 ## Chunk 3: Runner
 
-**Neel does first:** say which reflection model the GEPA pipeline uses. It stays the same for every run.
+**Neel does first:** nothing. Like the judges, the reflection model is a placeholder in `config.yaml` until the pilot.
 
 **Build:**
 
 1. Generation client for vLLM's OpenAI-compatible server (base URL in config). Qwen3-8B's thinking mode is set through its chat template's `enable_thinking` flag. ReForm-8B uses its documented prompt and chat format. Temperature, sample count and max output tokens come from config and are identical across arms.
-2. GEPA wiring around Neel's existing pipeline. Metric = judge score. Feedback text = Lean errors + judge verdict + judge reason. Trainset = the 50 train items, valset = the 70 val items, budget = max metric calls from config, one seed per run. Save the best-on-val prompt and the full candidate history to `runs/<run_id>/`.
+2. GEPA from the open-source `gepa` library, pinned to 0.1.4. Read its adapter interface first, then write a custom adapter with one text component, the instructions:
+   - `evaluate` runs the formalizer with the candidate's instructions on a batch and scores each item with the judge score. When asked for traces, it keeps the English, the extracted Lean, Lean's errors, and the judge's verdict and reason.
+   - `make_reflective_dataset` turns those into records for the reflection model: the input, the generated Lean, and feedback = Lean errors + judge verdict + judge reason.
+   - Call `gepa.optimize` with trainset = the 50 train items, valset = the 70 val items, `max_metric_calls` and `seed` from config, `run_dir` = `runs/<run_id>/gepa` (it resumes from there after a crash), and library defaults for everything else.
+   - Pass our own client as the reflection model if the library accepts a model object, so reflection calls go through our cache and cost log.
+   - Save the best-on-val prompt and the full candidate history to `runs/<run_id>/`.
 3. Cost logger and budget stop.
 4. Final-eval script for chunk 5: for each arm's final prompt, generate on test and miniF2F (arm F: test only, through its API), then compute the judge score, truth score and memorization check. Output `runs/final/<arm>.jsonl.gz`.
 5. Analysis script for chunk 6, written now so results can't shape it: everything in the analysis plan in `prereg.md`, plus the exploratory numbers (miniF2F transfer, format breakage, error-tag shifts) labeled exploratory. Output `results.json` and the two figures.
@@ -123,7 +128,7 @@ Plus unit tests for extraction, the comment stripper (line, nested block and doc
 3. The memorization check on those outputs.
 4. The full truth score on 20 of those items (mixed across models), then the labeling page. Neel labels them blind. Compute agreement with the reference judge.
 5. One short GEPA run on Qwen3-8B, about 150 metric calls. Confirm the loop works and the judge score moves. Measure time and cost per metric call and project the full study.
-6. A decision table for Neel: for each open choice, a recommendation and the pilot numbers behind it. Choices: Qwen3-8B thinking mode, temperature and sample count, output length cap, optimization judge, reference judge, arm F's model, GEPA budget (about 800). Recommended: no judge or arm F model from the Qwen family, and arm F from a different family than the reference judge.
+6. A decision table for Neel: for each open choice, a recommendation and the pilot numbers behind it. Choices: Qwen3-8B thinking mode, temperature and sample count, output length cap, optimization judge, reference judge, reflection model, arm F's model, GEPA budget (about 800). Recommended: no judge, reflection or arm F model from the Qwen family, and the reflection model and arm F from a different family than the reference judge.
 7. The go/no-go table from `prereg.md`: Qwen3-8B truth-faithful rate between about 10% and 70%; judge agreement at least 16/20; exact matches under about 20%; projected total under $300.
 8. Neel picks, then confirms or changes the 5-point threshold. Claude writes the final values into `config.yaml` and `prereg.md`, and Neel checks the diff. Commit, tag `prereg-frozen`, push, stop the pod.
 

@@ -27,6 +27,6 @@ Template:
 ### 2026-10-17 · chunk 0 · decisions before starting
 
 - **Did:** wrote `CLAUDE.md`, `CHUNKS.md`, `LOG.md` and `prereg.md` in a claude.ai project chat.
-- **Decisions:** Claude Code on Neel's laptop owns all code and runs, and the repo is the only source of truth. Both formalizers run on one rented H100 (RunPod) with vLLM; Qwen3-8B moves off Together, which keeps serving the judges. Changes to the Oct 17 design doc are listed at the top of `prereg.md`.
+- **Decisions:** Claude Code on Neel's laptop owns all code and runs, and the repo is the only source of truth. Both formalizers run on one rented H100 (RunPod) with vLLM; Qwen3-8B moves off Together, which keeps serving the judges. There is no existing GEPA pipeline, so GEPA comes from the open-source `gepa` library (0.1.4) with a custom adapter, built in chunk 3. Changes to the Oct 17 design doc are listed at the top of `prereg.md`.
 - **Cost:** $0 this entry, $0 total
 - **Next:** chunk 1
