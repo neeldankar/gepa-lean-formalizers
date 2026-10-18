@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_333",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_1_4\n(\u03b1 : Type*) [LinearOrder \u03b1]\n(s : Set \u03b1)\n(x y : \u03b1)\n(h\u2081 : x \u2208 lowerBounds s)\n(h\u2082 : y \u2208 upperBounds s)\n: x \u2264 y := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_1_4\n(\u03b1 : Type*) [LinearOrder \u03b1]\n(s : Set \u03b1)\n(x y : \u03b1)\n(h\u2081 : x \u2208 lowerBounds s)\n(h\u2082 : y \u2208 upperBounds s)\n: x \u2264 y := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

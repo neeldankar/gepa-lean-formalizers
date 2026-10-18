@@ -1,0 +1,77 @@
+"""Final evaluation (chunk 5): every arm's final prompt on test and miniF2F (arm F: test only).
+
+One row per (arm, GEPA seed, dataset, item, sample) with the raw output, the judge score, the truth
+score and memorization matches (test outputs only; miniF2F is not ProofNet). Rows with an AXLE
+outage keep `outage: true`; rerun to fill them (everything else is cached).
+"""
+import gzip
+import json
+from concurrent.futures import ThreadPoolExecutor
+
+from src.data.firewall import heldout_items
+from src.generate import generate
+from src.prompting import load_instructions
+from src.scoring import memorization
+from src.scoring.score import judge_score, prepare, truth_score
+
+
+def arm_prompts(cfg, arm, runs_dir):
+    """[(run_id, gepa_seed, instructions)]: the fixed prompt, or each GEPA run's best-on-val prompt."""
+    spec = cfg["arms"][arm]
+    if "gepa_runs" in spec:
+        return [(r, cfg["gepa"]["runs"][r]["seed"], (runs_dir / r / "best_prompt.txt").read_text().rstrip("\n"))
+                for r in spec["gepa_runs"]]
+    return [(None, None, load_instructions(spec["prompt"]))]
+
+
+def score_row(cfg, arm, model_key, run_id, seed, dataset, instructions, item, sample, gen, judge, checker):
+    out = generate(gen, cfg, model_key, instructions, item, sample)
+    p = prepare(checker, item, out["text"])
+    js = judge_score(checker, judge, cfg, item, out["text"], prepared=p)
+    ts = truth_score(checker, judge, cfg, item, out["text"], prepared=p)
+    cert, ref = ts["certificate"] or {}, ts["ref_judge"] or {}
+    return {
+        "arm": arm, "run_id": run_id, "gepa_seed": seed, "dataset": dataset, "item_id": item["id"], "sample": sample,
+        "output": out["text"], "finish_reason": out["finish_reason"],
+        "completion_tokens": (out.get("usage") or {}).get("completion_tokens"),
+        "extracted": p["extracted"], "normalized": p["normalized"], "format_failure": p["format_failure"],
+        "compile_status": p["compile_status"], "compiled": p["compiled"],
+        "judge_verdict": (js["judge"] or {}).get("verdict"), "judge_reason": (js["judge"] or {}).get("reason"),
+        "judge_score": js["judge_score"], "certified": cert.get("certified", False),
+        "cert_status": cert.get("status"), "cert_directions": cert.get("directions"),
+        "ref_verdict": ref.get("verdict"), "ref_reason": ref.get("reason"), "ref_error_tag": ref.get("error_tag"),
+        "truth_label": ts["truth_label"], "truth_source": ts["truth_source"],
+        "outage": ts["truth_source"] == "outage" or js["judge_score"] is None, "memorized": [],
+    }
+
+
+def eval_arm(cfg, arm, gen, judge, checker, runs_dir, root, mem_index=None):
+    spec = cfg["arms"][arm]
+    datasets = ["test"] if spec.get("test_only") else ["test", "minif2f"]
+    jobs = []
+    for dataset in datasets:
+        items = heldout_items(dataset, cfg, root=root, runs_dir=runs_dir)
+        for run_id, seed, instructions in arm_prompts(cfg, arm, runs_dir):
+            for item in items:
+                for sample in range(cfg["generation"]["samples"]):
+                    jobs.append((run_id, seed, dataset, instructions, item, sample))
+    with ThreadPoolExecutor(cfg["generation"]["workers"]) as pool:
+        rows = list(pool.map(lambda j: score_row(cfg, arm, spec["model"], *j, gen, judge, checker), jobs))
+    if mem_index is not None:
+        test = [(r, j[4]) for r, j in zip(rows, jobs) if r["dataset"] == "test" and r["normalized"]]
+        matches = memorization.exact_matches(checker, mem_index, [it for _, it in test], [r["normalized"] for r, _ in test])
+        for (r, _), m in zip(test, matches):
+            r["memorized"] = m
+    return rows
+
+
+def write_rows(path, rows):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with gzip.open(path, "wt") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+
+def read_rows(path):
+    with gzip.open(path, "rt") as f:
+        return [json.loads(line) for line in f]

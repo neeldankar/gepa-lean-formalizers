@@ -2,12 +2,12 @@
 
 ## Now
 
-- **Chunk:** 2 of 7 done (scoring)
-- **Status:** ready for chunk 3
-- **Next:** in Claude Code, type "Start chunk 3"
-- **Spent so far:** $0.03 of $300 (all in chunk 2)
-- **Waiting on Neel:** three decisions in the chunk 2 entry's Parked list (certificates and trivially true conjuncts; the 4 references that need autoImplicit; arm C's exact prompt). None blocks chunk 3.
-- **Parked ideas:** see the chunk 1 and chunk 2 entries
+- **Chunk:** 3 of 7 done (runner)
+- **Status:** ready for chunk 4 once Neel's prerequisites are in
+- **Next:** Neel's chunk 4 list (arm E prompt in `prompts/arm_E.txt`, dated predictions in prereg.md, RunPod account and pod, `GITHUB_TOKEN` and `RUNPOD_POD_ID` in `.env`), then "Start chunk 4"
+- **Spent so far:** $0.03 of $300
+- **Waiting on Neel:** chunk 4 prerequisites; two analysis-plan questions for the freeze (see the chunk 3 entry)
+- **Parked ideas:** see the chunk 1 to 3 entries
 
 ## Entries
 
@@ -23,6 +23,51 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-18 · chunk 3 · runner
+
+- **Did:** prereg.md Changes items 11 and 12, arm C row and the disagreement-count bullet (approved by Neel; commit c218f54). Rebuilt certificates as one Lean file per direction that declares only the hypothesis-side theorem (Neel's check); the candidate side has autoImplicit off and the reference side is as shipped. Built the generation client (`src/generate.py`, `src/prompting.py`), the data firewall (`src/data/firewall.py`), the GEPA adapter and runner (`src/gepa_adapter.py`, `src/runner.py`, `scripts/gepa_run.py`, gepa 0.1.4 with library defaults), GPU cost meter (`src/costs.py`), final eval (`src/final_eval.py`, `scripts/final_eval.py`), the analysis (`src/analysis.py`, `scripts/analyze.py`), pod scripts (`scripts/setup_pod.sh`, `scripts/run_job.sh`, both with `--dry-run`), mocks (`src/mocks.py`) and `scripts/chunk3.py`. Tests: 123 pass.
+- **Numbers** (from `runs/chunk3/summary.json` and `runs/chunk2/summary.json`; subagent check: match on every count and point estimate, intervals within 0.5 points, its numbers in `runs/chunk3/subagent_check.json`):
+  - Golden cases with the new certificate builder: 15/15 pass (one new case: pnv_280 with `f_a` bound explicitly, certified).
+  - autoImplicit / option references (hand-written candidate binds the auto-bound name):
+    - pnv_025 (Axler_exercise_7_6, test): candidate compiles with autoImplicit off: True; certified: True; reference judge: None
+    - pnv_207 (Axler_exercise_6_13, test): candidate compiles with autoImplicit off: True; certified: True; reference judge: None
+    - pnv_208 (Axler_exercise_7_5, val): candidate compiles with autoImplicit off: True; certified: True; reference judge: faithful
+    - pnv_280 (Ireland_Rosen_exercise_2_4, train): candidate compiles with autoImplicit off: True; certified: True; reference judge: faithful
+    - pnv_092 (Herstein_exercise_5_3_10, val): candidate compiles with autoImplicit off: True; certified: True; reference judge: faithful
+  - Smoke call (Qwen/Qwen3.5-9B, pnv_075): finish stop, compiled True, judge score 1, truth faithful
+  - Dry run on mocks:
+    - B_s0: done, 152 metric calls, best val 1.000
+    - B_s1: done, 152 metric calls, best val 1.000
+    - B_s2: done, 152 metric calls, best val 1.000
+    - D_s0: done, 152 metric calls, best val 1.000
+    - D_s1: done, 152 metric calls, best val 1.000
+    - D_s2: done, 152 metric calls, best val 1.000
+    - final rows per arm: {'A': 490, 'B': 1470, 'C': 490, 'D': 1470, 'F': 247}; figures: ['judge_vs_truth_gain.png', 'truth_by_arm.png']
+    - Q1: 58.7 [52.6, 64.8] effect
+    - Q2: 0.0 [0.0, 0.0] no meaningful effect
+    - Q3_qwen3-8b: 0.0 [0.0, 0.0] no meaningful effect
+    - Q3_reform-8b: 0.0 [0.0, 0.0] no meaningful effect
+  - Chunk 3 cost: $0.0014; by purpose: ref_judge 3 calls $0.0011, generate 1 calls $0.0000, opt_judge 1 calls $0.0002
+- **Bugs found and fixed:**
+  - pnv_092 (val) starts with `set_option maxRecDepth 2048 in`; normalization returned nothing for it, so its truth score and certificate would have crashed. Normalization, extraction and certificates now keep leading `set_option ... in` lines. A test checks that all 367 references normalize.
+  - Cache writes used one temp file name per process, so two threads checking the same Lean file collided. Temp names are now unique.
+- **Choices the spec left open:**
+  - User message for every arm: instructions, the English, then one fixed block with the header and helpers (Neel chose this). Arm A's seed (`prompts/arm_A.txt`): "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block." Arm F uses the same seed. Neel may want to edit arm A's wording before the freeze.
+  - Certificate tactics: `exact @H`, `intros; apply H <;> assumption`, `intros; simp_all [H]`, `intros; aesop (add unsafe 50% apply H)`, `intros; have hcert := @H; tauto`; the removal check swaps `H` for `cert_true : True`. An attempt counts as proved when no Lean error falls inside its own lines.
+  - The generation seed is the same for all three GEPA seeds, so the three runs share cached generations for the same prompt and item; they differ through GEPA's own seed.
+  - GEPA checks its budget between iterations, so a run can overshoot by at most one iteration (dry run: 152 metric calls for a budget of 150).
+  - An AXLE outage during GEPA stops the run (marker `STOPPED`, no `DONE`); rerunning resumes from `runs/<run_id>/gepa`.
+  - Analysis: items with any exact memorization match in a core arm are dropped for the "without exact matches" contrasts; the reference judge's agreement with hand labels uses compiled items only (it runs only on those).
+  - Placeholders until the pilot: reflection model and arm F `moonshotai/Kimi-K2.6`; generation temperature 0.6, 1 sample, 16,384 max tokens; GEPA budget 800. vLLM pinned at 0.30.0 (2026-09-22), 0.45 of GPU memory per server.
+  - The smoke call used `Qwen/Qwen3.5-9B` on Together because Qwen3-8B is not served there.
+- **Questions for Neel before the freeze (not blocking):**
+  - Decision rule: "the estimate is at least 5 points" is read as |estimate| >= 5, and the sign is reported, so a GEPA prompt that hurts by 5 or more with an interval below 0 is also an "effect".
+  - "Q1 to Q3 on the random part of the hand-labeled sample": the random sample is stratified by arm, so items are not paired across arms. The script compares per-arm rates with an unpaired bootstrap within each arm.
+- **Note for chunk 5:** `run_job.sh` stops the pod when its job ends, so the six GEPA runs and the final eval must be started as one job (one command that runs all six in parallel, the sanity check, then the final eval), not six separate jobs.
+- **Cost:** $0.0014 this entry (smoke call and reference-judge checks), $0.0336 total. The golden re-run's one new judge pair was logged under chunk 2 by the chunk 2 script.
+- **Problems:** none open. The dry run fed test and miniF2F item text to the mock formalizer and mock judge (copies of references, no model); no model saw a test item.
+- **Next:** chunk 4 (pilot and freeze, GPU)
 
 ### 2026-10-18 · chunk 2 · scoring
 

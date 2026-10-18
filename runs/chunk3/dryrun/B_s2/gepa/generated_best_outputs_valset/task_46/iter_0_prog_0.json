@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_241",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_4_5_33 {G : Type*} [Group G] [Fintype G] {p : \u2115}\n  (P : Sylow p G) [hP : P.Normal] (H : Subgroup G) [Fintype H] :\n  (\u2200 R : Sylow p H, R.toSubgroup = (H \u2293 P.toSubgroup).subgroupOf H) \u2227\n  Nonempty (Sylow p H) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_4_5_33 {G : Type*} [Group G] [Fintype G] {p : \u2115}\n  (P : Sylow p G) [hP : P.Normal] (H : Subgroup G) [Fintype H] :\n  (\u2200 R : Sylow p H, R.toSubgroup = (H \u2293 P.toSubgroup).subgroupOf H) \u2227\n  Nonempty (Sylow p H) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

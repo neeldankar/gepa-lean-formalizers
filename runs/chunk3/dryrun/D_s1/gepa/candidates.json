@@ -1,0 +1,8 @@
+[
+  {
+    "instructions": "Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency."
+  },
+  {
+    "instructions": "Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency.\nKeep every hypothesis from the problem."
+  }
+]

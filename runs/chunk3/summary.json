@@ -1,0 +1,181 @@
+{
+ "refs": [
+  {
+   "id": "pnv_025",
+   "name": "Axler_exercise_7_6",
+   "split": "test",
+   "candidate_compiles_autoimplicit_off": true,
+   "certified": true,
+   "ref_judge_verdict": null
+  },
+  {
+   "id": "pnv_207",
+   "name": "Axler_exercise_6_13",
+   "split": "test",
+   "candidate_compiles_autoimplicit_off": true,
+   "certified": true,
+   "ref_judge_verdict": null
+  },
+  {
+   "id": "pnv_208",
+   "name": "Axler_exercise_7_5",
+   "split": "val",
+   "candidate_compiles_autoimplicit_off": true,
+   "certified": true,
+   "ref_judge_verdict": "faithful"
+  },
+  {
+   "id": "pnv_280",
+   "name": "Ireland_Rosen_exercise_2_4",
+   "split": "train",
+   "candidate_compiles_autoimplicit_off": true,
+   "certified": true,
+   "ref_judge_verdict": "faithful"
+  },
+  {
+   "id": "pnv_092",
+   "name": "Herstein_exercise_5_3_10",
+   "split": "val",
+   "candidate_compiles_autoimplicit_off": true,
+   "certified": true,
+   "ref_judge_verdict": "faithful"
+  }
+ ],
+ "smoke": {
+  "item_id": "pnv_075",
+  "model": "Qwen/Qwen3.5-9B",
+  "finish_reason": "stop",
+  "compiled": true,
+  "judge_score": 1,
+  "truth_label": "faithful"
+ },
+ "dryrun": {
+  "gepa_runs": {
+   "B_s0": {
+    "run_id": "B_s0",
+    "status": "done",
+    "best_val": 1.0,
+    "total_metric_calls": 152,
+    "metric_calls": 152
+   },
+   "B_s1": {
+    "run_id": "B_s1",
+    "status": "done",
+    "best_val": 1.0,
+    "total_metric_calls": 152,
+    "metric_calls": 152
+   },
+   "B_s2": {
+    "run_id": "B_s2",
+    "status": "done",
+    "best_val": 1.0,
+    "total_metric_calls": 152,
+    "metric_calls": 152
+   },
+   "D_s0": {
+    "run_id": "D_s0",
+    "status": "done",
+    "best_val": 1.0,
+    "total_metric_calls": 152,
+    "metric_calls": 152
+   },
+   "D_s1": {
+    "run_id": "D_s1",
+    "status": "done",
+    "best_val": 1.0,
+    "total_metric_calls": 152,
+    "metric_calls": 152
+   },
+   "D_s2": {
+    "run_id": "D_s2",
+    "status": "done",
+    "best_val": 1.0,
+    "total_metric_calls": 152,
+    "metric_calls": 152
+   }
+  },
+  "final_rows": {
+   "A": 490,
+   "B": 1470,
+   "C": 490,
+   "D": 1470,
+   "F": 247
+  },
+  "contrasts": {
+   "Q1": {
+    "estimate": 58.70445344129555,
+    "ci": [
+     52.63157894736842,
+     64.77732793522267
+    ],
+    "decision": "effect"
+   },
+   "Q2": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "decision": "no meaningful effect"
+   },
+   "Q3_qwen3-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "decision": "no meaningful effect"
+   },
+   "Q3_reform-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "decision": "no meaningful effect"
+   }
+  },
+  "figures": [
+   "judge_vs_truth_gain.png",
+   "truth_by_arm.png"
+  ],
+  "mock_calls": {
+   "formalizer": 2547,
+   "judge": 1718,
+   "reflection": 6
+  }
+ },
+ "costs": {
+  "usd_total": 0.0014069299999999998,
+  "by_chunk": {
+   "3": {
+    "calls": 5,
+    "usd": 0.0014069299999999998
+   }
+  },
+  "by_run": {
+   "-": {
+    "calls": 2,
+    "usd": 0.0007589999999999999
+   },
+   "smoke": {
+    "calls": 3,
+    "usd": 0.00064793
+   }
+  },
+  "by_purpose": {
+   "ref_judge": {
+    "calls": 3,
+    "usd": 0.0011388
+   },
+   "generate": {
+    "calls": 1,
+    "usd": 3.878e-05
+   },
+   "opt_judge": {
+    "calls": 1,
+    "usd": 0.00022935
+   }
+  }
+ }
+}

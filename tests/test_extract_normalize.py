@@ -61,3 +61,15 @@ def test_candidate_content_turns_autoimplicit_off_for_the_theorem_only():
     item = {"header": "import Mathlib\nopen Real", "helper": "def g := 1"}
     content = candidate_content(item, "theorem candidate : g = 1 := by\n  sorry")
     assert content == "import Mathlib\nopen Real\n\ndef g := 1\n\nset_option autoImplicit false in\ntheorem candidate : g = 1 := by\n  sorry"
+
+
+def test_leading_set_option_kept():
+    ref = "set_option maxRecDepth 2048 in\ntheorem Herstein_exercise_5_3_10 : IsAlgebraic ℚ (cos (Real.pi / 180)) := by\n  sorry"
+    assert normalize_statement(ref) == "set_option maxRecDepth 2048 in\ntheorem candidate : IsAlgebraic ℚ (cos (Real.pi / 180)) := by\n  sorry"
+    text = block("theorem a : True := trivial\n\nset_option maxRecDepth 2048 in\ntheorem b : True := by\n  sorry")
+    assert extract_statement(text)[0].startswith("set_option maxRecDepth 2048 in\ntheorem b")
+
+
+def test_every_reference_normalizes():
+    from src.data.proofnet import ITEMS_PATH, read_jsonl
+    assert all(normalize_statement(it["formal_stmt"]) for it in read_jsonl(ITEMS_PATH))

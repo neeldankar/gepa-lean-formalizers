@@ -1,0 +1,2 @@
+Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a
+Keep every hypothesis from the problem.

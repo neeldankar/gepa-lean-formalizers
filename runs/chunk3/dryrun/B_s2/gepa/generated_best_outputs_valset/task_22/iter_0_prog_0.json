@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_112",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Munkres_exercise_17_4 {X : Type*} [TopologicalSpace X]\n  (U A : Set X) (hA : IsClosed A) :\n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Munkres_exercise_17_4 {X : Type*} [TopologicalSpace X]\n  (U A : Set X) (hA : IsClosed A) :\n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

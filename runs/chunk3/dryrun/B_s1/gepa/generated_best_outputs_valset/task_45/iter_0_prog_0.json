@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_239",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_4_5_21 {G : Type*} [Fintype G] [Group G]\n  : \u00ac IsSimpleGroup G := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_4_5_21 {G : Type*} [Fintype G] [Group G]\n  : \u00ac IsSimpleGroup G := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

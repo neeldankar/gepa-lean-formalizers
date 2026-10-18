@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_144",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Putnam_exercise_2010_a4 (n : \u2115) (hn : n > 0) :\n    \u00ac Nat.Prime (10^10^10^n + 10^10^n + 10^n - 1) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Putnam_exercise_2010_a4 (n : \u2115) (hn : n > 0) :\n    \u00ac Nat.Prime (10^10^10^n + 10^10^n + 10^n - 1) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

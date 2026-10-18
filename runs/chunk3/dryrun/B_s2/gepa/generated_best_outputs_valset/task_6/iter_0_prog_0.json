@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_024",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Axler_exercise_6_16 {K V : Type*} [RCLike K] [NormedAddCommGroup V]\n  [InnerProductSpace K V] [CompleteSpace V] {U : Submodule K V}\n  (hU : IsClosed (U : Set V)) :\n  U.orthogonal = \u22a5 \u2194 U = \u22a4 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Axler_exercise_6_16 {K V : Type*} [RCLike K] [NormedAddCommGroup V]\n  [InnerProductSpace K V] [CompleteSpace V] {U : Submodule K V}\n  (hU : IsClosed (U : Set V)) :\n  U.orthogonal = \u22a5 \u2194 U = \u22a4 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

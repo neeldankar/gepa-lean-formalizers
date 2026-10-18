@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_148",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_1_1a\n  (x : \u211d) (y : \u211a) (hy : y \u2260 0) :\n  ( Irrational x ) -> Irrational ( x + y ) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_1_1a\n  (x : \u211d) (y : \u211a) (hy : y \u2260 0) :\n  ( Irrational x ) -> Irrational ( x + y ) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

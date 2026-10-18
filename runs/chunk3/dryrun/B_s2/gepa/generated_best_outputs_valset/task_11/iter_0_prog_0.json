@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_048",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_4_3_26 {\u03b1 : Type*} [Fintype \u03b1]\n  (G : Subgroup (Equiv.Perm \u03b1))\n  (h_tran : \u2200 a b : \u03b1, \u2203 \u03c3 : G, (\u03c3 : Equiv.Perm \u03b1) a = b) :\n  \u2203 \u03c3 : G, \u2200 a : \u03b1, (\u03c3 : Equiv.Perm \u03b1) a \u2260 a := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_4_3_26 {\u03b1 : Type*} [Fintype \u03b1]\n  (G : Subgroup (Equiv.Perm \u03b1))\n  (h_tran : \u2200 a b : \u03b1, \u2203 \u03c3 : G, (\u03c3 : Equiv.Perm \u03b1) a = b) :\n  \u2203 \u03c3 : G, \u2200 a : \u03b1, (\u03c3 : Equiv.Perm \u03b1) a \u2260 a := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

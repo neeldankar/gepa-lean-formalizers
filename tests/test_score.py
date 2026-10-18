@@ -11,12 +11,18 @@ GOOD = "```lean4\ntheorem x : 1 = 1 := by\n  sorry\n```"
 
 
 class Checker:
+    """Mock AXLE. `failed` attempts get a Lean error on their own `theorem` line."""
+
     def __init__(self, status="ok", failed=()):
-        self.status, self.failed, self.contents = status, list(failed), []
+        self.status, self.failed, self.contents = status, set(failed), []
 
     def check(self, content):
         self.contents.append(content)
-        return CheckResult(self.status, [] if self.status == "ok" else ["err"], self.failed)
+        if self.status != "ok":
+            return CheckResult(self.status, ["err"], [])
+        errors = [f"-:{i}:8: error: failed" for i, line in enumerate(content.split("\n"), 1)
+                  if line.startswith("theorem cert_") and line.split()[1] in self.failed]
+        return CheckResult("lean_error" if errors else "ok", errors, [])
 
 
 class Client:

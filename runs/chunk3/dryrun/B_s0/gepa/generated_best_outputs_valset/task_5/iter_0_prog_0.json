@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_022",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Axler_exercise_6_2 {V : Type*} [NormedAddCommGroup V] {F : Type*}\n    [RCLike F] [InnerProductSpace F V]\n    (u v : V) :\n    \u27eau, v\u27eb_F = 0 \u2194 \u2200 (a : F), \u2016u\u2016 \u2264 \u2016u + a \u2022 v\u2016 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Axler_exercise_6_2 {V : Type*} [NormedAddCommGroup V] {F : Type*}\n    [RCLike F] [InnerProductSpace F V]\n    (u v : V) :\n    \u27eau, v\u27eb_F = 0 \u2194 \u2200 (a : F), \u2016u\u2016 \u2264 \u2016u + a \u2022 v\u2016 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

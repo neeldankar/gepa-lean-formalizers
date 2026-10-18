@@ -1,0 +1,25 @@
+5 random dry-run rows (seed 0):
+
+[D D_s2 | test pnv_310 | judge 1 | truth faithful (ref_judge)]
+normalized: theorem candidate :
+    ¬ LocallyCompactSpace (ℕ →ᵇ I) := by
+  sorry
+
+[D D_s1 | minif2f minif2f_mathd_algebra_33 | judge 1 | truth faithful (ref_judge)]
+normalized: theorem candidate (x y z : ℝ) (h₀ : x ≠ 0) (h₁ : 2 * x = 5 * y) (h₂ : 7 * y = 10 * z) :
+    z / x = 7 / 25 := by
+  sorry
+
+[A  | minif2f minif2f_mathd_algebra_107 | judge 0 | truth unfaithful (ref_judge)]
+normalized: theorem candidate (x y : ℝ) :
+    (x + 4) ^ 2 + (y - 3) ^ 2 = 5 ^ 2 := by
+  sorry
+
+[C  | test pnv_238 | judge 0 | truth unfaithful (ref_judge)]
+normalized: theorem candidate {G : Type*} [Fintype G] [Group G]
+  : ¬ IsSimpleGroup G := by
+  sorry
+
+[F  | test pnv_093 | judge 1 | truth faithful (ref_judge)]
+normalized: theorem candidate : Irreducible (X^3 - 3*X - 1 : Polynomial ℚ) := by
+  sorry

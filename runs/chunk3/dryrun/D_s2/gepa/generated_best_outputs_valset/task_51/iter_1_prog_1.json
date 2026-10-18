@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_261",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Herstein_exercise_2_5_31 {G : Type*} [CommGroup G] [Fintype G]\n  {p m n : \u2115} (hp : Nat.Prime p) (hp1 : \u00ac p \u2223 m) (hG : card G = p^n*m)\n  {H : Subgroup G} [Fintype H] (hH : card H = p^n) :\n  Subgroup.Characteristic H := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Herstein_exercise_2_5_31 {G : Type*} [CommGroup G] [Fintype G]\n  {p m n : \u2115} (hp : Nat.Prime p) (hp1 : \u00ac p \u2223 m) (hG : card G = p^n*m)\n  {H : Subgroup G} [Fintype H] (hH : card H = p^n) :\n  Subgroup.Characteristic H := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

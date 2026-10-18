@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_020",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Axler_exercise_5_12 {F V : Type*} [AddCommGroup V] [Field F]\n  [Module F V] {S : End F V}\n  :\n  \u2203 c : F, S = c \u2022 LinearMap.id := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Axler_exercise_5_12 {F V : Type*} [AddCommGroup V] [Field F]\n  [Module F V] {S : End F V}\n  :\n  \u2203 c : F, S = c \u2022 LinearMap.id := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

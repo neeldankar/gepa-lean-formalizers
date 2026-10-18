@@ -1,0 +1,8 @@
+[
+  {
+    "instructions": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block."
+  },
+  {
+    "instructions": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a\nKeep every hypothesis from the problem."
+  }
+]

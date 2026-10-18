@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_215",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_1_1_20 {G : Type*} [Group G] {x : G} :\n  orderOf x = orderOf x\u207b\u00b9 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_1_1_20 {G : Type*} [Group G] {x : G} :\n  orderOf x = orderOf x\u207b\u00b9 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

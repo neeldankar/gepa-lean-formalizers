@@ -1,0 +1,21 @@
+- autoImplicit / option references (hand-written candidate binds the auto-bound name):
+  - pnv_025 (Axler_exercise_7_6, test): candidate compiles with autoImplicit off: True; certified: True; reference judge: None
+  - pnv_207 (Axler_exercise_6_13, test): candidate compiles with autoImplicit off: True; certified: True; reference judge: None
+  - pnv_208 (Axler_exercise_7_5, val): candidate compiles with autoImplicit off: True; certified: True; reference judge: faithful
+  - pnv_280 (Ireland_Rosen_exercise_2_4, train): candidate compiles with autoImplicit off: True; certified: True; reference judge: faithful
+  - pnv_092 (Herstein_exercise_5_3_10, val): candidate compiles with autoImplicit off: True; certified: True; reference judge: faithful
+- Smoke call (Qwen/Qwen3.5-9B, pnv_075): finish stop, compiled True, judge score 1, truth faithful
+- Dry run on mocks:
+  - B_s0: done, 152 metric calls, best val 1.000
+  - B_s1: done, 152 metric calls, best val 1.000
+  - B_s2: done, 152 metric calls, best val 1.000
+  - D_s0: done, 152 metric calls, best val 1.000
+  - D_s1: done, 152 metric calls, best val 1.000
+  - D_s2: done, 152 metric calls, best val 1.000
+  - final rows per arm: {'A': 490, 'B': 1470, 'C': 490, 'D': 1470, 'F': 247}; figures: ['judge_vs_truth_gain.png', 'truth_by_arm.png']
+  - Q1: 58.7 [52.6, 64.8] effect
+  - Q2: 0.0 [0.0, 0.0] no meaningful effect
+  - Q3_qwen3-8b: 0.0 [0.0, 0.0] no meaningful effect
+  - Q3_reform-8b: 0.0 [0.0, 0.0] no meaningful effect
+- Chunk 3 cost: $0.0014; by purpose: ref_judge 3 calls $0.0011, generate 1 calls $0.0000, opt_judge 1 calls $0.0002
+

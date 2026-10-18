@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_367",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Shakarchi_exercise_5_1\n    (f : \u2102 \u2192 \u2102) (hf : DifferentiableOn \u2102 f (ball 0 1))\n    (hb : Bornology.IsBounded (f '' (ball (0 : \u2102) 1)))\n    (h0 : \u00ac Set.EqOn f (0 : \u2102 \u2192 \u2102) (ball (0 : \u2102) 1)) :\n    Summable (fun z : {z : \u2102 // f z = 0 \u2227 z \u2208 ball (0 : \u2102) 1} =>\n      ((analyticOrderAt f (z : \u2102)).toNat : \u211d) * (1 - \u2016(z : \u2102)\u2016)) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Shakarchi_exercise_5_1\n    (f : \u2102 \u2192 \u2102) (hf : DifferentiableOn \u2102 f (ball 0 1))\n    (hb : Bornology.IsBounded (f '' (ball (0 : \u2102) 1)))\n    (h0 : \u00ac Set.EqOn f (0 : \u2102 \u2192 \u2102) (ball (0 : \u2102) 1)) :\n    Summable (fun z : {z : \u2102 // f z = 0 \u2227 z \u2208 ball (0 : \u2102) 1} =>\n      ((analyticOrderAt f (z : \u2102)).toNat : \u211d) * (1 - \u2016(z : \u2102)\u2016)) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

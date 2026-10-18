@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_114",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Munkres_exercise_19_6a\n  {\u03b9 : Type*}\n  {f : \u03b9 \u2192 Type*} {x : \u2115 \u2192 \u03a0a, f a}\n  (y : \u03a0i, f i)\n  [\u03a0a, TopologicalSpace (f a)] :\n  Tendsto x atTop (\ud835\udcdd y) \u2194 \u2200 i, Tendsto (\u03bb j => (x j) i) atTop (\ud835\udcdd (y i)) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Munkres_exercise_19_6a\n  {\u03b9 : Type*}\n  {f : \u03b9 \u2192 Type*} {x : \u2115 \u2192 \u03a0a, f a}\n  (y : \u03a0i, f i)\n  [\u03a0a, TopologicalSpace (f a)] :\n  Tendsto x atTop (\ud835\udcdd y) \u2194 \u2200 i, Tendsto (\u03bb j => (x j) i) atTop (\ud835\udcdd (y i)) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

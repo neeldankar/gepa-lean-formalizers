@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_158",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_3_1a\n  (f : \u2115 \u2192 \u2102)\n  (h : \u2203 (a : \u2102), Tendsto (\u03bb (n : \u2115) => f n) atTop (\ud835\udcdd a))\n  : \u2203 (a : \u211d), Tendsto (\u03bb (n : \u2115) => \u2016f n\u2016) atTop (\ud835\udcdd a) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_3_1a\n  (f : \u2115 \u2192 \u2102)\n  (h : \u2203 (a : \u2102), Tendsto (\u03bb (n : \u2115) => f n) atTop (\ud835\udcdd a))\n  : \u2203 (a : \u211d), Tendsto (\u03bb (n : \u2115) => \u2016f n\u2016) atTop (\ud835\udcdd a) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

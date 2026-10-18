@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_152",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_1_13 (x y : \u2102) :\n  |\u2016x\u2016 - \u2016y\u2016| \u2264 \u2016x-y\u2016 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_1_13 (x y : \u2102) :\n  |\u2016x\u2016 - \u2016y\u2016| \u2264 \u2016x-y\u2016 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

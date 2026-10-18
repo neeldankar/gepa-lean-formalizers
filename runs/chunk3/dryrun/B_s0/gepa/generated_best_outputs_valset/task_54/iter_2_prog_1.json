@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_286",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Ireland_Rosen_exercise_4_11 {p : \u2115} (hp : p.Prime) (k s: \u2115)\n  (hs : s = \u2211 n : Fin (p-1), (n + 1 : \u2115) ^ k) :\n  ((\u00ac p - 1 \u2223 k) \u2192 s \u2261 0 [MOD p]) \u2227 (p - 1 \u2223 k \u2192 s \u2261 -1 [ZMOD p]) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Ireland_Rosen_exercise_4_11 {p : \u2115} (hp : p.Prime) (k s: \u2115)\n  (hs : s = \u2211 n : Fin (p-1), (n + 1 : \u2115) ^ k) :\n  ((\u00ac p - 1 \u2223 k) \u2192 s \u2261 0 [MOD p]) \u2227 (p - 1 \u2223 k \u2192 s \u2261 -1 [ZMOD p]) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_191",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Artin_exercise_10_4_7a {R : Type*} [CommRing R]\n  (I J : Ideal R) (hIJ : I + J = \u22a4) : I * J = I \u2293 J := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Artin_exercise_10_4_7a {R : Type*} [CommRing R]\n  (I J : Ideal R) (hIJ : I + J = \u22a4) : I * J = I \u2293 J := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

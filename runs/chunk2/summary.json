@@ -71,8 +71,8 @@
   "config": "ours"
  },
  "golden": {
-  "cases": 14,
-  "passed": 14,
+  "cases": 15,
+  "passed": 15,
   "certificates": true,
   "table": [
    {
@@ -292,6 +292,20 @@
      ]
     },
     "passed": true
+   },
+   {
+    "case": "reference that needs autoImplicit (f_a bound explicitly)",
+    "expected": {
+     "compiled": true,
+     "certified": true,
+     "truth_label": "faithful"
+    },
+    "got": {
+     "compiled": true,
+     "certified": true,
+     "truth_label": "faithful"
+    },
+    "passed": true
    }
   ]
  },
@@ -326,24 +340,24 @@
   "path": "runs/chunk2/labeling_demo.html"
  },
  "costs": {
-  "paid_calls": 49,
-  "usd_total": 0.0296398,
+  "paid_calls": 51,
+  "usd_total": 0.0322273,
   "by_purpose": {
    "opt_judge": {
     "model": "openai/gpt-oss-120b",
-    "calls": 10,
-    "usd": 0.0030421499999999995,
-    "prompt_tokens": 2941,
-    "completion_tokens": 4335,
-    "usd_per_call": 0.00030421499999999993
+    "calls": 11,
+    "usd": 0.0033262499999999993,
+    "prompt_tokens": 3303,
+    "completion_tokens": 4718,
+    "usd_per_call": 0.00030238636363636356
    },
    "ref_judge": {
     "model": "deepseek-ai/DeepSeek-V4.1-Flash",
-    "calls": 10,
-    "usd": 0.007506,
-    "prompt_tokens": 4356,
-    "completion_tokens": 5166,
-    "usd_per_call": 0.0007505999999999999
+    "calls": 11,
+    "usd": 0.0098094,
+    "prompt_tokens": 4902,
+    "completion_tokens": 6949,
+    "usd_per_call": 0.0008917636363636363
    },
    "probe": {
     "model": "zai-org/GLM-5.3-Flash",

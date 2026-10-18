@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_278",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Herstein_exercise_5_6_14 {p m n: \u2115} (hn : n > 0)\n  {F : Type*} [Field F] [CharP F p] (hm : m = p ^ n) :\n  (X ^ m - X : Polynomial F).Separable := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Herstein_exercise_5_6_14 {p m n: \u2115} (hn : n > 0)\n  {F : Type*} [Field F] [CharP F p] (hm : m = p ^ n) :\n  (X ^ m - X : Polynomial F).Separable := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

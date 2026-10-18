@@ -1,0 +1,49 @@
+{
+ "item_id": "pnv_075",
+ "model": "Qwen/Qwen3.5-9B",
+ "output": "```lean4\nimport Mathlib\n\nopen Fintype Set Real Ideal Polynomial\nopen scoped BigOperators\n\ntheorem euler_phi_divisibility (a n : ℕ) (h : 1 < a) : n ∣ Nat.totient (a ^ n - 1) := by sorry\n```",
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 134,
+  "total_tokens": 198,
+  "completion_tokens": 64,
+  "reasoning_tokens": 0
+ },
+ "normalized": "theorem candidate (a n : ℕ) (h : 1 < a) : n ∣ Nat.totient (a ^ n - 1) := by\n  sorry",
+ "compiled": true,
+ "judge": {
+  "verdict": "faithful",
+  "reason": "The Lean theorem quantifies over natural numbers a and n, assumes 1 < a (i.e., a > 1), and concludes n ∣ Nat.totient (a ^ n - 1), which exactly matches the English statement."
+ },
+ "judge_score": 1,
+ "certificate": {
+  "certified": true,
+  "status": "ok",
+  "directions": {
+   "c2r": [
+    "exact @{H}",
+    "intros; apply {H} <;> assumption",
+    "intros; simp_all [{H}]",
+    "intros; aesop (add unsafe 50% apply {H})",
+    "intros; have hcert := @{H}; tauto"
+   ],
+   "r2c": [
+    "exact @{H}",
+    "intros; apply {H} <;> assumption",
+    "intros; simp_all [{H}]",
+    "intros; aesop (add unsafe 50% apply {H})",
+    "intros; have hcert := @{H}; tauto"
+   ]
+  },
+  "discarded": {
+   "c2r": [],
+   "r2c": []
+  }
+ },
+ "ref_judge": {
+  "verdict": "faithful",
+  "reason": "The candidate uses the same natural numbers a and n, the equivalent hypothesis 1 < a, and the same conclusion n divides the totient of a^n - 1.",
+  "error_tag": null
+ },
+ "truth_label": "faithful"
+}

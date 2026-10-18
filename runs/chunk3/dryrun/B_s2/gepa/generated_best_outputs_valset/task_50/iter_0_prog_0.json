@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_260",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Herstein_exercise_2_5_23 {G : Type*} [Group G]\n  (hG : \u2200 (H : Subgroup G), H.Normal) (a b : G) :\n  \u2203 (j : \u2124) , b*a = a^j * b:= by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Herstein_exercise_2_5_23 {G : Type*} [Group G]\n  (hG : \u2200 (H : Subgroup G), H.Normal) (a b : G) :\n  \u2203 (j : \u2124) , b*a = a^j * b:= by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

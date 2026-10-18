@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_089",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Herstein_exercise_4_5_25 {p : \u2115} :\n  Irreducible (\u2211 i \u2208 Finset.range p, X ^ i : Polynomial \u211a) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Herstein_exercise_4_5_25 {p : \u2115} :\n  Irreducible (\u2211 i \u2208 Finset.range p, X ^ i : Polynomial \u211a) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

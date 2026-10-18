@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_160",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_3_6a\n: Tendsto (\u03bb (n : \u2115) => (\u2211 i \u2208 range n, g i)) atTop atTop := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_3_6a\n: Tendsto (\u03bb (n : \u2115) => (\u2211 i \u2208 range n, g i)) atTop atTop := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

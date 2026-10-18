@@ -11,6 +11,7 @@ import asyncio
 import hashlib
 import json
 import os
+import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -147,7 +148,7 @@ class AxleChecker:
         if result is None:
             return result_cls(OUTAGE, [last_error])
 
-        tmp = path.with_suffix(f".tmp{os.getpid()}")
+        tmp = path.with_suffix(f".tmp{uuid.uuid4().hex}")  # unique: threads may write the same key
         tmp.write_text(json.dumps(asdict(result)))
         tmp.replace(path)
         return result

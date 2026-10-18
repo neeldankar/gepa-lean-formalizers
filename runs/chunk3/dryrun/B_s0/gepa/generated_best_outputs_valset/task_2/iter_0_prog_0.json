@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_008",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Artin_exercise_10_2_4 :\n  span ({2} : Set $ Polynomial \u2124) \u2293 (span {X}) =\n  span ({2 * X} : Set $ Polynomial \u2124) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Artin_exercise_10_2_4 :\n  span ({2} : Set $ Polynomial \u2124) \u2293 (span {X}) =\n  span ({2 * X} : Set $ Polynomial \u2124) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

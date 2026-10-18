@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_305",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Munkres_exercise_24_3a (f : I \u2192 I) :\n  \u2203 (x : I), f x = x := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Munkres_exercise_24_3a (f : I \u2192 I) :\n  \u2203 (x : I), f x = x := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_081",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Herstein_exercise_2_9_2 {G H : Type*} [Fintype G] [Fintype H] [Group G]\n  [Group H] (hH : IsCyclic H) :\n  IsCyclic (G \u00d7 H) \u2194 (card G).Coprime (card H) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Herstein_exercise_2_9_2 {G H : Type*} [Fintype G] [Fintype H] [Group G]\n  [Group H] (hH : IsCyclic H) :\n  IsCyclic (G \u00d7 H) \u2194 (card G).Coprime (card H) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

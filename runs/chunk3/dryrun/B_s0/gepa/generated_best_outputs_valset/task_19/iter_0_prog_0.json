@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_097",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Ireland_Rosen_exercise_3_1 : Infinite {p : Nat.Primes // p \u2261 -1 [ZMOD 6]} := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Ireland_Rosen_exercise_3_1 : Infinite {p : Nat.Primes // p \u2261 -1 [ZMOD 6]} := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

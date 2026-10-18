@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_006",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Artin_exercise_6_4_3 {G : Type*} [Group G] [Fintype G] {p q : \u2115}\n  (hq : Prime q) (hG : card G = p^2 * q) :\n  IsSimpleGroup G \u2192 False := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Artin_exercise_6_4_3 {G : Type*} [Group G] [Fintype G] {p q : \u2115}\n  (hq : Prime q) (hG : card G = p^2 * q) :\n  IsSimpleGroup G \u2192 False := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

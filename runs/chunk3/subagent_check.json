@@ -1,0 +1,112 @@
+{
+ "golden": {
+  "passed": 15,
+  "cases": 15,
+  "flag_disagreements": [],
+  "non_train_items": []
+ },
+ "refs": {
+  "n": 5,
+  "compiles": 5,
+  "certified": 5,
+  "splits": {
+   "test": 2,
+   "val": 2,
+   "train": 1
+  },
+  "verdicts": {
+   "pnv_025": null,
+   "pnv_207": null,
+   "pnv_208": "faithful",
+   "pnv_280": "faithful",
+   "pnv_092": "faithful"
+  },
+  "problems": []
+ },
+ "costs_chunk3": {
+  "n": 5,
+  "usd": 0.0014069299999999998,
+  "usd_recomputed": 0.0014069299999999998,
+  "per_purpose": {
+   "ref_judge": {
+    "n": 3,
+    "usd": 0.0011388,
+    "usd_recomputed": 0.0011388
+   },
+   "generate": {
+    "n": 1,
+    "usd": 3.878e-05,
+    "usd_recomputed": 3.878e-05
+   },
+   "opt_judge": {
+    "n": 1,
+    "usd": 0.00022935,
+    "usd_recomputed": 0.00022935
+   }
+  },
+  "off_rows": [],
+  "models": {
+   "deepseek-ai/DeepSeek-V4.1-Flash": 3,
+   "Qwen/Qwen3.5-9B": 1,
+   "openai/gpt-oss-120b": 1
+  }
+ },
+ "dryrun": {
+  "rows_per_arm": {
+   "A": 490,
+   "B": 1470,
+   "C": 490,
+   "D": 1470,
+   "F": 247
+  },
+  "n_test_items": 247,
+  "arm_means": {
+   "A": {
+    "truth": 41.29554655870445,
+    "judge": 41.29554655870445
+   },
+   "C": {
+    "truth": 41.29554655870445,
+    "judge": 41.29554655870445
+   },
+   "B": {
+    "truth": 100.0,
+    "judge": 100.0
+   },
+   "D": {
+    "truth": 100.0,
+    "judge": 100.0
+   }
+  },
+  "contrasts": {
+   "Q1": {
+    "estimate": 58.70445344129555,
+    "ci": [
+     52.63157894736842,
+     64.37246963562754
+    ]
+   },
+   "Q2": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "Q3_qwen3-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "Q3_reform-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_323",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Pugh_exercise_3_1 {f : \u211d \u2192 \u211d}\n  (hf : \u2200 x y, |f x - f y| \u2264 |x - y| ^ 2) :\n  \u2203 c, f = \u03bb _x => c := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Pugh_exercise_3_1 {f : \u211d \u2192 \u211d}\n  (hf : \u2200 x y, |f x - f y| \u2264 |x - y| ^ 2) :\n  \u2203 c, f = \u03bb _x => c := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

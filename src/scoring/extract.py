@@ -9,7 +9,9 @@ failure.
 import re
 
 FENCE = re.compile(r"```[ \t]*(?:lean4|lean)?[ \t]*\n(.*?)```", re.DOTALL)
-DECL = re.compile(r"^[ \t]*(?:@\[[^\]]*\][ \t]*)?(?:private[ \t]+|protected[ \t]+)?(theorem|lemma)\b", re.MULTILINE)
+# a declaration, including any `set_option ... in` lines directly in front of it
+DECL = re.compile(r"^(?:[ \t]*set_option[ \t]+\S+[ \t]+\S+[ \t]+in[ \t]*\n)*"
+                  r"[ \t]*(?:@\[[^\]]*\][ \t]*)?(?:private[ \t]+|protected[ \t]+)?(theorem|lemma)\b", re.MULTILINE)
 
 
 def extract_statement(text):

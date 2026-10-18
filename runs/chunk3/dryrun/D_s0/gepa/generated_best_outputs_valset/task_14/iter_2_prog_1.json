@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_060",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_7_1_15 {R : Type*} [Ring R] (hR : \u2200 a : R, a^2 = a) :\n\u2200 a b : R, a*b = b*a := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_7_1_15 {R : Type*} [Ring R] (hR : \u2200 a : R, a^2 = a) :\n\u2200 a b : R, a*b = b*a := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

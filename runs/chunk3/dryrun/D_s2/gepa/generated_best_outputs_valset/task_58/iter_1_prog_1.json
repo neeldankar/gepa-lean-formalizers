@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_304",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Munkres_exercise_23_11 {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]\n  (p : X \u2192 Y) (hq : IsQuotientMap p)\n  (hY : ConnectedSpace Y) (hX : \u2200 y : Y, IsConnected (p \u207b\u00b9' {y})) :\n  ConnectedSpace X := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Munkres_exercise_23_11 {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]\n  (p : X \u2192 Y) (hq : IsQuotientMap p)\n  (hY : ConnectedSpace Y) (hX : \u2200 y : Y, IsConnected (p \u207b\u00b9' {y})) :\n  ConnectedSpace X := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

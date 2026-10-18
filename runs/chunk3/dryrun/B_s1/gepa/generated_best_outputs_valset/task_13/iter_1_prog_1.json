@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_051",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_4_5_1a {p : \u2115} {G : Type*} [Group G]\n  {P : Sylow p G} (H : Subgroup G) (hH : P \u2264 H) :\n  IsPGroup p (P.subgroupOf H) \u2227\n  \u2200 (Q : Subgroup H), IsPGroup p Q \u2192 (P.subgroupOf H) \u2264 Q \u2192 Q = (P.subgroupOf H) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_4_5_1a {p : \u2115} {G : Type*} [Group G]\n  {P : Sylow p G} (H : Subgroup G) (hH : P \u2264 H) :\n  IsPGroup p (P.subgroupOf H) \u2227\n  \u2200 (Q : Subgroup H), IsPGroup p Q \u2192 (P.subgroupOf H) \u2264 Q \u2192 Q = (P.subgroupOf H) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

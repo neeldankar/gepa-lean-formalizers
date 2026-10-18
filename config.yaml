@@ -38,6 +38,10 @@ llm:
     openai/gpt-oss-120b: {input: 0.15, output: 0.6}
     deepseek-ai/DeepSeek-V4.1-Flash: {input: 0.3, output: 1.2}
     zai-org/GLM-5.3-Flash: {input: 0.15, output: 0.5}
+    moonshotai/Kimi-K2.6: {input: 1.2, output: 4.5}
+    Qwen/Qwen3.5-9B: {input: 0.17, output: 0.25}
+    qwen3-8b: {input: 0, output: 0}   # served by vLLM on the pod; GPU time is logged separately
+    reform-8b: {input: 0, output: 0}
 
 # Placeholders until the pilot (chunk 4): two different non-Qwen families.
 judges:
@@ -50,3 +54,65 @@ judges:
 scoring:
   stripper: ours  # set by the chunk 2 contest: AXLE remove_comments only if it passes every strip.CASES entry
   certificates: true
+
+# Formalizers. vLLM serves both on one H100 (scripts/setup_pod.sh); base URLs are on the pod.
+models:
+  qwen3-8b:
+    hf_id: Qwen/Qwen3-8B
+    base_url: http://localhost:8000/v1
+    enable_thinking: false     # decide in pilot
+  reform-8b:
+    hf_id: GuoxinChen/ReForm-8B
+    base_url: http://localhost:8001/v1
+  smoke:                       # chunk 3 live smoke call only: same client code through Together
+    served_name: Qwen/Qwen3.5-9B
+    base_url: https://api.together.xyz/v1
+    api_key_env: TOGETHER_API_KEY
+    enable_thinking: false
+  arm_f:                       # arm F's frontier model, through Together; placeholder until the pilot
+    served_name: moonshotai/Kimi-K2.6
+    base_url: https://api.together.xyz/v1
+    api_key_env: TOGETHER_API_KEY
+
+# Identical across arms; decide in pilot.
+generation:
+  temperature: 0.6
+  samples: 1
+  max_tokens: 16384
+  seed: 0
+  workers: 16
+
+arms:
+  A: {model: qwen3-8b, prompt: prompts/arm_A.txt}
+  B: {model: qwen3-8b, gepa_runs: [B_s0, B_s1, B_s2]}
+  C: {model: reform-8b, prompt: prompts/arm_C.txt}
+  D: {model: reform-8b, gepa_runs: [D_s0, D_s1, D_s2]}
+  E: {model: qwen3-8b, prompt: prompts/arm_E.txt}
+  F: {model: arm_f, prompt: prompts/arm_A.txt, test_only: true}
+
+gepa:
+  max_metric_calls: 800            # decide in pilot
+  reflection_model: moonshotai/Kimi-K2.6   # placeholder until the pilot; not Qwen, not the reference judge's family
+  reflection_max_tokens: 8000
+  runs:
+    B_s0: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt}
+    B_s1: {model: qwen3-8b, seed: 1, seed_prompt: prompts/arm_A.txt}
+    B_s2: {model: qwen3-8b, seed: 2, seed_prompt: prompts/arm_A.txt}
+    D_s0: {model: reform-8b, seed: 0, seed_prompt: prompts/arm_C.txt}
+    D_s1: {model: reform-8b, seed: 1, seed_prompt: prompts/arm_C.txt}
+    D_s2: {model: reform-8b, seed: 2, seed_prompt: prompts/arm_C.txt}
+
+gpu:
+  usd_per_hour: 2.7
+
+pod:
+  vllm_version: 0.30.0             # 2026-09-22 release
+  workdir: /workspace
+  repo_dir: /workspace/gepa-lean-formalizers
+  gpu_memory_utilization: 0.45     # per server; two servers share one H100
+  max_model_len: 40960
+
+analysis:
+  threshold_points: 5              # placeholder; Neel confirms at the freeze
+  bootstrap_resamples: 10000
+  seed: 0

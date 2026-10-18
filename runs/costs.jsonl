@@ -47,3 +47,10 @@
 {"time": "2026-10-18T05:07:18+00:00", "chunk": 2, "purpose": "gloss", "model": "zai-org/GLM-5.3-Flash", "prompt_tokens": 256, "completion_tokens": 2380, "usd": 0.0012284000000000002}
 {"time": "2026-10-18T05:07:24+00:00", "chunk": 2, "purpose": "gloss", "model": "zai-org/GLM-5.3-Flash", "prompt_tokens": 177, "completion_tokens": 1727, "usd": 0.00089005}
 {"time": "2026-10-18T05:07:34+00:00", "chunk": 2, "purpose": "gloss", "model": "zai-org/GLM-5.3-Flash", "prompt_tokens": 214, "completion_tokens": 2942, "usd": 0.0015030999999999998}
+{"time": "2026-10-18T05:38:57+00:00", "chunk": 2, "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 362, "completion_tokens": 383, "usd": 0.00028409999999999997}
+{"time": "2026-10-18T05:39:06+00:00", "chunk": 2, "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 546, "completion_tokens": 1783, "usd": 0.0023034}
+{"time": "2026-10-18T05:49:08+00:00", "chunk": 3, "run_id": null, "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 495, "completion_tokens": 353, "usd": 0.0005720999999999999}
+{"time": "2026-10-18T05:49:16+00:00", "chunk": 3, "run_id": null, "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 363, "completion_tokens": 65, "usd": 0.0001869}
+{"time": "2026-10-18T05:49:26+00:00", "chunk": 3, "run_id": "smoke", "purpose": "generate", "model": "Qwen/Qwen3.5-9B", "prompt_tokens": 134, "completion_tokens": 64, "usd": 3.878e-05}
+{"time": "2026-10-18T05:49:28+00:00", "chunk": 3, "run_id": "smoke", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 269, "completion_tokens": 315, "usd": 0.00022935}
+{"time": "2026-10-18T05:49:33+00:00", "chunk": 3, "run_id": "smoke", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 390, "completion_tokens": 219, "usd": 0.0003798}

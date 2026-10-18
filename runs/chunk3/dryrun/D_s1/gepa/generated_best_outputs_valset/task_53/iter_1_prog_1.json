@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_285",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Ireland_Rosen_exercise_4_6 {p n : \u2115} (hp : p.Prime) (hpn : p = 2 ^ n + 1)\n    (hn : 2 \u2264 n) :\n    IsPrimitiveRoot (3 : ZMod p) (p - 1) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Ireland_Rosen_exercise_4_6 {p n : \u2115} (hp : p.Prime) (hpn : p = 2 ^ n + 1)\n    (hn : 2 \u2264 n) :\n    IsPrimitiveRoot (3 : ZMod p) (p - 1) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

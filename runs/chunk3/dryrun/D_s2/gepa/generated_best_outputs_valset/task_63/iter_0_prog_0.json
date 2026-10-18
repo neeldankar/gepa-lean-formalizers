@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_338",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_2_19a {X : Type*} [MetricSpace X]\n  (A B : Set X) (hB : IsClosed B) (hAB : Disjoint A B) :\n  A \u2229 closure B = \u2205 \u2227 closure A \u2229 B = \u2205 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_2_19a {X : Type*} [MetricSpace X]\n  (A B : Set X) (hB : IsClosed B) (hAB : Disjoint A B) :\n  A \u2229 closure B = \u2205 \u2227 closure A \u2229 B = \u2205 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

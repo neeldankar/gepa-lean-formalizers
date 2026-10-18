@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_222",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_2_4_16a {G : Type*} [Group G] [Fintype G] {H : Subgroup G}\n  (hH : H \u2260 \u22a4) :\n  \u2203 M : Subgroup G, M \u2260 \u22a4 \u2227\n  (\u2200 K : Subgroup G, M \u2264 K \u2192 K = M \u2228 K = \u22a4) \u2227\n  H \u2264 M := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_2_4_16a {G : Type*} [Group G] [Fintype G] {H : Subgroup G}\n  (hH : H \u2260 \u22a4) :\n  \u2203 M : Subgroup G, M \u2260 \u22a4 \u2227\n  (\u2200 K : Subgroup G, M \u2264 K \u2192 K = M \u2228 K = \u22a4) \u2227\n  H \u2264 M := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

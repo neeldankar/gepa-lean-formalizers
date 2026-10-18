@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_258",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Herstein_exercise_2_2_6c {G : Type*} [Group G] {n : \u2115} (hn : n > 1)\n  (h : \u2200 (a b : G), (a * b) ^ n = a ^ n * b ^ n) :\n  \u2200 (a b : G), (a * b * a\u207b\u00b9 * b\u207b\u00b9) ^ (n * (n - 1)) = 1 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Herstein_exercise_2_2_6c {G : Type*} [Group G] {n : \u2115} (hn : n > 1)\n  (h : \u2200 (a b : G), (a * b) ^ n = a ^ n * b ^ n) :\n  \u2200 (a b : G), (a * b * a\u207b\u00b9 * b\u207b\u00b9) ^ (n * (n - 1)) = 1 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

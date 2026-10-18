@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_363",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Shakarchi_exercise_2_2 :\n    Tendsto (fun y => \u222b x in (0 : \u211d)..y, Real.sin x / x) atTop (\ud835\udcdd (Real.pi / 2)) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Shakarchi_exercise_2_2 :\n    Tendsto (fun y => \u222b x in (0 : \u211d)..y, Real.sin x / x) atTop (\ud835\udcdd (Real.pi / 2)) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

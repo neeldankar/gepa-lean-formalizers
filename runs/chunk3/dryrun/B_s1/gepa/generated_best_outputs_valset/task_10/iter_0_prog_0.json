@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_035",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Dummit_Foote_exercise_1_6_4 :\n    IsEmpty (\u211d\u02e3 \u2243* \u2102\u02e3) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_1_6_4 :\n    IsEmpty (\u211d\u02e3 \u2243* \u2102\u02e3) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_257",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Herstein_exercise_2_2_3 {G : Type*} [Group G]\n  (h : \u2203 n : \u2124, (\u2200 a b : G, (a * b) ^ n = a ^ n * b ^ n) \u2227\n                  (\u2200 a b : G, (a * b) ^ (n + 1) = a ^ (n + 1) * b ^ (n + 1)) \u2227\n                  (\u2200 a b : G, (a * b) ^ (n + 2) = a ^ (n + 2) * b ^ (n + 2))) :\n  \u2200 a b : G, a * b = b * a := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Herstein_exercise_2_2_3 {G : Type*} [Group G]\n  (h : \u2203 n : \u2124, (\u2200 a b : G, (a * b) ^ n = a ^ n * b ^ n) \u2227\n                  (\u2200 a b : G, (a * b) ^ (n + 1) = a ^ (n + 1) * b ^ (n + 1)) \u2227\n                  (\u2200 a b : G, (a * b) ^ (n + 2) = a ^ (n + 2) * b ^ (n + 2))) :\n  \u2200 a b : G, a * b = b * a := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

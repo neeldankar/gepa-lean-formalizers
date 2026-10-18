@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_101",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Ireland_Rosen_exercise_4_8 {p : \u2115} (hp : Odd p) (hp' : p.Prime) (a : (ZMod p)\u02e3) :\n  IsPrimitiveRoot (a : ZMod p) (p - 1) \u2194\n    \u2200 q : \u2115, q \u2223 (p - 1) \u2192 q.Prime \u2192\n      \u00ac ((a : ZMod p) ^ ((p - 1) / q) = 1) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Ireland_Rosen_exercise_4_8 {p : \u2115} (hp : Odd p) (hp' : p.Prime) (a : (ZMod p)\u02e3) :\n  IsPrimitiveRoot (a : ZMod p) (p - 1) \u2194\n    \u2200 q : \u2115, q \u2223 (p - 1) \u2192 q.Prime \u2192\n      \u00ac ((a : ZMod p) ^ ((p - 1) / q) = 1) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

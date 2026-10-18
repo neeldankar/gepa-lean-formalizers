@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_092",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\nset_option maxRecDepth 2048 in\ntheorem Herstein_exercise_5_3_10 : IsAlgebraic \u211a (cos (Real.pi / 180)) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "set_option maxRecDepth 2048 in\ntheorem Herstein_exercise_5_3_10 : IsAlgebraic \u211a (cos (Real.pi / 180)) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

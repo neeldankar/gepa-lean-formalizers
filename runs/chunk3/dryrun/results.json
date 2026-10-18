@@ -1,0 +1,339 @@
+{
+ "threshold_points": 5,
+ "bootstrap_resamples": 2000,
+ "confirmatory": {
+  "items": 247,
+  "arm_truth_rates": {
+   "A": {
+    "per_seed": [
+     41.29554655870445
+    ],
+    "mean": 41.29554655870445
+   },
+   "B": {
+    "per_seed": [
+     100.0,
+     100.0,
+     100.0
+    ],
+    "mean": 100.0
+   },
+   "C": {
+    "per_seed": [
+     41.29554655870445
+    ],
+    "mean": 41.29554655870445
+   },
+   "D": {
+    "per_seed": [
+     100.0,
+     100.0,
+     100.0
+    ],
+    "mean": 100.0
+   },
+   "F": {
+    "per_seed": [
+     41.29554655870445
+    ],
+    "mean": 41.29554655870445
+   }
+  },
+  "per_arm_intervals": {
+   "A:truth": {
+    "estimate": 41.29554655870445,
+    "ci": [
+     35.22267206477733,
+     47.36842105263158
+    ]
+   },
+   "A:judge": {
+    "estimate": 41.29554655870445,
+    "ci": [
+     35.22267206477733,
+     47.36842105263158
+    ]
+   },
+   "B:truth": {
+    "estimate": 100.0,
+    "ci": [
+     100.0,
+     100.0
+    ]
+   },
+   "B:judge": {
+    "estimate": 100.0,
+    "ci": [
+     100.0,
+     100.0
+    ]
+   },
+   "C:truth": {
+    "estimate": 41.29554655870445,
+    "ci": [
+     35.22267206477733,
+     47.36842105263158
+    ]
+   },
+   "C:judge": {
+    "estimate": 41.29554655870445,
+    "ci": [
+     35.22267206477733,
+     47.36842105263158
+    ]
+   },
+   "D:truth": {
+    "estimate": 100.0,
+    "ci": [
+     100.0,
+     100.0
+    ]
+   },
+   "D:judge": {
+    "estimate": 100.0,
+    "ci": [
+     100.0,
+     100.0
+    ]
+   },
+   "F:truth": {
+    "estimate": 41.29554655870445,
+    "ci": [
+     35.22267206477733,
+     47.36842105263158
+    ]
+   },
+   "F:judge": {
+    "estimate": 41.29554655870445,
+    "ci": [
+     35.22267206477733,
+     47.36842105263158
+    ]
+   }
+  },
+  "contrasts": {
+   "Q1": {
+    "estimate": 58.70445344129555,
+    "ci": [
+     52.63157894736842,
+     64.77732793522267
+    ],
+    "decision": "effect"
+   },
+   "Q2": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "decision": "no meaningful effect"
+   },
+   "Q3_qwen3-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "decision": "no meaningful effect"
+   },
+   "Q3_reform-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "decision": "no meaningful effect"
+   }
+  }
+ },
+ "alongside": {
+  "compile_and_memorization": {
+   "A": {
+    "outputs": 247,
+    "compile_rate": 100.0,
+    "faithful_given_compiled": 41.29554655870445,
+    "format_failure_rate": 0.0,
+    "memorization_rate": 0.0,
+    "cert_judge_disagreements": 0,
+    "outages": 0
+   },
+   "B": {
+    "outputs": 741,
+    "compile_rate": 100.0,
+    "faithful_given_compiled": 100.0,
+    "format_failure_rate": 0.0,
+    "memorization_rate": 0.0,
+    "cert_judge_disagreements": 0,
+    "outages": 0
+   },
+   "C": {
+    "outputs": 247,
+    "compile_rate": 100.0,
+    "faithful_given_compiled": 41.29554655870445,
+    "format_failure_rate": 0.0,
+    "memorization_rate": 0.0,
+    "cert_judge_disagreements": 0,
+    "outages": 0
+   },
+   "D": {
+    "outputs": 741,
+    "compile_rate": 100.0,
+    "faithful_given_compiled": 100.0,
+    "format_failure_rate": 0.0,
+    "memorization_rate": 0.0,
+    "cert_judge_disagreements": 0,
+    "outages": 0
+   },
+   "F": {
+    "outputs": 247,
+    "compile_rate": 100.0,
+    "faithful_given_compiled": 41.29554655870445,
+    "format_failure_rate": 0.0,
+    "memorization_rate": 0.0,
+    "cert_judge_disagreements": 0,
+    "outages": 0
+   }
+  },
+  "contrasts_without_exact_matches": {
+   "items_dropped": 0,
+   "Q1": {
+    "estimate": 58.70445344129555,
+    "ci": [
+     52.63157894736842,
+     64.77732793522267
+    ]
+   },
+   "Q2": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "Q3_qwen3-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "Q3_reform-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "hand_check": "not available (no labels yet)"
+ },
+ "exploratory": {
+  "note": "exploratory",
+  "minif2f_transfer": {
+   "items": 243,
+   "contrasts": {
+    "Q1": {
+     "estimate": 65.02057613168725,
+     "ci": [
+      58.8477366255144,
+      70.7921810699588
+     ]
+    },
+    "Q2": {
+     "estimate": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "per_arm_intervals": {
+    "A:truth": {
+     "estimate": 34.97942386831276,
+     "ci": [
+      29.207818930041153,
+      41.1522633744856
+     ]
+    },
+    "A:judge": {
+     "estimate": 34.97942386831276,
+     "ci": [
+      29.207818930041153,
+      41.1522633744856
+     ]
+    },
+    "B:truth": {
+     "estimate": 100.0,
+     "ci": [
+      100.0,
+      100.0
+     ]
+    },
+    "B:judge": {
+     "estimate": 100.0,
+     "ci": [
+      100.0,
+      100.0
+     ]
+    },
+    "C:truth": {
+     "estimate": 34.97942386831276,
+     "ci": [
+      29.207818930041153,
+      41.1522633744856
+     ]
+    },
+    "C:judge": {
+     "estimate": 34.97942386831276,
+     "ci": [
+      29.207818930041153,
+      41.1522633744856
+     ]
+    },
+    "D:truth": {
+     "estimate": 100.0,
+     "ci": [
+      100.0,
+      100.0
+     ]
+    },
+    "D:judge": {
+     "estimate": 100.0,
+     "ci": [
+      100.0,
+      100.0
+     ]
+    }
+   }
+  },
+  "format_breakage": {
+   "A": 0.0,
+   "B": 0.0,
+   "C": 0.0,
+   "D": 0.0,
+   "F": 0.0
+  },
+  "error_tags": {
+   "A": {
+    "Missing premise": {
+     "count": 145,
+     "share": 100.0
+    }
+   },
+   "B": {},
+   "C": {
+    "Missing premise": {
+     "count": 145,
+     "share": 100.0
+    }
+   },
+   "D": {},
+   "F": {
+    "Missing premise": {
+     "count": 145,
+     "share": 100.0
+    }
+   }
+  }
+ }
+}

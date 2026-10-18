@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_303",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Munkres_exercise_23_6 {X : Type*}\n  [TopologicalSpace X] {A C : Set X}\n  (hCA : C \u2229 A \u2260 \u2205) (hCXA : C \u2229 A\u1d9c \u2260 \u2205) :\n  C \u2229 (frontier A) \u2260 \u2205 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Munkres_exercise_23_6 {X : Type*}\n  [TopologicalSpace X] {A C : Set X}\n  (hCA : C \u2229 A \u2260 \u2205) (hCXA : C \u2229 A\u1d9c \u2260 \u2205) :\n  C \u2229 (frontier A) \u2260 \u2205 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_121",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Munkres_exercise_24_2\n    {f : (Metric.sphere (0 : \u2102) 1 : Set \u2102) \u2192 \u211d}\n    : \u2203 x, f x = f (-x) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Munkres_exercise_24_2\n    {f : (Metric.sphere (0 : \u2102) 1 : Set \u2102) \u2192 \u211d}\n    : \u2203 x, f x = f (-x) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "mock judge: unfaithful"
+        },
+        "score": 0
+    }
+]

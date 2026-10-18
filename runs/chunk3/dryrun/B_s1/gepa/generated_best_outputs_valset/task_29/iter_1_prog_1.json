@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_147",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Putnam_exercise_2020_b5 (z : Fin 4 \u2192 \u2102) (hz0 : \u2200 n, \u2016z n\u2016 = 1)\n  (hz1 : \u2200 n, z n \u2260 1) :\n  3 - z 0 - z 1 - z 2 - z 3 + (z 0) * (z 1) * (z 2) * (z 3) \u2260 0 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Putnam_exercise_2020_b5 (z : Fin 4 \u2192 \u2102) (hz0 : \u2200 n, \u2016z n\u2016 = 1)\n  (hz1 : \u2200 n, z n \u2260 1) :\n  3 - z 0 - z 1 - z 2 - z 3 + (z 0) * (z 1) * (z 2) * (z 3) \u2260 0 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

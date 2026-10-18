@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_169",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_4_12\n  {\u03b1 \u03b2 \u03b3 : Type*} [UniformSpace \u03b1] [UniformSpace \u03b2] [UniformSpace \u03b3]\n  {f : \u03b1 \u2192 \u03b2} {g : \u03b2 \u2192 \u03b3}\n  (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g \u2218 f) := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_4_12\n  {\u03b1 \u03b2 \u03b3 : Type*} [UniformSpace \u03b1] [UniformSpace \u03b2] [UniformSpace \u03b3]\n  {f : \u03b1 \u2192 \u03b2} {g : \u03b2 \u2192 \u03b3}\n  (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (g \u2218 f) := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

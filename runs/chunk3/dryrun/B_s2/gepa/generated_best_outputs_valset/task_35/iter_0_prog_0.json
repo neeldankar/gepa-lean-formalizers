@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_179",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Shakarchi_exercise_1_26 :\n    \u2200 (f F\u2081 F\u2082 : \u2102 \u2192 \u2102) (\u03a9 : Set \u2102),\n      Nonempty \u03a9 \u2192 IsOpen \u03a9 \u2192 IsConnected \u03a9 \u2192\n      ContinuousOn f \u03a9 \u2192 DifferentiableOn \u2102 F\u2081 \u03a9 \u2192 DifferentiableOn \u2102 F\u2082 \u03a9 \u2192\n      (\u2200 x \u2208 \u03a9, deriv F\u2081 x = f x) \u2192 (\u2200 x \u2208 \u03a9, deriv F\u2082 x = f x) \u2192\n      \u2203 c : \u2102, \u2200 x \u2208 \u03a9, F\u2081 x = F\u2082 x + c := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Shakarchi_exercise_1_26 :\n    \u2200 (f F\u2081 F\u2082 : \u2102 \u2192 \u2102) (\u03a9 : Set \u2102),\n      Nonempty \u03a9 \u2192 IsOpen \u03a9 \u2192 IsConnected \u03a9 \u2192\n      ContinuousOn f \u03a9 \u2192 DifferentiableOn \u2102 F\u2081 \u03a9 \u2192 DifferentiableOn \u2102 F\u2082 \u03a9 \u2192\n      (\u2200 x \u2208 \u03a9, deriv F\u2081 x = f x) \u2192 (\u2200 x \u2208 \u03a9, deriv F\u2082 x = f x) \u2192\n      \u2203 c : \u2102, \u2200 x \u2208 \u03a9, F\u2081 x = F\u2082 x + c := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_359",
+        "sample": 0,
+        "output": "<think>working</think>\n```lean4\ntheorem Rudin_exercise_5_17\n  {f : \u211d \u2192 \u211d}\n  (hf' : DifferentiableOn \u211d f (Icc (-1) 1))\n  (hf'' : DifferentiableOn \u211d (deriv f) (Icc (-1) 1))\n  (hf''' : DifferentiableOn \u211d (deriv (deriv f)) (Icc (-1) 1))\n  (hf0 : f (-1) = 0)\n  (hf1 : f 0 = 0)\n  (hf2 : f 1 = 1)\n  (hf3 : deriv f 0 = 0) :\n  \u2203 x, x \u2208 Ioo (-1 : \u211d) 1 \u2227 deriv (deriv (deriv f)) x \u2265 3 := by\n  sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Rudin_exercise_5_17\n  {f : \u211d \u2192 \u211d}\n  (hf' : DifferentiableOn \u211d f (Icc (-1) 1))\n  (hf'' : DifferentiableOn \u211d (deriv f) (Icc (-1) 1))\n  (hf''' : DifferentiableOn \u211d (deriv (deriv f)) (Icc (-1) 1))\n  (hf0 : f (-1) = 0)\n  (hf1 : f 0 = 0)\n  (hf2 : f 1 = 1)\n  (hf3 : deriv f 0 = 0) :\n  \u2203 x, x \u2208 Ioo (-1 : \u211d) 1 \u2227 deriv (deriv (deriv f)) x \u2265 3 := by\n  sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "mock judge: faithful"
+        },
+        "score": 1
+    }
+]
