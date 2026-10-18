@@ -2,12 +2,12 @@
 
 ## Now
 
-- **Chunk:** 3 of 7 done (runner)
-- **Status:** ready for chunk 4 once Neel's prerequisites are in
-- **Next:** Neel's remaining chunk 4 list (RunPod account and H100 pod, `GITHUB_TOKEN` and `RUNPOD_POD_ID` in `.env`), then "Start chunk 4"
-- **Spent so far:** $0.03 of $300
-- **Waiting on Neel:** RunPod pod and the two `.env` entries; two analysis-plan questions and arm A's seed wording for the freeze (see the chunk 3 entry)
-- **Parked ideas:** see the chunk 1 to 3 entries
+- **Chunk:** 4 of 7 stopped at the go check (pilot steps 1 to 3 done; labels, GEPA pilot run and freeze not done)
+- **Status:** pod stopped. Qwen3-8B's truth-faithful rate on the 30 pilot items is 6.7% (thinking off) and 0.0% (thinking on), under the roughly-10% go line, mostly from compile failures.
+- **Next:** Neel decides how to proceed (options in the chunk 4 entry), then "Continue chunk 4" on a restarted pod
+- **Spent so far:** $3.20 of $300
+- **Waiting on Neel:** the go-check decision (chunk 4 entry)
+- **Parked ideas:** see the chunk 1 to 4 entries
 
 ## Entries
 
@@ -23,6 +23,39 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-18 · chunk 4 · pilot stopped at the go check
+
+- **Did:**
+  - prereg.md and CHUNKS.md edits from Neel's answers to the chunk 3 questions (Neel checked the diff; commit fe17ebb): Changes item 13 (the random part of the hand-check is one set of test items labeled in all four core arms, paired bootstrap), the matching Scoring, Analysis plan and chunk 6 text, and the decision rule ("at least 5 points in size, in either direction, with the sign reported"). `src/analysis.py` `hand_check` now runs Q1 to Q3 on the random part through the same paired bootstrap; 4 new tests. Arm A's seed prompt stays as written (Neel).
+  - Hosting: the pod is an H100 SXM 80GB (`nvidia-smi`: H100 80GB HBM3) at $3.99/hr; PCIe and NVL were out of capacity. `config.yaml` `gpu.type` and `gpu.usd_per_hour: 3.99`. The pod has no separate volume: `/workspace` is the 50 GB container disk, so caches are lost when it stops.
+  - Built `scripts/chunk4.py` (steps gen, armf, label, gepa, gpu, agree, project, stats, diagnose, costs) and `tests/test_chunk4.py` (9 tests). The pilot GEPA run (`pilot_qwen`, 150 metric calls) lives under `pilot:` in config, outside `gepa.runs`, so chunk 5 and the firewall never see it.
+  - Pilot steps 1 to 3 (prereg "Pilot and go criteria"): pod setup, 30 seeded val items in three configurations, judge score, truth score and memorization check on all 90 outputs. Then stopped the pod (18:50:09 UTC) under the go-check stop rule.
+- **Run pilot_gen** (2026-10-18, pod, val only): config `generation` (temperature 0.6, 1 sample, 16,384 max tokens, seed 0, 16 workers), prompts `prompts/arm_A.txt` (Qwen3-8B) and `prompts/arm_C.txt` (ReForm-8B). Outcome: complete on the second attempt (the first stopped at ReForm-8B, see Bugs). Output `runs/chunk4/pilot.jsonl.gz`.
+- **Numbers** (from `runs/chunk4/summary.json`, steps `stats`, `diagnose`, `costs`; subagent check: match on every count and rate, its numbers in `runs/chunk4/subagent_check.json`; every invariant holds: judge score and truth faithful never exceed compiled, all 90 rows are val items, the same 30 items per configuration):
+  - qwen_nothink: compile 16.7% (30 outputs), format failures 0, truth faithful 6.7%, judge score 6.7%, certified 1, exact matches 0.0%, tokens mean 93 / median 86 / max 175, hit 16,384 cap 0, 181 tokens/s and 0.52 s per item at 16 workers, API $0.0004 per output
+  - qwen_think: compile 3.3% (30 outputs), format failures 0, truth faithful 0.0%, judge score 0.0%, certified 0, exact matches 0.0%, tokens mean 2980 / median 2672 / max 6861, hit 16,384 cap 0, 1313 tokens/s and 2.27 s per item at 16 workers, API $0.0000 per output
+  - reform: compile 63.3% (30 outputs), format failures 1, truth faithful 46.7%, judge score 53.3%, certified 8, exact matches 0.0%, tokens mean 1786 / median 1037 / max 16384, hit 16,384 cap 1, 419 tokens/s and 4.26 s per item at 16 workers, API $0.0015 per output
+  - Qwen3-8B compile failures, first Lean error: unknown identifier 11 of 25 (thinking off) and 12 of 29 (thinking on), unexpected token 7 and 6, the rest type and instance errors. Lean 3 habits (`λ x,`, `at_top`, `is_...` names, `∥x∥`, `∑ x in s`) or `variable` lines appear in 8 of 25 and 7 of 29 failures.
+  - Go checks so far: Qwen3-8B truth faithful in 10% to 70%: no (6.7% thinking off, 0.0% thinking on). Exact matches under 20%: yes (0.0% in every configuration). Reference judge agreement and projected total: not measured (no labels, no GEPA pilot run).
+  - Pod: container up 18:03:20 to 18:50:09 UTC, 0.78 GPU hours; setup took 0.18 h after the venv was created.
+- **Bugs found and fixed:**
+  - The pod image's system Python refuses pip installs (PEP 668): setup now installs into `/workspace/venv`, and `run_job.sh` puts it on PATH.
+  - vLLM 0.30.0 cannot install with our `numpy==2.5.4` pin: on the pod, vLLM's numpy wins. The analysis runs on the laptop with the pinned version.
+  - RunPod's nginx proxy listens on port 8001, so ReForm-8B's server failed to bind and the old health check accepted Qwen3-8B's reply through the proxy. ReForm-8B now serves on 8010, and setup checks each port's served model name.
+  - `runpodctl` needs `RUNPOD_API_KEY`, which exists only in the container's PID 1 environment. `run_job.sh` would have pushed results and then failed to stop the pod; it now reads the key from `/proc/1/environ`. Found when stopping this pod.
+  - A rerun of `gen` would time cached generations at about 0 s: each configuration is now timed once and saved; the two Qwen3-8B timings come from the first attempt's log (`runs/chunk4/gen_attempt1.log`).
+- **Choices the spec left open:**
+  - Truth score on all 90 pilot outputs, not only the 20 to be labeled: the go check needs Qwen3-8B's rate on the pilot items, and it cost about $0.06.
+  - Pod GPU cost = container wall clock times $3.99/hr, logged as balancing `gpu` rows (`run_id: pod_session`). RunPod may also bill a few minutes before the container starts.
+- **Parked:** extraction keeps only the theorem, so a Qwen3-8B answer that declares `variable` lines (3 of 25 failures, thinking off) loses those binders. The task asks for one theorem, so this is per spec.
+- **Waiting on Neel:** the go check fails on Qwen3-8B's truth rate (2 of 30 thinking off; the line is about 3 of 30). Options:
+  1. Finish the pilot anyway (label 20, GEPA pilot run), then decide. It shows whether GEPA moves Qwen3-8B off the floor. Restart overhead is about 25 min of setup (the pod has no volume).
+  2. Accept 2 of 30 as within "roughly 10%" and go on with thinking off.
+  3. Change the design before the freeze, for example arm A's seed naming Lean 4 Mathlib syntax (it is also B's seed), or another general model on the same base.
+  4. Take it to a project chat first (the chunk 4 rule for a failed go check).
+- **Cost:** $3.17 this entry (GPU $3.11, reference judge $0.05, optimization judge $0.01), $3.20 total. The cost log has 27 optimization-judge and 28 reference-judge rows for 25 judged outputs; probably the one re-ask for replies without valid JSON (not checked).
+- **Next:** Neel's decision, then "Continue chunk 4"
 
 ### 2026-10-18 · before chunk 4 · arm E prompt and predictions
 

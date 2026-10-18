@@ -355,7 +355,69 @@ def project(cfg, summary, argv=()):
                               {k: v["exact_match_rate"] for k, v in stats.items()}, proj["total_usd_upper"])
 
 
-STEPS = {"gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
+# Patterns behind compile failures, counted on the raw output's extracted statement.
+PATTERNS = {
+    "old big-operator binder (∑/∏ x in s)": r"[∑∏]\s*\S+\s+in\s",
+    "Lean 3 lambda (λ x, or fun x,)": r"(λ|fun)\s[^=↦]*?,",
+    "Lean 3 snake_case Mathlib names (at_top, is_..., ...)": r"\b(at_top|at_bot|is_[a-z_]+|nat\.|int\.|real\.)",
+    "Lean 3 norm bars (∥x∥)": r"∥",
+    "`variable` lines in the answer block (dropped: one theorem per answer)": r"^\s*variables?\s",
+}
+
+
+def diagnose_rows(rows):
+    """Per configuration: compile statuses, pattern counts among compile failures, and the first line
+    of each Lean error grouped by kind."""
+    import re
+    from collections import Counter
+    out = {}
+    for name in CONFIGS:
+        rs = [r for r in rows if r["config"] == name]
+        failed = [r for r in rs if not r["compiled"]]
+        answer = lambda r: r["output"].rsplit("</think>", 1)[-1]
+        out[name] = {
+            "outputs": len(rs), "compile_failures": len(failed),
+            "patterns_in_failures": {k: sum(bool(re.search(p, answer(r), re.M)) for r in failed) for k, p in PATTERNS.items()},
+            "failures_with_any_pattern": sum(any(re.search(p, answer(r), re.M) for p in PATTERNS.values()) for r in failed),
+            "compile_status": dict(Counter(r["compile_status"] for r in rs)),
+        }
+    return out
+
+
+def diagnose(cfg, summary, argv=()):
+    rows = read_rows(PILOT)
+    d = diagnose_rows(rows)
+    # Lean's own error kinds, recompiled through AXLE (free and cached).
+    from collections import Counter
+    import re
+    checker = AxleChecker(cfg["axle"])
+    items = {it["id"]: it for it in gepa_items("val")}
+    from src.scoring.score import prepare
+    for name in CONFIGS:
+        kinds = Counter()
+        for r in rows:
+            if r["config"] == name and not r["compiled"] and r["normalized"]:
+                errs = prepare(checker, items[r["item_id"]], r["output"])["lean_errors"]
+                first = str(errs[0]) if errs else "(no error text)"
+                m = re.search(r"error(\([^)]*\))?:\s*([^\n`']{0,60})", first)
+                kinds[(m.group(1) or "") + " " + m.group(2).strip() if m else first[:60]] += 1
+        d[name]["first_error_kinds"] = dict(kinds.most_common(8))
+    summary["diagnose"] = d
+
+
+def stats(cfg, summary, argv=()):
+    """Per-configuration pilot numbers and the go checks that need no labels or GEPA run."""
+    rows, crow = read_rows(PILOT), read_jsonl(COSTS_PATH)
+    summary["stats"] = st = {name: config_stats(rows, crow, name) for name in CONFIGS}
+    summary["go_partial"] = {
+        "qwen_truth_faithful_rate": {k: st[k]["truth_faithful_rate"] for k in ("qwen_nothink", "qwen_think")},
+        "qwen_go_10_to_70": {k: 10 <= st[k]["truth_faithful_rate"] <= 70 for k in ("qwen_nothink", "qwen_think")},
+        "exact_match_rate_max": max(v["exact_match_rate"] for v in st.values()),
+        "not_measured": ["reference judge agreement (labels)", "projected total (GEPA pilot run)"],
+    }
+
+
+STEPS = {"stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
          "costs": costs, "project": project}
 
 

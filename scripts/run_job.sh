@@ -2,7 +2,7 @@
 # Run a long job on the pod inside tmux, then push its results and stop the pod.
 # Usage: bash scripts/run_job.sh [--dry-run] JOB_NAME COMMAND...
 #   e.g. bash scripts/run_job.sh gepa_B_s0 python -m scripts.gepa_run B_s0
-# Needs GITHUB_TOKEN and RUNPOD_POD_ID in the environment (.env is loaded; nothing is printed).
+# Needs GITHUB_TOKEN and RUNPOD_POD_ID in .env (loaded; nothing is printed). RUNPOD_API_KEY comes from the container.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -29,6 +29,9 @@ echo "[\$(date -u +%FT%TZ)] end $JOB: exit \$STATUS" >> "$LOG"
 cp "$LOG" "runs/logs_$JOB.log" 2>/dev/null || true
 git add runs/ && git commit -q -m "Results: $JOB (exit \$STATUS)" || true
 python3 scripts/secret_scan.py --history && git push -q "https://x-access-token:\${GITHUB_TOKEN}@github.com/neeldankar/gepa-lean-formalizers.git" HEAD
+# runpodctl needs RUNPOD_API_KEY, which RunPod sets only in the container's own environment (PID 1),
+# not in SSH or tmux shells; read it from there without printing it.
+[ -z "\${RUNPOD_API_KEY:-}" ] && export RUNPOD_API_KEY="\$(tr '\\0' '\\n' < /proc/1/environ | grep '^RUNPOD_API_KEY=' | cut -d= -f2-)"
 runpodctl stop pod "\$RUNPOD_POD_ID"
 SCRIPT
 

@@ -33,6 +33,13 @@
    "added_hours": 0.02309459222222221,
    "total_hours": 0.7741386469444445,
    "total_usd": 3.0888132013083336
+  },
+  {
+   "until": "2026-10-18T18:50:09+00:00",
+   "logged_hours_before": 0.7741386469444445,
+   "added_hours": 0.006139130833333284,
+   "total_hours": 0.7802777777777777,
+   "total_usd": 3.1133083333333333
   }
  ],
  "gen_timing": {
@@ -118,5 +125,191 @@
     "workers": 16
    }
   }
+ },
+ "diagnose": {
+  "qwen_nothink": {
+   "outputs": 30,
+   "compile_failures": 25,
+   "patterns_in_failures": {
+    "old big-operator binder (∑/∏ x in s)": 1,
+    "Lean 3 lambda (λ x, or fun x,)": 3,
+    "Lean 3 snake_case Mathlib names (at_top, is_..., ...)": 2,
+    "Lean 3 norm bars (∥x∥)": 1,
+    "`variable` lines in the answer block (dropped: one theorem per answer)": 3
+   },
+   "failures_with_any_pattern": 8,
+   "compile_status": {
+    "lean_error": 25,
+    "ok": 5
+   },
+   "first_error_kinds": {
+    "(lean.unknownIdentifier) Unknown identifier": 11,
+    " unexpected token": 7,
+    " type expected, got": 3,
+    "(lean.synthInstanceFailed) failed to synthesize instance of type class": 1,
+    " invalid binder annotation, type is not a class instance": 1,
+    " Application type mismatch: The argument": 1,
+    " unexpected token; expected": 1
+   }
+  },
+  "qwen_think": {
+   "outputs": 30,
+   "compile_failures": 29,
+   "patterns_in_failures": {
+    "old big-operator binder (∑/∏ x in s)": 1,
+    "Lean 3 lambda (λ x, or fun x,)": 4,
+    "Lean 3 snake_case Mathlib names (at_top, is_..., ...)": 4,
+    "Lean 3 norm bars (∥x∥)": 1,
+    "`variable` lines in the answer block (dropped: one theorem per answer)": 0
+   },
+   "failures_with_any_pattern": 7,
+   "compile_status": {
+    "ok": 1,
+    "lean_error": 29
+   },
+   "first_error_kinds": {
+    "(lean.unknownIdentifier) Unknown identifier": 12,
+    " unexpected token": 6,
+    " expected token": 2,
+    " type expected, got": 2,
+    "(lean.synthInstanceFailed) failed to synthesize instance of type class": 2,
+    "(lean.unknownIdentifier) Unknown constant": 2,
+    " invalid binder annotation, type is not a class instance": 2,
+    " Application type mismatch: The argument": 1
+   }
+  },
+  "reform": {
+   "outputs": 30,
+   "compile_failures": 11,
+   "patterns_in_failures": {
+    "old big-operator binder (∑/∏ x in s)": 1,
+    "Lean 3 lambda (λ x, or fun x,)": 1,
+    "Lean 3 snake_case Mathlib names (at_top, is_..., ...)": 0,
+    "Lean 3 norm bars (∥x∥)": 0,
+    "`variable` lines in the answer block (dropped: one theorem per answer)": 0
+   },
+   "failures_with_any_pattern": 2,
+   "compile_status": {
+    "ok": 19,
+    "lean_error": 10,
+    "null": 1
+   },
+   "first_error_kinds": {
+    " unexpected token": 3,
+    "(lean.unknownIdentifier) Unknown identifier": 2,
+    "(lean.unknownIdentifier) Unknown constant": 2,
+    "(lean.synthInstanceFailed) failed to synthesize instance of type class": 1,
+    " Type mismatch": 1,
+    " expected": 1
+   }
+  }
+ },
+ "costs": {
+  "usd_total": 3.170558983333333,
+  "by_chunk": {
+   "4": {
+    "calls": 150,
+    "usd": 3.170558983333333
+   }
+  },
+  "by_run": {
+   "pod_session": {
+    "calls": 5,
+    "usd": 3.1133083333333333
+   },
+   "pilot_qwen_nothink": {
+    "calls": 41,
+    "usd": 0.01257465
+   },
+   "pilot_qwen_think": {
+    "calls": 32,
+    "usd": 0.0006977999999999999
+   },
+   "pilot_reform": {
+    "calls": 72,
+    "usd": 0.043978199999999995
+   }
+  },
+  "by_purpose": {
+   "gpu": {
+    "calls": 5,
+    "usd": 3.1133083333333333
+   },
+   "generate": {
+    "calls": 90,
+    "usd": 0.0
+   },
+   "opt_judge": {
+    "calls": 27,
+    "usd": 0.007219349999999999
+   },
+   "ref_judge": {
+    "calls": 28,
+    "usd": 0.0500313
+   }
+  }
+ },
+ "costs_all_chunks_usd": 3.2041932133333333,
+ "stats": {
+  "qwen_nothink": {
+   "outputs": 30,
+   "compile_rate": 16.666666666666668,
+   "format_failures": 0,
+   "truth_faithful_rate": 6.666666666666667,
+   "judge_score_rate": 6.666666666666667,
+   "certified": 1,
+   "exact_match_rate": 0.0,
+   "hit_length_cap": 0,
+   "tokens_mean": 93.43333333333334,
+   "tokens_median": 86,
+   "tokens_max": 175,
+   "api_usd_per_output": 0.000419155,
+   "outages": 0
+  },
+  "qwen_think": {
+   "outputs": 30,
+   "compile_rate": 3.3333333333333335,
+   "format_failures": 0,
+   "truth_faithful_rate": 0.0,
+   "judge_score_rate": 0.0,
+   "certified": 0,
+   "exact_match_rate": 0.0,
+   "hit_length_cap": 0,
+   "tokens_mean": 2980.4333333333334,
+   "tokens_median": 2672,
+   "tokens_max": 6861,
+   "api_usd_per_output": 2.3259999999999998e-05,
+   "outages": 0
+  },
+  "reform": {
+   "outputs": 30,
+   "compile_rate": 63.333333333333336,
+   "format_failures": 1,
+   "truth_faithful_rate": 46.666666666666664,
+   "judge_score_rate": 53.333333333333336,
+   "certified": 8,
+   "exact_match_rate": 0.0,
+   "hit_length_cap": 1,
+   "tokens_mean": 1785.8333333333333,
+   "tokens_median": 1037,
+   "tokens_max": 16384,
+   "api_usd_per_output": 0.0014659399999999998,
+   "outages": 0
+  }
+ },
+ "go_partial": {
+  "qwen_truth_faithful_rate": {
+   "qwen_nothink": 6.666666666666667,
+   "qwen_think": 0.0
+  },
+  "qwen_go_10_to_70": {
+   "qwen_nothink": false,
+   "qwen_think": false
+  },
+  "exact_match_rate_max": 0.0,
+  "not_measured": [
+   "reference judge agreement (labels)",
+   "projected total (GEPA pilot run)"
+  ]
  }
 }
