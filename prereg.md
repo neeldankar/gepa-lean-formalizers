@@ -14,9 +14,10 @@ This file is the spec. If it differs from the design doc saved in the claude.ai 
 4. **The labeling page glosses each Lean statement on its own** and never compares them, so Neel's labels can't anchor on the judge.
 5. **Error-type tags come from the reference judge**, in the same call as its verdict.
 6. **Arm E's prompt and Neel's predictions are written before the pilot's short GEPA run**, so neither can be shaped by GEPA output.
-7. **Comment stripping uses our own tested stripper.** The design doc said AXLE ships a `remove_comments` helper; AXLE's current docs list none. AXLE's `normalize` can turn docstrings into plain comments first.
-8. **Contingencies.** If the equivalence certificate layer can't pass its golden test cases by the end of chunk 2, it is dropped before the pilot, and the truth label becomes the reference judge's verdict on every compiled item, checked by the hand-check. miniF2F items that don't compile as they are in `lean-4.28.0` are dropped and counted, never hand-fixed.
+7. **Comment stripping.** The AXLE Python package does ship a `remove_comments` helper, though the web docs don't list it. We use it only if it passes our stripper tests (line, nested block and doc comments, and `--` inside string literals); otherwise we use our own tested stripper. AXLE's `normalize` can turn docstrings into plain comments first.
+8. **Contingencies.** If the equivalence certificate layer can't pass its golden test cases by the end of chunk 2, it is dropped before the pilot, and the truth label becomes the reference judge's verdict on every compiled item, checked by the hand-check. miniF2F items that don't compile in `lean-4.28.0` are dropped and counted, never hand-fixed. Before compiling, miniF2F items get one scripted, syntax-only rewrite: the old big-operator binder `∑ x in s` (and `∏`) becomes `∑ x ∈ s`. Items that still don't compile are dropped and counted. There are no other edits, and nothing is fixed by hand.
 9. **No existing GEPA pipeline.** GEPA comes from the open-source `gepa` library, pinned to version 0.1.4, through a small custom adapter built in chunk 3. Everything not set here uses the library's defaults (Pareto candidate selection, reflection minibatches of 3, no merging). The reflection model becomes a pilot decision.
+10. **autoImplicit is off for candidates.** AXLE's Lean environment has `autoImplicit` on, so an unknown name in a model output silently becomes a bound variable and the statement still compiles. Every candidate is compiled as `set_option autoImplicit false in` followed by the theorem, in the judge score, the truth score and the certificates. References are compiled as ProofNet-Verified ships them.
 
 ## Summary
 
@@ -63,7 +64,7 @@ Both models share Qwen3-8B-Base, so the general vs specialist comparison isn't a
 | Task | Given an English statement plus ProofNet-Verified's header (imports, opens) and any helper definitions, write one Lean 4 theorem statement ending in `:= by sorry` | Fixed |
 | Main data | [ProofNet-Verified](https://github.com/marcusm117/ProofNet-Verified): 367 undergraduate statements, each with an English statement and a reference formalization that has a formal proof. Lean 4.28.0, Apache-2.0. | Fixed |
 | Splits | Seeded split stratified by textbook: 50 train (GEPA feedback), 70 validation (GEPA selection), 247 test, touched once at the end | Chunk 1 |
-| Secondary test | miniF2F, AI-MO fixed version (244 statements), for the transfer check. Only items whose English statement and reference load and compile as they are in `lean-4.28.0` are used; the rest are dropped and counted. | Chunk 1 |
+| Secondary test | miniF2F, AI-MO fixed version (244 statements), for the transfer check. Only items whose English statement and reference load and compile in `lean-4.28.0` after the one scripted binder rewrite (Changes, item 8) are used; the rest are dropped and counted. | Chunk 1 |
 | Hosting | One rented H100 80GB (RunPod) running vLLM serves both formalizers with the same sampling code. Judges, the reflection model and arm F run through APIs. | Fixed |
 | General model | Qwen3-8B. Thinking mode on or off is set in the pilot and then fixed for every arm. | Decide in pilot |
 | Specialist | [ReForm-8B](https://huggingface.co/GuoxinChen/ReForm-8B): fine-tuned from Qwen3-8B-Base for formalization, Apache-2.0. Its example uses up to 32,768 new tokens, so outputs are long. The output length cap is set in the pilot and applies to every arm. | Decide cap in pilot |
@@ -87,14 +88,14 @@ The truth score is the weak point of the whole design, so it is built in layers.
 
 **Before any judge sees an output:**
 
-- **Strip comments and docstrings, and rename the theorem to a fixed name.** Use our own tested stripper; AXLE's `normalize` can turn docstrings into plain comments first. Without this, GEPA could learn to persuade judges with comments like `-- faithful translation`, and Q3 would measure prompt injection instead of meaning.
+- **Strip comments and docstrings, and rename the theorem to a fixed name.** Use AXLE's `remove_comments` if it passes our stripper tests, otherwise our own tested stripper (Changes, item 7); AXLE's `normalize` can turn docstrings into plain comments first. Without this, GEPA could learn to persuade judges with comments like `-- faithful translation`, and Q3 would measure prompt injection instead of meaning.
 - **Extract the final Lean statement.** If none can be found, record a format failure. This matters most for ReForm-8B's long outputs.
 
-**Judge score**, the score GEPA optimizes: 1 if the statement compiles and the optimization judge, which sees only the English and the candidate, says faithful. Otherwise 0.
+**Judge score**, the score GEPA optimizes: 1 if the statement compiles (with `autoImplicit` off, Changes item 10) and the optimization judge, which sees only the English and the candidate, says faithful. Otherwise 0.
 
 **Truth score**, used only for evaluation:
 
-1. **Compile check.** A failure counts as unfaithful, but compile rate is reported separately. That keeps Mathlib version drift (old lemma names) apart from meaning errors.
+1. **Compile check**, with `autoImplicit` off (Changes, item 10). A failure counts as unfaithful, but compile rate is reported separately. That keeps Mathlib version drift (old lemma names) apart from meaning errors.
 2. **Equivalence certificate.** Try to prove candidate → reference and reference → candidate in Lean with cheap automation through AXLE. Proving both directions settles the item as faithful. One trap: both statements are true theorems, so a direction can be "proved" from scratch without using the other statement. A direction only counts if it fails once its hypothesis is removed. Certificates only confirm faithfulness and never refute it, so a failed attempt means unknown.
 3. **Reference-aware judge.** On every compiled item, a strong judge from a different model family than the optimization judge sees the English, the reference, and the candidate, and gives a verdict, a reason, and, for unfaithful items, an error tag from ProofNet-Verified's taxonomy.
 4. **Truth label.** The certificate when there is one, otherwise the reference judge's verdict.
