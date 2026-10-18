@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 stopped at the go check (pilot steps 1 to 3 done; labels, GEPA pilot run and freeze not done)
-- **Status:** pod stopped. Qwen3-8B's truth-faithful rate on the 30 pilot items is 6.7% (thinking off) and 0.0% (thinking on), under the roughly-10% go line, mostly from compile failures.
-- **Next:** Neel decides how to proceed (options in the chunk 4 entry), then "Continue chunk 4" on a restarted pod
-- **Spent so far:** $3.20 of $300
-- **Waiting on Neel:** the go-check decision (chunk 4 entry)
+- **Chunk:** 4 of 7 stopped at the go check a second time (labels, GEPA pilot run and freeze not done)
+- **Status:** pod paused (stopped, not terminated). With Neel's Lean 4 syntax block in arm A, Qwen3-8B (thinking off) is truth-faithful on 3.3% of the 30 pilot items (first run 6.7%), under Neel's 10% line.
+- **Next:** Neel decides how to proceed, then "Continue chunk 4" on the paused pod
+- **Spent so far:** $5.85 of $300
+- **Waiting on Neel:** the go-check decision (chunk 4 rerun entry); the Q3 prereg draft (`runs/chunk4/prereg_q3_draft.md`)
 - **Parked ideas:** see the chunk 1 to 4 entries
 
 ## Entries
@@ -23,6 +23,38 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-18 · chunk 4 · rerun with the Lean 4 syntax block, stopped at the go check again
+
+- **Did:**
+  - Neel's decisions before the freeze: thinking mode off. Neel's Lean 4 syntax block added verbatim to the top of `prompts/arm_A.txt` and `prompts/arm_E.txt` (diff checked by Neel; commit f5faca3); arm C unchanged.
+  - Analysis: Q3 is now the judge false-positive rate among compiled outputs (judge faithful, truth unfaithful, divided by compiled), GEPA arm minus seed arm, paired bootstrap, same decision rule. Per GEPA seed the rate is a ratio of sums over items, then the mean over seeds. Judge gain minus truth gain stays as a descriptive number with no decision rule. Hand-check Q3 uses hand labels. 5 new tests. The prereg change is drafted, not applied: `runs/chunk4/prereg_q3_draft.md` (commit 8e28fe9).
+  - Second pod session on a new pod (Neel started it; H100 80GB HBM3, $3.99/hr, again no separate volume). Ran `chunk4 rerun`, then paused the pod (`runpodctl stop`, never remove: Neel's rule) at 20:31:49 UTC.
+- **Run pilot_a2** (2026-10-18, pod, val only): Qwen3-8B, thinking off, `prompts/arm_A.txt` with the syntax block (sha256 5479558c048d...), the same 30 pilot items, `generation` config unchanged (temperature 0.6, 1 sample, 16,384 max tokens, seed 0). Outcome: complete. Output `runs/chunk4/pilot_a2.jsonl.gz`; the first run's `pilot.jsonl.gz` is unchanged.
+- **Numbers** (from `runs/chunk4/summary.json`, steps `stats`, `diagnose`, `costs`; subagent check: match on every count, rate and cost, its numbers in `runs/chunk4/subagent_check_rerun.json`; every invariant holds, and the 30 item ids equal the first run's):
+
+  | Qwen3-8B, thinking off | First arm A | Arm A with syntax block |
+  | --- | --- | --- |
+  | Compile | 16.7% (5/30) | 10.0% (3/30) |
+  | Truth faithful | 6.7% (2/30) | 3.3% (1/30) |
+  | Judge score | 6.7% (2/30) | 0.0% (0/30) |
+  | Certified | 1 | 1 |
+  | Exact matches | 0.0% | 0.0% |
+  | Tokens mean / median / max | 93 / 86 / 175 | 94 / 88 / 230 |
+
+  - The 30 outputs all differ from the first run. Compiled items: first run pnv_097, pnv_112, pnv_169, pnv_285, pnv_305; rerun pnv_034, pnv_112, pnv_160.
+  - Rerun compile failures (27), first Lean error: unknown identifier 11, expected or unexpected token 10, the rest type, instance and field errors. Lean 3 habits or `variable` lines in 9 of 27 (`variable` lines 4, Lean 3 lambda 3, snake_case 1, norm bars 1, old binder 0). Example: `∃ λ : k, ...` uses `λ` as a variable name, which Lean 4 rejects.
+  - Of the 3 compiled rerun outputs, pnv_160 is certified faithful (reference judge also faithful) but the optimization judge said unfaithful, so the judge score is 0 of 30 while truth is 1 of 30 (found by the subagent check).
+  - Go check: Qwen3-8B truth faithful at least about 10%: no (3.3%). Exact matches under 20%: yes (0.0%).
+  - 181 then 186 tokens/s at 16 workers for thinking off (first run, rerun).
+  - Pod session 2: container up 19:52:05 to 20:31:49 UTC, 0.66 GPU hours, setup 0.51 h (including the failed start below).
+- **Bugs found and fixed:**
+  - Both vLLM servers starting at once each sized their KV cache while the other was loading, and both failed ("Available KV cache memory: -1.61 GiB"). `setup_pod.sh` now starts ReForm-8B only after Qwen3-8B is healthy. Session 1 never hit this because ReForm-8B's port clash delayed its start.
+  - The new pod's id differs from `RUNPOD_POD_ID` in `.env`, so `run_job.sh` would have stopped the old pod. It now takes the id from the container (`/proc/1/environ`), with `.env` as the fallback.
+  - `gpu_balance` subtracted every chunk 4 GPU hour ever logged, which would undercount a second session. It now counts only rows logged after the current session's container start; each session is recorded in `summary.json` `pod_sessions`.
+  - My status at 20:12 UTC said the servers were loading; they had failed at 19:59. I had read 0 MiB of GPU memory as loading without checking the server logs.
+- **Cost:** $2.64 this entry (GPU $2.64, judges under $0.01), chunk 4 $5.82, total $5.85.
+- **Waiting on Neel:** the go check fails again (1 of 30; the line is about 3 of 30). The syntax block fixed some Lean 3 habits (Mathlib 4 class names such as `Field` and `AddCommGroup`, no old binder), but compile failures are mostly unknown identifiers and parse errors, which point to Mathlib name knowledge rather than syntax. Both reruns are 30 items, so 2 vs 1 is within noise.
 
 ### 2026-10-18 · chunk 4 · pilot stopped at the go check
 

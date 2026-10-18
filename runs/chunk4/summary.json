@@ -62,6 +62,13 @@
    "added_hours": 0.025776169444444386,
    "total_hours": 0.6581179627777778,
    "total_usd": 2.6258906714833334
+  },
+  {
+   "until": "2026-10-18T20:31:49+00:00",
+   "logged_hours_before": 0.6581179627777778,
+   "added_hours": 0.00410425944444448,
+   "total_hours": 0.6622222222222223,
+   "total_usd": 2.642266666666667
   }
  ],
  "gen_timing": {
@@ -260,17 +267,17 @@
   }
  },
  "costs": {
-  "usd_total": 5.800379504816668,
+  "usd_total": 5.816755500000001,
   "by_chunk": {
    "4": {
-    "calls": 189,
-    "usd": 5.800379504816668
+    "calls": 190,
+    "usd": 5.816755500000001
    }
   },
   "by_run": {
    "pod_session": {
-    "calls": 8,
-    "usd": 5.739199004816666
+    "calls": 9,
+    "usd": 5.755574999999999
    },
    "pilot_qwen_nothink": {
     "calls": 41,
@@ -291,8 +298,8 @@
   },
   "by_purpose": {
    "gpu": {
-    "calls": 8,
-    "usd": 5.739199004816666
+    "calls": 9,
+    "usd": 5.755574999999999
    },
    "generate": {
     "calls": 120,
@@ -308,7 +315,7 @@
    }
   }
  },
- "costs_all_chunks_usd": 5.834013734816667,
+ "costs_all_chunks_usd": 5.850389730000001,
  "stats": {
   "qwen_nothink": {
    "outputs": 30,
