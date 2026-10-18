@@ -204,3 +204,42 @@
 {"time": "2026-10-18T18:48:23+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.19113465466666665, "hours": 0.047903422222222214}
 {"time": "2026-10-18T18:49:46+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.09214742296666663, "hours": 0.02309459222222221}
 {"time": "2026-10-18T18:50:09+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.024495132024999804, "hours": 0.006139130833333284}
+{"time": "2026-10-18T20:29:25+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 2.4830749888583337, "hours": 0.6223245586111111}
+{"time": "2026-10-18T20:29:34+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 247, "completion_tokens": 39, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 268, "completion_tokens": 52, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 270, "completion_tokens": 54, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 259, "completion_tokens": 63, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 281, "completion_tokens": 71, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 281, "completion_tokens": 71, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 306, "completion_tokens": 73, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 277, "completion_tokens": 78, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 258, "completion_tokens": 30, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 309, "completion_tokens": 88, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 293, "completion_tokens": 89, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 289, "completion_tokens": 92, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 278, "completion_tokens": 97, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 258, "completion_tokens": 46, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 287, "completion_tokens": 111, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 314, "completion_tokens": 113, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 288, "completion_tokens": 86, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 297, "completion_tokens": 131, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 278, "completion_tokens": 132, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 262, "completion_tokens": 64, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 257, "completion_tokens": 57, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 251, "completion_tokens": 79, "usd": 0.0}
+{"time": "2026-10-18T20:29:39+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 304, "completion_tokens": 68, "usd": 0.0}
+{"time": "2026-10-18T20:29:39+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 272, "completion_tokens": 91, "usd": 0.0}
+{"time": "2026-10-18T20:29:39+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 285, "completion_tokens": 135, "usd": 0.0}
+{"time": "2026-10-18T20:29:39+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 275, "completion_tokens": 145, "usd": 0.0}
+{"time": "2026-10-18T20:29:39+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 290, "completion_tokens": 137, "usd": 0.0}
+{"time": "2026-10-18T20:29:39+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 288, "completion_tokens": 124, "usd": 0.0}
+{"time": "2026-10-18T20:29:40+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 325, "completion_tokens": 165, "usd": 0.0}
+{"time": "2026-10-18T20:29:40+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 285, "completion_tokens": 230, "usd": 0.0}
+{"time": "2026-10-18T20:29:42+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 290, "completion_tokens": 217, "usd": 0.0001737}
+{"time": "2026-10-18T20:29:43+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 265, "completion_tokens": 327, "usd": 0.00023595}
+{"time": "2026-10-18T20:29:44+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 286, "completion_tokens": 530, "usd": 0.0003609}
+{"time": "2026-10-18T20:29:45+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 439, "completion_tokens": 282, "usd": 0.0004701}
+{"time": "2026-10-18T20:29:49+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 387, "completion_tokens": 239, "usd": 0.0004029}
+{"time": "2026-10-18T20:29:59+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 429, "completion_tokens": 1798, "usd": 0.0022863}
+{"time": "2026-10-18T20:30:01+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.03996876654166685, "hours": 0.010017234722222268}
+{"time": "2026-10-18T20:31:34+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.1028469160833331, "hours": 0.025776169444444386}
