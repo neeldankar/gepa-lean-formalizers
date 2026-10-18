@@ -10,6 +10,8 @@ DRY=0
 if [ "${1:-}" = "--dry-run" ]; then DRY=1; shift; fi
 JOB=$1; shift
 CMD="$*"
+VENV=${VENV:-/workspace/venv}
+[ -x "$VENV/bin/python" ] && export PATH="$VENV/bin:$PATH"
 PY=${PYTHON:-python3}
 WORK=$("$PY" -c "import yaml; print(yaml.safe_load(open('config.yaml'))['pod']['workdir'])")
 LOG="$WORK/logs/$JOB.log"
@@ -18,6 +20,7 @@ LOG="$WORK/logs/$JOB.log"
 read -r -d '' BODY <<SCRIPT || true
 set -o pipefail
 cd "$(pwd)"
+[ -x "$VENV/bin/python" ] && export PATH="$VENV/bin:\$PATH"
 set -a; [ -f .env ] && . ./.env; set +a
 mkdir -p "$WORK/logs"
 echo "[\$(date -u +%FT%TZ)] start $JOB: $CMD" >> "$LOG"

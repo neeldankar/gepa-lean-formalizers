@@ -50,6 +50,7 @@ def test_sampling_settings_identical_across_models_and_thinking_flag():
 def test_gpu_meter_logs_hours_and_stops_at_cap(tmp_path):
     cfg = copy.deepcopy(CFG)
     cfg["budget"]["chunk_caps_usd"][4] = 1.0
+    cfg["gpu"]["usd_per_hour"] = 2.7  # fixed here so the test does not follow the pod rate
     t = [0.0]
     meter = GpuMeter(cfg, 4, "r1", costs_path=tmp_path / "c.jsonl", clock=lambda: t[0])
     t[0] = 600.0  # 10 minutes

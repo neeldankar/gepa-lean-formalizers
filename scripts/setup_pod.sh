@@ -2,13 +2,19 @@
 # Set up a RunPod H100: install vLLM, download both formalizers, serve them on one GPU, health check.
 # Usage: bash scripts/setup_pod.sh [--dry-run]
 # Run from the repo root on the pod. Settings come from config.yaml (pod, models).
-# PYTHON picks the interpreter (default python3); it needs PyYAML, installed first on the pod.
+# Packages go into a venv (VENV, default /workspace/venv): the pod image's system Python refuses pip
+# installs (PEP 668). PYTHON overrides the interpreter (the dry run uses the laptop's venv).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 DRY=0
 [ "${1:-}" = "--dry-run" ] && DRY=1
-PY=${PYTHON:-python3}
+VENV=${VENV:-/workspace/venv}
+if [ -z "${PYTHON:-}" ]; then
+  [ -x "$VENV/bin/python" ] || python3 -m venv "$VENV"
+  export PATH="$VENV/bin:$PATH"
+fi
+PY=${PYTHON:-$VENV/bin/python}
 run() { echo "+ $*"; if [ "$DRY" = 0 ]; then eval "$@"; fi; }
 cfg() { "$PY" -c "import sys, yaml
 v = yaml.safe_load(open('config.yaml'))
