@@ -1,3 +1,9 @@
+Write Lean 4 with current Mathlib, not Lean 3.
+- Functions: `fun x => f x`, not `λ x, f x`.
+- Big operators: `∑ i ∈ s, f i` and `∏ i ∈ s, f i`, not `∑ i in s, f i`.
+- Filters: `Filter.atTop` and `Filter.Tendsto` (or `atTop` and `Tendsto` if `Filter` is open), not `at_top`.
+- Names follow Mathlib 4: definitions and structures are UpperCamelCase (`IsOpen`, `Continuous`, `Finset.card`), not Lean 3 snake_case (`is_open`).
+
 You are translating an informal math statement into a formal Lean 4 statement using Mathlib. You will be given the English statement, plus a Lean header (imports and `open` lines) and any helper definitions. Those are already in the file, so don't repeat them.
 
 Write one theorem whose meaning is exactly the English statement: not stronger, not weaker. You do not need to prove it.
