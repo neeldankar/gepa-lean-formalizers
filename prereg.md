@@ -18,6 +18,8 @@ This file is the spec. If it differs from the design doc saved in the claude.ai 
 8. **Contingencies.** If the equivalence certificate layer can't pass its golden test cases by the end of chunk 2, it is dropped before the pilot, and the truth label becomes the reference judge's verdict on every compiled item, checked by the hand-check. miniF2F items that don't compile in `lean-4.28.0` are dropped and counted, never hand-fixed. Before compiling, miniF2F items get one scripted, syntax-only rewrite: the old big-operator binder `∑ x in s` (and `∏`) becomes `∑ x ∈ s`. Items that still don't compile are dropped and counted. There are no other edits, and nothing is fixed by hand.
 9. **No existing GEPA pipeline.** GEPA comes from the open-source `gepa` library, pinned to version 0.1.4, through a small custom adapter built in chunk 3. Everything not set here uses the library's defaults (Pareto candidate selection, reflection minibatches of 3, no merging). The reflection model becomes a pilot decision.
 10. **autoImplicit is off for candidates.** AXLE's Lean environment has `autoImplicit` on, so an unknown name in a model output silently becomes a bound variable and the statement still compiles. Every candidate is compiled as `set_option autoImplicit false in` followed by the theorem, in the judge score, the truth score and the certificates. References are compiled as ProofNet-Verified ships them.
+11. **Arm C uses ReForm-8B's own prompt** from its released code: `Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency.` followed by a newline, the English statement and a newline, sent as one user message through the model's chat template (github.com/Chen-GX/ReForm, `lean_plugins/generate.py` line 38, commit `0047fdf`). This replaces the shorter sentence quoted from the model card. A seed weaker than the prompt ReForm-8B was trained with would inflate D minus C. Every arm's user message then adds the same fixed block with the item's Lean header and helper definitions (Setup, Task).
+12. **Faithful means logically equivalent.** A candidate with an equivalence certificate counts as faithful even if it adds always-true clauses, since it states the same proposition as the reference. Items where a certificate and the reference judge disagree go to the hand-check, and their count is reported.
 
 ## Summary
 
@@ -114,7 +116,7 @@ The four core arms form the 2×2. Two cheap reference points show where the numb
 | --- | --- | --- | --- | --- |
 | A | Qwen3-8B | Plain seed prompt | none | Core: general model, before |
 | B | Qwen3-8B | GEPA, starting from A's prompt | 3 | Core: general model, after |
-| C | ReForm-8B | Its documented prompt ("Think step by step to translate the mathematical problem in natural language to Lean 4") | none | Core: specialist, before |
+| C | ReForm-8B | Its own prompt from its released code ("Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency." then the English statement; Changes, item 11) | none | Core: specialist, before |
 | D | ReForm-8B | GEPA, starting from C's prompt | 3 | Core: specialist, after |
 | E | Qwen3-8B | A careful hand-written checklist prompt: list every hypothesis, check number types, check quantifiers. Written by Neel before any GEPA output exists. | none | Does GEPA beat a person spending 30 minutes on a prompt? |
 | F | One frontier model | Plain seed prompt | none | Ceiling reference, test set only |
@@ -173,6 +175,7 @@ The 5-point threshold is a placeholder for Neel to confirm at the freeze.
 - compile rate and faithful-given-compiled, separately
 - the memorization rate per arm, plus Q1 to Q3 recomputed without exact matches
 - Q1 to Q3 recomputed on the random part of the hand-labeled sample only, as a sensitivity check
+- the number of items where a certificate and the reference judge disagree, per arm (Changes, item 12)
 
 Exploratory analyses are labeled exploratory. Every run, including broken or discarded ones, goes in the run log (`LOG.md`).
 
