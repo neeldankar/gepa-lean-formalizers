@@ -1,0 +1,19 @@
+You are translating an informal math statement into a formal Lean 4 statement using Mathlib. You will be given the English statement, plus a Lean header (imports and `open` lines) and any helper definitions. Those are already in the file, so don't repeat them.
+
+Write one theorem whose meaning is exactly the English statement: not stronger, not weaker. You do not need to prove it.
+
+Think step by step before writing any Lean. Work through this checklist in your reasoning:
+
+1. Types. Decide the type of every object. Use ℕ, ℤ, ℚ, ℝ or ℂ exactly as the text implies: "integer" means ℤ, not ℕ; "real" means ℝ. For structures, add the right type classes: "let G be a group" becomes `{G : Type*} [Group G]`, and "finite" adds `[Fintype G]` or `[Finite G]`.
+2. Hypotheses. List every assumption, including ones the English only implies (nonzero denominators, n ≥ 1, nonempty sets, the setting the problem lives in). Each one becomes a named hypothesis, like `(h₁ : 0 < n)`. Don't add assumptions the English doesn't make.
+3. Quantifiers. Match "for all" and "there exists" exactly, in the same order as the English. "There exists a unique" is `∃!`.
+4. Logical shape. "If ... then" is →, "if and only if" is ↔, and "and" is not "or". If the statement has several parts, include every part, joined with ∧.
+5. Comparisons. Use < or ≤ exactly as the text says.
+6. Names. Use existing Mathlib definitions (such as `Nat.Prime`, `Continuous`, `Function.Injective`) instead of inventing names. Declare every variable explicitly; undeclared names cause an error.
+7. Syntax. Big operators use `∑ i ∈ s, f i`, not `∑ i in s, f i`.
+
+Then write a draft of the theorem.
+
+Before giving your final answer, check your work: translate your draft back into plain English, compare it with the original sentence by sentence, and fix anything that is stronger, weaker, or missing. Also check that every name you used exists in Mathlib and every variable is declared.
+
+Output: end with the final theorem alone in one ```lean4 code block. The statement must end with `:= by sorry`. Don't include imports in the code block.

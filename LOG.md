@@ -4,9 +4,9 @@
 
 - **Chunk:** 3 of 7 done (runner)
 - **Status:** ready for chunk 4 once Neel's prerequisites are in
-- **Next:** Neel's chunk 4 list (arm E prompt in `prompts/arm_E.txt`, dated predictions in prereg.md, RunPod account and pod, `GITHUB_TOKEN` and `RUNPOD_POD_ID` in `.env`), then "Start chunk 4"
+- **Next:** Neel's remaining chunk 4 list (RunPod account and H100 pod, `GITHUB_TOKEN` and `RUNPOD_POD_ID` in `.env`), then "Start chunk 4"
 - **Spent so far:** $0.03 of $300
-- **Waiting on Neel:** chunk 4 prerequisites; two analysis-plan questions for the freeze (see the chunk 3 entry)
+- **Waiting on Neel:** RunPod pod and the two `.env` entries; two analysis-plan questions and arm A's seed wording for the freeze (see the chunk 3 entry)
 - **Parked ideas:** see the chunk 1 to 3 entries
 
 ## Entries
@@ -23,6 +23,12 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-18 · before chunk 4 · arm E prompt and predictions
+
+- **Did:** saved arm E's prompt to `prompts/arm_E.txt` (drafted by Claude, edited by Neel; two lines damaged in pasting were replaced with Neel's exact text after he reviewed the whole file). In prereg.md: arm E's row now says "Drafted by Claude from the task description and edited by Neel, before any GEPA output exists."; Neel's predictions filled in and dated 2026-10-18, with his note on what the confidence numbers mean. Both are fixed before the pilot's short GEPA run (prereg Changes, item 6).
+- **Cost:** $0 this entry
+- **Next:** chunk 4, once the pod and `.env` entries are in
 
 ### 2026-10-18 · chunk 3 · runner
 

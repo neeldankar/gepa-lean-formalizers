@@ -118,7 +118,7 @@ The four core arms form the 2×2. Two cheap reference points show where the numb
 | B | Qwen3-8B | GEPA, starting from A's prompt | 3 | Core: general model, after |
 | C | ReForm-8B | Its own prompt from its released code ("Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency." then the English statement; Changes, item 11) | none | Core: specialist, before |
 | D | ReForm-8B | GEPA, starting from C's prompt | 3 | Core: specialist, after |
-| E | Qwen3-8B | A careful hand-written checklist prompt: list every hypothesis, check number types, check quantifiers. Written by Neel before any GEPA output exists. | none | Does GEPA beat a person spending 30 minutes on a prompt? |
+| E | Qwen3-8B | A careful hand-written checklist prompt: list every hypothesis, check number types, check quantifiers. Drafted by Claude from the task description and edited by Neel, before any GEPA output exists. | none | Does GEPA beat a person spending 30 minutes on a prompt? |
 | F | One frontier model | Plain seed prompt | none | Ceiling reference, test set only |
 
 A vs B answers Q1. The gain in A to B compared with the gain in C to D answers Q2. Judge score vs truth score within each pair answers Q3.
@@ -141,11 +141,13 @@ Each confirmatory result has a pre-stated reading, so a null result is a finding
 
 | Question | Prediction | Confidence (%) | Date written |
 | --- | --- | --- | --- |
-| Q1: truth gain, Qwen3-8B (A to B), in points |  |  |  |
-| Q2: truth gain, ReForm-8B (C to D), in points |  |  |  |
-| Q3: judge gain minus truth gain, per model |  |  |  |
-| Which error type GEPA fixes most |  |  |  |
-| Does GEPA break ReForm-8B's format? |  |  |  |
+| Q1: truth gain, Qwen3-8B (A to B), in points | +8 points | 50 | 2026-10-18 |
+| Q2: truth gain, ReForm-8B (C to D), in points | +0 points | 70 | 2026-10-18 |
+| Q3: judge gain minus truth gain, per model | Qwen3-8B +4 points, ReForm-8B +2 points | 40 | 2026-10-18 |
+| Which error type GEPA fixes most | Missing premise | 50 | 2026-10-18 |
+| Does GEPA break ReForm-8B's format? | No | 60 | 2026-10-18 |
+
+Confidence: for number rows, how sure I am the true value is within ±5 points of my prediction; for the other rows, how sure I am the prediction is right.
 
 ## Analysis plan
 
