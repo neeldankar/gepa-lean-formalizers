@@ -1,0 +1,5 @@
+== gen
+qwen_nothink {"items": 30, "gen_seconds": 15.480507725849748, "completion_tokens": 2803, "tokens_per_second": 181.06641265515336, "workers": 16, "source": "earlier run's log"}
+qwen_think {"items": 30, "gen_seconds": 68.1095111949835, "completion_tokens": 89413, "tokens_per_second": 1312.7828761540954, "workers": 16, "source": "earlier run's log"}
+reform {"items": 30, "gen_seconds": 127.87254436896183, "completion_tokens": 53575, "tokens_per_second": 418.9718775393674, "workers": 16}
+EXIT 0

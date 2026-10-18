@@ -1,0 +1,11 @@
++ mkdir -p /workspace/logs
++ grep -v '^numpy==' requirements.txt > /tmp/requirements_pod.txt
++ /workspace/venv/bin/python -m pip install -q --no-cache-dir vllm==0.30.0 -r /tmp/requirements_pod.txt
++ hf download Qwen/Qwen3-8B > /workspace/logs/download_qwen.log 2>&1
++ hf download GuoxinChen/ReForm-8B > /workspace/logs/download_reform.log 2>&1
++ nohup vllm serve Qwen/Qwen3-8B --served-model-name qwen3-8b --port 8000 --gpu-memory-utilization 0.45 --max-model-len 40960 > /workspace/logs/vllm_qwen.log 2>&1 &
++ nohup vllm serve GuoxinChen/ReForm-8B --served-model-name reform-8b --port 8001 --gpu-memory-utilization 0.45 --max-model-len 40960 > /workspace/logs/vllm_reform.log 2>&1 &
+server on 8000 is up
+server on 8001 is up
+both servers healthy
+EXIT 0

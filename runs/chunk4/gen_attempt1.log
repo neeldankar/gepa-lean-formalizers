@@ -1,0 +1,40 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/gepa-lean-formalizers/scripts/chunk4.py", line 402, in <module>
+    main()
+  File "/workspace/gepa-lean-formalizers/scripts/chunk4.py", line 396, in main
+    STEPS[name](cfg, summary, argv)
+  File "/workspace/gepa-lean-formalizers/scripts/chunk4.py", line 125, in gen
+    outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it), items))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/scripts/chunk4.py", line 125, in <lambda>
+    outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it), items))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/generate.py", line 22, in generate
+    return client.chat_full(served_name(cfg, model_key), messages, purpose="generate", temperature=g["temperature"],
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 76, in chat_full
+    data = self.post(body)
+           ^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 115, in _post
+    raise LLMError(f"HTTP {e.code}: {e.read()[:300]!r}") from None
+src.llm.LLMError: HTTP 404: b'{"error":{"message":"The model `reform-8b` does not exist.","type":"NotFoundError","param":"model","code":404}}'
+== gen
+qwen_nothink {"items": 30, "gen_seconds": 15.480507725849748, "completion_tokens": 2803, "tokens_per_second": 181.06641265515336, "workers": 16}
+qwen_think {"items": 30, "gen_seconds": 68.1095111949835, "completion_tokens": 89413, "tokens_per_second": 1312.7828761540954, "workers": 16}
+EXIT 1

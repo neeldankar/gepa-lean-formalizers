@@ -1,0 +1,122 @@
+{
+ "pod": {
+  "container_start": "2026-10-18T18:03:20+00:00",
+  "gpu_type": "H100 SXM 80GB",
+  "usd_per_hour": 3.99
+ },
+ "setup_hours": 0.1775,
+ "gpu_balances": [
+  {
+   "until": "2026-10-18T18:30:45.888251+00:00",
+   "logged_hours_before": 0,
+   "added_hours": 0.4571911808333334,
+   "total_hours": 0.4571911808333334,
+   "total_usd": 1.8241928115250003
+  },
+  {
+   "until": "2026-10-18T18:45:31.306277+00:00",
+   "logged_hours_before": 0.4571911808333334,
+   "added_hours": 0.24594945166666665,
+   "total_hours": 0.7031406325,
+   "total_usd": 2.8055311236750002
+  },
+  {
+   "until": "2026-10-18T18:48:23.758597+00:00",
+   "logged_hours_before": 0.7031406325,
+   "added_hours": 0.047903422222222214,
+   "total_hours": 0.7510440547222222,
+   "total_usd": 2.996665778341667
+  },
+  {
+   "until": "2026-10-18T18:49:46.899129+00:00",
+   "logged_hours_before": 0.7510440547222222,
+   "added_hours": 0.02309459222222221,
+   "total_hours": 0.7741386469444445,
+   "total_usd": 3.0888132013083336
+  }
+ ],
+ "gen_timing": {
+  "qwen_nothink": {
+   "items": 30,
+   "gen_seconds": 15.480507725849748,
+   "completion_tokens": 2803,
+   "tokens_per_second": 181.06641265515336,
+   "workers": 16,
+   "source": "earlier run's log"
+  },
+  "qwen_think": {
+   "items": 30,
+   "gen_seconds": 68.1095111949835,
+   "completion_tokens": 89413,
+   "tokens_per_second": 1312.7828761540954,
+   "workers": 16,
+   "source": "earlier run's log"
+  },
+  "reform": {
+   "items": 30,
+   "gen_seconds": 127.87254436896183,
+   "completion_tokens": 53575,
+   "tokens_per_second": 418.9718775393674,
+   "workers": 16
+  }
+ },
+ "gen": {
+  "item_ids": [
+   "pnv_258",
+   "pnv_285",
+   "pnv_022",
+   "pnv_160",
+   "pnv_347",
+   "pnv_333",
+   "pnv_261",
+   "pnv_304",
+   "pnv_260",
+   "pnv_363",
+   "pnv_097",
+   "pnv_148",
+   "pnv_112",
+   "pnv_191",
+   "pnv_051",
+   "pnv_158",
+   "pnv_031",
+   "pnv_092",
+   "pnv_319",
+   "pnv_257",
+   "pnv_024",
+   "pnv_215",
+   "pnv_081",
+   "pnv_169",
+   "pnv_239",
+   "pnv_208",
+   "pnv_034",
+   "pnv_305",
+   "pnv_367",
+   "pnv_020"
+  ],
+  "timing": {
+   "qwen_nothink": {
+    "items": 30,
+    "gen_seconds": 15.480507725849748,
+    "completion_tokens": 2803,
+    "tokens_per_second": 181.06641265515336,
+    "workers": 16,
+    "source": "earlier run's log"
+   },
+   "qwen_think": {
+    "items": 30,
+    "gen_seconds": 68.1095111949835,
+    "completion_tokens": 89413,
+    "tokens_per_second": 1312.7828761540954,
+    "workers": 16,
+    "source": "earlier run's log"
+   },
+   "reform": {
+    "items": 30,
+    "gen_seconds": 127.87254436896183,
+    "completion_tokens": 53575,
+    "tokens_per_second": 418.9718775393674,
+    "workers": 16
+   }
+  }
+ }
+}
