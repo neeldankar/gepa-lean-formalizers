@@ -103,7 +103,8 @@ gepa:
     D_s2: {model: reform-8b, seed: 2, seed_prompt: prompts/arm_C.txt}
 
 gpu:
-  usd_per_hour: 2.7
+  type: H100 SXM 80GB            # RunPod, chunk 4 pod (PCIe and NVL were out of capacity)
+  usd_per_hour: 3.99
 
 pod:
   vllm_version: 0.30.0             # 2026-09-22 release

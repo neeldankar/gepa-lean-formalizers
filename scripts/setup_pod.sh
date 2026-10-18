@@ -25,9 +25,13 @@ REFORM=$(cfg models/reform-8b/hf_id)
 LOGS="$WORK/logs"
 
 run "mkdir -p $LOGS"
-run "$PY -m pip install -q vllm==$VLLM -r requirements.txt"
-run "huggingface-cli download $QWEN > $LOGS/download_qwen.log 2>&1"
-run "huggingface-cli download $REFORM > $LOGS/download_reform.log 2>&1"
+# --no-cache-dir: the pod may have only its 50 GB container disk (no separate volume).
+run "$PY -m pip install -q --no-cache-dir vllm==$VLLM -r requirements.txt"
+# Newer huggingface_hub ships `hf` in place of `huggingface-cli`.
+HF=huggingface-cli
+[ "$DRY" = 0 ] && command -v hf > /dev/null && HF=hf
+run "$HF download $QWEN > $LOGS/download_qwen.log 2>&1"
+run "$HF download $REFORM > $LOGS/download_reform.log 2>&1"
 # Two servers share one H100: each gets a fixed share of GPU memory.
 run "nohup vllm serve $QWEN --served-model-name qwen3-8b --port 8000 --gpu-memory-utilization $MEM --max-model-len $MAXLEN > $LOGS/vllm_qwen.log 2>&1 &"
 run "nohup vllm serve $REFORM --served-model-name reform-8b --port 8001 --gpu-memory-utilization $MEM --max-model-len $MAXLEN > $LOGS/vllm_reform.log 2>&1 &"
