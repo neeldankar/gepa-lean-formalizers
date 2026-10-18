@@ -8,8 +8,8 @@ Confirmatory, on the test split:
   Q1 = B - A (truth)
   Q2 = (D - C) - (B - A) (truth)
   Q3 = (judge gain) - (truth gain), for Qwen3-8B (A to B) and ReForm-8B (C to D)
-Decision rule (threshold T points): "effect" if the interval excludes 0 and |estimate| >= T;
-"no meaningful effect" if the whole interval lies within [-T, T]; otherwise "inconclusive".
+Decision rule (threshold T points): "effect" if the interval excludes 0 and |estimate| >= T, in
+either direction (the estimate keeps its sign); "no meaningful effect" if the whole interval lies within [-T, T]; otherwise "inconclusive".
 """
 import csv
 import json
@@ -138,7 +138,14 @@ def error_tags(rows, dataset):
 
 
 def read_labels(labels_path, sample_path):
-    """Hand labels joined to the hidden sample mapping: [{label_id, label, arm, item_id, gepa_seed, part}]."""
+    """Hand labels joined to the hidden sample mapping.
+
+    sample.jsonl has one line per labeled output: {label_id, arm, item_id, gepa_seed, sample, parts},
+    where `parts` lists "random" and/or "disagreement" (prereg Changes, item 13). The random part is one
+    set of test items labeled in all four core arms, one GEPA seed per item for B and D. An output
+    picked by both parts is shown once and counts in both.
+    Returns [{label_id, label, arm, item_id, gepa_seed, sample, parts}].
+    """
     with open(labels_path) as f:
         labels = {r["label_id"]: r["label"] for r in csv.DictReader(f)}
     with open(sample_path) as f:
@@ -147,9 +154,9 @@ def read_labels(labels_path, sample_path):
 
 
 def hand_check(rows, labeled, resamples, seed):
-    """Reference judge agreement (random part) and Q1-Q3 on the random part, unpaired within arms."""
+    """Reference judge agreement (random part) and Q1-Q3 on the random part, paired over its items."""
     key = {(r["arm"], r["item_id"], r["gepa_seed"], r["sample"]): r for r in rows if r["dataset"] == "test"}
-    random_part = [x for x in labeled if x["part"] == "random" and x["label"] in ("faithful", "unfaithful")]
+    random_part = [x for x in labeled if "random" in x["parts"] and x["label"] in ("faithful", "unfaithful")]
     joined = [(x, key[(x["arm"], x["item_id"], x.get("gepa_seed"), x.get("sample", 0))]) for x in random_part]
     agree = defaultdict(lambda: [0, 0])
     for x, r in joined:
@@ -159,28 +166,25 @@ def hand_check(rows, labeled, resamples, seed):
                 agree[k][1] += 1
     agreement = {k: {"agree": a, "n": n, "rate": 100 * a / n} for k, (a, n) in sorted(agree.items())}
 
-    rng = np.random.default_rng(seed)
-    per_arm = defaultdict(lambda: {"truth": [], "judge": []})
+    # Paired: keep the random items labeled faithful or unfaithful in every core arm, then reuse the
+    # test-split bootstrap on one-row matrices (truth = the hand label, judge = that output's judge score).
+    by_item = defaultdict(dict)
     for x, r in joined:
-        per_arm[x["arm"]]["truth"].append(100.0 * (x["label"] == "faithful"))
-        per_arm[x["arm"]]["judge"].append(100.0 * judge_value(r))
-    per_arm = {a: {k: np.array(v) for k, v in d.items()} for a, d in per_arm.items()}
+        if x["arm"] in CORE:
+            by_item[x["item_id"]][x["arm"]] = (100.0 * (x["label"] == "faithful"), 100.0 * judge_value(r))
+    random_items = {x["item_id"] for x in labeled if "random" in x["parts"]}
+    items = sorted(i for i, arms in by_item.items() if set(arms) == set(CORE))
     contrasts = {}
-    for name, spec in CONTRASTS.items():
-        arms = {arm for s in spec.values() for arm in s}
-        if not all(a in per_arm and len(per_arm[a]["truth"]) for a in arms):
-            continue
-        point = {(a, s): float(per_arm[a][s].mean()) for a in arms for s in ("truth", "judge")}
-        draws = []
-        for _ in range(resamples):
-            means = {(a, s): float(per_arm[a][s][rng.integers(0, len(per_arm[a][s]), len(per_arm[a][s]))].mean())
-                     for a in arms for s in ("truth", "judge")}
-            draws.append(contrast_value(means, spec))
-        contrasts[name] = {"estimate": contrast_value(point, spec), "ci": [float(x) for x in np.percentile(draws, [2.5, 97.5])]}
+    if items:
+        mats = {a: {"truth": np.array([[by_item[i][a][0] for i in items]]),
+                    "judge": np.array([[by_item[i][a][1] for i in items]])} for a in CORE}
+        contrasts, _ = bootstrap(mats, CONTRASTS, resamples, seed)
     unsure = sum(1 for x in labeled if x["label"] == "unsure")
     return {"judge_agreement_random_part": agreement, "contrasts_random_part_hand_labels": contrasts,
+            "random_items": len(random_items), "random_items_paired": len(items),
+            "items_dropped": len(random_items) - len(items),
             "labeled": len(labeled), "unsure": unsure,
-            "disagreement_part": sum(1 for x in labeled if x["part"] == "disagreement")}
+            "disagreement_part": sum(1 for x in labeled if "disagreement" in x["parts"])}
 
 
 def analyze(rows, cfg, labeled=None):

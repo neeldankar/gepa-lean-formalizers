@@ -167,7 +167,7 @@ From there the job runs on its own:
 
 ## Chunk 6: Hand-check and analysis
 
-**Build the sample:** every item where a certificate and the reference judge disagree (up to 25, chosen at random if there are more), plus a random sample stratified by arm (A, B, C, D, with seeds pooled) to bring the total to about 100. Shuffle, hide arm and model, generate the labeling page.
+**Build the sample:** every item where a certificate and the reference judge disagree (up to 25, chosen at random if there are more), plus one set of randomly chosen test items, each labeled in all four core arms A, B, C and D (for B and D, one GEPA seed chosen at random per item), enough items to bring the total to about 100. Shuffle, hide arm and model, generate the labeling page.
 
 **Neel labels** (5 to 7 hours, any number of sittings). He doesn't open results or GEPA prompts until he's done.
 

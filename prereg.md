@@ -20,6 +20,7 @@ This file is the spec. If it differs from the design doc saved in the claude.ai 
 10. **autoImplicit is off for candidates.** AXLE's Lean environment has `autoImplicit` on, so an unknown name in a model output silently becomes a bound variable and the statement still compiles. Every candidate is compiled as `set_option autoImplicit false in` followed by the theorem, in the judge score, the truth score and the certificates. References are compiled as ProofNet-Verified ships them.
 11. **Arm C uses ReForm-8B's own prompt** from its released code: `Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency.` followed by a newline, the English statement and a newline, sent as one user message through the model's chat template (github.com/Chen-GX/ReForm, `lean_plugins/generate.py` line 38, commit `0047fdf`). This replaces the shorter sentence quoted from the model card. A seed weaker than the prompt ReForm-8B was trained with would inflate D minus C. Every arm's user message then adds the same fixed block with the item's Lean header and helper definitions (Setup, Task).
 12. **Faithful means logically equivalent.** A candidate with an equivalence certificate counts as faithful even if it adds always-true clauses, since it states the same proposition as the reference. Items where a certificate and the reference judge disagree go to the hand-check, and their count is reported.
+13. **The random part of the hand-check is paired across arms.** One set of randomly chosen test items is labeled in all four core arms (for B and D, one GEPA seed chosen at random per item), enough items to bring the hand-check to about 100 labels in total. Q1 to Q3 on this subset use the paired bootstrap. The disagreement part (up to 25 items) is unchanged. Arm and model stay hidden and the page order is shuffled.
 
 ## Summary
 
@@ -102,7 +103,7 @@ The truth score is the weak point of the whole design, so it is built in layers.
 3. **Reference-aware judge.** On every compiled item, a strong judge from a different model family than the optimization judge sees the English, the reference, and the candidate, and gives a verdict, a reason, and, for unfaithful items, an error tag from ProofNet-Verified's taxonomy.
 4. **Truth label.** The certificate when there is one, otherwise the reference judge's verdict.
 
-**Neel's hand-check.** Neel labels about 100 test outputs from the four core arms, blind to arm and model: every item where a certificate and the reference judge disagree (up to 25, sampled at random if there are more), plus a random sample stratified by arm for the rest. The random part gives the reference judge's error rate, which is reported next to every truth-score result. The disagreement part checks the certificates and is reported separately. Hand labels never overwrite the primary truth score.
+**Neel's hand-check.** Neel labels about 100 test outputs from the four core arms, blind to arm and model: every item where a certificate and the reference judge disagree (up to 25, sampled at random if there are more), plus one set of randomly chosen test items labeled in all four core arms (for B and D, one GEPA seed chosen at random per item), enough items to bring the total to about 100 (Changes, item 13). Arm and model stay hidden and the page order is shuffled. The random part gives the reference judge's error rate, which is reported next to every truth-score result. The disagreement part checks the certificates and is reported separately. Hand labels never overwrite the primary truth score.
 
 **If the certificate layer is dropped** (Changes, item 8), the truth label is the reference judge's verdict on every compiled item, and the hand-check sample is entirely random.
 
@@ -163,7 +164,7 @@ Neel checks and changes this before the freeze. Everything below is computed on 
 
 **What counts as a result.** Proposed smallest effect worth caring about: 5 points.
 
-- "Effect" if the interval excludes 0 and the estimate is at least 5 points.
+- "Effect" if the interval excludes 0 and the estimate is at least 5 points in size, in either direction, with the sign reported.
 - "No meaningful effect" if the whole interval sits within ±5.
 - "Inconclusive" otherwise.
 
@@ -176,7 +177,7 @@ The 5-point threshold is a placeholder for Neel to confirm at the freeze.
 - the reference judge's agreement with Neel's hand labels on the random part of the hand-check sample, overall and per arm
 - compile rate and faithful-given-compiled, separately
 - the memorization rate per arm, plus Q1 to Q3 recomputed without exact matches
-- Q1 to Q3 recomputed on the random part of the hand-labeled sample only, as a sensitivity check
+- Q1 to Q3 recomputed on the random part of the hand-labeled sample only, with the paired bootstrap over its items (Changes, item 13), as a sensitivity check
 - the number of items where a certificate and the reference judge disagree, per arm (Changes, item 12)
 
 Exploratory analyses are labeled exploratory. Every run, including broken or discarded ones, goes in the run log (`LOG.md`).
