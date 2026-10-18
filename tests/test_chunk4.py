@@ -23,20 +23,24 @@ def test_pilot_items_are_val_only_and_seeded():
     assert [it["id"] for it in items] == [it["id"] for it in chunk4.pilot_items(CFG)]
 
 
-def fake_pilot_rows(n_items=30):
+def fake_pilot_rows(n_items=30, a2_compiled=6):
     rows = []
-    for k, name in enumerate(chunk4.CONFIGS):
+    for k, name in enumerate(chunk4.ALL_CONFIGS):
         for i in range(n_items):
-            rows.append({"config": name, "item_id": f"pnv_{i:03d}", "compiled": (i + k) % 3 != 0,
+            compiled = i < a2_compiled if name == "qwen_a2" else (i + k) % 3 != 0
+            rows.append({"config": name, "item_id": f"pnv_{i:03d}", "compiled": compiled,
                          "ref_verdict": "faithful" if i % 2 else "unfaithful", "normalized": f"theorem X : {i} = {i} := by sorry"})
     return rows
 
 
 def test_label_sample_quota_distinct_compiled_and_blind():
+    # Only 6 rerun outputs compile: 4 more Qwen3-8B outputs come from the first thinking-off run.
     picked = chunk4.pick_label_rows(fake_pilot_rows(), CFG)
     assert len(picked) == 20 and len({r["item_id"] for r in picked}) == 20 and all(r["compiled"] for r in picked)
-    by = {c: sum(r["config"] == c for r in picked) for c in chunk4.CONFIGS}
-    assert by == {"qwen_nothink": 5, "qwen_think": 5, "reform": 10}
+    by = {c: sum(r["config"] == c for r in picked) for c in chunk4.ALL_CONFIGS}
+    assert by == {"qwen_a2": 6, "qwen_nothink": 4, "qwen_think": 0, "reform": 10}
+    full = chunk4.pick_label_rows(fake_pilot_rows(a2_compiled=30), CFG)
+    assert sum(r["config"] == "qwen_a2" for r in full) == 10 and sum(r["config"] == "reform" for r in full) == 10
     val = gepa_items("val")
     items = {f"pnv_{i:03d}": val[i] for i in range(30)}
     mapping, records = chunk4.label_records(picked, items)
@@ -88,9 +92,10 @@ def test_projection_arithmetic():
 
 def test_gpu_balance_tops_up_to_wall_clock(tmp_path):
     costs = tmp_path / "costs.jsonl"
-    costs.write_text(json.dumps({"chunk": 4, "purpose": "gpu", "usd": 1.0, "hours": 0.25}) + "\n"
-                     + json.dumps({"chunk": 3, "purpose": "gpu", "usd": 9.0, "hours": 5.0}) + "\n")
     start = datetime(2026, 10, 18, 18, 0, tzinfo=timezone.utc)
+    t = (start + timedelta(minutes=30)).isoformat()
+    costs.write_text(json.dumps({"time": t, "chunk": 4, "purpose": "gpu", "usd": 1.0, "hours": 0.25}) + "\n"
+                     + json.dumps({"time": t, "chunk": 3, "purpose": "gpu", "usd": 9.0, "hours": 5.0}) + "\n")
     cfg = copy.deepcopy(CFG)
     cfg["gpu"]["usd_per_hour"] = 4.0
     out = chunk4.gpu_balance(cfg, start, start + timedelta(hours=2), costs_path=costs)
@@ -117,3 +122,16 @@ def test_runner_honors_pilot_budget_and_thinking_override(tmp_path):
     assert result["status"] == "done" and 60 <= result["total_metric_calls"] < 120
     assert seen and all(k == {"enable_thinking": True} for k in seen)
     assert cfg["models"]["qwen3-8b"]["enable_thinking"] == CFG["models"]["qwen3-8b"]["enable_thinking"]  # not mutated
+
+
+def test_gpu_balance_counts_each_pod_session_separately(tmp_path):
+    costs = tmp_path / "costs.jsonl"
+    cfg = copy.deepcopy(CFG)
+    cfg["gpu"]["usd_per_hour"] = 4.0
+    s1 = datetime(2026, 10, 18, 18, 0, tzinfo=timezone.utc)
+    chunk4.gpu_balance(cfg, s1, s1 + timedelta(hours=1), costs_path=costs)  # session 1: 1 h
+    s2 = s1 + timedelta(hours=3)                                            # pod stopped, then restarted
+    out = chunk4.gpu_balance(cfg, s2, s2 + timedelta(minutes=30), costs_path=costs)
+    assert out["logged_hours_before"] == 0 and out["added_hours"] == pytest.approx(0.5)
+    rows = [json.loads(line) for line in costs.read_text().splitlines()]
+    assert sum(r["hours"] for r in rows) == pytest.approx(1.5)

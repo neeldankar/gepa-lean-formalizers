@@ -16,6 +16,7 @@ Steps (write into runs/chunk4/ and summary.json there):
 """
 import copy
 import csv
+import hashlib
 import json
 import random
 import subprocess
@@ -41,12 +42,17 @@ CHUNK = 4
 RUN_DIR = ROOT / "runs/chunk4"
 SUMMARY = RUN_DIR / "summary.json"
 PILOT = RUN_DIR / "pilot.jsonl.gz"
+PILOT_A2 = RUN_DIR / "pilot_a2.jsonl.gz"
 # name: (model key, prompt, enable_thinking or None)
 CONFIGS = {
     "qwen_nothink": ("qwen3-8b", "prompts/arm_A.txt", False),
     "qwen_think": ("qwen3-8b", "prompts/arm_A.txt", True),
     "reform": ("reform-8b", "prompts/arm_C.txt", None),
 }
+# The rerun after the first go check: Neel's arm A with a Lean 4 syntax block, thinking off (Neel's
+# decision). prompts/arm_A.txt is edited in place; the first run's version is in git (commit c475f95).
+RERUN_CONFIGS = {"qwen_a2": ("qwen3-8b", "prompts/arm_A.txt", False)}
+ALL_CONFIGS = {**CONFIGS, **RERUN_CONFIGS}
 QWEN_PROMPTS, REFORM_PROMPTS = 5, 4  # final eval: A, B x3, E on Qwen3-8B; C, D x3 on ReForm-8B
 
 
@@ -65,8 +71,13 @@ def pilot_items(cfg):
     return random.Random(cfg["pilot"]["seed"]).sample(val, cfg["pilot"]["val_items"])
 
 
+def all_rows():
+    """Pilot rows from the first run and, if it exists, the rerun."""
+    return read_rows(PILOT) + (read_rows(PILOT_A2) if PILOT_A2.exists() else [])
+
+
 def config_cfg(cfg, name):
-    model_key, _, thinking = CONFIGS[name]
+    model_key, _, thinking = ALL_CONFIGS[name]
     c = copy.deepcopy(cfg)
     if thinking is not None:
         c["models"][model_key]["enable_thinking"] = thinking
@@ -80,9 +91,11 @@ def container_start():
 
 
 def gpu_balance(cfg, start, until, costs_path=COSTS_PATH, chunk=CHUNK):
-    """Append one `gpu` row so chunk GPU hours equal the pod's wall clock since `start`."""
+    """Append one `gpu` row so this pod session's GPU hours equal its wall clock since `start` (rows
+    logged before `start` belong to earlier sessions and are left alone)."""
     rows = read_jsonl(costs_path) if costs_path.exists() else []
-    logged = sum(r.get("hours", 0) for r in rows if r["chunk"] == chunk and r["purpose"] == "gpu")
+    logged = sum(r.get("hours", 0) for r in rows if r["chunk"] == chunk and r["purpose"] == "gpu"
+                 and datetime.fromisoformat(r["time"]) >= start)
     hours = max(0.0, (until - start).total_seconds() / 3600 - logged)
     row = {"time": until.isoformat(timespec="seconds"), "chunk": chunk, "run_id": "pod_session", "purpose": "gpu",
            "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": hours * cfg["gpu"]["usd_per_hour"],
@@ -106,14 +119,54 @@ def setup_hours(venv="/workspace/venv", log="/workspace/setup.log"):
     return (done - born) / 3600
 
 
+def pod(cfg, summary, argv=()):
+    """Record this pod session (container start, setup time) and make it the current one."""
+    session = {"container_start": container_start().isoformat(), "gpu_type": cfg["gpu"]["type"],
+               "usd_per_hour": cfg["gpu"]["usd_per_hour"], "setup_hours": setup_hours()}
+    sessions = summary.setdefault("pod_sessions", [summary["pod"] | {"setup_hours": summary.get("setup_hours")}]
+                                  if "pod" in summary else [])
+    if not sessions or sessions[-1]["container_start"] != session["container_start"]:
+        sessions.append(session)
+    summary["pod"] = session
+    summary["setup_hours"] = session["setup_hours"]
+
+
+def run_config(cfg, summary, name, items, checker, timing):
+    """Generate (timed once per configuration), then score every output and check memorization."""
+    model_key, prompt, _ = ALL_CONFIGS[name]
+    workers = cfg["generation"]["workers"]
+    c = config_cfg(cfg, name)
+    instructions = load_instructions(prompt)
+    genc = formalizer_client(c, model_key, CHUNK, run_id=f"pilot_{name}")
+    judge = LLMClient(c, CHUNK, run_id=f"pilot_{name}")
+    if name not in timing:
+        t0 = time.monotonic()  # generation alone, all items at `workers` concurrency
+        with ThreadPoolExecutor(workers) as pool:
+            outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it), items))
+        seconds = time.monotonic() - t0
+        tokens = sum((o.get("usage") or {}).get("completion_tokens") or 0 for o in outs)
+        timing[name] = {"items": len(items), "gen_seconds": seconds, "completion_tokens": tokens,
+                        "tokens_per_second": tokens / seconds if seconds else None, "workers": workers}
+        save_summary(summary)
+    with ThreadPoolExecutor(workers) as pool:  # generations now come from the cache
+        rs = list(pool.map(lambda it: score_row(c, name, model_key, None, None, "val", instructions, it, 0,
+                                                genc, judge, checker), items))
+    statements = [r["normalized"] for r in rs if r["normalized"]]
+    matched = memorization.exact_matches(checker, memorization.load_index(),
+                                         [it for it, r in zip(items, rs) if r["normalized"]], statements)
+    for r, m in zip([r for r in rs if r["normalized"]], matched):
+        r["memorized"] = m
+    for r in rs:
+        r["config"], r["model"] = name, model_key
+    print(name, json.dumps(timing[name]))
+    return rs
+
+
 def gen(cfg, summary, argv=()):
-    summary["pod"] = {"container_start": container_start().isoformat(), "gpu_type": cfg["gpu"]["type"],
-                      "usd_per_hour": cfg["gpu"]["usd_per_hour"]}
-    summary["setup_hours"] = setup_hours()
+    pod(cfg, summary)
     gpu(cfg, summary)
     items = pilot_items(cfg)
     checker = AxleChecker(cfg["axle"])
-    workers = cfg["generation"]["workers"]
     # A rerun finds earlier generations in the cache, so a configuration is timed only once: its timing
     # is saved as soon as it is measured, or read back from an earlier run's log (--timing-log).
     timing = summary.setdefault("gen_timing", {})
@@ -122,35 +175,23 @@ def gen(cfg, summary, argv=()):
             name, _, rest = line.strip().partition(" ")
             if name in CONFIGS and rest.startswith("{"):
                 timing[name] = {**json.loads(rest), "source": "earlier run's log"}
-    rows = []
-    for name, (model_key, prompt, _) in CONFIGS.items():
-        c = config_cfg(cfg, name)
-        instructions = load_instructions(prompt)
-        genc = formalizer_client(c, model_key, CHUNK, run_id=f"pilot_{name}")
-        judge = LLMClient(c, CHUNK, run_id=f"pilot_{name}")
-        if name not in timing:
-            t0 = time.monotonic()  # generation alone, all items at `workers` concurrency
-            with ThreadPoolExecutor(workers) as pool:
-                outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it), items))
-            seconds = time.monotonic() - t0
-            tokens = sum((o.get("usage") or {}).get("completion_tokens") or 0 for o in outs)
-            timing[name] = {"items": len(items), "gen_seconds": seconds, "completion_tokens": tokens,
-                            "tokens_per_second": tokens / seconds if seconds else None, "workers": workers}
-            save_summary(summary)
-        with ThreadPoolExecutor(workers) as pool:  # generations now come from the cache
-            rs = list(pool.map(lambda it: score_row(c, name, model_key, None, None, "val", instructions, it, 0,
-                                                    genc, judge, checker), items))
-        statements = [r["normalized"] for r in rs if r["normalized"]]
-        matched = memorization.exact_matches(checker, memorization.load_index(),
-                                             [it for it, r in zip(items, rs) if r["normalized"]], statements)
-        for r, m in zip([r for r in rs if r["normalized"]], matched):
-            r["memorized"] = m
-        for r in rs:
-            r["config"], r["model"] = name, model_key
-        rows += rs
-        print(name, json.dumps(timing[name]))
+    rows = [r for name in CONFIGS for r in run_config(cfg, summary, name, items, checker, timing)]
     write_rows(PILOT, rows)
     summary["gen"] = {"item_ids": [it["id"] for it in items], "timing": timing}
+    gpu(cfg, summary)
+
+
+def rerun(cfg, summary, argv=()):
+    """Qwen3-8B, thinking off, with the revised arm A prompt, on the same 30 pilot items."""
+    pod(cfg, summary)
+    gpu(cfg, summary)
+    items = pilot_items(cfg)
+    assert [it["id"] for it in items] == summary["gen"]["item_ids"], "pilot items changed"
+    text = load_instructions(RERUN_CONFIGS["qwen_a2"][1])
+    summary["rerun"] = {"config": "qwen_a2", "prompt": text, "prompt_sha256": hashlib.sha256(text.encode()).hexdigest()}
+    timing = summary.setdefault("gen_timing", {})
+    rows = run_config(cfg, summary, "qwen_a2", items, AxleChecker(cfg["axle"]), timing)
+    write_rows(PILOT_A2, rows)
     gpu(cfg, summary)
 
 
@@ -167,18 +208,27 @@ def armf(cfg, summary, argv=()):
                        "finish_reasons": dict(sorted({r["finish_reason"]: sum(x["finish_reason"] == r["finish_reason"] for x in rows) for r in rows}.items()))}
 
 
-def pick_label_rows(rows, cfg):
-    """20 compiled outputs on distinct items: 5 per Qwen3-8B mode and 10 ReForm-8B, then shuffled."""
+# Label mix after the rerun: half Qwen3-8B (the rerun first, topped up from the first thinking-off
+# run), the rest ReForm-8B.
+LABEL_GROUPS = (("qwen_a2", "qwen_nothink"), ("reform",))
+
+
+def pick_label_rows(rows, cfg, groups=LABEL_GROUPS):
+    """20 compiled outputs on distinct items: half from the first group, the rest from the second,
+    each filled from its configurations in order; then shuffled."""
     rng = random.Random(cfg["pilot"]["seed"])
     n = cfg["pilot"]["label_items"]
-    quota = {"qwen_nothink": n // 4, "qwen_think": n // 4, "reform": n - 2 * (n // 4)}
     used, picked = set(), []
-    for name, k in quota.items():
-        pool = [r for r in rows if r["config"] == name and r["compiled"] and r["ref_verdict"] and r["item_id"] not in used]
-        rng.shuffle(pool)
-        for r in pool[:k]:
-            picked.append(r)
-            used.add(r["item_id"])
+    for g, names in enumerate(groups):
+        quota = n // 2 if g == 0 else n - len(picked)
+        taken = 0
+        for name in names:
+            pool = [r for r in rows if r["config"] == name and r["compiled"] and r["ref_verdict"] and r["item_id"] not in used]
+            rng.shuffle(pool)
+            for r in pool[: quota - taken]:
+                picked.append(r)
+                used.add(r["item_id"])
+                taken += 1
     rng.shuffle(picked)
     return picked
 
@@ -197,11 +247,11 @@ def label_records(picked, items):
 
 def label(cfg, summary, argv=()):
     items = {it["id"]: it for it in gepa_items("val")}
-    mapping, records = label_records(pick_label_rows(read_rows(PILOT), cfg), items)
+    mapping, records = label_records(pick_label_rows(all_rows(), cfg), items)
     write_jsonl(RUN_DIR / "label_sample.jsonl", mapping)
     client = LLMClient(cfg, CHUNK, run_id="pilot_label")
     build_page(client, cfg, records, RUN_DIR / "labeling.html", page_key="chunk4-pilot")
-    summary["label"] = {"n": len(mapping), "by_config": {c: sum(m["config"] == c for m in mapping) for c in CONFIGS}}
+    summary["label"] = {"n": len(mapping), "by_config": {c: sum(m["config"] == c for m in mapping) for c in ALL_CONFIGS}}
 
 
 def agreement(rows, mapping, labels):
@@ -232,7 +282,7 @@ def agree(cfg, summary, argv=()):
     path = argv[argv.index("--labels") + 1] if "--labels" in argv else RUN_DIR / "labels.csv"
     with open(path) as f:
         labels = {r["label_id"]: r["label"] for r in csv.DictReader(f)}
-    out, per = agreement(read_rows(PILOT), read_jsonl(RUN_DIR / "label_sample.jsonl"), labels)
+    out, per = agreement(all_rows(), read_jsonl(RUN_DIR / "label_sample.jsonl"), labels)
     write_jsonl(RUN_DIR / "agreement.jsonl", per)
     summary["agree"] = out
 
@@ -319,12 +369,12 @@ def costs(cfg, summary, argv=()):
 
 
 def project(cfg, summary, argv=()):
-    rows = read_rows(PILOT)
+    rows = all_rows()
     crow = read_jsonl(COSTS_PATH)
-    stats = {name: config_stats(rows, crow, name) for name in CONFIGS}
-    t = summary["gen"]["timing"]
+    stats = {name: config_stats(rows, crow, name) for name in ALL_CONFIGS if any(r["config"] == name for r in rows)}
+    t = summary["gen_timing"]
     run_id = summary["gepa_launch"]["run_id"]
-    qcfg = "qwen_think" if summary["gepa_launch"]["enable_thinking"] else "qwen_nothink"
+    qcfg = "qwen_a2" if "qwen_a2" in stats else ("qwen_think" if summary["gepa_launch"]["enable_thinking"] else "qwen_nothink")
     cand = json.loads((ROOT / "runs" / run_id / "candidates.json").read_text())
     calls = cand["total_metric_calls"]
     gepa_rows = [c for c in crow if c.get("run_id") == run_id]
@@ -371,7 +421,7 @@ def diagnose_rows(rows):
     import re
     from collections import Counter
     out = {}
-    for name in CONFIGS:
+    for name in [n for n in ALL_CONFIGS if any(r["config"] == n for r in rows)]:
         rs = [r for r in rows if r["config"] == name]
         failed = [r for r in rs if not r["compiled"]]
         answer = lambda r: r["output"].rsplit("</think>", 1)[-1]
@@ -385,7 +435,7 @@ def diagnose_rows(rows):
 
 
 def diagnose(cfg, summary, argv=()):
-    rows = read_rows(PILOT)
+    rows = all_rows()
     d = diagnose_rows(rows)
     # Lean's own error kinds, recompiled through AXLE (free and cached).
     from collections import Counter
@@ -393,7 +443,7 @@ def diagnose(cfg, summary, argv=()):
     checker = AxleChecker(cfg["axle"])
     items = {it["id"]: it for it in gepa_items("val")}
     from src.scoring.score import prepare
-    for name in CONFIGS:
+    for name in d:
         kinds = Counter()
         for r in rows:
             if r["config"] == name and not r["compiled"] and r["normalized"]:
@@ -407,25 +457,26 @@ def diagnose(cfg, summary, argv=()):
 
 def stats(cfg, summary, argv=()):
     """Per-configuration pilot numbers and the go checks that need no labels or GEPA run."""
-    rows, crow = read_rows(PILOT), read_jsonl(COSTS_PATH)
-    summary["stats"] = st = {name: config_stats(rows, crow, name) for name in CONFIGS}
+    rows, crow = all_rows(), read_jsonl(COSTS_PATH)
+    summary["stats"] = st = {name: config_stats(rows, crow, name) for name in ALL_CONFIGS if any(r["config"] == name for r in rows)}
+    qwen = [k for k in ("qwen_nothink", "qwen_think", "qwen_a2") if k in st]
     summary["go_partial"] = {
-        "qwen_truth_faithful_rate": {k: st[k]["truth_faithful_rate"] for k in ("qwen_nothink", "qwen_think")},
-        "qwen_go_10_to_70": {k: 10 <= st[k]["truth_faithful_rate"] <= 70 for k in ("qwen_nothink", "qwen_think")},
+        "qwen_truth_faithful_rate": {k: st[k]["truth_faithful_rate"] for k in qwen},
+        "qwen_go_10_to_70": {k: 10 <= st[k]["truth_faithful_rate"] <= 70 for k in qwen},
         "exact_match_rate_max": max(v["exact_match_rate"] for v in st.values()),
         "not_measured": ["reference judge agreement (labels)", "projected total (GEPA pilot run)"],
     }
 
 
-STEPS = {"stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
+STEPS = {"pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
          "costs": costs, "project": project}
 
 
 def report():
     s = load_summary()
     print(f"- Pod: {s['pod']['gpu_type']} at ${s['pod']['usd_per_hour']}/hr; container start {s['pod']['container_start']}")
-    for name, t in s["gen"]["timing"].items():
-        st = s["stats"][name]
+    for name, st in s["stats"].items():
+        t = s["gen_timing"][name]
         print(f"- {name}: {st['outputs']} outputs; compile {st['compile_rate']:.1f}%; format failures {st['format_failures']}; "
               f"truth faithful {st['truth_faithful_rate']:.1f}%; judge score {st['judge_score_rate']:.1f}%; certified {st['certified']}; "
               f"exact matches {st['exact_match_rate']:.1f}%; tokens mean {st['tokens_mean']:.0f}, median {st['tokens_median']}, "
@@ -450,7 +501,7 @@ def report():
     print(f"\n- Chunk 4 cost: ${c['usd_total']:.2f}; by purpose: "
           + ", ".join(f"{k} {v['calls']} rows ${v['usd']:.3f}" for k, v in c["by_purpose"].items()))
     print("\n5 random pilot rows (seed 0):")
-    for r in random.Random(0).sample(read_rows(PILOT), 5):
+    for r in random.Random(0).sample(all_rows(), 5):
         print(f"\n[{r['config']} | {r['item_id']} | compiled {r['compiled']} | judge {r['judge_verdict']} -> score {r['judge_score']} "
               f"| ref judge {r['ref_verdict']} | certified {r['certified']} | truth {r['truth_label']} | tokens {r['completion_tokens']}]")
         print("output tail:", r["output"][-400:].replace("\n", " "))

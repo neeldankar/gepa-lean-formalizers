@@ -23,10 +23,35 @@ def test_bootstrap_recovers_planted_effect(planted):
     assert q1["estimate"] == pytest.approx(round(247 * 0.10) / 247 * 100)
 
 
-def test_judge_gap_recovered(planted):
-    q3 = planted["confirmatory"]["contrasts"]["Q3_qwen3-8b"]
-    assert q3["ci"][0] > 0 and q3["estimate"] == pytest.approx(round(247 * 0.08) / 247 * 100, abs=0.01)
-    assert planted["confirmatory"]["contrasts"]["Q3_reform-8b"]["estimate"] == 0
+def test_judge_gap_recovered_as_descriptive(planted):
+    d = planted["confirmatory"]["descriptive"]
+    q = d["judge_gain_minus_truth_gain_qwen3-8b"]
+    assert q["ci"][0] > 0 and q["estimate"] == pytest.approx(round(247 * 0.08) / 247 * 100, abs=0.01)
+    assert d["judge_gain_minus_truth_gain_reform-8b"]["estimate"] == 0 and "decision" not in q
+
+
+def test_q3_false_positive_rate_planted(planted):
+    # B's judge says faithful on 8% more items whose truth is unfaithful; everything compiles.
+    c = planted["confirmatory"]["contrasts"]
+    assert c["Q3_qwen3-8b"]["estimate"] == pytest.approx(round(247 * 0.08) / 247 * 100)
+    assert c["Q3_qwen3-8b"]["ci"][0] > 0 and c["Q3_qwen3-8b"]["decision"] == "effect"
+    assert c["Q3_reform-8b"]["estimate"] == 0 and c["Q3_reform-8b"]["ci"] == [0.0, 0.0]
+    assert planted["confirmatory"]["per_arm_intervals"]["A:fpr"]["estimate"] == 0
+    assert not any(k.endswith((":fp", ":compiled")) for k in planted["confirmatory"]["per_arm_intervals"])
+
+
+def test_false_positive_rate_exact_uncompiled_out_of_denominator():
+    def row(arm, seed, i, compiled, judge, truth):
+        return {"arm": arm, "gepa_seed": seed, "dataset": "test", "item_id": f"t{i}", "sample": 0, "outage": False,
+                "compiled": compiled, "judge_score": judge, "truth_label": truth}
+    rows = [row("A", None, i, c, j, "unfaithful") for i, (c, j) in enumerate([(True, 1), (True, 0), (False, 0), (False, 0)])]
+    # B seed 0: 1 false positive of 4 compiled (item 0 is truly faithful) = 25; seed 1: 1 of 1 compiled = 100
+    rows += [row("B", 0, i, True, j, t) for i, (j, t) in enumerate([(1, "faithful"), (1, "unfaithful"), (0, "unfaithful"), (0, "unfaithful")])]
+    rows += [row("B", 1, i, i == 0, int(i == 0), "unfaithful") for i in range(4)]
+    mats, _ = analysis.matrices(rows, "test")
+    means = analysis.arm_means(mats)
+    assert means[("A", "fpr")] == pytest.approx(50.0) and means[("B", "fpr")] == pytest.approx(62.5)
+    assert analysis.contrast_value(means, analysis.CONTRASTS["Q3_qwen3-8b"]) == pytest.approx(12.5)
 
 
 def test_no_planted_effect_covers_zero():
@@ -145,3 +170,13 @@ def test_seed_resampling_widens_interval_when_seeds_disagree():
         width[name] = q1["ci"][1] - q1["ci"][0]
         assert q1["estimate"] == pytest.approx(round(247 * 0.10) / 247 * 100, abs=0.5)
     assert width["spread"] > width["same"] + 2
+
+
+def test_hand_check_computes_q3_from_hand_labels(tmp_path):
+    rows = fake_rows(n_items=100, judge_extra_points=8)
+    labeled = hand_labeled(tmp_path, rows, 100)  # hand labels equal the truth labels
+    hc = analysis.hand_check(rows, labeled, 500, 0)["contrasts_random_part_hand_labels"]
+    judge_b = {r["item_id"]: r["judge_score"] for r in rows if r["arm"] == "B" and r["gepa_seed"] == 0}
+    truth_b = {r["item_id"]: r["truth_label"] for r in rows if r["arm"] == "B" and r["gepa_seed"] == 0}
+    expected = 100 * sum(judge_b[i] == 1 and truth_b[i] == "unfaithful" for i in judge_b) / 100
+    assert hc["Q3_qwen3-8b"]["estimate"] == pytest.approx(expected) and expected > 0

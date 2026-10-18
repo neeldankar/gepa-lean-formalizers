@@ -7,7 +7,10 @@ All rates are in points (0 to 100). A per-item value is the mean over samples. F
 Confirmatory, on the test split:
   Q1 = B - A (truth)
   Q2 = (D - C) - (B - A) (truth)
-  Q3 = (judge gain) - (truth gain), for Qwen3-8B (A to B) and ReForm-8B (C to D)
+  Q3 = judge false-positive rate among compiled outputs (judge faithful, truth unfaithful, divided by
+       compiled), GEPA arm minus seed arm, for Qwen3-8B (B - A) and ReForm-8B (D - C). Per GEPA seed
+       the rate is a ratio of sums over items; the arm's rate is the mean over seeds.
+Descriptive (no decision rule): judge-score gain minus truth-score gain, per model.
 Decision rule (threshold T points): "effect" if the interval excludes 0 and |estimate| >= T, in
 either direction (the estimate keeps its sign); "no meaningful effect" if the whole interval lies within [-T, T]; otherwise "inconclusive".
 """
@@ -21,9 +24,14 @@ CORE = ("A", "B", "C", "D")
 CONTRASTS = {
     "Q1": {"truth": {"B": 1, "A": -1}},
     "Q2": {"truth": {"D": 1, "C": -1, "B": -1, "A": 1}},
-    "Q3_qwen3-8b": {"judge": {"B": 1, "A": -1}, "truth": {"B": -1, "A": 1}},
-    "Q3_reform-8b": {"judge": {"D": 1, "C": -1}, "truth": {"D": -1, "C": 1}},
+    "Q3_qwen3-8b": {"fpr": {"B": 1, "A": -1}},
+    "Q3_reform-8b": {"fpr": {"D": 1, "C": -1}},
 }
+DESCRIPTIVE_CONTRASTS = {
+    "judge_gain_minus_truth_gain_qwen3-8b": {"judge": {"B": 1, "A": -1}, "truth": {"B": -1, "A": 1}},
+    "judge_gain_minus_truth_gain_reform-8b": {"judge": {"D": 1, "C": -1}, "truth": {"D": -1, "C": 1}},
+}
+SCORES = ("truth", "judge", "fpr")
 EXPLORATORY_CONTRASTS = {k: CONTRASTS[k] for k in ("Q1", "Q2")}
 
 
@@ -35,8 +43,13 @@ def judge_value(row):
     return float(row["judge_score"] or 0)
 
 
+def false_positive(row):
+    """Compiled, the optimization judge says faithful, the truth label says unfaithful."""
+    return 1.0 if row["compiled"] and judge_value(row) == 1 and row["truth_label"] != "faithful" else 0.0
+
+
 def matrices(rows, dataset, items=None, exclude=frozenset()):
-    """{arm: {"truth"/"judge": array (seeds x items)}} over a shared item order."""
+    """{arm: {"truth"/"judge"/"fp"/"compiled": array (seeds x items)}} over a shared item order."""
     rows = [r for r in rows if r["dataset"] == dataset and not r.get("outage")]
     item_ids = sorted(items if items is not None else {r["item_id"] for r in rows} - set(exclude))
     pos = {i: k for k, i in enumerate(item_ids)}
@@ -44,25 +57,30 @@ def matrices(rows, dataset, items=None, exclude=frozenset()):
     for r in rows:
         if r["item_id"] in pos:
             acc[(r["arm"], r["gepa_seed"])][r["item_id"]].append(r)
-    out = defaultdict(lambda: {"truth": [], "judge": []})
+    values = {"truth": truth_value, "judge": judge_value, "fp": false_positive, "compiled": lambda r: float(r["compiled"])}
+    out = defaultdict(lambda: {k: [] for k in values})
     for (arm, seed), by_item in sorted(acc.items(), key=lambda kv: (kv[0][0], -1 if kv[0][1] is None else kv[0][1])):
-        t, j = np.full(len(item_ids), np.nan), np.full(len(item_ids), np.nan)
-        for i, rs in by_item.items():
-            t[pos[i]] = np.mean([truth_value(r) for r in rs])
-            j[pos[i]] = np.mean([judge_value(r) for r in rs])
-        out[arm]["truth"].append(t)
-        out[arm]["judge"].append(j)
+        for k, f in values.items():
+            v = np.full(len(item_ids), np.nan)
+            for i, rs in by_item.items():
+                v[pos[i]] = np.mean([f(r) for r in rs])
+            out[arm][k].append(v)
     return {arm: {k: np.array(v) * 100 for k, v in d.items()} for arm, d in out.items()}, item_ids
 
 
 def arm_means(mats, idx=None, seed_draws=None):
-    """{(arm, score): mean}, optionally on resampled items and seeds."""
+    """{(arm, score): mean} for truth, judge and fpr, optionally on resampled items and seeds."""
     out = {}
     for arm, d in mats.items():
-        for score, m in d.items():
-            seeds = seed_draws[arm] if seed_draws else np.arange(m.shape[0])
-            sub = m[seeds] if idx is None else m[np.ix_(seeds, idx)]
-            out[(arm, score)] = float(np.nanmean(sub))
+        seeds = seed_draws[arm] if seed_draws else np.arange(d["truth"].shape[0])
+        pick = (lambda m: m[seeds]) if idx is None else (lambda m: m[np.ix_(seeds, idx)])
+        for score in ("truth", "judge"):
+            out[(arm, score)] = float(np.nanmean(pick(d[score])))
+        if "fp" in d:
+            fp, comp = np.nansum(pick(d["fp"]), axis=1), np.nansum(pick(d["compiled"]), axis=1)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                per_seed = np.where(comp > 0, 100 * fp / comp, np.nan)
+            out[(arm, "fpr")] = float(np.nanmean(per_seed)) if np.isfinite(per_seed).any() else float("nan")
     return out
 
 
@@ -89,10 +107,10 @@ def bootstrap(mats, contrasts, resamples, seed):
     result = {}
     for name, spec in contrasts.items():
         if name in draws:
-            lo, hi = np.percentile(draws[name], [2.5, 97.5])
+            lo, hi = np.nanpercentile(draws[name], [2.5, 97.5])
             result[name] = {"estimate": contrast_value(point, spec), "ci": [float(lo), float(hi)]}
-    per_arm = {f"{arm}:{score}": {"estimate": point[(arm, score)], "ci": [float(x) for x in np.percentile(v, [2.5, 97.5])]}
-               for (arm, score), v in arm_draws.items()}
+    per_arm = {f"{arm}:{score}": {"estimate": point[(arm, score)], "ci": [float(x) for x in np.nanpercentile(v, [2.5, 97.5])]}
+               for (arm, score), v in arm_draws.items() if score in SCORES}
     return result, per_arm
 
 
@@ -167,17 +185,20 @@ def hand_check(rows, labeled, resamples, seed):
     agreement = {k: {"agree": a, "n": n, "rate": 100 * a / n} for k, (a, n) in sorted(agree.items())}
 
     # Paired: keep the random items labeled faithful or unfaithful in every core arm, then reuse the
-    # test-split bootstrap on one-row matrices (truth = the hand label, judge = that output's judge score).
+    # test-split bootstrap on one-row matrices (truth = the hand label, judge = that output's judge score,
+    # a false positive = judge score 1 and hand label unfaithful).
     by_item = defaultdict(dict)
     for x, r in joined:
         if x["arm"] in CORE:
-            by_item[x["item_id"]][x["arm"]] = (100.0 * (x["label"] == "faithful"), 100.0 * judge_value(r))
+            by_item[x["item_id"]][x["arm"]] = (100.0 * (x["label"] == "faithful"), 100.0 * judge_value(r),
+                                               100.0 * (judge_value(r) == 1 and x["label"] == "unfaithful"),
+                                               100.0 * bool(r["compiled"]))
     random_items = {x["item_id"] for x in labeled if "random" in x["parts"]}
     items = sorted(i for i, arms in by_item.items() if set(arms) == set(CORE))
     contrasts = {}
     if items:
-        mats = {a: {"truth": np.array([[by_item[i][a][0] for i in items]]),
-                    "judge": np.array([[by_item[i][a][1] for i in items]])} for a in CORE}
+        mats = {a: {k: np.array([[by_item[i][a][n] for i in items]]) for n, k in enumerate(("truth", "judge", "fp", "compiled"))}
+                for a in CORE}
         contrasts, _ = bootstrap(mats, CONTRASTS, resamples, seed)
     unsure = sum(1 for x in labeled if x["label"] == "unsure")
     return {"judge_agreement_random_part": agreement, "contrasts_random_part_hand_labels": contrasts,
@@ -193,11 +214,13 @@ def analyze(rows, cfg, labeled=None):
     results = {"threshold_points": T, "bootstrap_resamples": R}
 
     mats, items = matrices(rows, "test")
-    contrasts, per_arm = bootstrap(mats, CONTRASTS, R, seed)
+    both, per_arm = bootstrap(mats, {**CONTRASTS, **DESCRIPTIVE_CONTRASTS}, R, seed)
+    contrasts = {k: v for k, v in both.items() if k in CONTRASTS}
     for c in contrasts.values():
         c["decision"] = decide(c["estimate"], c["ci"], T)
     results["confirmatory"] = {"items": len(items), "arm_truth_rates": per_seed_rates(mats),
-                               "per_arm_intervals": per_arm, "contrasts": contrasts}
+                               "per_arm_intervals": per_arm, "contrasts": contrasts,
+                               "descriptive": {k: v for k, v in both.items() if k in DESCRIPTIVE_CONTRASTS}}
 
     memorized = {r["item_id"] for r in rows if r["dataset"] == "test" and r["memorized"] and r["arm"] in CORE}
     m2, items2 = matrices(rows, "test", exclude=memorized)
@@ -237,7 +260,7 @@ def figures(results, out_dir):
     fig.savefig(out_dir / "truth_by_arm.png", dpi=150)
     plt.close(fig)
 
-    c = results["confirmatory"]["contrasts"]
+    c = results["confirmatory"]["descriptive"]
     gains = {}
     for model, (after, before) in {"Qwen3-8B": ("B", "A"), "ReForm-8B": ("D", "C")}.items():
         for score in ("judge", "truth"):
@@ -246,7 +269,7 @@ def figures(results, out_dir):
     x = np.arange(2)
     for k, (score, color) in enumerate((("judge", "#c0504d"), ("truth", "#4a6fa5"))):
         ax.bar(x + (k - 0.5) * 0.35, [gains[(m, score)] for m in ("Qwen3-8B", "ReForm-8B")], 0.35, label=f"{score} gain", color=color)
-    for i, name in enumerate(("Q3_qwen3-8b", "Q3_reform-8b")):
+    for i, name in enumerate(("judge_gain_minus_truth_gain_qwen3-8b", "judge_gain_minus_truth_gain_reform-8b")):
         if name in c:
             ax.annotate(f"gap {c[name]['estimate']:.1f} [{c[name]['ci'][0]:.1f}, {c[name]['ci'][1]:.1f}]",
                         (x[i], max(gains[(m, s)] for m in ("Qwen3-8B", "ReForm-8B") for s in ("judge", "truth"))),
