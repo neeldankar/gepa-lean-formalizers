@@ -23,24 +23,24 @@ def test_pilot_items_are_val_only_and_seeded():
     assert [it["id"] for it in items] == [it["id"] for it in chunk4.pilot_items(CFG)]
 
 
-def fake_pilot_rows(n_items=30, a2_compiled=6):
+def fake_pilot_rows(n_items=30, latest_compiled=6):
     rows = []
     for k, name in enumerate(chunk4.ALL_CONFIGS):
         for i in range(n_items):
-            compiled = i < a2_compiled if name == "qwen_a2" else (i + k) % 3 != 0
+            compiled = i < latest_compiled if name == "qwen_a3" else (i + k) % 3 != 0
             rows.append({"config": name, "item_id": f"pnv_{i:03d}", "compiled": compiled,
                          "ref_verdict": "faithful" if i % 2 else "unfaithful", "normalized": f"theorem X : {i} = {i} := by sorry"})
     return rows
 
 
 def test_label_sample_quota_distinct_compiled_and_blind():
-    # Only 6 rerun outputs compile: 4 more Qwen3-8B outputs come from the first thinking-off run.
+    # Only 6 outputs of the latest rerun compile: 4 more Qwen3-8B outputs come from the previous rerun.
     picked = chunk4.pick_label_rows(fake_pilot_rows(), CFG)
     assert len(picked) == 20 and len({r["item_id"] for r in picked}) == 20 and all(r["compiled"] for r in picked)
     by = {c: sum(r["config"] == c for r in picked) for c in chunk4.ALL_CONFIGS}
-    assert by == {"qwen_a2": 6, "qwen_nothink": 4, "qwen_think": 0, "reform": 10}
-    full = chunk4.pick_label_rows(fake_pilot_rows(a2_compiled=30), CFG)
-    assert sum(r["config"] == "qwen_a2" for r in full) == 10 and sum(r["config"] == "reform" for r in full) == 10
+    assert by == {"qwen_a3": 6, "qwen_a2": 4, "qwen_nothink": 0, "qwen_think": 0, "reform": 10}
+    full = chunk4.pick_label_rows(fake_pilot_rows(latest_compiled=30), CFG)
+    assert sum(r["config"] == "qwen_a3" for r in full) == 10 and sum(r["config"] == "reform" for r in full) == 10
     val = gepa_items("val")
     items = {f"pnv_{i:03d}": val[i] for i in range(30)}
     mapping, records = chunk4.label_records(picked, items)
@@ -135,3 +135,19 @@ def test_gpu_balance_counts_each_pod_session_separately(tmp_path):
     assert out["logged_hours_before"] == 0 and out["added_hours"] == pytest.approx(0.5)
     rows = [json.loads(line) for line in costs.read_text().splitlines()]
     assert sum(r["hours"] for r in rows) == pytest.approx(1.5)
+
+
+@pytest.mark.live
+def test_fewshot_pool_and_block_match_the_saved_file():
+    from src.axle_check import AxleChecker
+    pool = chunk4.fewshot_pool(AxleChecker(CFG["axle"]), gepa_items("train"))
+    ids = {it["id"] for it in pool}
+    train = json.loads((ROOT / "data/splits.json").read_text())["train"]
+    assert ids <= set(train) and "pnv_280" not in ids and all(not it["helper"].strip() for it in pool)
+    f = CFG["fewshot"]
+    import random
+    examples = random.Random(f["seed"]).sample(pool, f["n"])
+    assert (ROOT / f["path"]).read_text() == chunk4.fewshot_block(examples) + "\n"
+    assert [it["id"] for it in examples] == f["ids"] == ["pnv_218", "pnv_226", "pnv_018"]  # never redrawn
+    assert "open Fintype" in chunk4.fewshot_block(examples).split("Example 3:")[1]           # @card's open line is shown
+    assert all(chunk4.sorry_ending(it["formal_stmt"]).endswith(" := by sorry") for it in examples)

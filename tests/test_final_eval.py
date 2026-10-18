@@ -38,7 +38,7 @@ def test_locked_without_done_markers(tmp_path):
 
 def test_arm_prompts_for_gepa_arm(tmp_path):
     prompts = arm_prompts(CFG, "B", fake_runs(tmp_path))
-    assert [(r, s) for r, s, _ in prompts] == [("B_s0", 0), ("B_s1", 1), ("B_s2", 2)]
+    assert [(r, s) for r, s, _, _ in prompts] == [("B_s0", 0), ("B_s1", 1), ("B_s2", 2)]
     assert prompts[1][2].startswith("prompt of B_s1")
 
 
@@ -54,3 +54,13 @@ def test_arm_a_and_f_rows(tmp_path):
     assert {r["dataset"] for r in rows_f} == {"test"} and len(rows_f) == 247
     write_rows(tmp_path / "A.jsonl.gz", rows_a)
     assert read_rows(tmp_path / "A.jsonl.gz") == rows_a
+
+
+def test_fewshot_goes_to_a_b_e_f_only(tmp_path):
+    runs = fake_runs(tmp_path)
+    shots = (ROOT / "prompts/fewshot.txt").read_text().rstrip("\n")
+    for arm in ("A", "B", "E", "F", "C", "D"):
+        prompts = arm_prompts(CFG, arm, runs)
+        want = shots if arm in ("A", "B", "E", "F") else ""
+        assert all(p[3] == want for p in prompts), arm
+        assert all("Example 1:" not in p[2] for p in prompts), arm  # the block is never in the instructions

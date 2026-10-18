@@ -1,0 +1,47 @@
+Example 1:
+Prove that if $\Omega=\{1,2,3, \ldots\}$ then $S_{\Omega}$ is an infinite group
+
+Lean 4 context (use these imports, opens and definitions; write one theorem):
+```lean4
+import Mathlib
+
+open Fintype Subgroup Set Polynomial Ideal
+open scoped BigOperators
+```
+Answer:
+```lean4
+theorem Dummit_Foote_exercise_1_3_8 : Infinite (Equiv.Perm ℕ) := by sorry
+```
+
+Example 2:
+Use Lagrange's Theorem in the multiplicative group $(\mathbb{Z} / p \mathbb{Z})^{\times}$to prove Fermat's Little Theorem: if $p$ is a prime then $a^{p} \equiv a(\bmod p)$ for all $a \in \mathbb{Z}$.
+
+Lean 4 context (use these imports, opens and definitions; write one theorem):
+```lean4
+import Mathlib
+
+open Fintype Subgroup Set Polynomial Ideal
+open scoped BigOperators
+```
+Answer:
+```lean4
+theorem Dummit_Foote_exercise_3_2_16 (p : ℕ) (hp : Nat.Prime p) (a : ℤ) :
+  a ^ p ≡ a [ZMOD p] := by sorry
+```
+
+Example 3:
+Suppose $p \in \mathcal{P}(\mathbf{C})$ has degree $m$. Prove that $p$ has $m$ distinct roots if and only if $p$ and its derivative $p^{\prime}$ have no roots in common.
+
+Lean 4 context (use these imports, opens and definitions; write one theorem):
+```lean4
+import Mathlib
+
+open Fintype Complex Polynomial LinearMap FiniteDimensional Module Module.End
+open scoped BigOperators
+```
+Answer:
+```lean4
+theorem Axler_exercise_4_4 (p : Polynomial ℂ) (m : ℕ) (hp : p ≠ 0) (hm : m = p.degree) :
+    @card (p.rootSet ℂ) (rootSetFintype p ℂ) = m ↔
+    Disjoint (p.rootSet ℂ) ((Polynomial.derivative p).rootSet ℂ) := by sorry
+```

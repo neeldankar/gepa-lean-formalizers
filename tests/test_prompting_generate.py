@@ -6,7 +6,7 @@ from src.config import load_config
 from src.costs import GpuMeter, summarize
 from src.generate import generate
 from src.llm import BudgetExceeded
-from src.prompting import load_instructions, user_message
+from src.prompting import load_fewshot, load_instructions, user_message
 
 CFG = copy.deepcopy(load_config())
 ITEM = {"informal_stmt": "Show that 1 = 1.", "header": "import Mathlib\nopen Real", "helper": "def g := 1"}
@@ -61,3 +61,17 @@ def test_gpu_meter_logs_hours_and_stops_at_cap(tmp_path):
     import json
     rows = [json.loads(line) for line in (tmp_path / "c.jsonl").read_text().splitlines()]
     assert rows[0]["usd"] == pytest.approx(2.7 / 6) and summarize(rows)["by_run"]["r1"]["calls"] == 2
+
+
+def test_no_fewshot_message_is_byte_identical():
+    # Arm C (and D) carry no few-shot block: the message is exactly what it was before the block existed.
+    c = load_instructions("prompts/arm_C.txt")
+    expected = f"{c}\n{ITEM['informal_stmt']}\n" + "\nLean 4 context (use these imports, opens and definitions; write one theorem):\n```lean4\nimport Mathlib\nopen Real\n\ndef g := 1\n```\n"
+    assert user_message(c, ITEM) == expected and user_message(c, ITEM, "") == expected
+
+
+def test_fewshot_sits_between_instructions_and_the_problem():
+    a, shots = load_instructions("prompts/arm_A.txt"), load_fewshot("prompts/fewshot.txt")
+    msg = user_message(a, ITEM, shots)
+    assert msg.startswith(f"{a}\n\n{shots}\n{ITEM['informal_stmt']}\n")
+    assert msg.split(ITEM["informal_stmt"], 1)[1] == user_message(a, ITEM).split(ITEM["informal_stmt"], 1)[1]

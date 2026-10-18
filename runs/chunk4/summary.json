@@ -413,5 +413,20 @@
   "config": "qwen_a2",
   "prompt": "Write Lean 4 with current Mathlib, not Lean 3.\n- Functions: `fun x => f x`, not `λ x, f x`.\n- Big operators: `∑ i ∈ s, f i` and `∏ i ∈ s, f i`, not `∑ i in s, f i`.\n- Filters: `Filter.atTop` and `Filter.Tendsto` (or `atTop` and `Tendsto` if `Filter` is open), not `at_top`.\n- Names follow Mathlib 4: definitions and structures are UpperCamelCase (`IsOpen`, `Continuous`, `Finset.card`), not Lean 3 snake_case (`is_open`).\n\nTranslate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
   "prompt_sha256": "5479558c048d4d3214c798c81051f68735f0af1226e79fa95af0c87fec233aa1"
+ },
+ "fewshot": {
+  "seed": 0,
+  "pool_size": 43,
+  "ids": [
+   "pnv_218",
+   "pnv_226",
+   "pnv_018"
+  ],
+  "names": [
+   "Dummit_Foote_exercise_1_3_8",
+   "Dummit_Foote_exercise_3_2_16",
+   "Axler_exercise_4_4"
+  ],
+  "path": "prompts/fewshot.txt"
  }
 }

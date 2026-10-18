@@ -115,3 +115,53 @@ def test_gepa_code_never_references_heldout_loaders():
     for module in (runner, gepa_adapter):
         src = inspect.getsource(module)
         assert "heldout_items" not in src and "minif2f" not in src.lower()
+
+
+def test_gepa_never_edits_the_fewshot_suffix(tmp_path):
+    """The optimized component is the instruction text only; the few-shot block is a fixed suffix."""
+    cfg = make_cfg(budget=150)
+    cfg["gepa"]["runs"]["T_s0"]["fewshot"] = "prompts/fewshot.txt"
+    shots = (runner.ROOT / "prompts/fewshot.txt").read_text().rstrip("\n")
+    seed = runner.load_instructions("prompts/arm_A.txt")
+    posts, sent = MockPosts(), []
+    def formalizer(body):
+        sent.append(body["messages"][0]["content"])
+        return posts.formalizer(body)
+    kw = dict(cache_dir=tmp_path / "llm_cache", costs_path=tmp_path / "costs.jsonl")
+    gen = LLMClient(cfg, 3, post=formalizer, base_url="http://mock", api_key_env=None, **kw)
+    judge = LLMClient(cfg, 3, post=posts.judge, **kw)
+    refl = LLMClient(cfg, 3, post=posts.reflection, **kw)
+    checker = AxleChecker(cfg["axle"], client_factory=MockAxleClient, cache_dir=tmp_path / "axle_cache")
+    result = runner.run_gepa(cfg, "T_s0", gen, judge, refl, checker, runs_dir=tmp_path / "runs")
+    assert result["status"] == "done" and posts.calls["reflection"] > 0
+    out = tmp_path / "runs/T_s0"
+    candidates = [c[gepa_adapter.COMPONENT] for c in json.loads((out / "candidates.json").read_text())["candidates"]]
+    assert len(candidates) > 1 and candidates[0] == seed
+    lines = [l for l in shots.splitlines() if l.strip() and not l.startswith("```")]
+    assert not any(l in c for c in candidates for l in lines)          # no candidate carries any example line
+    assert "Example 1:" not in (out / "best_prompt.txt").read_text()
+    assert sent and all(f"\n\n{shots}\n" in m for m in sent)            # every formalizer call carries it verbatim
+    assert all(any(m.startswith(f"{c}\n\n{shots}\n") for c in candidates) for m in sent)  # right after the instructions
+
+
+def test_gepa_trainset_leaves_out_the_fewshot_examples():
+    ids = [it["id"] for it in runner.gepa_trainset(BASE)]
+    train = json.loads((runner.ROOT / "data/splits.json").read_text())["train"]
+    assert len(ids) == 47 and set(ids) <= set(train)
+    assert not set(ids) & set(BASE["fewshot"]["ids"]) and set(train) - set(ids) == set(BASE["fewshot"]["ids"])
+
+
+@pytest.mark.parametrize("fewshot", [None, "prompts/fewshot.txt"])
+def test_run_gepa_passes_the_47_item_trainset(tmp_path, monkeypatch, fewshot):
+    # Every GEPA run (B with the few-shot block, D without) trains on the same 47 items; val is unchanged.
+    seen = {}
+    def fake_optimize(**kw):
+        seen.update(kw)
+        raise runner.BudgetExceeded("stop after capturing the arguments")
+    monkeypatch.setattr(runner.gepa, "optimize", fake_optimize)
+    cfg = make_cfg()
+    if fewshot:
+        cfg["gepa"]["runs"]["T_s0"]["fewshot"] = fewshot
+    run(tmp_path, cfg, MockPosts())
+    assert [it["id"] for it in seen["trainset"]] == [it["id"] for it in runner.gepa_trainset(cfg)]
+    assert len(seen["trainset"]) == 47 and len(seen["valset"]) == 70

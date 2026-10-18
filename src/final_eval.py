@@ -10,22 +10,23 @@ from concurrent.futures import ThreadPoolExecutor
 
 from src.data.firewall import heldout_items
 from src.generate import generate
-from src.prompting import load_instructions
+from src.prompting import load_fewshot, load_instructions
 from src.scoring import memorization
 from src.scoring.score import judge_score, prepare, truth_score
 
 
 def arm_prompts(cfg, arm, runs_dir):
-    """[(run_id, gepa_seed, instructions)]: the fixed prompt, or each GEPA run's best-on-val prompt."""
+    """[(run_id, gepa_seed, instructions, fewshot)]: the fixed prompt, or each GEPA run's best-on-val
+    prompt, with the arm's (or the GEPA run's) fixed few-shot block."""
     spec = cfg["arms"][arm]
     if "gepa_runs" in spec:
-        return [(r, cfg["gepa"]["runs"][r]["seed"], (runs_dir / r / "best_prompt.txt").read_text().rstrip("\n"))
-                for r in spec["gepa_runs"]]
-    return [(None, None, load_instructions(spec["prompt"]))]
+        return [(r, cfg["gepa"]["runs"][r]["seed"], (runs_dir / r / "best_prompt.txt").read_text().rstrip("\n"),
+                 load_fewshot(cfg["gepa"]["runs"][r].get("fewshot"))) for r in spec["gepa_runs"]]
+    return [(None, None, load_instructions(spec["prompt"]), load_fewshot(spec.get("fewshot")))]
 
 
-def score_row(cfg, arm, model_key, run_id, seed, dataset, instructions, item, sample, gen, judge, checker):
-    out = generate(gen, cfg, model_key, instructions, item, sample)
+def score_row(cfg, arm, model_key, run_id, seed, dataset, instructions, item, sample, gen, judge, checker, fewshot=""):
+    out = generate(gen, cfg, model_key, instructions, item, sample, fewshot=fewshot)
     p = prepare(checker, item, out["text"])
     js = judge_score(checker, judge, cfg, item, out["text"], prepared=p)
     ts = truth_score(checker, judge, cfg, item, out["text"], prepared=p)
@@ -51,12 +52,12 @@ def eval_arm(cfg, arm, gen, judge, checker, runs_dir, root, mem_index=None):
     jobs = []
     for dataset in datasets:
         items = heldout_items(dataset, cfg, root=root, runs_dir=runs_dir)
-        for run_id, seed, instructions in arm_prompts(cfg, arm, runs_dir):
+        for run_id, seed, instructions, fewshot in arm_prompts(cfg, arm, runs_dir):
             for item in items:
                 for sample in range(cfg["generation"]["samples"]):
-                    jobs.append((run_id, seed, dataset, instructions, item, sample))
+                    jobs.append((run_id, seed, dataset, instructions, item, sample, fewshot))
     with ThreadPoolExecutor(cfg["generation"]["workers"]) as pool:
-        rows = list(pool.map(lambda j: score_row(cfg, arm, spec["model"], *j, gen, judge, checker), jobs))
+        rows = list(pool.map(lambda j: score_row(cfg, arm, spec["model"], *j[:6], gen, judge, checker, fewshot=j[6]), jobs))
     if mem_index is not None:
         test = [(r, j[4]) for r, j in zip(rows, jobs) if r["dataset"] == "test" and r["normalized"]]
         matches = memorization.exact_matches(checker, mem_index, [it for _, it in test], [r["normalized"] for r, _ in test])

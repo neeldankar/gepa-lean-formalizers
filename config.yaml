@@ -83,24 +83,33 @@ generation:
   workers: 16
 
 arms:
-  A: {model: qwen3-8b, prompt: prompts/arm_A.txt}
+  A: {model: qwen3-8b, prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}
   B: {model: qwen3-8b, gepa_runs: [B_s0, B_s1, B_s2]}
   C: {model: reform-8b, prompt: prompts/arm_C.txt}
   D: {model: reform-8b, gepa_runs: [D_s0, D_s1, D_s2]}
-  E: {model: qwen3-8b, prompt: prompts/arm_E.txt}
-  F: {model: arm_f, prompt: prompts/arm_A.txt, test_only: true}
+  E: {model: qwen3-8b, prompt: prompts/arm_E.txt, fewshot: prompts/fewshot.txt}
+  F: {model: arm_f, prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt, test_only: true}
 
 gepa:
   max_metric_calls: 800            # decide in pilot
   reflection_model: moonshotai/Kimi-K2.6   # placeholder until the pilot; not Qwen, not the reference judge's family
   reflection_max_tokens: 8000
   runs:
-    B_s0: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt}
-    B_s1: {model: qwen3-8b, seed: 1, seed_prompt: prompts/arm_A.txt}
-    B_s2: {model: qwen3-8b, seed: 2, seed_prompt: prompts/arm_A.txt}
+    B_s0: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}
+    B_s1: {model: qwen3-8b, seed: 1, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}
+    B_s2: {model: qwen3-8b, seed: 2, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}
     D_s0: {model: reform-8b, seed: 0, seed_prompt: prompts/arm_C.txt}
     D_s1: {model: reform-8b, seed: 1, seed_prompt: prompts/arm_C.txt}
     D_s2: {model: reform-8b, seed: 2, seed_prompt: prompts/arm_C.txt}
+
+# Fixed few-shot block for arms A, B (as a suffix GEPA can't edit), E and F (prereg draft, chunk 4).
+# Built by `python -m scripts.chunk4 fewshot` from train items only: no helper definitions, and the
+# reference compiles with autoImplicit off.
+fewshot:
+  path: prompts/fewshot.txt
+  n: 3
+  seed: 0
+  ids: [pnv_218, pnv_226, pnv_018]   # the seed-0 draw; `fewshot` checks it. Left out of every GEPA trainset.
 
 # Chunk 4 pilot: val items only.
 pilot:
@@ -110,7 +119,7 @@ pilot:
   arm_f_items: 10          # arm F's model on the first 10 pilot items, for its cost per item
   # The short GEPA run. Kept out of gepa.runs so chunk 5 and the firewall never see it.
   gepa_run_id: pilot_qwen
-  gepa_run: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt, max_metric_calls: 150, enable_thinking: false}
+  gepa_run: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt, max_metric_calls: 150, enable_thinking: false}
 
 gpu:
   type: H100 SXM 80GB            # RunPod, chunk 4 pod (PCIe and NVL were out of capacity)

@@ -12,7 +12,7 @@ from src.config import ROOT
 from src.data.firewall import gepa_items
 from src.gepa_adapter import COMPONENT, AxleOutage, FormalizerAdapter
 from src.llm import BudgetExceeded
-from src.prompting import load_instructions
+from src.prompting import load_fewshot, load_instructions
 
 
 class ReflectionLM:
@@ -28,6 +28,13 @@ class ReflectionLM:
         return self.client.chat(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
 
 
+def gepa_trainset(cfg):
+    """The train split minus the few-shot example items (their answers are in the prompt). Used by
+    every GEPA run, B and D alike; splits.json is unchanged."""
+    examples = set(cfg.get("fewshot", {}).get("ids", []))
+    return [it for it in gepa_items("train") if it["id"] not in examples]
+
+
 def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, runs_dir=ROOT / "runs", on_batch=None):
     spec = cfg["gepa"]["runs"][run_id]
     if "enable_thinking" in spec:  # the chunk 4 pilot run fixes its own thinking mode
@@ -35,12 +42,13 @@ def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, 
         cfg["models"][spec["model"]]["enable_thinking"] = spec["enable_thinking"]
     out_dir = runs_dir / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
-    adapter = FormalizerAdapter(cfg, spec["model"], gen_client, judge_client, checker, on_batch=on_batch)
+    adapter = FormalizerAdapter(cfg, spec["model"], gen_client, judge_client, checker, on_batch=on_batch,
+                                fewshot=load_fewshot(spec.get("fewshot")))
     reflection = ReflectionLM(reflection_client, cfg["gepa"]["reflection_model"], cfg["gepa"]["reflection_max_tokens"])
     try:
         result = gepa.optimize(
             seed_candidate={COMPONENT: load_instructions(spec["seed_prompt"])},
-            trainset=gepa_items("train"),
+            trainset=gepa_trainset(cfg),
             valset=gepa_items("val"),
             adapter=adapter,
             reflection_lm=reflection,

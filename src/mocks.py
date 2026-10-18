@@ -45,7 +45,9 @@ class MockPosts:
     def formalizer(self, body):
         self.calls["formalizer"] += 1
         prompt = body["messages"][0]["content"]
-        item = self._item_in(prompt)
+        # The item's English sits after the last code fence (the few-shot examples) and before the
+        # last context block (each example has its own), so an example's English is never taken for the item.
+        item = self._item_in(prompt.rsplit("\nLean 4 context", 1)[0].rsplit("```", 1)[-1])
         stmt = item["formal_stmt"]
         if "hypothes" not in prompt.split(item["informal_stmt"])[0].lower():
             stmt = _drop_first_hypothesis(stmt)

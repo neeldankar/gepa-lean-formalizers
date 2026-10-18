@@ -1,4 +1,6 @@
-"""GEPA adapter: one text component, `instructions` (prereg Setup, GEPA).
+"""GEPA adapter: one text component, `instructions` (prereg Setup, GEPA). The few-shot block, if
+the run has one, is a fixed suffix sent after the instructions on every call; GEPA never sees or
+edits it, so every candidate (and best_prompt.txt) is instruction text only.
 
 evaluate: formalizer -> judge score (compiled and the optimization judge says faithful), the mean
 over samples per item. Traces keep the English, the extracted Lean, Lean's errors and the judge's
@@ -40,8 +42,8 @@ def feedback_text(trace):
 class FormalizerAdapter:
     propose_new_texts = None  # use GEPA's default reflective proposer
 
-    def __init__(self, cfg, model_key, gen_client, judge_client, checker, on_batch=None):
-        self.cfg, self.model_key = cfg, model_key
+    def __init__(self, cfg, model_key, gen_client, judge_client, checker, on_batch=None, fewshot=""):
+        self.cfg, self.model_key, self.fewshot = cfg, model_key, fewshot
         self.gen_client, self.judge_client, self.checker = gen_client, judge_client, checker
         self.samples = cfg["generation"]["samples"]
         self.workers = cfg["generation"]["workers"]
@@ -49,7 +51,7 @@ class FormalizerAdapter:
         self.metric_calls = 0
 
     def score_one(self, instructions, item, sample):
-        out = generate(self.gen_client, self.cfg, self.model_key, instructions, item, sample)
+        out = generate(self.gen_client, self.cfg, self.model_key, instructions, item, sample, fewshot=self.fewshot)
         js = judge_score(self.checker, self.judge_client, self.cfg, item, out["text"])
         if js["judge_score"] is None:
             raise AxleOutage(f"AXLE outage on {item['id']}: {js['lean_errors'][:1]}")

@@ -33,7 +33,7 @@ from src.data.proofnet import read_jsonl, write_jsonl
 from src.final_eval import read_rows, score_row, write_rows
 from src.generate import formalizer_client, generate
 from src.llm import COSTS_PATH, LLMClient
-from src.prompting import load_instructions
+from src.prompting import context_block, load_fewshot, load_instructions
 from src.scoring import memorization
 from src.scoring.labeling import build_page
 from src.scoring.normalize import normalize_statement
@@ -51,7 +51,12 @@ CONFIGS = {
 }
 # The rerun after the first go check: Neel's arm A with a Lean 4 syntax block, thinking off (Neel's
 # decision). prompts/arm_A.txt is edited in place; the first run's version is in git (commit c475f95).
-RERUN_CONFIGS = {"qwen_a2": ("qwen3-8b", "prompts/arm_A.txt", False)}
+# qwen_a2 is historical: its prompt was arm_A.txt at commit f5faca3 (saved in summary.json "rerun").
+RERUN_CONFIGS = {"qwen_a2": ("qwen3-8b", "prompts/arm_A.txt", False),
+                 # third: arm A back to its first instruction line, plus the fixed few-shot block
+                 "qwen_a3": ("qwen3-8b", "prompts/arm_A.txt", False)}
+RERUN_FEWSHOT = {"qwen_a3": "prompts/fewshot.txt"}
+RERUN_OUT = {"qwen_a2": PILOT_A2, "qwen_a3": RUN_DIR / "pilot_a3.jsonl.gz"}
 ALL_CONFIGS = {**CONFIGS, **RERUN_CONFIGS}
 QWEN_PROMPTS, REFORM_PROMPTS = 5, 4  # final eval: A, B x3, E on Qwen3-8B; C, D x3 on ReForm-8B
 
@@ -72,8 +77,8 @@ def pilot_items(cfg):
 
 
 def all_rows():
-    """Pilot rows from the first run and, if it exists, the rerun."""
-    return read_rows(PILOT) + (read_rows(PILOT_A2) if PILOT_A2.exists() else [])
+    """Pilot rows from the first run and every rerun that exists."""
+    return read_rows(PILOT) + [r for path in RERUN_OUT.values() if path.exists() for r in read_rows(path)]
 
 
 def config_cfg(cfg, name):
@@ -137,12 +142,13 @@ def run_config(cfg, summary, name, items, checker, timing):
     workers = cfg["generation"]["workers"]
     c = config_cfg(cfg, name)
     instructions = load_instructions(prompt)
+    fewshot = load_fewshot(RERUN_FEWSHOT.get(name))
     genc = formalizer_client(c, model_key, CHUNK, run_id=f"pilot_{name}")
     judge = LLMClient(c, CHUNK, run_id=f"pilot_{name}")
     if name not in timing:
         t0 = time.monotonic()  # generation alone, all items at `workers` concurrency
         with ThreadPoolExecutor(workers) as pool:
-            outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it), items))
+            outs = list(pool.map(lambda it: generate(genc, c, model_key, instructions, it, fewshot=fewshot), items))
         seconds = time.monotonic() - t0
         tokens = sum((o.get("usage") or {}).get("completion_tokens") or 0 for o in outs)
         timing[name] = {"items": len(items), "gen_seconds": seconds, "completion_tokens": tokens,
@@ -150,7 +156,7 @@ def run_config(cfg, summary, name, items, checker, timing):
         save_summary(summary)
     with ThreadPoolExecutor(workers) as pool:  # generations now come from the cache
         rs = list(pool.map(lambda it: score_row(c, name, model_key, None, None, "val", instructions, it, 0,
-                                                genc, judge, checker), items))
+                                                genc, judge, checker, fewshot=fewshot), items))
     statements = [r["normalized"] for r in rs if r["normalized"]]
     matched = memorization.exact_matches(checker, memorization.load_index(),
                                          [it for it, r in zip(items, rs) if r["normalized"]], statements)
@@ -182,16 +188,21 @@ def gen(cfg, summary, argv=()):
 
 
 def rerun(cfg, summary, argv=()):
-    """Qwen3-8B, thinking off, with the revised arm A prompt, on the same 30 pilot items."""
+    """Qwen3-8B, thinking off, with a revised arm A prompt, on the same 30 pilot items.
+    --config qwen_a2 (syntax block) or qwen_a3 (few-shot, the default)."""
+    name = argv[argv.index("--config") + 1] if "--config" in argv else "qwen_a3"
     pod(cfg, summary)
     gpu(cfg, summary)
     items = pilot_items(cfg)
     assert [it["id"] for it in items] == summary["gen"]["item_ids"], "pilot items changed"
-    text = load_instructions(RERUN_CONFIGS["qwen_a2"][1])
-    summary["rerun"] = {"config": "qwen_a2", "prompt": text, "prompt_sha256": hashlib.sha256(text.encode()).hexdigest()}
+    text = load_instructions(RERUN_CONFIGS[name][1])
+    fewshot = load_fewshot(RERUN_FEWSHOT.get(name))
+    record = {"config": name, "prompt": text, "prompt_sha256": hashlib.sha256(text.encode()).hexdigest(),
+              "fewshot_sha256": hashlib.sha256(fewshot.encode()).hexdigest() if fewshot else None}
+    summary["rerun" if name == "qwen_a2" else f"rerun_{name}"] = record
     timing = summary.setdefault("gen_timing", {})
-    rows = run_config(cfg, summary, "qwen_a2", items, AxleChecker(cfg["axle"]), timing)
-    write_rows(PILOT_A2, rows)
+    rows = run_config(cfg, summary, name, items, AxleChecker(cfg["axle"]), timing)
+    write_rows(RERUN_OUT[name], rows)
     gpu(cfg, summary)
 
 
@@ -208,9 +219,48 @@ def armf(cfg, summary, argv=()):
                        "finish_reasons": dict(sorted({r["finish_reason"]: sum(x["finish_reason"] == r["finish_reason"] for x in rows) for r in rows}.items()))}
 
 
-# Label mix after the rerun: half Qwen3-8B (the rerun first, topped up from the first thinking-off
-# run), the rest ReForm-8B.
-LABEL_GROUPS = (("qwen_a2", "qwen_nothink"), ("reform",))
+# Label mix: half Qwen3-8B (the latest rerun first, topped up from the earlier thinking-off runs),
+# the rest ReForm-8B.
+LABEL_GROUPS = (("qwen_a3", "qwen_a2", "qwen_nothink"), ("reform",))
+
+
+def fewshot_pool(checker, items):
+    """Train items usable as examples: no helper definitions (an example shows no context), and the
+    reference compiles with autoImplicit off (our rule for candidates; excludes pnv_280)."""
+    from src.scoring.compile import compile_candidate
+    pool = []
+    for it in sorted(items, key=lambda it: it["id"]):
+        if it["helper"].strip():
+            continue
+        if compile_candidate(checker, it, normalize_statement(it["formal_stmt"])).passed:
+            pool.append(it)
+    return pool
+
+
+def sorry_ending(stmt):
+    """The reference text with its proof replaced by exactly `:= by sorry`."""
+    import re
+    head = re.sub(r":=\s*(by\s+)?sorry\s*$", "", stmt.rstrip())
+    assert head != stmt.rstrip(), "reference does not end in sorry"
+    return head.rstrip() + " := by sorry"
+
+
+def fewshot_block(examples):
+    """Each example is laid out like a real query (English, then its context block) and then the answer."""
+    parts = [f"Example {k}:\n{it['informal_stmt']}\n{context_block(it)}Answer:\n```lean4\n{sorry_ending(it['formal_stmt'])}\n```"
+             for k, it in enumerate(examples, 1)]
+    return "\n\n".join(parts)
+
+
+def fewshot(cfg, summary, argv=()):
+    f = cfg["fewshot"]
+    pool = fewshot_pool(AxleChecker(cfg["axle"]), gepa_items("train"))
+    examples = random.Random(f["seed"]).sample(pool, f["n"])
+    (ROOT / f["path"]).write_text(fewshot_block(examples) + "\n")
+    if f.get("ids") != [it["id"] for it in examples]:
+        raise SystemExit(f"config fewshot.ids {f.get('ids')} differs from the seeded draw {[it['id'] for it in examples]}")
+    summary["fewshot"] = {"seed": f["seed"], "pool_size": len(pool), "ids": [it["id"] for it in examples],
+                          "names": [it["name"] for it in examples], "path": f["path"]}
 
 
 def pick_label_rows(rows, cfg, groups=LABEL_GROUPS):
@@ -374,7 +424,7 @@ def project(cfg, summary, argv=()):
     stats = {name: config_stats(rows, crow, name) for name in ALL_CONFIGS if any(r["config"] == name for r in rows)}
     t = summary["gen_timing"]
     run_id = summary["gepa_launch"]["run_id"]
-    qcfg = "qwen_a2" if "qwen_a2" in stats else ("qwen_think" if summary["gepa_launch"]["enable_thinking"] else "qwen_nothink")
+    qcfg = next(k for k in ("qwen_a3", "qwen_a2", "qwen_nothink") if k in stats)
     cand = json.loads((ROOT / "runs" / run_id / "candidates.json").read_text())
     calls = cand["total_metric_calls"]
     gepa_rows = [c for c in crow if c.get("run_id") == run_id]
@@ -459,7 +509,7 @@ def stats(cfg, summary, argv=()):
     """Per-configuration pilot numbers and the go checks that need no labels or GEPA run."""
     rows, crow = all_rows(), read_jsonl(COSTS_PATH)
     summary["stats"] = st = {name: config_stats(rows, crow, name) for name in ALL_CONFIGS if any(r["config"] == name for r in rows)}
-    qwen = [k for k in ("qwen_nothink", "qwen_think", "qwen_a2") if k in st]
+    qwen = [k for k in ("qwen_nothink", "qwen_think", "qwen_a2", "qwen_a3") if k in st]
     summary["go_partial"] = {
         "qwen_truth_faithful_rate": {k: st[k]["truth_faithful_rate"] for k in qwen},
         "qwen_go_10_to_70": {k: 10 <= st[k]["truth_faithful_rate"] <= 70 for k in qwen},
@@ -468,7 +518,7 @@ def stats(cfg, summary, argv=()):
     }
 
 
-STEPS = {"pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
+STEPS = {"fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
          "costs": costs, "project": project}
 
 
