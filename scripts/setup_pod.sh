@@ -32,7 +32,9 @@ LOGS="$WORK/logs"
 
 run "mkdir -p $LOGS"
 # --no-cache-dir: the pod may have only its 50 GB container disk (no separate volume).
-run "$PY -m pip install -q --no-cache-dir vllm==$VLLM -r requirements.txt"
+# vLLM pins its own numpy, which conflicts with ours; on the pod vLLM's wins (the analysis runs on the laptop).
+run "grep -v '^numpy==' requirements.txt > /tmp/requirements_pod.txt"
+run "$PY -m pip install -q --no-cache-dir vllm==$VLLM -r /tmp/requirements_pod.txt"
 # Newer huggingface_hub ships `hf` in place of `huggingface-cli`.
 HF=huggingface-cli
 [ "$DRY" = 0 ] && command -v hf > /dev/null && HF=hf

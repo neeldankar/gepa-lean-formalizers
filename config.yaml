@@ -102,6 +102,16 @@ gepa:
     D_s1: {model: reform-8b, seed: 1, seed_prompt: prompts/arm_C.txt}
     D_s2: {model: reform-8b, seed: 2, seed_prompt: prompts/arm_C.txt}
 
+# Chunk 4 pilot: val items only.
+pilot:
+  val_items: 30
+  seed: 0
+  label_items: 20          # 10 Qwen3-8B (5 per thinking mode) and 10 ReForm-8B, compiled outputs only
+  arm_f_items: 10          # arm F's model on the first 10 pilot items, for its cost per item
+  # The short GEPA run. Kept out of gepa.runs so chunk 5 and the firewall never see it.
+  gepa_run_id: pilot_qwen
+  gepa_run: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt, max_metric_calls: 150, enable_thinking: false}
+
 gpu:
   type: H100 SXM 80GB            # RunPod, chunk 4 pod (PCIe and NVL were out of capacity)
   usd_per_hour: 3.99

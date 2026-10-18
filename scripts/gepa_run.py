@@ -16,7 +16,10 @@ from src.runner import run_gepa
 def main(argv):
     run_id = argv[0]
     chunk = int(argv[argv.index("--chunk") + 1]) if "--chunk" in argv else 5
-    cfg = load_config()
+    run(load_config(), run_id, chunk)
+
+
+def run(cfg, run_id, chunk):
     spec = cfg["gepa"]["runs"][run_id]
     gen = formalizer_client(cfg, spec["model"], chunk, run_id=run_id)
     judge = LLMClient(cfg, chunk, run_id=run_id)

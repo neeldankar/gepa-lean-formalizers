@@ -3,6 +3,7 @@
 Writes runs/<run_id>/: gepa/ (GEPA's own state; it resumes from here after a crash),
 best_prompt.txt, candidates.json and DONE. A budget stop or AXLE outage leaves no DONE marker.
 """
+import copy
 import json
 
 import gepa
@@ -29,6 +30,9 @@ class ReflectionLM:
 
 def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, runs_dir=ROOT / "runs", on_batch=None):
     spec = cfg["gepa"]["runs"][run_id]
+    if "enable_thinking" in spec:  # the chunk 4 pilot run fixes its own thinking mode
+        cfg = copy.deepcopy(cfg)
+        cfg["models"][spec["model"]]["enable_thinking"] = spec["enable_thinking"]
     out_dir = runs_dir / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
     adapter = FormalizerAdapter(cfg, spec["model"], gen_client, judge_client, checker, on_batch=on_batch)
@@ -40,7 +44,7 @@ def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, 
             valset=gepa_items("val"),
             adapter=adapter,
             reflection_lm=reflection,
-            max_metric_calls=cfg["gepa"]["max_metric_calls"],
+            max_metric_calls=spec.get("max_metric_calls", cfg["gepa"]["max_metric_calls"]),
             seed=spec["seed"],
             run_dir=str(out_dir / "gepa"),
         )
