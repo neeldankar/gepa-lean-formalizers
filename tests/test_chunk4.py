@@ -151,3 +151,19 @@ def test_fewshot_pool_and_block_match_the_saved_file():
     assert [it["id"] for it in examples] == f["ids"] == ["pnv_218", "pnv_226", "pnv_018"]  # never redrawn
     assert "open Fintype" in chunk4.fewshot_block(examples).split("Example 3:")[1]           # @card's open line is shown
     assert all(chunk4.sorry_ending(it["formal_stmt"]).endswith(" := by sorry") for it in examples)
+
+
+@pytest.mark.parametrize("check,ok", [
+    ({"kind": "reflection", "new_cost_rows": 1, "finish_reason": "stop", "seed": "S", "new_instruction": "New rules.", "failures": []}, True),
+    ({"kind": "reflection", "new_cost_rows": 1, "finish_reason": "length", "seed": "S", "new_instruction": "New rules.", "failures": []}, False),
+    ({"kind": "reflection", "new_cost_rows": 1, "finish_reason": "stop", "seed": "S", "new_instruction": "S", "failures": []}, False),
+    ({"kind": "reflection", "new_cost_rows": 1, "finish_reason": "stop", "seed": "S", "new_instruction": "", "failures": []}, False),
+    ({"kind": "reflection", "new_cost_rows": 0, "finish_reason": "stop", "seed": "S", "new_instruction": "New.", "failures": ["HTTP 400"]}, False),
+    ({"kind": "reflection", "new_cost_rows": 0, "finish_reason": "stop", "seed": "S", "new_instruction": "New.", "failures": []}, False),  # cached
+    ({"kind": "arm_f", "new_cost_rows": 1, "finish_reason": "stop", "format_failure": False}, True),
+    ({"kind": "arm_f", "new_cost_rows": 1, "finish_reason": "stop", "format_failure": True}, False),
+    ({"kind": "judge", "new_cost_rows": 1, "verdict": "unfaithful"}, True),
+    ({"kind": "judge", "new_cost_rows": 2, "verdict": "unparseable"}, False),
+])
+def test_preflight_verdict(check, ok):
+    assert chunk4.preflight_verdict(check)["pass"] is ok

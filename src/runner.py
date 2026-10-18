@@ -34,10 +34,14 @@ class ReflectionLM:
         messages = [{"role": "user", "content": prompt}] if isinstance(prompt, str) else prompt
         self.calls += 1
         try:
-            return self.client.chat(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
+            out = self.client.chat_full(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
         except Exception as e:
             self.failures.append(f"{type(e).__name__}: {e}"[:500])
             raise
+        if out["finish_reason"] == "length":  # a cut-off reply would become a broken candidate prompt
+            self.failures.append(f"reply cut off at max_tokens={self.max_tokens}")
+            raise ReflectionFailed(self.failures[-1])
+        return out["text"]
 
 
 def gepa_trainset(cfg):

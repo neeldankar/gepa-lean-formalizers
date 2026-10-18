@@ -321,11 +321,11 @@
   }
  },
  "costs": {
-  "usd_total": 7.0390944499999994,
+  "usd_total": 7.7988531499999985,
   "by_chunk": {
    "4": {
-    "calls": 409,
-    "usd": 7.0390944499999994
+    "calls": 418,
+    "usd": 7.7988531499999985
    }
   },
   "by_run": {
@@ -364,6 +364,10 @@
    "pilot_probe": {
     "calls": 3,
     "usd": 0.0005223
+   },
+   "preflight": {
+    "calls": 9,
+    "usd": 0.7597587000000001
    }
   },
   "by_purpose": {
@@ -372,16 +376,16 @@
     "usd": 6.949249999999999
    },
    "generate": {
-    "calls": 238,
-    "usd": 0.0
+    "calls": 239,
+    "usd": 0.10467
    },
    "opt_judge": {
-    "calls": 50,
-    "usd": 0.012992999999999998
+    "calls": 52,
+    "usd": 0.013425899999999998
    },
    "ref_judge": {
-    "calls": 37,
-    "usd": 0.0580911
+    "calls": 39,
+    "usd": 0.060549900000000004
    },
    "gloss": {
     "calls": 40,
@@ -390,10 +394,14 @@
    "probe": {
     "calls": 3,
     "usd": 0.0005223
+   },
+   "reflection": {
+    "calls": 4,
+    "usd": 0.652197
    }
   }
  },
- "costs_all_chunks_usd": 7.072728680000001,
+ "costs_all_chunks_usd": 7.832487380000001,
  "stats": {
   "qwen_nothink": {
    "outputs": 30,
@@ -555,5 +563,96 @@
   "max_metric_calls": 150,
   "enable_thinking": false,
   "started": "2026-10-18T21:28:43+00:00"
+ },
+ "preflight": {
+  "all_pass": true,
+  "checks": {
+   "arm_f_generate": {
+    "pass": true,
+    "reasons": [],
+    "model": "moonshotai/Kimi-K3",
+    "seconds": 79.8,
+    "usd": 0.10467000000000048,
+    "usage": {
+     "prompt_tokens": 645,
+     "completion_tokens": 6849,
+     "total_tokens": 7494,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 6576
+     }
+    }
+   },
+   "opt_judge_pnv_258": {
+    "pass": true,
+    "reasons": [],
+    "model": "openai/gpt-oss-120b",
+    "seconds": 1.9,
+    "usd": 0.00026625000000013443,
+    "usage": null
+   },
+   "ref_judge_pnv_258": {
+    "pass": true,
+    "reasons": [],
+    "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+    "seconds": 0.5,
+    "usd": 0.0003035999999996264,
+    "usage": null
+   },
+   "opt_judge_pnv_260": {
+    "pass": true,
+    "reasons": [],
+    "model": "openai/gpt-oss-120b",
+    "seconds": 1.1,
+    "usd": 0.00016664999999971286,
+    "usage": null
+   },
+   "ref_judge_pnv_260": {
+    "pass": true,
+    "reasons": [],
+    "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+    "seconds": 7.2,
+    "usd": 0.00215520000000069,
+    "usage": null
+   },
+   "reflection_minibatch_3": {
+    "pass": true,
+    "reasons": [],
+    "model": "moonshotai/Kimi-K3",
+    "seconds": 66.7,
+    "usd": 0.07330799999999993,
+    "usage": {
+     "prompt_tokens": 971,
+     "completion_tokens": 4693,
+     "total_tokens": 5664,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 3746
+     }
+    }
+   },
+   "reflection_long_15": {
+    "pass": true,
+    "reasons": [],
+    "model": "moonshotai/Kimi-K3",
+    "seconds": 259.5,
+    "usd": 0.3744329999999998,
+    "usage": {
+     "prompt_tokens": 3611,
+     "completion_tokens": 24240,
+     "total_tokens": 27851,
+     "prompt_tokens_details": {
+      "cached_tokens": 3456
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 22225
+     }
+    }
+   }
+  }
  }
 }

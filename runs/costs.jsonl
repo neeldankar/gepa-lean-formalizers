@@ -463,3 +463,12 @@
 {"time": "2026-10-18T21:33:08+00:00", "chunk": 4, "run_id": "pilot_probe", "purpose": "probe", "model": "zai-org/GLM-5.3", "prompt_tokens": 19, "completion_tokens": 8, "usd": 6.18e-05}
 {"time": "2026-10-18T21:33:08+00:00", "chunk": 4, "run_id": "pilot_probe", "purpose": "probe", "model": "MiniMaxAI/MiniMax-M3", "prompt_tokens": 183, "completion_tokens": 8, "usd": 6.45e-05}
 {"time": "2026-10-18T21:31:04+00:00", "chunk": 4, "run_id": "pod_session", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.31551794383806564, "hours": 0.07907717890678337}
+{"time": "2026-10-18T21:43:01+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 971, "completion_tokens": 4714, "usd": 0.073623}
+{"time": "2026-10-18T21:44:50+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 3611, "completion_tokens": 8000, "usd": 0.130833}
+{"time": "2026-10-18T21:46:09+00:00", "chunk": 4, "run_id": "preflight", "purpose": "generate", "model": "moonshotai/Kimi-K3", "prompt_tokens": 645, "completion_tokens": 6849, "usd": 0.10467}
+{"time": "2026-10-18T21:46:11+00:00", "chunk": 4, "run_id": "preflight", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 335, "completion_tokens": 360, "usd": 0.00026625}
+{"time": "2026-10-18T21:46:12+00:00", "chunk": 4, "run_id": "preflight", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 512, "completion_tokens": 125, "usd": 0.0003036}
+{"time": "2026-10-18T21:46:13+00:00", "chunk": 4, "run_id": "preflight", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 275, "completion_tokens": 209, "usd": 0.00016664999999999998}
+{"time": "2026-10-18T21:46:20+00:00", "chunk": 4, "run_id": "preflight", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 420, "completion_tokens": 1691, "usd": 0.0021552}
+{"time": "2026-10-18T21:48:27+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 971, "completion_tokens": 4693, "usd": 0.073308}
+{"time": "2026-10-18T21:52:46+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 3611, "completion_tokens": 24240, "usd": 0.374433}

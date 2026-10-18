@@ -38,7 +38,8 @@ llm:
     openai/gpt-oss-120b: {input: 0.15, output: 0.6}
     deepseek-ai/DeepSeek-V4.1-Flash: {input: 0.3, output: 1.2}
     zai-org/GLM-5.3-Flash: {input: 0.15, output: 0.5}
-    moonshotai/Kimi-K2.6: {input: 1.2, output: 4.5}
+    moonshotai/Kimi-K2.6: {input: 1.2, output: 4.5}   # no longer served serverless (chunk 4)
+    moonshotai/Kimi-K3: {input: 3, output: 15}
     Qwen/Qwen3.5-9B: {input: 0.17, output: 0.25}
     qwen3-8b: {input: 0, output: 0}   # served by vLLM on the pod; GPU time is logged separately
     reform-8b: {input: 0, output: 0}
@@ -69,8 +70,8 @@ models:
     base_url: https://api.together.xyz/v1
     api_key_env: TOGETHER_API_KEY
     enable_thinking: false
-  arm_f:                       # arm F's frontier model, through Together; placeholder until the pilot
-    served_name: moonshotai/Kimi-K2.6
+  arm_f:                       # arm F's frontier model, through Together; Neel's pick, chunk 4
+    served_name: moonshotai/Kimi-K3
     base_url: https://api.together.xyz/v1
     api_key_env: TOGETHER_API_KEY
 
@@ -92,8 +93,8 @@ arms:
 
 gepa:
   max_metric_calls: 800            # decide in pilot
-  reflection_model: moonshotai/Kimi-K2.6   # placeholder until the pilot; not Qwen, not the reference judge's family
-  reflection_max_tokens: 8000
+  reflection_model: moonshotai/Kimi-K3     # Neel's pick, chunk 4 (fallback zai-org/GLM-5.3 if the projection goes over); not Qwen, not the reference judge's family
+  reflection_max_tokens: 32000     # Kimi-K3 reasons first; 8000 cut off a 15-record reflection (chunk 4 preflight)
   runs:
     B_s0: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}
     B_s1: {model: qwen3-8b, seed: 1, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}

@@ -33,7 +33,7 @@ from src.data.proofnet import read_jsonl, write_jsonl
 from src.final_eval import read_rows, score_row, write_rows
 from src.generate import formalizer_client, generate
 from src.llm import COSTS_PATH, LLMClient
-from src.prompting import context_block, load_fewshot, load_instructions
+from src.prompting import context_block, load_fewshot, load_instructions, user_message
 from src.scoring import memorization
 from src.scoring.labeling import build_page
 from src.scoring.normalize import normalize_statement
@@ -261,6 +261,127 @@ def fewshot(cfg, summary, argv=()):
         raise SystemExit(f"config fewshot.ids {f.get('ids')} differs from the seeded draw {[it['id'] for it in examples]}")
     summary["fewshot"] = {"seed": f["seed"], "pool_size": len(pool), "ids": [it["id"] for it in examples],
                           "names": [it["name"] for it in examples], "path": f["path"]}
+
+
+def preflight_verdict(check):
+    """Pass/fail for one live API check: a new paid cost row (so not a cache hit), a normal stop, and
+    the check's own content test."""
+    reasons = []
+    if not check.get("new_cost_rows"):
+        reasons.append("no new cost row (cache hit or not called)")
+    if check.get("finish_reason") not in (None, "stop") or check.get("finish_reason") == "length":
+        reasons.append(f"finish_reason {check.get('finish_reason')}")
+    kind = check["kind"]
+    if kind == "reflection":
+        new = (check.get("new_instruction") or "").strip()
+        if not new or new == check["seed"].strip():
+            reasons.append("no new instruction")
+        if check.get("failures"):
+            reasons.append(f"reflection failures: {check['failures'][:1]}")
+    elif kind == "arm_f" and check.get("format_failure"):
+        reasons.append("no Lean statement extracted")
+    elif kind == "judge" and check.get("verdict") not in ("faithful", "unfaithful"):
+        reasons.append(f"verdict {check.get('verdict')}")
+    return {"pass": not reasons, "reasons": reasons}
+
+
+def preflight(cfg, summary, argv=()):
+    """Live tests of every API model GEPA and the final eval need, before paying for a pod."""
+    from gepa.strategies.instruction_proposal import InstructionProposalSignature
+    from src.gepa_adapter import feedback_text
+    from src.runner import ReflectionLM
+    from src.scoring import judge as judges
+    from src.scoring.score import prepare
+
+    def snap():
+        rows = read_jsonl(COSTS_PATH) if COSTS_PATH.exists() else []
+        return len(rows), sum(r["usd"] for r in rows)
+
+    def delta(before):
+        n, usd = snap()
+        return {"new_cost_rows": n - before[0], "usd": usd - before[1]}
+
+    only = set(argv[argv.index("--only") + 1].split(",")) if "--only" in argv else None
+    want = lambda name: only is None or name in only
+    checker = AxleChecker(cfg["axle"])
+    client = LLMClient(cfg, CHUNK, run_id="preflight")
+    val = {it["id"]: it for it in gepa_items("val")}
+    rows = read_rows(RERUN_OUT["qwen_a3"])
+    seed = load_instructions("prompts/arm_A.txt")
+    checks = []
+
+    def records(rs):
+        out = []
+        for r in rs:
+            p = prepare(checker, val[r["item_id"]], r["output"])
+            trace = {**p, "judge": {"verdict": r["judge_verdict"], "reason": r["judge_reason"]} if r["compiled"] else None,
+                     "score": r["judge_score"] or 0}
+            out.append({"Inputs": user_message("", val[r["item_id"]]).lstrip("\n"),
+                        "Generated Outputs": p["extracted"] or "(no Lean statement found)", "Feedback": feedback_text(trace)})
+        return out
+
+    for label, rs in (("reflection_minibatch_3", rows[:3]), ("reflection_long_15", rows[3:18])):
+        if not want(label):
+            continue
+        prompt = InstructionProposalSignature.prompt_renderer({"current_instruction_doc": seed, "dataset_with_feedback": records(rs)})
+        lm = ReflectionLM(client, cfg["gepa"]["reflection_model"], cfg["gepa"]["reflection_max_tokens"])
+        before, t0 = snap(), time.monotonic()
+        try:
+            text = lm(prompt)
+        except Exception:
+            text = ""
+        reply = client.chat_full(cfg["gepa"]["reflection_model"], [{"role": "user", "content": prompt}], purpose="reflection",
+                                 max_tokens=cfg["gepa"]["reflection_max_tokens"]) if lm.calls and not any(
+            "HTTP" in f or "Error" in f for f in lm.failures) else {}
+        seconds = time.monotonic() - t0
+        full = reply  # the same call again is a cache hit: it returns finish_reason and usage
+        new = InstructionProposalSignature.output_extractor(text)["new_instruction"] if text else ""
+        checks.append({"name": label, "kind": "reflection", "model": cfg["gepa"]["reflection_model"], "records": len(rs),
+                       "prompt_chars": len(prompt), "seconds": seconds, **delta(before),
+                       "finish_reason": full.get("finish_reason"), "usage": full.get("usage"), "failures": lm.failures,
+                       "seed": seed, "new_instruction": new})
+
+    train = sorted(gepa_items("train"), key=lambda it: it["id"])
+    item = next(it for it in train if it["id"] not in cfg["fewshot"]["ids"])
+    genc = formalizer_client(cfg, "arm_f", CHUNK, run_id="preflight")
+    before, t0 = snap(), time.monotonic()
+    out = generate(genc, cfg, "arm_f", load_instructions(cfg["arms"]["F"]["prompt"]), item,
+                   fewshot=load_fewshot(cfg["arms"]["F"].get("fewshot"))) if want("arm_f_generate") else None
+    p = prepare(checker, item, out["text"]) if out else None
+    if out: checks.append({"name": "arm_f_generate", "kind": "arm_f", "model": cfg["models"]["arm_f"]["served_name"], "item_id": item["id"],
+                   "seconds": time.monotonic() - t0, **delta(before), "finish_reason": out["finish_reason"],
+                   "usage": out.get("usage"), "format_failure": p["format_failure"], "compiled": p["compiled"],
+                   "extracted": p["extracted"]})
+
+    for r in [r for r in rows if r["compiled"]][:2]:
+        if not want(f"opt_judge_{r['item_id']}"):
+            continue
+        it = val[r["item_id"]]
+        for name, call, model in (("opt_judge", lambda: judges.optimization_judge(client, cfg, it["informal_stmt"], r["normalized"]),
+                                   cfg["judges"]["optimization"]),
+                                  ("ref_judge", lambda: judges.reference_judge(client, cfg, it["informal_stmt"],
+                                                                               normalize_statement(it["formal_stmt"]), r["normalized"]),
+                                   cfg["judges"]["reference"])):
+            before, t0 = snap(), time.monotonic()
+            v = call()
+            checks.append({"name": f"{name}_{r['item_id']}", "kind": "judge", "model": model, "seconds": time.monotonic() - t0,
+                           **delta(before), "verdict": v["verdict"], "reason": v["reason"][:300]})
+
+    for c in checks:
+        c.update(preflight_verdict(c), max_tokens=cfg["gepa"]["reflection_max_tokens"] if c["kind"] == "reflection" else None)
+    path = RUN_DIR / "api_preflight.json"
+    if only is not None and path.exists():  # rerun of some checks: keep the others, record the earlier attempt
+        old = json.loads(path.read_text())
+        rerun = {c["name"] for c in checks}
+        earlier = old.get("earlier_attempts", []) + [c for c in old["checks"] if c["name"] in rerun]
+        checks = [c for c in old["checks"] if c["name"] not in rerun] + checks
+        path.write_text(json.dumps({"checks": checks, "earlier_attempts": earlier}, indent=1, ensure_ascii=False) + "\n")
+    else:
+        path.write_text(json.dumps({"checks": checks}, indent=1, ensure_ascii=False) + "\n")
+    summary["preflight"] = {"all_pass": all(c["pass"] for c in checks),
+                            "checks": {c["name"]: {"pass": c["pass"], "reasons": c["reasons"], "model": c["model"],
+                                                   "seconds": round(c["seconds"], 1), "usd": c["usd"], "usage": c.get("usage")}
+                                       for c in checks}}
 
 
 def pick_label_rows(rows, cfg, groups=LABEL_GROUPS):
@@ -518,7 +639,7 @@ def stats(cfg, summary, argv=()):
     }
 
 
-STEPS = {"fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
+STEPS = {"preflight": preflight, "fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
          "costs": costs, "project": project}
 
 

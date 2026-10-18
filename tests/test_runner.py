@@ -180,3 +180,18 @@ def test_failed_reflection_stops_the_run_without_done(tmp_path):
     assert result["status"] == "stopped" and "reflection" in result["reason"]
     assert (out / "STOPPED").exists() and not (out / "DONE").exists() and not (out / "best_prompt.txt").exists()
     assert result["metric_calls"] < 150  # it stops at the first evaluation after the failure, not at the budget
+
+
+def test_cut_off_reflection_reply_stops_the_run(tmp_path):
+    """A reflection reply that hits max_tokens (Kimi-K3 reasons first) must not become a candidate."""
+    cfg = make_cfg(budget=150)
+    posts = MockPosts()
+    full = posts.reflection
+    def cut_off(body):
+        reply = full(body)
+        reply["choices"][0]["finish_reason"] = "length"
+        return reply
+    posts.reflection = cut_off
+    result, _ = run(tmp_path, cfg, posts)
+    assert result["status"] == "stopped" and "cut off" in result["reason"]
+    assert not (tmp_path / "runs/T_s0/DONE").exists()
