@@ -180,3 +180,36 @@ def test_gepa_refuses_a_finished_run_dir(tmp_path):
     (tmp_path / "pilot_qwen/DONE").write_text("ok\n")
     with pytest.raises(SystemExit):
         chunk4.refuse_finished_run(tmp_path / "pilot_qwen")
+
+
+def test_preflight_gate():
+    from datetime import datetime, timezone
+    now = datetime(2026, 10, 22, 2, 0, tzinfo=timezone.utc)
+    passing = {"time": "2026-10-21T21:40:00+00:00", "checks": [{"name": n, "pass": True, "reasons": []} for n in chunk4.PREFLIGHT_CHECKS]}
+    assert chunk4.preflight_gate(passing, now) == (True, [])
+    one_failed = {**passing, "checks": [{**c, "pass": c["name"] != "reflection_long_15", "reasons": ["finish_reason length"]} for c in passing["checks"]]}
+    assert not chunk4.preflight_gate(one_failed, now)[0]
+    missing = {**passing, "checks": passing["checks"][1:]}
+    assert not chunk4.preflight_gate(missing, now)[0]
+    stale = {**passing, "time": "2026-10-20T21:40:00+00:00"}
+    ok, reasons = chunk4.preflight_gate(stale, now)
+    assert not ok and "old" in reasons[0]
+
+
+def test_reliability_and_overnight_projection():
+    costs = [{"run_id": "pilot_qwen", "purpose": "reflection", "seconds": s} for s in (100, 300, 150, 900)]
+    costs += [{"run_id": "pilot_qwen", "purpose": "opt_judge", "seconds": 2}, {"run_id": "other", "purpose": "reflection", "seconds": 5000}]
+    fails = [{"run_id": "pilot_qwen", "purpose": "reflection", "kind": "timeout"}, {"run_id": "pilot_qwen", "purpose": "ref_judge", "kind": "RetryableError"}]
+    rel = chunk4.reliability(costs, fails, "pilot_qwen")
+    assert (rel["reflection_calls"], rel["reflection_median_s"], rel["reflection_slowest_s"]) == (4, 300, 900)
+    assert rel["failed_attempts"] == 2 and rel["timed_out"] == 1 and rel["reflection_hang_rate"] == pytest.approx(1 / 5)
+    cfg = copy.deepcopy(CFG)
+    cfg["gepa"]["max_metric_calls"] = 800
+    cfg["llm"]["purpose_limits"] = {"reflection": {"timeout_seconds": 600, "retries": 1}}
+    m = {"gen_s_per_item": {"qwen": 1.0, "reform": 4.0}, "gepa_wall_s_per_call": 9.0, "pilot_metric_calls": 160,
+         "final_eval_hours": 2.0, "setup_hours": 0.25}
+    o = chunk4.overnight_hours(m, rel, cfg)
+    assert o["gepa_parallel_h"] == pytest.approx(800 * 9 * 4 / 3600)          # 8 h: ReForm-8B runs set the pace
+    assert o["reflection_calls_per_run"] == pytest.approx(4 / 160 * 800)       # 20 reflections per run
+    assert o["expected_hang_stall_h"] == pytest.approx(0.2 * 20 * 600 / 3600)  # 4 hangs x 10 min
+    assert o["total_h"] == pytest.approx(8 + 0.2 * 20 * 600 / 3600 + 2 + 0.25)

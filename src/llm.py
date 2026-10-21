@@ -19,6 +19,7 @@ from pathlib import Path
 from src.config import ROOT, load_env
 
 COSTS_PATH = ROOT / "runs/costs.jsonl"
+FAILURES_PATH = ROOT / "runs/api_failures.jsonl"  # every failed attempt: timeouts, retryable and other errors
 
 
 class BudgetExceeded(RuntimeError):
@@ -61,11 +62,13 @@ class LLMClient:
         self.long_purposes = set(llm.get("long_purposes", []))
         self.long_timeout = llm.get("long_timeout_seconds", self.timeout)
         self.long_retries = llm.get("long_retries", self.retries)
+        self.purpose_limits = llm.get("purpose_limits", {})  # per purpose, wins over the two above
         self.chunk = chunk
         self.cap = cfg["budget"]["chunk_caps_usd"][chunk]
         self.cache_dir = Path(cache_dir or ROOT / llm["cache_dir"])
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.costs_path = Path(costs_path)
+        self.failures_path = self.costs_path.parent / FAILURES_PATH.name
         self.post = post or self._post
         self.paid_calls = 0
 
@@ -86,8 +89,10 @@ class LLMClient:
         with self.lock:
             if spent(self.chunk, self.costs_path) >= self.cap:
                 raise BudgetExceeded(f"chunk {self.chunk} reached its ${self.cap} cap")
-        long = purpose in self.long_purposes
-        data = self.with_retries(body, self.long_timeout if long else self.timeout, self.long_retries if long else self.retries)
+        timeout, retries = self.limits(purpose)
+        t0 = time.monotonic()
+        data = self.with_retries(body, timeout, retries, purpose=purpose)
+        seconds = time.monotonic() - t0
         choice = data["choices"][0]
         out = {"text": choice["message"].get("content") or "", "usage": data.get("usage") or {},
                "finish_reason": choice.get("finish_reason")}
@@ -101,6 +106,7 @@ class LLMClient:
                     "run_id": self.run_id, "purpose": purpose, "model": model,
                     "prompt_tokens": out["usage"].get("prompt_tokens", 0),
                     "completion_tokens": out["usage"].get("completion_tokens", 0), "usd": usd,
+                    "seconds": round(seconds, 1),
                 }) + "\n")
         tmp = path.with_suffix(f".tmp{uuid.uuid4().hex}")  # unique: threads may write the same key
         tmp.write_text(json.dumps(out))
@@ -113,17 +119,43 @@ class LLMClient:
         p = self.prices[model]
         return (usage.get("prompt_tokens", 0) * p["input"] + usage.get("completion_tokens", 0) * p["output"]) / 1e6
 
-    def with_retries(self, body, timeout, retries):
+    def limits(self, purpose):
+        """(hard timeout per attempt in seconds, retries) for a call made for `purpose`."""
+        if purpose in self.purpose_limits:
+            lim = self.purpose_limits[purpose]
+            return lim["timeout_seconds"], lim["retries"]
+        if purpose in self.long_purposes:
+            return self.long_timeout, self.long_retries
+        return self.timeout, self.retries
+
+    def log_failure(self, body, purpose, error, seconds):
+        with self.lock:
+            self.failures_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.failures_path, "a") as f:
+                f.write(json.dumps({
+                    "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "chunk": self.chunk,
+                    "run_id": self.run_id, "purpose": purpose, "model": body.get("model"),
+                    "kind": "timeout" if isinstance(error, CallTimeout) else type(error).__name__,
+                    "error": str(error)[:300], "seconds": round(seconds, 1),
+                }) + "\n")
+
+    def with_retries(self, body, timeout, retries, purpose=None):
         """At most retries + 1 attempts, each cut off after `timeout` seconds of wall clock however the
-        server behaves. Exhausting them raises LLMError, which every caller treats as a failure."""
+        server behaves. Every failed attempt is logged; exhausting them raises LLMError, which every
+        caller treats as a failure."""
         last = None
         for attempt in range(retries + 1):
+            t0 = time.monotonic()
             try:
                 return self.call_with_deadline(body, timeout)
             except RetryableError as e:
+                self.log_failure(body, purpose, e, time.monotonic() - t0)
                 last = e
                 if attempt < retries:
                     time.sleep(self.backoff * 2**attempt)
+            except LLMError as e:
+                self.log_failure(body, purpose, e, time.monotonic() - t0)
+                raise
         raise LLMError(f"gave up after {retries + 1} attempts: {last}")
 
     def call_with_deadline(self, body, timeout):

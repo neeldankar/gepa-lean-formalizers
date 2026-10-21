@@ -285,6 +285,34 @@ def preflight_verdict(check):
     return {"pass": not reasons, "reasons": reasons}
 
 
+PREFLIGHT_CHECKS = ("reflection_minibatch_3", "reflection_long_15", "arm_f_generate",
+                    "opt_judge_pnv_258", "ref_judge_pnv_258", "opt_judge_pnv_260", "ref_judge_pnv_260")
+
+
+def preflight_gate(report, now, max_age_hours=24):
+    """(ok, reasons): every preflight check present and passed, the latest run under max_age_hours old."""
+    reasons = []
+    by_name = {c["name"]: c for c in report.get("checks", [])}
+    for name in PREFLIGHT_CHECKS:
+        if name not in by_name:
+            reasons.append(f"{name}: missing")
+        elif not by_name[name]["pass"]:
+            reasons.append(f"{name}: failed {by_name[name]['reasons']}")
+    stamp = report.get("time") or (report.get("date", "1970-01-01") + "T00:00:00+00:00")
+    age = (now - datetime.fromisoformat(stamp)).total_seconds() / 3600
+    if age > max_age_hours:
+        reasons.append(f"preflight is {age:.1f} h old (limit {max_age_hours} h)")
+    return not reasons, reasons
+
+
+def preflight_ok(cfg, summary, argv=()):
+    """Exit 0 only if the committed preflight passed in full and is recent (the pod's gate before GEPA)."""
+    ok, reasons = preflight_gate(json.loads((RUN_DIR / "api_preflight.json").read_text()), datetime.now(timezone.utc))
+    print("preflight gate:", "open" if ok else "closed", *reasons, sep="\n  ")
+    if not ok:
+        raise SystemExit(1)
+
+
 def fresh_cache_dir(root=ROOT / "cache/preflight"):
     """A cache directory no earlier call has used, so the preflight's calls cannot be cache hits."""
     path = root / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
@@ -386,6 +414,7 @@ def preflight(cfg, summary, argv=()):
         if not dated.exists():
             dated.write_text(path.read_text())
     checks_date = datetime.now(timezone.utc).date().isoformat()
+    checks_time = datetime.now(timezone.utc).isoformat(timespec="seconds")
     if only is not None and path.exists() and json.loads(path.read_text()).get("date") != checks_date:
         old = json.loads(path.read_text())  # an older day's file: archive it, never merge across days
         dated = RUN_DIR / f"api_preflight_{old.get('date', '2026-10-18')}.json"
@@ -397,11 +426,11 @@ def preflight(cfg, summary, argv=()):
         rerun = {c["name"] for c in checks}
         earlier = old.get("earlier_attempts", []) + [c for c in old["checks"] if c["name"] in rerun]
         checks = [c for c in old["checks"] if c["name"] not in rerun] + checks
-        path.write_text(json.dumps({"date": checks_date, "cache_dir": str(cache) if cache else None, "checks": checks,
-                                    "earlier_attempts": earlier}, indent=1, ensure_ascii=False) + "\n")
+        path.write_text(json.dumps({"date": checks_date, "time": checks_time, "cache_dir": str(cache) if cache else None,
+                                    "checks": checks, "earlier_attempts": earlier}, indent=1, ensure_ascii=False) + "\n")
     else:
-        path.write_text(json.dumps({"date": checks_date, "cache_dir": str(cache) if cache else None, "checks": checks},
-                                   indent=1, ensure_ascii=False) + "\n")
+        path.write_text(json.dumps({"date": checks_date, "time": checks_time, "cache_dir": str(cache) if cache else None,
+                                    "checks": checks}, indent=1, ensure_ascii=False) + "\n")
     summary["preflight"] = {"all_pass": all(c["pass"] for c in checks),
                             "checks": {c["name"]: {"pass": c["pass"], "reasons": c["reasons"], "model": c["model"],
                                                    "seconds": round(c["seconds"], 1), "usd": c["usd"], "usage": c.get("usage")}
@@ -533,6 +562,33 @@ def projection(m, cfg):
     }
 
 
+def reliability(cost_rows, failure_rows, run_id):
+    """Reflection latency and hung or failed API attempts for one GEPA run, from the raw logs."""
+    secs = sorted(c["seconds"] for c in cost_rows if c.get("run_id") == run_id and c["purpose"] == "reflection" and "seconds" in c)
+    fails = [f for f in failure_rows if f.get("run_id") == run_id]
+    timeouts = [f for f in fails if f["kind"] == "timeout"]
+    refl_fails = [f for f in fails if f["purpose"] == "reflection"]
+    attempts = len(secs) + len(refl_fails)
+    return {"reflection_calls": len(secs), "reflection_median_s": secs[len(secs) // 2] if secs else None,
+            "reflection_slowest_s": secs[-1] if secs else None, "failed_attempts": len(fails), "timed_out": len(timeouts),
+            "reflection_hang_rate": len(refl_fails) / attempts if attempts else 0.0}
+
+
+def overnight_hours(m, rel, cfg):
+    """Projected chunk 5 wall clock (hours): the six GEPA runs in parallel (the slowest, ReForm-8B, sets the
+    pace, scaled from the pilot's wall time per metric call), expected stall from hung reflection calls
+    (hang rate x projected reflection calls per run x the reflection cap), the final eval, and setup."""
+    budget = cfg["gepa"]["max_metric_calls"]
+    reform_ratio = m["gen_s_per_item"]["reform"] / m["gen_s_per_item"]["qwen"]
+    gepa = budget * m["gepa_wall_s_per_call"] * max(1.0, reform_ratio) / 3600
+    calls_per_run = rel["reflection_calls"] / m["pilot_metric_calls"] * budget if m["pilot_metric_calls"] else 0.0
+    cap = cfg["llm"].get("purpose_limits", {}).get("reflection", {}).get("timeout_seconds", cfg["llm"]["long_timeout_seconds"])
+    stall = rel["reflection_hang_rate"] * calls_per_run * cap / 3600
+    final = m["final_eval_hours"]
+    return {"gepa_parallel_h": gepa, "expected_hang_stall_h": stall, "final_eval_h": final, "setup_h": m["setup_hours"],
+            "total_h": gepa + stall + final + m["setup_hours"], "reflection_calls_per_run": calls_per_run}
+
+
 def go_checks(qwen_truth_rate, ref_agree, exact_match_rates, projected_total):
     """The four go criteria from prereg "Pilot and go criteria"."""
     return [
@@ -583,6 +639,8 @@ def project(cfg, summary, argv=()):
     calls = cand["total_metric_calls"]
     gepa_rows = [c for c in crow if c.get("run_id") == run_id]
     gepa_hours = sum(c.get("hours", 0) for c in gepa_rows if c["purpose"] == "gpu")
+    failures_path = COSTS_PATH.parent / "api_failures.jsonl"
+    rel = reliability(crow, read_jsonl(failures_path) if failures_path.exists() else [], run_id)
     gepa_api = sum(c["usd"] for c in gepa_rows if c["purpose"] != "gpu")
     gloss = [c for c in crow if c.get("run_id") == "pilot_label"]
     armf_rows = [c for c in crow if c.get("run_id") == "pilot_arm_f"]
@@ -607,6 +665,9 @@ def project(cfg, summary, argv=()):
     ref_agree = summary["agree"]["ref_judge"]["agree"] if "agree" in summary else None
     summary["go"] = go_checks(stats[qcfg]["truth_faithful_rate"], ref_agree if ref_agree is not None else -1,
                               {k: v["exact_match_rate"] for k, v in stats.items()}, proj["total_usd_upper"])
+    m2 = {**m, "gepa_wall_s_per_call": gepa_hours * 3600 / calls, "pilot_metric_calls": calls,
+          "final_eval_hours": proj["final_eval_gpu_hours"]}
+    summary["go_info"] = {"reliability": rel, "overnight_hours": overnight_hours(m2, rel, cfg)}
 
 
 # Patterns behind compile failures, counted on the raw output's extracted statement.
@@ -698,7 +759,7 @@ def relabel(cfg, summary, argv=()):
     summary["relabel"] = {"records": len(records), "page_key": "chunk4-pilot", "out": str(out)}
 
 
-STEPS = {"relabel": relabel, "preflight": preflight, "fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
+STEPS = {"preflight_ok": preflight_ok, "relabel": relabel, "preflight": preflight, "fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
          "costs": costs, "project": project}
 
 
@@ -727,6 +788,11 @@ def report():
     print("\n| Go check | Value | Go |\n| --- | --- | --- |")
     for c in s["go"]:
         print(f"| {c['check']} | {c['value']:.1f} | {'yes' if c['go'] else 'NO'} |")
+    if "go_info" in s:
+        r, o = s["go_info"]["reliability"], s["go_info"]["overnight_hours"]
+        print(f"| Reflection latency (median / slowest) | {r['reflection_median_s']} s / {r['reflection_slowest_s']} s | info |")
+        print(f"| Hung or timed-out calls | {r['timed_out']} timed out, {r['failed_attempts']} failed attempts; reflection hang rate {100 * r['reflection_hang_rate']:.1f}% | info |")
+        print(f"| Projected overnight run | {o['total_h']:.1f} h (GEPA {o['gepa_parallel_h']:.1f} + hang stall {o['expected_hang_stall_h']:.1f} + final eval {o['final_eval_h']:.1f} + setup {o['setup_h']:.1f}) | info |")
     c = s["costs"]
     print(f"\n- Chunk 4 cost: ${c['usd_total']:.2f}; by purpose: "
           + ", ".join(f"{k} {v['calls']} rows ${v['usd']:.3f}" for k, v in c["by_purpose"].items()))

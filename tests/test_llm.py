@@ -69,7 +69,8 @@ def hanging_client(tmp_path, post, timeout=0.3, retries=1):
     from src.config import load_config
     from src.llm import LLMClient
     cfg = copy.deepcopy(load_config())
-    cfg["llm"].update(timeout_seconds=timeout, long_timeout_seconds=timeout, retries=retries, long_retries=retries, backoff_seconds=0)
+    cfg["llm"].update(timeout_seconds=timeout, long_timeout_seconds=timeout, retries=retries, long_retries=retries, backoff_seconds=0,
+                      purpose_limits={})
     cfg["llm"]["prices"]["m"] = {"input": 0, "output": 0}
     return LLMClient(cfg, 4, cache_dir=tmp_path / "c", costs_path=tmp_path / "costs.jsonl", post=post)
 
@@ -103,3 +104,26 @@ def test_non_retryable_error_is_not_retried(tmp_path):
     with pytest.raises(LLMError, match="400"):
         hanging_client(tmp_path, bad, retries=3).chat("m", [{"role": "user", "content": "x"}], purpose="reflection")
     assert len(calls) == 1
+
+
+def test_reflection_has_its_own_cap_and_every_failed_attempt_is_logged(tmp_path):
+    import json
+    import time
+    import pytest
+    from src.llm import LLMError
+    client = hanging_client(tmp_path, lambda body: time.sleep(30), timeout=5, retries=3)
+    client.purpose_limits = {"reflection": {"timeout_seconds": 0.2, "retries": 1}}
+    assert client.limits("reflection") == (0.2, 1) and client.limits("ref_judge") == (5, 3)
+    with pytest.raises(LLMError):
+        client.chat("m", [{"role": "user", "content": "r"}], purpose="reflection")
+    rows = [json.loads(l) for l in (tmp_path / "api_failures.jsonl").read_text().splitlines()]
+    assert [r["kind"] for r in rows] == ["timeout", "timeout"] and all(r["purpose"] == "reflection" for r in rows)
+
+
+def test_cost_rows_carry_latency(tmp_path):
+    import json
+    reply = {"choices": [{"message": {"content": "ok"}, "finish_reason": "stop"}], "usage": {"prompt_tokens": 1, "completion_tokens": 1}}
+    client = hanging_client(tmp_path, lambda body: reply)
+    client.chat("m", [{"role": "user", "content": "x"}], purpose="opt_judge")
+    row = json.loads((tmp_path / "costs.jsonl").read_text())
+    assert "seconds" in row and row["seconds"] >= 0
