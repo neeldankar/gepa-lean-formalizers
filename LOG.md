@@ -2,11 +2,12 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 in progress: few-shot rerun done, labeling page out, GEPA pilot run failed (reflection model down); freeze not done
-- **Status:** pod stopped by the GEPA job. With the few-shot seed, Qwen3-8B (thinking off) is truth-faithful on 6.7% of the 30 pilot items (compile 20.0%). The GEPA pilot made no new candidate: Together no longer serves Kimi-K2.6 serverless.
-- **Next:** Neel labels the 20 items and picks a reflection model; a pod for the GEPA pilot rerun (about 10 min setup)
-- **Spent so far:** $7.07 of $300
-- **Waiting on Neel:** labels (`~/Desktop/chunk4_labeling.html`); reflection and arm F model; both prereg drafts (`runs/chunk4/prereg_q3_draft.md`, `runs/chunk4/prereg_fewshot_draft.md`)
+- **Chunk:** 4 of 7 in progress (pilot): few-shot rerun done, labeling page out, API preflight passed; the GEPA pilot run and the freeze are not done
+- **Status:** no pod running. Neel picked `moonshotai/Kimi-K3` for reflection and arm F; the live preflight from the laptop passed for reflection (3 and 15 records), arm F and both judges (`runs/chunk4/api_preflight.json`). Qwen3-8B with the few-shot seed: 6.7% truth faithful on the 30 pilot items (compile 20.0%).
+- **Next:** Neel starts a pod and pastes its SSH command; then setup (about 10 min, servers one after the other) and the 150-call GEPA pilot run (`python -m scripts.chunk4 gepa --thinking off` through `scripts/run_job.sh`, which pushes and stops the pod). In parallel: rebuild the labeling page to Neel's spec (one item at a time, dark mode, KaTeX, shortcuts, list view, autosave, help panel; same items, blinding and labels.csv format; local file only).
+- **Spent so far:** $7.83 of $300 (chunk 4: $7.80 of its $30 cap)
+- **Waiting on Neel:** a pod; labels for the 20 items (`~/Desktop/chunk4_labeling.html`, export goes to `~/Downloads/labels.csv`); both prereg drafts (`runs/chunk4/prereg_q3_draft.md`, `runs/chunk4/prereg_fewshot_draft.md`)
+- **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the GEPA run or if idle more than about 30 min; push before any stop.
 - **Parked ideas:** see the chunk 1 to 4 entries
 
 ## Entries
@@ -23,6 +24,18 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-18 · chunk 4 · Kimi-K3 chosen, live API preflight
+
+- **Did:** Neel chose `moonshotai/Kimi-K3` for reflection and arm F ($3 / $15 per 1M tokens; fallback `zai-org/GLM-5.3` if the projection goes over). New step `chunk4 preflight`: live calls from the laptop, each required to add a paid cost row (no cache hits). Reflection uses GEPA 0.1.4's own prompt renderer with our feedback records from real few-shot pilot rows.
+- **Numbers** (from `runs/chunk4/api_preflight.json`):
+  - Reflection, 3 records: pass, 67 s, 971 in / 4,693 out tokens, $0.07, finish stop
+  - Reflection, 15 records: first attempt failed (finish length at the 8,000-token cap, no instruction); with a 32,000-token cap: pass, 260 s, 3,611 in / 24,240 out, $0.37
+  - Arm F (train item pnv_004, arm A prompt + few-shot): pass, 80 s, 645 in / 6,849 out, $0.10, the statement compiles
+  - Optimization judge (gpt-oss-120b) and reference judge (DeepSeek-V4.1-Flash), 2 compiled pilot outputs each: pass, parsed verdicts
+- **Changes:** `gepa.reflection_max_tokens` 8000 to 32000. A reflection reply cut off at max_tokens now stops the GEPA run (like a failed call) instead of becoming a candidate. New tests for both and for the preflight pass rules.
+- **Cost:** $0.76 this entry, chunk 4 $7.80, total $7.83.
+- **Next:** a pod for the GEPA pilot run.
 
 ### 2026-10-18 · chunk 4 · few-shot rerun, labeling page, GEPA pilot run failed (reflection model down)
 
