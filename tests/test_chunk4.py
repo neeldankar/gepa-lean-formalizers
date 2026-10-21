@@ -213,3 +213,11 @@ def test_reliability_and_overnight_projection():
     assert o["reflection_calls_per_run"] == pytest.approx(4 / 160 * 800)       # 20 reflections per run
     assert o["expected_hang_stall_h"] == pytest.approx(0.2 * 20 * 600 / 3600)  # 4 hangs x 10 min
     assert o["total_h"] == pytest.approx(8 + 0.2 * 20 * 600 / 3600 + 2 + 0.25)
+
+
+def test_preflight_api_error_is_a_failed_check():
+    check = {"kind": "arm_f", "new_cost_rows": 0, "error": "LLMError: gave up after 1 attempts: HTTP 503: Service unavailable"}
+    v = chunk4.preflight_verdict(check)
+    assert not v["pass"] and "503" in v["reasons"][0]
+    judge = {"kind": "judge", "new_cost_rows": 0, "verdict": "error"}
+    assert not chunk4.preflight_verdict(judge)["pass"]

@@ -267,6 +267,8 @@ def preflight_verdict(check):
     """Pass/fail for one live API check: a new paid cost row (so not a cache hit), a normal stop, and
     the check's own content test."""
     reasons = []
+    if check.get("error"):
+        reasons.append(f"error: {check['error'][:200]}")
     if not check.get("new_cost_rows"):
         reasons.append("no new cost row (cache hit or not called)")
     if check.get("finish_reason") not in (None, "stop") or check.get("finish_reason") == "length":
@@ -374,17 +376,25 @@ def preflight(cfg, summary, argv=()):
         seconds = time.monotonic() - t0
         full = reply  # the same call again is a cache hit: it returns finish_reason and usage
         new = InstructionProposalSignature.output_extractor(text)["new_instruction"] if text else ""
+        error = lm.failures[0] if lm.failures else None
         checks.append({"name": label, "kind": "reflection", "model": cfg["gepa"]["reflection_model"], "records": len(rs),
                        "prompt_chars": len(prompt), "seconds": seconds, **delta(before),
                        "finish_reason": full.get("finish_reason"), "usage": full.get("usage"), "failures": lm.failures,
-                       "seed": seed, "new_instruction": new})
+                       "seed": seed, "new_instruction": new, "error": error})
 
     train = sorted(gepa_items("train"), key=lambda it: it["id"])
     item = next(it for it in train if it["id"] not in cfg["fewshot"]["ids"])
     genc = formalizer_client(cfg, "arm_f", CHUNK, run_id="preflight", cache_dir=cache)
     before, t0 = snap(), time.monotonic()
-    out = generate(genc, cfg, "arm_f", load_instructions(cfg["arms"]["F"]["prompt"]), item,
-                   fewshot=load_fewshot(cfg["arms"]["F"].get("fewshot"))) if want("arm_f_generate") else None
+    out, error = None, None
+    if want("arm_f_generate"):
+        try:  # an API failure is a failed check, recorded like any other, never a crash
+            out = generate(genc, cfg, "arm_f", load_instructions(cfg["arms"]["F"]["prompt"]), item,
+                           fewshot=load_fewshot(cfg["arms"]["F"].get("fewshot")))
+        except Exception as e:
+            error = f"{type(e).__name__}: {e}"[:300]
+            checks.append({"name": "arm_f_generate", "kind": "arm_f", "model": cfg["models"]["arm_f"]["served_name"],
+                           "item_id": item["id"], "seconds": time.monotonic() - t0, **delta(before), "error": error})
     p = prepare(checker, item, out["text"]) if out else None
     if out: checks.append({"name": "arm_f_generate", "kind": "arm_f", "model": cfg["models"]["arm_f"]["served_name"], "item_id": item["id"],
                    "seconds": time.monotonic() - t0, **delta(before), "finish_reason": out["finish_reason"],
@@ -401,7 +411,10 @@ def preflight(cfg, summary, argv=()):
                                                                                normalize_statement(it["formal_stmt"]), r["normalized"]),
                                    cfg["judges"]["reference"])):
             before, t0 = snap(), time.monotonic()
-            v = call()
+            try:
+                v = call()
+            except Exception as e:  # recorded as a failed check
+                v = {"verdict": "error", "reason": f"{type(e).__name__}: {e}"}
             checks.append({"name": f"{name}_{r['item_id']}", "kind": "judge", "model": model, "seconds": time.monotonic() - t0,
                            **delta(before), "verdict": v["verdict"], "reason": v["reason"][:300]})
 

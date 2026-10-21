@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/neeldankar/Desktop/formalization project/gepa-lean-formalizers/scripts/chunk4.py", line 755, in <module>
+    mapping = read_jsonl(RUN_DIR / "label_sample.jsonl")
+    ^^^^^^
+  File "/Users/neeldankar/Desktop/formalization project/gepa-lean-formalizers/scripts/chunk4.py", line 749, in main
+    """Rebuild the labeling page (new layout) from the first page's records; same items, glosses and key."""
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/neeldankar/Desktop/formalization project/gepa-lean-formalizers/scripts/chunk4.py", line 358, in preflight
+    "Generated Outputs": p["extracted"] or "(no Lean statement found)", "Feedback": feedback_text(trace)})
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/neeldankar/Desktop/formalization project/gepa-lean-formalizers/src/generate.py", line 22, in generate
+    return client.chat_full(served_name(cfg, model_key), messages, purpose="generate", temperature=g["temperature"],
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/neeldankar/Desktop/formalization project/gepa-lean-formalizers/src/llm.py", line 90, in chat_full
+    if spent(self.chunk, self.costs_path) >= self.cap:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/neeldankar/Desktop/formalization project/gepa-lean-formalizers/src/llm.py", line 127, in with_retries
+    if purpose in self.long_purposes:
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src.llm.LLMError: gave up after 1 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
+== preflight

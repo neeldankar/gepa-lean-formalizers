@@ -2,12 +2,13 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 in progress (pilot): few-shot rerun done, labeling page out, API preflight passed; the GEPA pilot run and the freeze are not done
-- **Status:** no pod running. Neel picked `moonshotai/Kimi-K3` for reflection and arm F; the live preflight from the laptop passed for reflection (3 and 15 records), arm F and both judges (`runs/chunk4/api_preflight.json`). Qwen3-8B with the few-shot seed: 6.7% truth faithful on the 30 pilot items (compile 20.0%).
-- **Next:** Neel starts a pod and pastes its SSH command; then setup (about 10 min, servers one after the other) and the 150-call GEPA pilot run (`python -m scripts.chunk4 gepa --thinking off` through `scripts/run_job.sh`, which pushes and stops the pod). In parallel: rebuild the labeling page to Neel's spec (one item at a time, dark mode, KaTeX, shortcuts, list view, autosave, help panel; same items, blinding and labels.csv format; local file only).
-- **Spent so far:** $7.83 of $300 (chunk 4: $7.80 of its $30 cap)
-- **Waiting on Neel:** a pod; labels for the 20 items (`~/Desktop/chunk4_labeling.html`, export goes to `~/Downloads/labels.csv`); both prereg drafts (`runs/chunk4/prereg_q3_draft.md`, `runs/chunk4/prereg_fewshot_draft.md`)
-- **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the GEPA run or if idle more than about 30 min; push before any stop.
+- **Chunk:** 4 of 7 in progress (pilot). Today's live API preflight failed; GEPA pilot run, chunk 5 dry run and freeze not done
+- **Status:** no pod running. Kimi-K3 on Together answered HTTP 503 "Service unavailable" to the long reflection check and to arm F (21:31 UTC); an earlier long check got no reply in 29 min. The short 3-record reflection passed at 20:50. GEPA is gated on a full, recent preflight, so nothing launched.
+- **Next:** Neel decides (see the 2026-10-21 preflight entry); then a full preflight from the laptop; then a pod, and `scripts/chunk4_pod_queue.sh` runs setup, the gate, the GEPA pilot run, the chunk 5 dry run, and stops the pod.
+- **Spent so far:** $8.06 of $300 (chunk 4: $8.03 of its $30 cap)
+- **Waiting on Neel:** what to do about Kimi-K3; then a pod; labels (`~/Desktop/chunk4_labeling.html`, rebuilt page); the three prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions)
+- **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
+- **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
   - Compile-error taxonomy: classify Lean compile failures per arm (unknown identifier, parse error, type error, ...).
   - Judge vs truth over GEPA iterations: a figure from the saved candidate outputs in `runs/<run_id>/candidates/` (item 2 data).
@@ -27,6 +28,25 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-21 · chunk 4 · cut scope; live API preflight failed (Kimi-K3 slow, then 503)
+
+- **Did** (Neel's cut-scope list, all pushed):
+  - Every GEPA candidate's full-val outputs are saved to `runs/<run_id>/candidates/` (raw output, extracted Lean, compile result, judge verdict). A test shows GEPA's code path cannot reach a truth score.
+  - `scripts/chunk5_job.py`: the chunk 5 combined job (six GEPA runs in parallel under one GPU meter, sanity check, final eval). Its `--dry-run` uses 2 runs of about 10 metric calls on 5 val items under `runs/dryrun_chunk5/`, then a final eval on 5 train items standing in for test and miniF2F. Tests show the dry run never loads a held-out item.
+  - The failed Oct 18 pilot run moved to `runs/pilot_qwen_failed_2026-10-18` (its saved GEPA state would have been resumed); `chunk4 gepa` refuses a run dir with DONE or STOPPED.
+  - Analysis additions coded and tested: truth-label sources per arm, reference-judge false positives and negatives, compile/meaning split of truth gains. Prereg text drafted, not applied: `runs/chunk4/prereg_analysis_additions_draft.md`.
+  - CLAUDE.md: the standing post-freeze scope rule. Three parked ideas added to the Now box.
+  - Labeling page rebuilt to Neel's spec (`~/Desktop/chunk4_labeling.html`; old page kept as `chunk4_labeling_2026-10-18.html`); same items, glosses, blinding, storage key and `labels.csv` format; records saved to `runs/chunk4/label_records.json`.
+  - Every API call (judges, reflection, formalizers, arm F, AXLE) now has a hard wall-clock limit per attempt and a retry cap: judges 300 s and 4 retries; formalizer outputs 1800 s and 1; reflection 600 s and 1 (Neel's cap); AXLE 600 s per attempt, then an outage. Exhausted retries stop a GEPA run with STOPPED and the reason; the chunk 5 job records a final-eval failure and exits non-zero. Tests with mocked hanging calls. Cost rows now carry `seconds`; every failed attempt goes to `runs/api_failures.jsonl`.
+  - `scripts/chunk4_pod_queue.sh`: setup, then a gate (`chunk4 preflight_ok`: all 7 preflight checks passed, under 24 h old; closed means no GEPA and the pod stops), then the GEPA pilot run, then the chunk 5 dry run, then the pod stops.
+  - Go/no-go additions for the pilot report: reflection latency (median, slowest), timed-out and failed calls, projected overnight run time including expected hang stall.
+- **Preflight today** (logs in `runs/chunk4/preflight_2026-10-21/`; cost rows `run_id: preflight`):
+  - 20:32 run: stopped by me at 20:47; the 300 s client timeout made the long Kimi-K3 call time out and retry.
+  - 20:48 run (fresh cache, 1800 s timeout): short reflection (3 records) passed, 971 in / 8,109 out tokens, $0.12, about 2.5 min. Long reflection (15 records): no reply in 29 min; killed at 21:20 (Neel's 2:20pm rule).
+  - 21:20 rerun (single attempt, no retries): the long reflection and then arm F both got HTTP 503 "Service unavailable" from Together for Kimi-K3 (arm F at 21:31:46). The judges did not run. A preflight bug made the arm F error crash the script instead of recording a failed check; fixed (API errors are now failed checks), with a test.
+  - Result: preflight failed. Per Neel's rule, no GEPA; no pod was running.
+- **Cost:** $0.23 today (two Kimi-K3 reflection replies); failed attempts are not billed rows. Chunk 4 $8.03, total $8.06.
 
 ### 2026-10-18 · chunk 4 · Kimi-K3 chosen, live API preflight
 
