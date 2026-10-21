@@ -664,7 +664,33 @@ def stats(cfg, summary, argv=()):
     }
 
 
-STEPS = {"preflight": preflight, "fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
+def records_from_old_page(text):
+    """The 20 records and their glosses from the first labeling page's HTML (the glosses were made on a
+    pod whose cache is gone; reusing them keeps the page's text unchanged)."""
+    import html as h
+    import re
+    cards = re.findall(r'<section class="card" data-id="([^"]+)">.*?<p class="english">(.*?)</p>.*?'
+                       r'<h3>Reference</h3><pre>(.*?)</pre><p class="gloss">(.*?)</p>.*?'
+                       r'<h3>Candidate</h3><pre>(.*?)</pre><p class="gloss">(.*?)</p>', text, re.S)
+    return [dict(zip(("label_id", "english", "reference", "reference_gloss", "candidate", "candidate_gloss"),
+                     map(h.unescape, c))) for c in cards]
+
+
+def relabel(cfg, summary, argv=()):
+    """Rebuild the labeling page (new layout) from the first page's records; same items, glosses and key."""
+    from pathlib import Path
+    from src.scoring.labeling import render_page
+    old = Path(argv[argv.index("--old") + 1]).expanduser()
+    out = Path(argv[argv.index("--out") + 1]).expanduser()
+    records = records_from_old_page(old.read_text())
+    mapping = read_jsonl(RUN_DIR / "label_sample.jsonl")
+    assert [r["label_id"] for r in records] == [m["label_id"] for m in mapping], "records differ from label_sample.jsonl"
+    (RUN_DIR / "label_records.json").write_text(json.dumps(records, indent=1, ensure_ascii=False) + "\n")
+    out.write_text(render_page(records, "chunk4-pilot"))
+    summary["relabel"] = {"records": len(records), "page_key": "chunk4-pilot", "out": str(out)}
+
+
+STEPS = {"relabel": relabel, "preflight": preflight, "fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
          "costs": costs, "project": project}
 
 
