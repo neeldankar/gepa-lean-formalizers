@@ -66,13 +66,15 @@ def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, 
         if on_batch:
             on_batch()
 
+    valset = gepa_items("val")[: spec["val_limit"]] if spec.get("val_limit") else gepa_items("val")  # val_limit: dry runs only
     adapter = FormalizerAdapter(cfg, spec["model"], gen_client, judge_client, checker, on_batch=batch_done,
-                                fewshot=load_fewshot(spec.get("fewshot")))
+                                fewshot=load_fewshot(spec.get("fewshot")), candidates_dir=out_dir / "candidates",
+                                val_ids=[it["id"] for it in valset])
     try:
         result = gepa.optimize(
             seed_candidate={COMPONENT: load_instructions(spec["seed_prompt"])},
             trainset=gepa_trainset(cfg),
-            valset=gepa_items("val"),
+            valset=valset,
             adapter=adapter,
             reflection_lm=reflection,
             max_metric_calls=spec.get("max_metric_calls", cfg["gepa"]["max_metric_calls"]),

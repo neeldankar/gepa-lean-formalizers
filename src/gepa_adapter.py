@@ -2,11 +2,17 @@
 the run has one, is a fixed suffix sent after the instructions on every call; GEPA never sees or
 edits it, so every candidate (and best_prompt.txt) is instruction text only.
 
+Every evaluation on the full valset is saved to <candidates_dir>/<sha256(instructions)[:12]>.jsonl (first
+line: the instructions; then one row per item and sample with the raw output, extracted Lean, compile
+result and judge verdict). Nothing here computes or reads a truth score.
+
 evaluate: formalizer -> judge score (compiled and the optimization judge says faithful), the mean
 over samples per item. Traces keep the English, the extracted Lean, Lean's errors and the judge's
 verdict and reason. Feedback for the reflection model is Lean's errors plus the judge's verdict
 and reason. Only train and validation items ever pass through here (firewall check per batch).
 """
+import hashlib
+import json
 from concurrent.futures import ThreadPoolExecutor
 
 from gepa.core.adapter import EvaluationBatch
@@ -42,8 +48,10 @@ def feedback_text(trace):
 class FormalizerAdapter:
     propose_new_texts = None  # use GEPA's default reflective proposer
 
-    def __init__(self, cfg, model_key, gen_client, judge_client, checker, on_batch=None, fewshot=""):
+    def __init__(self, cfg, model_key, gen_client, judge_client, checker, on_batch=None, fewshot="",
+                 candidates_dir=None, val_ids=()):
         self.cfg, self.model_key, self.fewshot = cfg, model_key, fewshot
+        self.candidates_dir, self.val_ids = candidates_dir, frozenset(val_ids)
         self.gen_client, self.judge_client, self.checker = gen_client, judge_client, checker
         self.samples = cfg["generation"]["samples"]
         self.workers = cfg["generation"]["workers"]
@@ -61,12 +69,27 @@ class FormalizerAdapter:
                 "compile_status": js["compile_status"], "lean_errors": js["lean_errors"],
                 "judge": js["judge"], "score": js["judge_score"]}
 
+    def save_candidate(self, instructions, results):
+        self.candidates_dir.mkdir(parents=True, exist_ok=True)
+        path = self.candidates_dir / f"{hashlib.sha256(instructions.encode()).hexdigest()[:12]}.jsonl"
+        lines = [json.dumps({"instructions": instructions}, ensure_ascii=False)]
+        for r in results:
+            j = r["judge"] or {}
+            lines.append(json.dumps({
+                "item_id": r["item_id"], "sample": r["sample"], "output": r["output"], "extracted": r["extracted"],
+                "compile_status": r["compile_status"], "compiled": r["compiled"], "lean_errors": r["lean_errors"],
+                "judge_verdict": j.get("verdict"), "judge_reason": j.get("reason"), "score": r["score"],
+            }, ensure_ascii=False))
+        path.write_text("\n".join(lines) + "\n")
+
     def evaluate(self, batch, candidate, capture_traces=False):
         check_gepa_batch(batch)
         instructions = candidate[COMPONENT]
         jobs = [(item, s) for item in batch for s in range(self.samples)]
         with ThreadPoolExecutor(self.workers) as pool:
             results = list(pool.map(lambda job: self.score_one(instructions, *job), jobs))
+        if self.candidates_dir and self.val_ids and {it["id"] for it in batch} == self.val_ids:
+            self.save_candidate(instructions, results)
         outputs, scores, traces = [], [], []
         for i, item in enumerate(batch):
             per_item = results[i * self.samples:(i + 1) * self.samples]

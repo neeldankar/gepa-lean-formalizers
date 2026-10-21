@@ -285,6 +285,13 @@ def preflight_verdict(check):
     return {"pass": not reasons, "reasons": reasons}
 
 
+def fresh_cache_dir(root=ROOT / "cache/preflight"):
+    """A cache directory no earlier call has used, so the preflight's calls cannot be cache hits."""
+    path = root / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    assert not path.exists()
+    return path
+
+
 def preflight(cfg, summary, argv=()):
     """Live tests of every API model GEPA and the final eval need, before paying for a pod."""
     from gepa.strategies.instruction_proposal import InstructionProposalSignature
@@ -304,7 +311,8 @@ def preflight(cfg, summary, argv=()):
     only = set(argv[argv.index("--only") + 1].split(",")) if "--only" in argv else None
     want = lambda name: only is None or name in only
     checker = AxleChecker(cfg["axle"])
-    client = LLMClient(cfg, CHUNK, run_id="preflight")
+    cache = fresh_cache_dir() if "--fresh" in argv else None  # a new cache dir: every call is live
+    client = LLMClient(cfg, CHUNK, run_id="preflight", cache_dir=cache)
     val = {it["id"]: it for it in gepa_items("val")}
     rows = read_rows(RERUN_OUT["qwen_a3"])
     seed = load_instructions("prompts/arm_A.txt")
@@ -343,7 +351,7 @@ def preflight(cfg, summary, argv=()):
 
     train = sorted(gepa_items("train"), key=lambda it: it["id"])
     item = next(it for it in train if it["id"] not in cfg["fewshot"]["ids"])
-    genc = formalizer_client(cfg, "arm_f", CHUNK, run_id="preflight")
+    genc = formalizer_client(cfg, "arm_f", CHUNK, run_id="preflight", cache_dir=cache)
     before, t0 = snap(), time.monotonic()
     out = generate(genc, cfg, "arm_f", load_instructions(cfg["arms"]["F"]["prompt"]), item,
                    fewshot=load_fewshot(cfg["arms"]["F"].get("fewshot"))) if want("arm_f_generate") else None
@@ -370,14 +378,22 @@ def preflight(cfg, summary, argv=()):
     for c in checks:
         c.update(preflight_verdict(c), max_tokens=cfg["gepa"]["reflection_max_tokens"] if c["kind"] == "reflection" else None)
     path = RUN_DIR / "api_preflight.json"
+    if only is None and path.exists():  # a full rerun: keep the earlier results under their date
+        earlier = json.loads(path.read_text())
+        dated = RUN_DIR / f"api_preflight_{earlier.get('date', '2026-10-18')}.json"
+        if not dated.exists():
+            dated.write_text(path.read_text())
+    checks_date = datetime.now(timezone.utc).date().isoformat()
     if only is not None and path.exists():  # rerun of some checks: keep the others, record the earlier attempt
         old = json.loads(path.read_text())
         rerun = {c["name"] for c in checks}
         earlier = old.get("earlier_attempts", []) + [c for c in old["checks"] if c["name"] in rerun]
         checks = [c for c in old["checks"] if c["name"] not in rerun] + checks
-        path.write_text(json.dumps({"checks": checks, "earlier_attempts": earlier}, indent=1, ensure_ascii=False) + "\n")
+        path.write_text(json.dumps({"date": checks_date, "cache_dir": str(cache) if cache else None, "checks": checks,
+                                    "earlier_attempts": earlier}, indent=1, ensure_ascii=False) + "\n")
     else:
-        path.write_text(json.dumps({"checks": checks}, indent=1, ensure_ascii=False) + "\n")
+        path.write_text(json.dumps({"date": checks_date, "cache_dir": str(cache) if cache else None, "checks": checks},
+                                   indent=1, ensure_ascii=False) + "\n")
     summary["preflight"] = {"all_pass": all(c["pass"] for c in checks),
                             "checks": {c["name"]: {"pass": c["pass"], "reasons": c["reasons"], "model": c["model"],
                                                    "seconds": round(c["seconds"], 1), "usd": c["usd"], "usage": c.get("usage")}
@@ -521,6 +537,14 @@ def go_checks(qwen_truth_rate, ref_agree, exact_match_rates, projected_total):
     ]
 
 
+def refuse_finished_run(out_dir):
+    """GEPA resumes from runs/<run_id>/gepa; a finished or stopped run there must be moved aside first,
+    or a relaunch would end at once with the old state (chunk 4: the failed Kimi-K2.6 run)."""
+    for marker in ("DONE", "STOPPED"):
+        if (out_dir / marker).exists():
+            raise SystemExit(f"{out_dir} already has {marker}; move it aside before relaunching")
+
+
 def gepa(cfg, summary, argv=()):
     from scripts import gepa_run
     p = cfg["pilot"]
@@ -528,6 +552,7 @@ def gepa(cfg, summary, argv=()):
     if "--thinking" in argv:
         spec["enable_thinking"] = argv[argv.index("--thinking") + 1] == "on"
     cfg["gepa"]["runs"] = {p["gepa_run_id"]: spec}
+    refuse_finished_run(ROOT / "runs" / p["gepa_run_id"])
     summary["gepa_launch"] = {"run_id": p["gepa_run_id"], **spec,
                               "started": datetime.now(timezone.utc).isoformat(timespec="seconds")}
     save_summary(summary)

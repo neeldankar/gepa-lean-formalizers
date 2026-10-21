@@ -195,3 +195,28 @@ def test_cut_off_reflection_reply_stops_the_run(tmp_path):
     result, _ = run(tmp_path, cfg, posts)
     assert result["status"] == "stopped" and "cut off" in result["reason"]
     assert not (tmp_path / "runs/T_s0/DONE").exists()
+
+
+def test_candidates_saved_without_any_truth_score(tmp_path, monkeypatch):
+    """Item 2: every candidate's val outputs are saved, and GEPA's code path never reaches a truth score."""
+    from src.scoring import certificate, judge, score
+    def forbidden(*a, **k):
+        raise AssertionError("GEPA code path reached a truth-score function")
+    for mod, name in ((score, "truth_score"), (judge, "reference_judge"), (certificate, "certificate")):
+        monkeypatch.setattr(mod, name, forbidden)
+    for mod in (gepa_adapter, runner):  # nor is any truth function imported into GEPA's modules by name
+        assert not {"truth_score", "reference_judge", "certificate", "truth_label"} & set(vars(mod))
+    result, _ = run(tmp_path, make_cfg(budget=150), MockPosts())
+    assert result["status"] == "done"
+    out = tmp_path / "runs/T_s0"
+    cands = json.loads((out / "candidates.json").read_text())["candidates"]
+    files = sorted((out / "candidates").glob("*.jsonl"))
+    assert len(files) == len(cands) > 1
+    val_ids = {it["id"] for it in runner.gepa_items("val")}
+    for f in files:
+        lines = [json.loads(l) for l in f.read_text().splitlines()]
+        assert lines[0]["instructions"] in [c[gepa_adapter.COMPONENT] for c in cands]
+        rows = lines[1:]
+        assert {r["item_id"] for r in rows} == val_ids and len(rows) == 70
+        assert all(set(r) == {"item_id", "sample", "output", "extracted", "compile_status", "compiled", "lean_errors",
+                              "judge_verdict", "judge_reason", "score"} for r in rows)

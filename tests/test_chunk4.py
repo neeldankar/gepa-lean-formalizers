@@ -167,3 +167,16 @@ def test_fewshot_pool_and_block_match_the_saved_file():
 ])
 def test_preflight_verdict(check, ok):
     assert chunk4.preflight_verdict(check)["pass"] is ok
+
+
+def test_fresh_preflight_cache_dir_is_new(tmp_path):
+    a = chunk4.fresh_cache_dir(tmp_path)
+    assert not a.exists() and a.parent == tmp_path
+
+
+def test_gepa_refuses_a_finished_run_dir(tmp_path):
+    chunk4.refuse_finished_run(tmp_path / "pilot_qwen")  # nothing there: fine
+    (tmp_path / "pilot_qwen").mkdir()
+    (tmp_path / "pilot_qwen/DONE").write_text("ok\n")
+    with pytest.raises(SystemExit):
+        chunk4.refuse_finished_run(tmp_path / "pilot_qwen")

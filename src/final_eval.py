@@ -46,12 +46,17 @@ def score_row(cfg, arm, model_key, run_id, seed, dataset, instructions, item, sa
     }
 
 
-def eval_arm(cfg, arm, gen, judge, checker, runs_dir, root, mem_index=None):
+def eval_arm(cfg, arm, gen, judge, checker, runs_dir, root, mem_index=None, items_for=None):
+    """items_for(dataset) -> (label, items) replaces the held-out loader; only the chunk 5 dry run uses it,
+    with train items standing in for test and miniF2F, so it never touches either."""
     spec = cfg["arms"][arm]
     datasets = ["test"] if spec.get("test_only") else ["test", "minif2f"]
     jobs = []
-    for dataset in datasets:
-        items = heldout_items(dataset, cfg, root=root, runs_dir=runs_dir)
+    for name in datasets:
+        if items_for:
+            dataset, items = items_for(name)
+        else:
+            dataset, items = name, heldout_items(name, cfg, root=root, runs_dir=runs_dir)
         for run_id, seed, instructions, fewshot in arm_prompts(cfg, arm, runs_dir):
             for item in items:
                 for sample in range(cfg["generation"]["samples"]):
@@ -59,7 +64,7 @@ def eval_arm(cfg, arm, gen, judge, checker, runs_dir, root, mem_index=None):
     with ThreadPoolExecutor(cfg["generation"]["workers"]) as pool:
         rows = list(pool.map(lambda j: score_row(cfg, arm, spec["model"], *j[:6], gen, judge, checker, fewshot=j[6]), jobs))
     if mem_index is not None:
-        test = [(r, j[4]) for r, j in zip(rows, jobs) if r["dataset"] == "test" and r["normalized"]]
+        test = [(r, j[4]) for r, j in zip(rows, jobs) if r["dataset"].endswith("test") and r["normalized"]]
         matches = memorization.exact_matches(checker, mem_index, [it for _, it in test], [r["normalized"] for r, _ in test])
         for (r, _), m in zip(test, matches):
             r["memorized"] = m
