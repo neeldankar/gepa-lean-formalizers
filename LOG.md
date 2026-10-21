@@ -8,7 +8,10 @@
 - **Spent so far:** $7.83 of $300 (chunk 4: $7.80 of its $30 cap)
 - **Waiting on Neel:** a pod; labels for the 20 items (`~/Desktop/chunk4_labeling.html`, export goes to `~/Downloads/labels.csv`); both prereg drafts (`runs/chunk4/prereg_q3_draft.md`, `runs/chunk4/prereg_fewshot_draft.md`)
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the GEPA run or if idle more than about 30 min; push before any stop.
-- **Parked ideas:** see the chunk 1 to 4 entries
+- **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
+  - Compile-error taxonomy: classify Lean compile failures per arm (unknown identifier, parse error, type error, ...).
+  - Judge vs truth over GEPA iterations: a figure from the saved candidate outputs in `runs/<run_id>/candidates/` (item 2 data).
+  - ReForm-8B training-data contamination: note whether ProofNet-style statements could be in ReForm-8B's training data.
 
 ## Entries
 

@@ -29,7 +29,7 @@ def fake_rows(n_items=247, effect_points=10.0, judge_extra_points=0.0, seed=0, m
                         "dataset": dataset, "item_id": f"{dataset}_{i:03d}", "sample": 0,
                         "compiled": True, "format_failure": False, "outage": False,
                         "truth_label": "faithful" if truth[i] else "unfaithful",
-                        "judge_score": int(judge[i]), "certified": False,
+                        "judge_score": int(judge[i]), "certified": False, "truth_source": "ref_judge",
                         "ref_verdict": "faithful" if truth[i] else "unfaithful",
                         "ref_error_tag": None if truth[i] else "Missing premise", "memorized": [],
                     })

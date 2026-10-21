@@ -11,6 +11,10 @@ Confirmatory, on the test split:
        compiled), GEPA arm minus seed arm, for Qwen3-8B (B - A) and ReForm-8B (D - C). Per GEPA seed
        the rate is a ratio of sums over items; the arm's rate is the mean over seeds.
 Descriptive (no decision rule): judge-score gain minus truth-score gain, per model.
+Reported alongside (prereg draft, chunk 4): the source of each truth label per arm; the reference judge's
+false positives and false negatives against the hand labels; and each truth gain split into a compile
+part and a meaning part, dT = f0 * dc + c1 * df (c = compile rate, f = faithful given compiled, both
+pooled over seeds and items so the split is exact), with paired-bootstrap intervals.
 Decision rule (threshold T points): "effect" if the interval excludes 0 and |estimate| >= T, in
 either direction (the estimate keeps its sign); "no meaningful effect" if the whole interval lies within [-T, T]; otherwise "inconclusive".
 """
@@ -32,6 +36,8 @@ DESCRIPTIVE_CONTRASTS = {
     "judge_gain_minus_truth_gain_reform-8b": {"judge": {"D": 1, "C": -1}, "truth": {"D": -1, "C": 1}},
 }
 SCORES = ("truth", "judge", "fpr")
+# Truth-gain splits: Q1 is A to B; Q2's two terms are C to D and A to B.
+DECOMPOSITIONS = {"A_to_B": ("A", "B"), "C_to_D": ("C", "D")}
 EXPLORATORY_CONTRASTS = {k: CONTRASTS[k] for k in ("Q1", "Q2")}
 
 
@@ -81,15 +87,38 @@ def arm_means(mats, idx=None, seed_draws=None):
             with np.errstate(invalid="ignore", divide="ignore"):
                 per_seed = np.where(comp > 0, 100 * fp / comp, np.nan)
             out[(arm, "fpr")] = float(np.nanmean(per_seed)) if np.isfinite(per_seed).any() else float("nan")
+        if "compiled" in d:  # pooled over the drawn seeds and items, so truth = c * f / 100 exactly
+            comp, tr = pick(d["compiled"]), pick(d["truth"])
+            out[(arm, "c")] = float(np.nanmean(comp))
+            total = np.nansum(comp)
+            out[(arm, "f")] = float(100 * np.nansum(tr) / total) if total > 0 else float("nan")
     return out
+
+
+def decomposition(means, before, after):
+    """dT = f0 * dc + c1 * df, in points."""
+    c0, f0, c1, f1 = means[(before, "c")], means[(before, "f")], means[(after, "c")], means[(after, "f")]
+    return {"compile_part": f0 * (c1 - c0) / 100, "meaning_part": c1 * (f1 - f0) / 100,
+            "total": means[(after, "truth")] - means[(before, "truth")]}
+
+
+def decomposition_fns(mats):
+    fns = {}
+    for name, (b, a) in DECOMPOSITIONS.items():
+        if b in mats and a in mats:
+            for part in ("compile_part", "meaning_part", "total"):
+                fns[f"{name}:{part}"] = lambda m, b=b, a=a, part=part: decomposition(m, b, a)[part]
+    return fns
 
 
 def contrast_value(means, spec):
     return sum(w * means[(arm, score)] for score, arms in spec.items() for arm, w in arms.items())
 
 
-def bootstrap(mats, contrasts, resamples, seed):
-    """{name: {"estimate", "ci": [lo, hi]}} plus per-arm means with intervals."""
+def bootstrap(mats, contrasts, resamples, seed, derived=None):
+    """{name: {"estimate", "ci": [lo, hi]}} plus per-arm means with intervals. `derived` maps extra names
+    to functions of the arm means (computed on the same resamples)."""
+    derived = derived or {}
     n = next(iter(mats.values()))["truth"].shape[1]
     rng = np.random.default_rng(seed)
     point = arm_means(mats)
@@ -102,9 +131,14 @@ def bootstrap(mats, contrasts, resamples, seed):
         for name, spec in contrasts.items():
             if all(arm in mats for s in spec.values() for arm in s):
                 draws[name].append(contrast_value(means, spec))
+        for name, fn in derived.items():
+            draws[name].append(fn(means))
         for key, v in means.items():
             arm_draws[key].append(v)
     result = {}
+    for name, fn in derived.items():
+        lo, hi = np.nanpercentile(draws[name], [2.5, 97.5])
+        result[name] = {"estimate": fn(point), "ci": [float(lo), float(hi)]}
     for name, spec in contrasts.items():
         if name in draws:
             lo, hi = np.nanpercentile(draws[name], [2.5, 97.5])
@@ -141,8 +175,20 @@ def compile_stats(rows, dataset):
             "memorization_rate": 100 * sum(bool(r["memorized"]) for r in rs) / len(rs) if rs else None,
             "cert_judge_disagreements": sum(1 for r in compiled if r["certified"] and r["ref_verdict"] != "faithful"),
             "outages": sum(1 for r in rows if r["arm"] == arm and r["dataset"] == dataset and r.get("outage")),
+            "truth_source_share": truth_sources(rs),
         }
     return out
+
+
+def truth_sources(rs):
+    """Share (points) of truth labels from a certificate, the reference judge, or a compile failure
+    (format failures included there, and also shown on their own)."""
+    if not rs:
+        return None
+    n = len(rs)
+    src = Counter(r["truth_source"] for r in rs)
+    return {"certificate": 100 * src["certificate"] / n, "ref_judge": 100 * src["ref_judge"] / n,
+            "compile_failure": 100 * (src["compile"] + src["format"]) / n, "of_which_format": 100 * src["format"] / n}
 
 
 def error_tags(rows, dataset):
@@ -183,6 +229,15 @@ def hand_check(rows, labeled, resamples, seed):
                 agree[k][0] += r["ref_verdict"] == x["label"]
                 agree[k][1] += 1
     agreement = {k: {"agree": a, "n": n, "rate": 100 * a / n} for k, (a, n) in sorted(agree.items())}
+    errors = defaultdict(lambda: {"false_positive": 0, "false_negative": 0, "n": 0})
+    for x, r in joined:
+        if r["ref_verdict"] in ("faithful", "unfaithful"):
+            for k in ("all", x["arm"]):
+                errors[k]["n"] += 1
+                errors[k]["false_positive"] += r["ref_verdict"] == "faithful" and x["label"] == "unfaithful"
+                errors[k]["false_negative"] += r["ref_verdict"] == "unfaithful" and x["label"] == "faithful"
+    judge_errors = {k: {**e, "false_positive_rate": 100 * e["false_positive"] / e["n"],
+                        "false_negative_rate": 100 * e["false_negative"] / e["n"]} for k, e in sorted(errors.items())}
 
     # Paired: keep the random items labeled faithful or unfaithful in every core arm, then reuse the
     # test-split bootstrap on one-row matrices (truth = the hand label, judge = that output's judge score,
@@ -201,7 +256,8 @@ def hand_check(rows, labeled, resamples, seed):
                 for a in CORE}
         contrasts, _ = bootstrap(mats, CONTRASTS, resamples, seed)
     unsure = sum(1 for x in labeled if x["label"] == "unsure")
-    return {"judge_agreement_random_part": agreement, "contrasts_random_part_hand_labels": contrasts,
+    return {"judge_agreement_random_part": agreement, "judge_errors_random_part": judge_errors,
+            "contrasts_random_part_hand_labels": contrasts,
             "random_items": len(random_items), "random_items_paired": len(items),
             "items_dropped": len(random_items) - len(items),
             "labeled": len(labeled), "unsure": unsure,
@@ -214,8 +270,13 @@ def analyze(rows, cfg, labeled=None):
     results = {"threshold_points": T, "bootstrap_resamples": R}
 
     mats, items = matrices(rows, "test")
-    both, per_arm = bootstrap(mats, {**CONTRASTS, **DESCRIPTIVE_CONTRASTS}, R, seed)
+    both, per_arm = bootstrap(mats, {**CONTRASTS, **DESCRIPTIVE_CONTRASTS}, R, seed, derived=decomposition_fns(mats))
     contrasts = {k: v for k, v in both.items() if k in CONTRASTS}
+    split = defaultdict(dict)
+    for k, v in both.items():
+        if ":" in k:
+            name, part = k.split(":")
+            split[name][part] = v
     for c in contrasts.values():
         c["decision"] = decide(c["estimate"], c["ci"], T)
     results["confirmatory"] = {"items": len(items), "arm_truth_rates": per_seed_rates(mats),
@@ -227,6 +288,7 @@ def analyze(rows, cfg, labeled=None):
     without, _ = bootstrap(m2, CONTRASTS, R, seed) if items2 else ({}, None)
     results["alongside"] = {
         "compile_and_memorization": compile_stats(rows, "test"),
+        "truth_gain_split": {"note": "A_to_B is Q1 and Q2's Qwen3-8B term; C_to_D is Q2's ReForm-8B term", **split},
         "contrasts_without_exact_matches": {"items_dropped": len(memorized), **without},
         "hand_check": hand_check(rows, labeled, R, seed) if labeled else "not available (no labels yet)",
     }

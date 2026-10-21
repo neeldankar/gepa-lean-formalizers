@@ -1,6 +1,8 @@
 import copy
 import json
 
+import numpy as np
+
 import pytest
 
 from src import analysis
@@ -180,3 +182,64 @@ def test_hand_check_computes_q3_from_hand_labels(tmp_path):
     truth_b = {r["item_id"]: r["truth_label"] for r in rows if r["arm"] == "B" and r["gepa_seed"] == 0}
     expected = 100 * sum(judge_b[i] == 1 and truth_b[i] == "unfaithful" for i in judge_b) / 100
     assert hc["Q3_qwen3-8b"]["estimate"] == pytest.approx(expected) and expected > 0
+
+
+def split_rows():
+    """A: compiles 50 of 100, 20 faithful (f = 40%). B: compiles all 100, 40 faithful (f = 40%): a compile-only gain.
+    C: compiles 60, 30 faithful. D: compiles 60, 45 faithful: a meaning-only gain."""
+    rows = []
+    def add(arm, seed, compiled, faithful):
+        for i in range(100):
+            c, f = i < compiled, i < faithful
+            rows.append({"arm": arm, "gepa_seed": seed, "dataset": "test", "item_id": f"t{i:03d}", "sample": 0,
+                         "outage": False, "compiled": c, "judge_score": int(f), "truth_label": "faithful" if f else "unfaithful",
+                         "truth_source": "ref_judge" if c else "compile", "format_failure": False, "certified": False,
+                         "ref_verdict": ("faithful" if f else "unfaithful") if c else None, "ref_error_tag": None, "memorized": []})
+    add("A", None, 50, 20)
+    for s in (0, 1, 2):
+        add("B", s, 100, 40)
+        add("D", s, 60, 45)
+    add("C", None, 60, 30)
+    return rows
+
+
+def test_truth_gain_split_is_exact_and_attributes_correctly():
+    mats, _ = analysis.matrices(split_rows(), "test")
+    m = analysis.arm_means(mats)
+    ab = analysis.decomposition(m, "A", "B")
+    assert ab["total"] == pytest.approx(20) and ab["compile_part"] == pytest.approx(20) and ab["meaning_part"] == pytest.approx(0)
+    cd = analysis.decomposition(m, "C", "D")
+    assert cd["total"] == pytest.approx(15) and cd["compile_part"] == pytest.approx(0) and cd["meaning_part"] == pytest.approx(15)
+    # the identity holds on every bootstrap resample, not only at the point estimate
+    rng = np.random.default_rng(0)
+    for _ in range(50):
+        idx = rng.integers(0, 100, 100)
+        seeds = {a: rng.integers(0, d["truth"].shape[0], d["truth"].shape[0]) for a, d in mats.items()}
+        d = analysis.decomposition(analysis.arm_means(mats, idx, seeds), "A", "B")
+        assert d["compile_part"] + d["meaning_part"] == pytest.approx(d["total"])
+
+
+def test_split_reported_with_intervals():
+    r = analysis.analyze(split_rows(), CFG)
+    s = r["alongside"]["truth_gain_split"]
+    assert s["A_to_B"]["compile_part"]["estimate"] == pytest.approx(20) and len(s["A_to_B"]["compile_part"]["ci"]) == 2
+    assert s["C_to_D"]["meaning_part"]["estimate"] == pytest.approx(15)
+
+
+def test_truth_source_shares():
+    stats = analysis.compile_stats(split_rows(), "test")
+    assert stats["A"]["truth_source_share"] == {"certificate": 0.0, "ref_judge": 50.0, "compile_failure": 50.0, "of_which_format": 0.0}
+
+
+def test_reference_judge_false_positives_and_negatives(tmp_path):
+    rows = fake_rows(n_items=40)
+    # A: 2 items where the hand label says unfaithful but the judge said faithful (false positives), 1 the other way
+    truth_a = {r["item_id"]: r["truth_label"] for r in rows if r["arm"] == "A"}
+    fp_items = [i for i in range(10) if truth_a[f"test_{i:03d}"] == "faithful"][:2]
+    fn_items = [i for i in range(10) if truth_a[f"test_{i:03d}"] == "unfaithful"][:1]
+    def label(arm, i, t):
+        return FLIP[t] if arm == "A" and i in fp_items + fn_items else t
+    hc = analysis.hand_check(rows, hand_labeled(tmp_path, rows, 10, label), 200, 0)
+    e = hc["judge_errors_random_part"]["A"]
+    assert (e["false_positive"], e["false_negative"], e["n"]) == (len(fp_items), len(fn_items), 10)
+    assert hc["judge_errors_random_part"]["all"]["false_positive"] == len(fp_items)

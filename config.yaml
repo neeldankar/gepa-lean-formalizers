@@ -33,7 +33,7 @@ llm:
   cache_dir: cache/llm
   retries: 4
   backoff_seconds: 5
-  timeout_seconds: 300
+  timeout_seconds: 1800   # wait for a reply, per attempt; Kimi-K3 reflections passed 300 s (chunk 4), and so may long ReForm outputs with six GEPA runs on one GPU
   prices:  # USD per 1M tokens (Together model list, 2026-10-17)
     openai/gpt-oss-120b: {input: 0.15, output: 0.6}
     deepseek-ai/DeepSeek-V4.1-Flash: {input: 0.3, output: 1.2}

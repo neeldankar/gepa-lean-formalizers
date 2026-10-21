@@ -53,3 +53,10 @@ def test_budget_cap_stops_calls(tmp_path):
     with pytest.raises(BudgetExceeded):
         c.chat(MODEL, [{"role": "user", "content": "b"}], purpose="t")
     assert len(calls) == 1 and spent(2, tmp_path / "costs.jsonl") > 0.0001
+
+
+def test_client_timeout_allows_long_reflections():
+    # A non-streaming call sends nothing until it is done: Kimi-K3 reflections took 260 s to over 300 s in the
+    # chunk 4 preflight, so a 300 s timeout retried (and may have re-billed) them.
+    from src.config import load_config
+    assert load_config()["llm"]["timeout_seconds"] >= 1200

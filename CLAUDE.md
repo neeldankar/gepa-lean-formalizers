@@ -20,6 +20,7 @@ Do the work yourself in this one session. Use a subagent only for the verificati
 - Before the freeze (end of chunk 4), only Neel edits `prereg.md`. The one exception: at the freeze, you write in the decisions Neel made in chunk 4, and he checks the diff before the tag. After the freeze it never changes; any deviation goes in its dated Deviations section, approved by Neel.
 - Plain Python, JSONL files, one `config.yaml` for every knob, one entry script per chunk in `scripts/`. No new frameworks beyond GEPA and vLLM.
 - Prefer short, boring code. If the spec doesn't cover a choice, pick the simplest option and note it in `LOG.md`.
+- After the `prereg-frozen` tag, no new analyses, features or pipeline changes unless a bug blocks the run. New ideas from anyone (Neel, Claude, subagents, outside feedback) go to "Parked ideas" in `LOG.md` and are only considered in chunk 7, labeled exploratory. Don't propose new features unprompted; raise only bugs, blockers and decisions Neel has to make.
 
 ## Stop rules
 
