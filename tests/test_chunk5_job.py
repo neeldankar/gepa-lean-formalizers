@@ -86,3 +86,19 @@ def test_dry_run_eval_never_touches_test_or_minif2f(tmp_path, monkeypatch):
         assert len({r["dataset"] for r in rows}) == want
         if arm in ("B", "D"):
             assert {r["run_id"] for r in rows} == {f"{arm}_s0"}
+
+
+def test_final_eval_failure_is_reported_not_skipped(tmp_path, monkeypatch):
+    from src.llm import LLMError
+    calls = []
+    def eval_arm(cfg, arm, *a, **k):
+        calls.append(arm)
+        if arm == "C":
+            raise LLMError("gave up after 2 attempts: no reply within 1800 s")
+        return [{"dataset": "dryrun_test", "item_id": "pnv_x", "outage": False}]
+    monkeypatch.setattr(chunk5_job, "eval_arm", eval_arm)
+    monkeypatch.setattr(chunk5_job, "write_rows", lambda path, rows: None)
+    plan = chunk5_job.job_plan(CFG, dry=True)
+    saved = {}
+    rows, outages, error = chunk5_job.run_final(chunk5_job.job_cfg(CFG, plan), plan, tmp_path, tmp_path / "final", saved.update)
+    assert error.startswith("arm C: LLMError: gave up") and list(rows) == ["A", "B"] and calls == ["A", "B", "C"]

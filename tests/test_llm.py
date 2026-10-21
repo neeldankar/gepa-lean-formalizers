@@ -59,4 +59,47 @@ def test_client_timeout_allows_long_reflections():
     # A non-streaming call sends nothing until it is done: Kimi-K3 reflections took 260 s to over 300 s in the
     # chunk 4 preflight, so a 300 s timeout retried (and may have re-billed) them.
     from src.config import load_config
-    assert load_config()["llm"]["timeout_seconds"] >= 1200
+    llm = load_config()["llm"]
+    assert llm["long_timeout_seconds"] >= 1200 and {"reflection", "generate"} <= set(llm["long_purposes"])
+
+
+
+def hanging_client(tmp_path, post, timeout=0.3, retries=1):
+    import copy
+    from src.config import load_config
+    from src.llm import LLMClient
+    cfg = copy.deepcopy(load_config())
+    cfg["llm"].update(timeout_seconds=timeout, long_timeout_seconds=timeout, retries=retries, long_retries=retries, backoff_seconds=0)
+    cfg["llm"]["prices"]["m"] = {"input": 0, "output": 0}
+    return LLMClient(cfg, 4, cache_dir=tmp_path / "c", costs_path=tmp_path / "costs.jsonl", post=post)
+
+
+def test_a_hung_call_is_cut_off_retried_then_fails_loudly(tmp_path):
+    import time
+    import pytest
+    from src.llm import LLMError
+    calls = []
+    def hang(body):
+        calls.append(time.monotonic())
+        time.sleep(30)  # a server that never answers
+    client = hanging_client(tmp_path, hang)
+    t0 = time.monotonic()
+    for purpose in ("opt_judge", "ref_judge", "reflection", "generate"):
+        calls.clear()
+        with pytest.raises(LLMError, match="gave up after 2 attempts"):
+            client.chat("m", [{"role": "user", "content": purpose}], purpose=purpose)
+        assert len(calls) == 2  # one retry, then the failure is raised, never skipped
+    assert time.monotonic() - t0 < 5
+    assert not (tmp_path / "costs.jsonl").exists()  # nothing was billed or cached as a reply
+
+
+def test_non_retryable_error_is_not_retried(tmp_path):
+    import pytest
+    from src.llm import LLMError
+    calls = []
+    def bad(body):
+        calls.append(1)
+        raise LLMError("HTTP 400: endpoint_not_ready")
+    with pytest.raises(LLMError, match="400"):
+        hanging_client(tmp_path, bad, retries=3).chat("m", [{"role": "user", "content": "x"}], purpose="reflection")
+    assert len(calls) == 1

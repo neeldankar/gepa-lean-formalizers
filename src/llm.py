@@ -29,6 +29,14 @@ class LLMError(RuntimeError):
     pass
 
 
+class RetryableError(LLMError):
+    """Rate limit, server error, network error or a call past its hard timeout: worth another attempt."""
+
+
+class CallTimeout(RetryableError):
+    pass
+
+
 def spent(chunk, path=COSTS_PATH):
     if not Path(path).exists():
         return 0.0
@@ -48,6 +56,11 @@ class LLMClient:
         self.retries = llm["retries"]
         self.backoff = llm["backoff_seconds"]
         self.timeout = llm["timeout_seconds"]
+        # Long calls (formalizer generations, reflection) get a longer hard timeout and fewer retries, so a
+        # hung call costs at most (retries + 1) * timeout before it fails loudly.
+        self.long_purposes = set(llm.get("long_purposes", []))
+        self.long_timeout = llm.get("long_timeout_seconds", self.timeout)
+        self.long_retries = llm.get("long_retries", self.retries)
         self.chunk = chunk
         self.cap = cfg["budget"]["chunk_caps_usd"][chunk]
         self.cache_dir = Path(cache_dir or ROOT / llm["cache_dir"])
@@ -73,7 +86,8 @@ class LLMClient:
         with self.lock:
             if spent(self.chunk, self.costs_path) >= self.cap:
                 raise BudgetExceeded(f"chunk {self.chunk} reached its ${self.cap} cap")
-        data = self.post(body)
+        long = purpose in self.long_purposes
+        data = self.with_retries(body, self.long_timeout if long else self.timeout, self.long_retries if long else self.retries)
         choice = data["choices"][0]
         out = {"text": choice["message"].get("content") or "", "usage": data.get("usage") or {},
                "finish_reason": choice.get("finish_reason")}
@@ -99,21 +113,51 @@ class LLMClient:
         p = self.prices[model]
         return (usage.get("prompt_tokens", 0) * p["input"] + usage.get("completion_tokens", 0) * p["output"]) / 1e6
 
-    def _post(self, body):
+    def with_retries(self, body, timeout, retries):
+        """At most retries + 1 attempts, each cut off after `timeout` seconds of wall clock however the
+        server behaves. Exhausting them raises LLMError, which every caller treats as a failure."""
+        last = None
+        for attempt in range(retries + 1):
+            try:
+                return self.call_with_deadline(body, timeout)
+            except RetryableError as e:
+                last = e
+                if attempt < retries:
+                    time.sleep(self.backoff * 2**attempt)
+        raise LLMError(f"gave up after {retries + 1} attempts: {last}")
+
+    def call_with_deadline(self, body, timeout):
+        """One attempt in a daemon thread; past the deadline it is abandoned and counts as a timeout."""
+        box = {}
+
+        def run():
+            try:
+                box["data"] = self._post(body, timeout) if self.post == self._post else self.post(body)
+            except BaseException as e:  # handed to the caller below
+                box["error"] = e
+
+        t = threading.Thread(target=run, daemon=True)
+        t.start()
+        t.join(timeout)
+        if t.is_alive():
+            raise CallTimeout(f"no reply within {timeout} s")
+        if "error" in box:
+            raise box["error"]
+        return box["data"]
+
+    def _post(self, body, timeout=None):
         load_env()
         headers = {"Content-Type": "application/json", "User-Agent": "gepa-lean-formalizers"}
         if self.api_key_env:
             headers["Authorization"] = f"Bearer {os.environ[self.api_key_env]}"
         req = urllib.request.Request(f"{self.base_url}/chat/completions", data=json.dumps(body).encode(),
                                      method="POST", headers=headers)
-        for attempt in range(self.retries + 1):
-            try:
-                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                    return json.load(resp)
-            except urllib.error.HTTPError as e:
-                if e.code not in (429, 500, 502, 503, 504) or attempt == self.retries:
-                    raise LLMError(f"HTTP {e.code}: {e.read()[:300]!r}") from None
-            except (urllib.error.URLError, TimeoutError) as e:
-                if attempt == self.retries:
-                    raise LLMError(f"network error: {e}") from None
-            time.sleep(self.backoff * 2**attempt)
+        try:
+            with urllib.request.urlopen(req, timeout=timeout or self.timeout) as resp:
+                return json.load(resp)
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503, 504):
+                raise RetryableError(f"HTTP {e.code}: {e.read()[:300]!r}") from None
+            raise LLMError(f"HTTP {e.code}: {e.read()[:300]!r}") from None
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            raise RetryableError(f"network error: {e}") from None

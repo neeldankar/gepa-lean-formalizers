@@ -1,8 +1,8 @@
 """One GEPA run: gepa.optimize with library defaults, our adapter, our reflection client.
 
 Writes runs/<run_id>/: gepa/ (GEPA's own state; it resumes from here after a crash),
-best_prompt.txt, candidates.json and DONE. A budget stop, an AXLE outage or a failed reflection call
-leaves no DONE marker. GEPA itself catches reflection errors and carries on with the same candidate, so
+best_prompt.txt, candidates.json and DONE. A budget stop, an AXLE outage, a failed reflection call or
+any API call that exhausted its retries (judges, formalizer) leaves STOPPED with the reason and no DONE. GEPA itself catches reflection errors and carries on with the same candidate, so
 without the check below a run whose reflection model is down would end "done" with only the seed.
 """
 import copy
@@ -13,7 +13,7 @@ import gepa
 from src.config import ROOT
 from src.data.firewall import gepa_items
 from src.gepa_adapter import COMPONENT, AxleOutage, FormalizerAdapter
-from src.llm import BudgetExceeded
+from src.llm import BudgetExceeded, LLMError
 from src.prompting import load_fewshot, load_instructions
 
 
@@ -81,7 +81,7 @@ def run_gepa(cfg, run_id, gen_client, judge_client, reflection_client, checker, 
             seed=spec["seed"],
             run_dir=str(out_dir / "gepa"),
         )
-    except (BudgetExceeded, AxleOutage, ReflectionFailed) as e:
+    except (BudgetExceeded, AxleOutage, ReflectionFailed, LLMError) as e:  # LLMError: a call out of retries
         (out_dir / "STOPPED").write_text(f"{type(e).__name__}: {e}\n")
         return {"run_id": run_id, "status": "stopped", "reason": str(e), "metric_calls": adapter.metric_calls}
 

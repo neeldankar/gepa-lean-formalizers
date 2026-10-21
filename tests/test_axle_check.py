@@ -108,3 +108,21 @@ def test_live_broken_fails():
     result = AxleChecker(CFG).check(BROKEN)
     assert result.status == LEAN_ERROR
     assert result.errors
+
+
+def test_a_hung_axle_call_is_cut_off_retried_then_an_outage(tmp_path):
+    import asyncio
+    import time
+
+    class Hangs(FakeClient):
+        async def check(self, **kwargs):
+            self.calls += 1
+            await asyncio.sleep(30)  # AXLE never answers
+
+    client = Hangs([])
+    checker = AxleChecker({**CFG, "hard_timeout_seconds": 0.2}, client_factory=lambda: client, cache_dir=tmp_path)
+    t0 = time.monotonic()
+    result = checker.check(GOOD)
+    assert result.status == OUTAGE and "no reply within" in result.errors[0]
+    assert client.calls == CFG["outage_retries"] + 1 and time.monotonic() - t0 < 5
+    assert not list(tmp_path.iterdir())  # never cached, never scored

@@ -22,6 +22,7 @@ axle:
   client_timeout_seconds: 300  # how long the axle client keeps retrying 503/429 inside one attempt
   outage_retries: 3            # our own retries on top of the client's
   outage_backoff_seconds: 30   # doubles each retry
+  hard_timeout_seconds: 600    # wall-clock limit per attempt; a hung call is an outage attempt (retried, then reported)
   cache_dir: cache/axle
 
 budget:
@@ -33,7 +34,10 @@ llm:
   cache_dir: cache/llm
   retries: 4
   backoff_seconds: 5
-  timeout_seconds: 1800   # wait for a reply, per attempt; Kimi-K3 reflections passed 300 s (chunk 4), and so may long ReForm outputs with six GEPA runs on one GPU
+  timeout_seconds: 300          # hard wall-clock limit per attempt for judge and gloss calls (they take seconds)
+  long_purposes: [generate, reflection]   # formalizer outputs (vLLM and arm F) and GEPA reflection
+  long_timeout_seconds: 1800    # Kimi-K3 reflections passed 300 s (chunk 4); so may long ReForm outputs on a shared GPU
+  long_retries: 1               # a hung long call fails after at most 2 x 1800 s, and the run reports it
   prices:  # USD per 1M tokens (Together model list, 2026-10-17)
     openai/gpt-oss-120b: {input: 0.15, output: 0.6}
     deepseek-ai/DeepSeek-V4.1-Flash: {input: 0.3, output: 1.2}

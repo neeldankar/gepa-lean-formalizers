@@ -309,6 +309,8 @@ def preflight(cfg, summary, argv=()):
         return {"new_cost_rows": n - before[0], "usd": usd - before[1]}
 
     only = set(argv[argv.index("--only") + 1].split(",")) if "--only" in argv else None
+    if "--once" in argv:  # one attempt per call, no retries (a rerun Neel asked to make exactly once)
+        cfg["llm"]["retries"] = cfg["llm"]["long_retries"] = 0
     want = lambda name: only is None or name in only
     checker = AxleChecker(cfg["axle"])
     cache = fresh_cache_dir() if "--fresh" in argv else None  # a new cache dir: every call is live
@@ -384,6 +386,12 @@ def preflight(cfg, summary, argv=()):
         if not dated.exists():
             dated.write_text(path.read_text())
     checks_date = datetime.now(timezone.utc).date().isoformat()
+    if only is not None and path.exists() and json.loads(path.read_text()).get("date") != checks_date:
+        old = json.loads(path.read_text())  # an older day's file: archive it, never merge across days
+        dated = RUN_DIR / f"api_preflight_{old.get('date', '2026-10-18')}.json"
+        if not dated.exists():
+            dated.write_text(path.read_text())
+        path.unlink()
     if only is not None and path.exists():  # rerun of some checks: keep the others, record the earlier attempt
         old = json.loads(path.read_text())
         rerun = {c["name"] for c in checks}

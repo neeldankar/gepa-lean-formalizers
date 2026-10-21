@@ -55,6 +55,8 @@ class AxleChecker:
         self.timeout_seconds = cfg["timeout_seconds"]
         self.max_concurrency = cfg["max_concurrency"]
         self.outage_retries = cfg["outage_retries"]
+        # Wall-clock limit per attempt, however AXLE behaves; a hung call counts as an outage attempt.
+        self.hard_timeout = cfg.get("hard_timeout_seconds", cfg["client_timeout_seconds"] + cfg["timeout_seconds"] + 60)
         self.outage_backoff_seconds = cfg["outage_backoff_seconds"]
         self.cache_dir = Path(cache_dir or ROOT / cfg["cache_dir"])
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -132,7 +134,7 @@ class AxleChecker:
         for attempt in range(self.outage_retries + 1):
             try:
                 self.api_calls += 1
-                result = await self._call(client, tool, content, options)
+                result = await asyncio.wait_for(self._call(client, tool, content, options), self.hard_timeout)
                 break
             except axle.LeanTimeout as e:
                 result = result_cls(TIMEOUT, [str(e)])
@@ -140,8 +142,8 @@ class AxleChecker:
             except axle.LeanResourceExceeded as e:
                 result = result_cls(RESOURCE, [str(e)])
                 break
-            except OUTAGE_ERRORS as e:
-                last_error = f"{type(e).__name__}: {e}"
+            except (*OUTAGE_ERRORS, asyncio.TimeoutError) as e:
+                last_error = f"{type(e).__name__}: {e}" if str(e) else f"no reply within {self.hard_timeout} s"
                 if attempt < self.outage_retries:
                     await asyncio.sleep(self.outage_backoff_seconds * 2**attempt)
 

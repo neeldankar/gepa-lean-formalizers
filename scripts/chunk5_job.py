@@ -113,6 +113,31 @@ def run_gepa_children(cfg, plan, log_dir):
     return {run_id: p.returncode for run_id, (p, _) in children.items()}
 
 
+def run_final(cfg, plan, runs_dir, final_dir, save):
+    """Final eval of every arm. An API call that exhausted its retries (LLMError) or any other error is
+    returned as `error` so the job records it and exits non-zero; arms finished before it are kept."""
+    dry = plan["standin_ids"] is not None
+    checker = AxleChecker(cfg["axle"])
+    judge = LLMClient(cfg, plan["chunk"], run_id="final" if not dry else "chunk5_dryrun_final")
+    index = memorization.load_index()
+    items_for = standin_loader(plan) if dry else None
+    rows_per_arm, outages = {}, 0
+    for arm in cfg["arms"]:
+        try:
+            gen = formalizer_client(cfg, cfg["arms"][arm]["model"], plan["chunk"],
+                                    run_id=f"final_{arm}" if not dry else f"chunk5_dryrun_{arm}")
+            rows = eval_arm(cfg, arm, gen, judge, checker, runs_dir, ROOT, mem_index=index, items_for=items_for)
+        except Exception as e:
+            return rows_per_arm, outages, f"arm {arm}: {type(e).__name__}: {e}"[:1000]
+        write_rows(final_dir / f"{arm}.jsonl.gz", rows)
+        rows_per_arm[arm] = {"rows": len(rows), "datasets": sorted({r["dataset"] for r in rows}),
+                             "item_ids": sorted({r["item_id"] for r in rows}) if dry else None}
+        outages += sum(r["outage"] for r in rows)
+        print(f"arm {arm}: {len(rows)} rows", flush=True)
+        save(final=rows_per_arm)
+    return rows_per_arm, outages, None
+
+
 def main(argv):
     dry = "--dry-run" in argv
     cfg = load_config()
@@ -141,20 +166,11 @@ def main(argv):
         sys.exit(1)
     print("sanity check passed", flush=True)
 
-    checker = AxleChecker(cfg["axle"])
-    judge = LLMClient(cfg, plan["chunk"], run_id="final" if not dry else "chunk5_dryrun_final")
-    index = memorization.load_index()
-    items_for = standin_loader(plan) if dry else None
-    rows_per_arm, outages = {}, 0
-    for arm in cfg["arms"]:
-        gen = formalizer_client(cfg, cfg["arms"][arm]["model"], plan["chunk"], run_id=f"final_{arm}" if not dry else f"chunk5_dryrun_{arm}")
-        rows = eval_arm(cfg, arm, gen, judge, checker, runs_dir, ROOT, mem_index=index, items_for=items_for)
-        write_rows(final_dir / f"{arm}.jsonl.gz", rows)
-        rows_per_arm[arm] = {"rows": len(rows), "datasets": sorted({r["dataset"] for r in rows}),
-                             "item_ids": sorted({r["item_id"] for r in rows}) if dry else None}
-        outages += sum(r["outage"] for r in rows)
-        print(f"arm {arm}: {len(rows)} rows", flush=True)
-        save(final=rows_per_arm)
+    rows_per_arm, outages, error = run_final(cfg, plan, runs_dir, final_dir, save)
+    if error:
+        save(final_error=error)
+        print("final eval failed:", error, flush=True)
+        sys.exit(1)
     save(outages=outages, finished=datetime.now(timezone.utc).isoformat(timespec="seconds"))
     sys.exit(1 if outages else 0)
 

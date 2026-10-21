@@ -220,3 +220,26 @@ def test_candidates_saved_without_any_truth_score(tmp_path, monkeypatch):
         assert {r["item_id"] for r in rows} == val_ids and len(rows) == 70
         assert all(set(r) == {"item_id", "sample", "output", "extracted", "compile_status", "compiled", "lean_errors",
                               "judge_verdict", "judge_reason", "score"} for r in rows)
+
+
+@pytest.mark.parametrize("role", ["judge", "formalizer"])
+def test_a_hung_judge_or_formalizer_call_stops_the_run_and_says_so(tmp_path, role):
+    """One hung API call must not stall a GEPA run: it is cut off, retried once, then the run stops with STOPPED."""
+    import time
+    cfg = make_cfg(budget=150)
+    cfg["llm"].update(timeout_seconds=0.2, long_timeout_seconds=0.2, retries=1, long_retries=1, backoff_seconds=0)
+    posts = MockPosts()
+    real = getattr(posts, role)
+    seen = []
+    def hangs_once_seeded(body):
+        seen.append(1)
+        if len(seen) > 5:  # let a few calls through, then hang for good
+            time.sleep(30)
+        return real(body)
+    setattr(posts, role, hangs_once_seeded)
+    t0 = time.monotonic()
+    result, _ = run(tmp_path, cfg, posts)
+    out = tmp_path / "runs/T_s0"
+    assert result["status"] == "stopped" and "gave up after 2 attempts" in result["reason"]
+    assert "no reply within" in (out / "STOPPED").read_text() and not (out / "DONE").exists()
+    assert time.monotonic() - t0 < 20
