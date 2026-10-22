@@ -1,0 +1,38 @@
+{
+ "started": "21:04:00",
+ "keepalives": 11,
+ "data_chunks": 536,
+ "first_data_s": 2.3,
+ "first_reasoning_s": 2.3,
+ "first_content_s": 111.0,
+ "last_data_s": 125.2,
+ "reasoning_chars": 20254,
+ "content_chars": 4379,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 1224,
+  "completion_tokens": 6007,
+  "total_tokens": 7231,
+  "cost": 0.093777,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.093777,
+   "upstream_inference_prompt_cost": 0.003672,
+   "upstream_inference_completions_cost": 0.090105
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 4915,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "provider": "Together",
+ "error": null,
+ "seconds": 125.2
+}

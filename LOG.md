@@ -6,7 +6,7 @@
 - **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
 - **Next:** resume on a new pod with Kimi-K3 through OpenRouter pinned to Together (Deviation 2): the 5 stopped runs, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
 - **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
-- **Waiting on Neel:** the tripwire paused chunk 5 at 20:43 UTC (D_s2's reflection call: 3 upstream 504s at 300 s). Resume or hold? Pod 7 idles meanwhile; stop at about 21:14 UTC without an answer.
+- **Waiting on Neel:** resume or hold after the D_s2 replays (streamed replay 1 failed at 300.8 s; replay 2 completed in 125.2 s). Pod 7 is kept up (Neel), paused since 20:43 UTC.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,15 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 5 · transport fix: Kimi-K3 calls stream; replay of D_s2's failed reflection
+
+- **Neel:** keep pod 7 up, don't resume yet. Switch Kimi-K3 calls (reflection and arm F) to streaming through OpenRouter. This is a transport fix: no model, prompt, temperature or scoring change. Code: `LLMClient(stream=True)` sends `stream: true` and `assemble_stream` turns the server-sent events back into the same reply (content joined, finish reason, usage, provider). Keep-alives are skipped; an error chunk or a missing finish reason is retryable. `models.arm_f.stream: true` applies to reflection and arm F only. Tests: 229 pass (3 new).
+- **The request:** rebuilt from D_s2's saved state on a copy (`/workspace/capture`; `runs/D_s2` untouched) and saved without sending (`runs/chunk5/d_s2_reflection_request.json`): 4,382 prompt characters, max_tokens 32,000. GEPA re-seeds its RNG at start and D_s2 had finished no iteration since its state was saved (20:26:54 UTC), so it is the request that failed 3 times. Its non-streaming reply was never cached, which fits.
+- **Replay 1** (production client, streaming, 1 attempt, 1800 s limit; `runs/chunk5/d_s2_replay_streaming_1.json`): completed: False. `LLMError: gave up after 1 attempts: stream error: {'code': 504, 'message': 'A Timeout Occurred', 'metadata': {'error_typ` after 300.8 s. The partial output length was not recorded (the assembler discards a broken stream).
+- **Replay 2** (same body, raw HTTP, chunk timings recorded; `runs/chunk5/d_s2_replay_streaming_2_measured.json`): completed in 125.2 s. First token at 2.3 s, first content at 111.0 s. 6,007 output tokens (4,915 reasoning; 4,379 content characters). Finish stop, provider Together, $ 0.094 (cost row added after the fact; it went out over raw HTTP and is not cached).
+- **Reading:** at temperature 0.0 the same request finished in 125.2 s, under half of 300 s, so the answer is not too long for the gateway. The 504s at about 300 s look like intermittent upstream stalls; streaming did not stop one (replay 1), and an identical retry got through (replay 2).
+- **Cost:** $ 0.094 this entry.
 
 ### 2026-10-22 · chunk 5 · pod 7: tripwire tripped (D_s2 504s); the pause worked, the tripwire killed itself; fixed
 

@@ -1,0 +1,7 @@
+{
+ "completed": false,
+ "error": "LLMError: gave up after 1 attempts: stream error: {'code': 504, 'message': 'A Timeout Occurred', 'metadata': {'error_type': 'timeout'}}",
+ "started": "20:58:13",
+ "seconds": 300.8,
+ "max_tokens": 32000
+}
