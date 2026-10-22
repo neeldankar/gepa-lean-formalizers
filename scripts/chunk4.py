@@ -58,6 +58,7 @@ RERUN_CONFIGS = {"qwen_a2": ("qwen3-8b", "prompts/arm_A.txt", False),
 RERUN_FEWSHOT = {"qwen_a3": "prompts/fewshot.txt"}
 RERUN_OUT = {"qwen_a2": PILOT_A2, "qwen_a3": RUN_DIR / "pilot_a3.jsonl.gz"}
 ALL_CONFIGS = {**CONFIGS, **RERUN_CONFIGS}
+GEPA_MINIBATCH = 3  # gepa 0.1.4's default reflection minibatch (prereg Changes, item 9)
 QWEN_PROMPTS, REFORM_PROMPTS = 5, 4  # final eval: A, B x3, E on Qwen3-8B; C, D x3 on ReForm-8B
 
 
@@ -206,17 +207,43 @@ def rerun(cfg, summary, argv=()):
     gpu(cfg, summary)
 
 
-def armf(cfg, summary, argv=()):
-    items = pilot_items(cfg)[: cfg["pilot"]["arm_f_items"]]
-    genc = formalizer_client(cfg, "arm_f", CHUNK, run_id="pilot_arm_f")
-    instructions = load_instructions(cfg["arms"]["F"]["prompt"])
+def armf_rows(genc, cfg, checker, items):
+    """Arm F (its prompt and few-shot block) on `items`: per item the output, finish reason, tokens,
+    seconds and compile result."""
+    from src.scoring.score import prepare
+    arm = cfg["arms"]["F"]
+    instructions, fewshot = load_instructions(arm["prompt"]), load_fewshot(arm.get("fewshot"))
+
+    def one(it):
+        t0 = time.monotonic()
+        o = generate(genc, cfg, "arm_f", instructions, it, fewshot=fewshot)
+        p = prepare(checker, it, o["text"])
+        return {"item_id": it["id"], "output": o["text"], "finish_reason": o["finish_reason"], "usage": o.get("usage"),
+                "completion_tokens": (o.get("usage") or {}).get("completion_tokens"), "seconds": time.monotonic() - t0,
+                "format_failure": p["format_failure"], "compiled": p["compiled"], "extracted": p["extracted"]}
+
     with ThreadPoolExecutor(cfg["generation"]["workers"]) as pool:
-        outs = list(pool.map(lambda it: generate(genc, cfg, "arm_f", instructions, it), items))
-    rows = [{"item_id": it["id"], "output": o["text"], "finish_reason": o["finish_reason"], "usage": o.get("usage")}
-            for it, o in zip(items, outs)]
-    write_jsonl(RUN_DIR / "arm_f.jsonl", rows)
-    summary["armf"] = {"model": cfg["models"]["arm_f"]["served_name"], "items": len(rows),
-                       "finish_reasons": dict(sorted({r["finish_reason"]: sum(x["finish_reason"] == r["finish_reason"] for x in rows) for r in rows}.items()))}
+        return list(pool.map(one, items))
+
+
+def armf(cfg, summary, argv=()):
+    """Arm F's model on the first pilot items, or with --ids on the named train or val items."""
+    if "--ids" in argv:
+        by_id = {it["id"]: it for split in ("train", "val") for it in gepa_items(split)}
+        items = [by_id[i] for i in argv[argv.index("--ids") + 1].split(",")]
+    else:
+        items = pilot_items(cfg)[: cfg["pilot"]["arm_f_items"]]
+    model = cfg["models"]["arm_f"]["served_name"]
+    genc = formalizer_client(cfg, "arm_f", CHUNK, run_id="pilot_arm_f")
+    rows = armf_rows(genc, cfg, AxleChecker(cfg["axle"]), items)
+    write_jsonl(RUN_DIR / f"arm_f_{model.split('/')[-1].lower().replace('-', '').replace('.', '')}.jsonl", rows)
+    toks = [r["completion_tokens"] or 0 for r in rows]
+    summary["armf"] = {"model": model, "items": [r["item_id"] for r in rows], "compiled": sum(r["compiled"] for r in rows),
+                       "format_failures": sum(r["format_failure"] for r in rows), "max_completion_tokens": max(toks),
+                       "completion_tokens": toks, "hit_length_cap": sum(r["finish_reason"] == "length" for r in rows),
+                       "seconds": [round(r["seconds"], 1) for r in rows],
+                       "usd": sum(genc.cost(model, r["usage"]) for r in rows if r["usage"])}
+    print(json.dumps(summary["armf"]))
 
 
 # Label mix: half Qwen3-8B (the latest rerun first, topped up from the earlier thinking-off runs),
@@ -620,17 +647,19 @@ def config_stats(rows, costs_rows, name):
 def projection(m, cfg):
     """Projected full-study cost (USD) from pilot measurements `m`:
     gen_s_per_item {qwen, reform} (GPU seconds per item at pilot concurrency), api_per_output {qwen,
-    reform}, gepa_gpu_s_per_call and gepa_api_per_call (Qwen3-8B pilot run), armf_usd_per_item,
+    reform}, gepa_gpu_s_per_call and gepa_api_per_call (Qwen3-8B pilot run, reflection excluded when
+    reflections_per_run, reflection_median_s and reflection_usd are given), armf_usd_per_item,
     gloss_usd, setup_hours, spent_usd (all chunks so far)."""
     rate = cfg["gpu"]["usd_per_hour"]
     budget = cfg["gepa"]["max_metric_calls"]
     n_items = cfg["split"]["test"] + m["minif2f_items"]
     reform_ratio = m["gen_s_per_item"]["reform"] / m["gen_s_per_item"]["qwen"]
-    gepa_qwen_h = budget * m["gepa_gpu_s_per_call"] / 3600
-    gepa_reform_h = gepa_qwen_h * reform_ratio
+    refl_h = m.get("reflections_per_run", 0) * m.get("reflection_median_s", 0) / 3600  # the GPU waits; not scaled
+    gepa_qwen_h = budget * m["gepa_gpu_s_per_call"] / 3600 + refl_h
+    gepa_reform_h = budget * m["gepa_gpu_s_per_call"] * reform_ratio / 3600 + refl_h
     gepa_gpu_serial = 3 * (gepa_qwen_h + gepa_reform_h) * rate
     gepa_gpu_parallel = max(gepa_qwen_h, gepa_reform_h) * rate  # six runs at once share the GPU
-    gepa_api = 6 * budget * m["gepa_api_per_call"]
+    gepa_api = 6 * (budget * m["gepa_api_per_call"] + m.get("reflections_per_run", 0) * m.get("reflection_usd", 0))
     eval_h = n_items * (QWEN_PROMPTS * m["gen_s_per_item"]["qwen"] + REFORM_PROMPTS * m["gen_s_per_item"]["reform"]) / 3600
     eval_api = n_items * (QWEN_PROMPTS * m["api_per_output"]["qwen"] + REFORM_PROMPTS * m["api_per_output"]["reform"])
     armf = cfg["split"]["test"] * (m["armf_usd_per_item"] + m["api_per_output"]["qwen"])
@@ -649,6 +678,13 @@ def projection(m, cfg):
     }
 
 
+def reflections_per_run(budget, val_n, minibatch, accept_rate):
+    """Reflection calls in a GEPA run of `budget` metric calls (gepa 0.1.4 defaults): the seed's full val
+    pass once, then per iteration one reflection, the parent and the child on a minibatch, and a full
+    val pass when the child is accepted. Pilot check: 70 + 3 x (3 + 3) + 70 = 158 with 1 of 3 accepted."""
+    return (budget - val_n) / (2 * minibatch + accept_rate * val_n)
+
+
 def reliability(cost_rows, failure_rows, run_id):
     """Reflection latency and hung or failed API attempts for one GEPA run, from the raw logs."""
     secs = sorted(c["seconds"] for c in cost_rows if c.get("run_id") == run_id and c["purpose"] == "reflection" and "seconds" in c)
@@ -662,13 +698,15 @@ def reliability(cost_rows, failure_rows, run_id):
 
 
 def overnight_hours(m, rel, cfg):
-    """Projected chunk 5 wall clock (hours): the six GEPA runs in parallel (the slowest, ReForm-8B, sets the
-    pace, scaled from the pilot's wall time per metric call), expected stall from hung reflection calls
-    (hang rate x projected reflection calls per run x the reflection cap), the final eval, and setup."""
+    """Projected chunk 5 wall clock (hours): the six GEPA runs in parallel, the slowest (ReForm-8B) setting
+    the pace. Per run: metric calls at the pilot's wall time per call without reflection, scaled by the
+    ReForm/Qwen generation time ratio, plus reflections per run at the median reflection latency (not
+    scaled), plus the expected stall from hung reflections (hang rate x reflections x the cap); then the
+    final eval and setup."""
     budget = cfg["gepa"]["max_metric_calls"]
     reform_ratio = m["gen_s_per_item"]["reform"] / m["gen_s_per_item"]["qwen"]
-    gepa = budget * m["gepa_wall_s_per_call"] * max(1.0, reform_ratio) / 3600
-    calls_per_run = rel["reflection_calls"] / m["pilot_metric_calls"] * budget if m["pilot_metric_calls"] else 0.0
+    calls_per_run = m["reflections_per_run"]
+    gepa = (budget * m["eval_wall_s_per_call"] * max(1.0, reform_ratio) + calls_per_run * m["reflection_median_s"]) / 3600
     cap = cfg["llm"].get("purpose_limits", {}).get("reflection", {}).get("timeout_seconds", cfg["llm"]["long_timeout_seconds"])
     stall = rel["reflection_hang_rate"] * calls_per_run * cap / 3600
     final = m["final_eval_hours"]
@@ -724,11 +762,20 @@ def project(cfg, summary, argv=()):
     qcfg = next(k for k in ("qwen_a3", "qwen_a2", "qwen_nothink") if k in stats)
     cand = json.loads((ROOT / "runs" / run_id / "candidates.json").read_text())
     calls = cand["total_metric_calls"]
-    gepa_rows = [c for c in crow if c.get("run_id") == run_id]
+    started = summary["gepa_launch"]["started"]  # rows of earlier, failed launches under the same run id don't count
+    since = [c for c in crow if c["time"] >= started]
+    gepa_rows = [c for c in since if c.get("run_id") == run_id]
     gepa_hours = sum(c.get("hours", 0) for c in gepa_rows if c["purpose"] == "gpu")
     failures_path = COSTS_PATH.parent / "api_failures.jsonl"
-    rel = reliability(crow, read_jsonl(failures_path) if failures_path.exists() else [], run_id)
-    gepa_api = sum(c["usd"] for c in gepa_rows if c["purpose"] != "gpu")
+    fails = [f for f in read_jsonl(failures_path) if f["time"] >= started] if failures_path.exists() else []
+    rel = reliability(since, fails, run_id)
+    gepa_api = sum(c["usd"] for c in gepa_rows if c["purpose"] not in ("gpu", "reflection"))
+    # Today's real 3-record reflections on pilot data: the pilot run's own and the load check's six.
+    refl = [c for c in crow if c["purpose"] == "reflection" and "seconds" in c
+            and ((c.get("run_id") == run_id and c["time"] >= started) or c.get("run_id") == "preflight_load")]
+    refl_secs = sorted(c["seconds"] for c in refl)
+    accept_rate = (len(cand["val_aggregate_scores"]) - 1) / cand["reflection_calls"]
+    val_n, budget = len(gepa_items("val")), cfg["gepa"]["max_metric_calls"]
     gloss = [c for c in crow if c.get("run_id") == "pilot_label"]
     armf_rows = [c for c in crow if c.get("run_id") == "pilot_arm_f"]
     m = {
@@ -736,7 +783,12 @@ def project(cfg, summary, argv=()):
         "gen_s_per_item": {"qwen": t[qcfg]["gen_seconds"] / t[qcfg]["items"],
                            "reform": t["reform"]["gen_seconds"] / t["reform"]["items"]},
         "api_per_output": {"qwen": stats[qcfg]["api_usd_per_output"], "reform": stats["reform"]["api_usd_per_output"]},
-        "gepa_gpu_s_per_call": gepa_hours * 3600 / calls, "gepa_api_per_call": gepa_api / calls,
+        "gepa_gpu_s_per_call": (gepa_hours * 3600 - sum(c["seconds"] for c in gepa_rows if c["purpose"] == "reflection")) / calls,
+        "gepa_api_per_call": gepa_api / calls,
+        "accept_rate": accept_rate, "reflections_per_run": reflections_per_run(budget, val_n, GEPA_MINIBATCH, accept_rate),
+        "reflections_per_run_bounds": [reflections_per_run(budget, val_n, GEPA_MINIBATCH, a) for a in (1.0, 0.0)],
+        "reflection_median_s": refl_secs[len(refl_secs) // 2], "reflection_slowest_s": refl_secs[-1],
+        "reflection_usd": sum(c["usd"] for c in refl) / len(refl), "reflection_sample": len(refl),
         "armf_usd_per_item": sum(c["usd"] for c in armf_rows) / len(armf_rows) if armf_rows else 0.0,
         "gloss_usd": sum(c["usd"] for c in gloss) / len(gloss) if gloss else 0.0,
         "setup_hours": summary["setup_hours"], "spent_usd": sum(c["usd"] for c in crow),
@@ -752,8 +804,7 @@ def project(cfg, summary, argv=()):
     ref_agree = summary["agree"]["ref_judge"]["agree"] if "agree" in summary else None
     summary["go"] = go_checks(stats[qcfg]["truth_faithful_rate"], ref_agree if ref_agree is not None else -1,
                               {k: v["exact_match_rate"] for k, v in stats.items()}, proj["total_usd_upper"])
-    m2 = {**m, "gepa_wall_s_per_call": gepa_hours * 3600 / calls, "pilot_metric_calls": calls,
-          "final_eval_hours": proj["final_eval_gpu_hours"]}
+    m2 = {**m, "eval_wall_s_per_call": m["gepa_gpu_s_per_call"], "final_eval_hours": proj["final_eval_gpu_hours"]}
     summary["go_info"] = {"reliability": rel, "overnight_hours": overnight_hours(m2, rel, cfg)}
 
 

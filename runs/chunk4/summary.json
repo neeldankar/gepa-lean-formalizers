@@ -321,11 +321,11 @@
   }
  },
  "costs": {
-  "usd_total": 10.25743629367916,
+  "usd_total": 10.919260293679159,
   "by_chunk": {
    "4": {
-    "calls": 725,
-    "usd": 10.25743629367916
+    "calls": 735,
+    "usd": 10.919260293679159
    }
   },
   "by_run": {
@@ -400,6 +400,14 @@
    "chunk5_dryrun_F": {
     "calls": 5,
     "usd": 0.233745
+   },
+   "pilot_arm_f": {
+    "calls": 5,
+    "usd": 0.2969198
+   },
+   "probe_arm_f_glm53_nothink": {
+    "calls": 5,
+    "usd": 0.3649042
    }
   },
   "by_purpose": {
@@ -408,8 +416,8 @@
     "usd": 7.558505343679159
    },
    "generate": {
-    "calls": 443,
-    "usd": 0.5861099999999999
+    "calls": 453,
+    "usd": 1.247934
    },
    "opt_judge": {
     "calls": 105,
@@ -433,7 +441,7 @@
    }
   }
  },
- "costs_all_chunks_usd": 10.291070523679162,
+ "costs_all_chunks_usd": 10.952894523679161,
  "stats": {
   "qwen_nothink": {
    "outputs": 30,
@@ -703,5 +711,147 @@
    148.9,
    111.0
   ]
+ },
+ "armf": {
+  "model": "zai-org/GLM-5.3",
+  "items": [
+   "pnv_004",
+   "pnv_011",
+   "pnv_019",
+   "pnv_029",
+   "pnv_042"
+  ],
+  "compiled": 1,
+  "format_failures": 4,
+  "max_completion_tokens": 16384,
+  "completion_tokens": [
+   16384,
+   933,
+   16384,
+   16384,
+   16384
+  ],
+  "hit_length_cap": 4,
+  "seconds": [
+   133.6,
+   9.0,
+   113.2,
+   129.6,
+   127.5
+  ],
+  "usd": 0.2969198
+ },
+ "gepa_pilot": {
+  "run_id": "pilot_qwen",
+  "config": "qwen_a3",
+  "metric_calls": 158,
+  "candidates": 2,
+  "seed_val": 0.05714285714285714,
+  "best_val": 0.05714285714285714,
+  "reflection_calls": 3,
+  "gpu_hours": 0.11101852905694007,
+  "api_usd": 0.008702099999999999
+ },
+ "measurements": {
+  "minif2f_items": 243,
+  "gen_s_per_item": {
+   "qwen": 0.6129885232696931,
+   "reform": 4.2624181456320605
+  },
+  "api_per_output": {
+   "qwen": 0.000206285,
+   "reform": 0.0014659399999999998
+  },
+  "gepa_gpu_s_per_call": 0.3966247126897738,
+  "gepa_api_per_call": 5.5076582278481005e-05,
+  "accept_rate": 0.3333333333333333,
+  "reflections_per_run": 24.886363636363637,
+  "reflections_per_run_bounds": [
+   9.605263157894736,
+   121.66666666666667
+  ],
+  "reflection_median_s": 121.2,
+  "reflection_slowest_s": 233.9,
+  "reflection_usd": 0.09687989999999999,
+  "reflection_sample": 10,
+  "armf_usd_per_item": 0.05938396,
+  "gloss_usd": 0.00045595125000000004,
+  "setup_hours": 0.1438888888888889,
+  "spent_usd": 10.952894523679161
+ },
+ "projection": {
+  "gepa_gpu_usd_serial": 28.44903095409601,
+  "gepa_gpu_usd_parallel": 5.788351178841008,
+  "gepa_api_usd": 14.73029811766398,
+  "final_eval_gpu_hours": 2.7378226242915513,
+  "final_eval_gpu_usd": 10.92391227092329,
+  "final_eval_api_usd": 3.3786406499999995,
+  "arm_f_usd": 14.718790515,
+  "setup_gpu_usd": 0.5741166666666667,
+  "handcheck_gloss_usd": 0.09119025000000001,
+  "chunk5_usd_serial": 72.77478917434995,
+  "chunk5_usd_parallel": 50.11410939909495,
+  "chunks6_7_cap_usd": 10,
+  "spent_usd": 10.952894523679161,
+  "total_usd_upper": 93.72768369802911,
+  "total_usd_parallel": 71.06700392277412
+ },
+ "go": [
+  {
+   "check": "Qwen3-8B truth-faithful rate between about 10% and 70%",
+   "value": 6.666666666666667,
+   "go": false
+  },
+  {
+   "check": "reference judge agrees with Neel on at least 16 of 20",
+   "value": 19,
+   "go": true
+  },
+  {
+   "check": "exact matches with known ProofNet statements under about 20% (every configuration)",
+   "value": 0.0,
+   "go": true
+  },
+  {
+   "check": "projected total under $300",
+   "value": 93.72768369802911,
+   "go": true
+  }
+ ],
+ "go_info": {
+  "reliability": {
+   "reflection_calls": 3,
+   "reflection_median_s": 95.0,
+   "reflection_slowest_s": 163.7,
+   "failed_attempts": 0,
+   "timed_out": 0,
+   "reflection_hang_rate": 0.0
+  },
+  "overnight_hours": {
+   "gepa_parallel_h": 1.4507145811631599,
+   "expected_hang_stall_h": 0.0,
+   "final_eval_h": 2.7378226242915513,
+   "setup_h": 0.1438888888888889,
+   "total_h": 4.3324260943436,
+   "reflection_calls_per_run": 24.886363636363637
+  }
+ },
+ "agree": {
+  "n": 20,
+  "unsure": 0,
+  "missing": 0,
+  "n_decided": 20,
+  "ref_judge": {
+   "agree": 19,
+   "of": 20
+  },
+  "truth_label": {
+   "agree": 20,
+   "of": 20
+  },
+  "opt_judge": {
+   "agree": 16,
+   "of": 20
+  }
  }
 }

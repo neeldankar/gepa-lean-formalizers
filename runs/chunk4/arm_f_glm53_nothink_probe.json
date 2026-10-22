@@ -1,0 +1,42 @@
+{
+ "model": "zai-org/GLM-5.3",
+ "enable_thinking": false,
+ "items": [
+  "pnv_004",
+  "pnv_011",
+  "pnv_019",
+  "pnv_029",
+  "pnv_042"
+ ],
+ "compiled": 0,
+ "format_failures": 5,
+ "completion_tokens": [
+  16384,
+  16384,
+  16384,
+  16384,
+  16384
+ ],
+ "reasoning_tokens": [
+  16384,
+  16384,
+  16384,
+  16384,
+  16384
+ ],
+ "finish": [
+  "length",
+  "length",
+  "length",
+  "length",
+  "length"
+ ],
+ "seconds": [
+  140.6,
+  133.0,
+  128.8,
+  133.6,
+  129.9
+ ],
+ "usd": 0.3649042
+}

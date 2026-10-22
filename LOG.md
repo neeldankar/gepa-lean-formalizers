@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 in progress (pilot). GEPA pilot run and chunk 5 dry run done (Oct 22, pod 5); freeze not done
-- **Status:** no pod running (pod 5 stopped itself at the end of the queue, about 02:54 UTC). Pilot gate was the 3-record reflection plus judges (Neel). Both jobs exit 0, no failed API calls in either.
-- **Next:** Neel's Block 2 decisions (arm F options in the 2026-10-22 pod entry), labels, prereg drafts; then the freeze.
-- **Spent so far:** $10.29 of $300 (chunk 4: $10.26 of its $30 cap). Pod setup time is not metered (about 10 min on pod 5).
-- **Waiting on Neel:** Block 2 arm F choice (32k cap for all arms / keep 16k and move arm F to GLM-5.3 / drop arm F); labels (`~/Desktop/chunk4_labeling.html`); the three prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions). Pod 4 (64.247.201.45, started 00:40 UTC) went unreachable mid-setup; check in the RunPod console that it is stopped.
+- **Chunk:** 4 of 7 in progress (pilot). GEPA pilot run, chunk 5 dry run and labels done; Block 2 (Neel's picks) and the freeze not done
+- **Status:** no pod running. Go table: 3 of 4 met (Qwen3-8B truth-faithful 6.7% is below about 10%); reference judge agrees with Neel on 19 of 20.
+- **Next:** Neel's Block 2 picks (see the 2026-10-22 Block 2 entry); then the freeze: write the picks into `config.yaml` and `prereg.md`, Neel checks the diff, tag `prereg-frozen`; the subagent recomputation of chunk 4's key numbers.
+- **Spent so far:** $10.95 of $300 (chunk 4: $10.92 of its $30 cap)
+- **Waiting on Neel:** Block 2 picks, including arm F's model (GLM-5.3 failed its 5-item test; `config.yaml` currently says GLM-5.3); the four prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions, go criterion 1). Check that pod 4 (64.247.201.45) is stopped.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,18 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 4 · Block 2: arm F on GLM-5.3, labels, projection
+
+- **Arm F on GLM-5.3** (Neel's option b; `config.yaml` `models.arm_f.served_name: zai-org/GLM-5.3`, price $1.40 / $4.40 per 1M). `chunk4 armf --ids` on the dry run's 5 train items (pnv_004, 011, 019, 029, 042), now with arm F's few-shot block and a compile check; run id `pilot_arm_f`. Outcome: compiled 1 of 5; 4 of 5 used all 16,384 tokens on reasoning and returned no text; max 16,384 tokens; 9 to 134 s; $0.30. Probe with `enable_thinking: false` (config unchanged, run id `probe_arm_f_glm53_nothink`): 0 of 5, all 5 at the cap, flag ignored; $0.36. Files `runs/chunk4/arm_f_glm53*.json*`. Same items on Kimi-K3 in the dry run: 5 of 5 under the cap, 4 compiled.
+- **Labels** (Neel, new page, 20 items; `runs/chunk4/labels.csv`, `chunk4 agree`): reference judge 19 of 20, truth label 20 of 20, optimization judge 16 of 20. Misses: ref judge unparseable on P20; opt judge faithful on 2 unfaithful ReForm-8B items, unfaithful on 1 certified item, unparseable on 1. 10 of 20 labeled faithful, 6 certified.
+- **Bugs fixed in `chunk4 project`** (tests added; 193 pass): it counted the failed Oct 18 launch's 131 `pilot_qwen` rows (now only rows since `gepa_launch.started`); reflections per run were scaled linearly (about 15); now `reflections_per_run` follows GEPA's call accounting (seed val pass 70, then 6 calls per iteration plus 70 per accepted child; pilot: 70 + 3 x 6 + 70 = 158). Reflection time and cost are their own terms in the overnight and cost projections.
+- **Numbers** (from `runs/chunk4/block2_numbers.json`, script `runs/chunk4/block2_numbers.py`, from `summary.json`; subagent check: pending, at the freeze):
+  - Go: Qwen3-8B truth-faithful 6.7% (no); reference judge 19/20 (yes); exact matches 0.0% (yes); projected total $93.73 upper, $71.07 with parallel GEPA (yes).
+  - Reflections per run at 800 calls: 24.9 at the pilot's accept rate (1 of 3), 9.6 to 121.7 for all to none accepted. Reflection: $0.097 and 121 s median per 3-record call (10 real calls). Six runs: $14.47 expected ($5.58 to $70.72).
+  - Overnight (chunk 5): 4.33 h = GEPA 1.45 h in parallel + final eval 2.74 h + setup 0.14 h; GEPA serial upper bound 7.13 h.
+- Drafted, not applied: `runs/chunk4/prereg_go1_draft.md` (go criterion 1 not met, proceeding because...).
+- **Cost:** $0.66 this entry (arm F tests); chunk 4 $10.92, total $10.95.
 
 ### 2026-10-22 · chunk 4 · pod 5: GEPA pilot run and chunk 5 dry run, both done
 

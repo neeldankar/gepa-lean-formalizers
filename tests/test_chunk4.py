@@ -212,13 +212,34 @@ def test_reliability_and_overnight_projection():
     cfg = copy.deepcopy(CFG)
     cfg["gepa"]["max_metric_calls"] = 800
     cfg["llm"]["purpose_limits"] = {"reflection": {"timeout_seconds": 600, "retries": 1}}
-    m = {"gen_s_per_item": {"qwen": 1.0, "reform": 4.0}, "gepa_wall_s_per_call": 9.0, "pilot_metric_calls": 160,
-         "final_eval_hours": 2.0, "setup_hours": 0.25}
+    m = {"gen_s_per_item": {"qwen": 1.0, "reform": 4.0}, "eval_wall_s_per_call": 9.0, "reflections_per_run": 20,
+         "reflection_median_s": 180, "final_eval_hours": 2.0, "setup_hours": 0.25}
     o = chunk4.overnight_hours(m, rel, cfg)
-    assert o["gepa_parallel_h"] == pytest.approx(800 * 9 * 4 / 3600)          # 8 h: ReForm-8B runs set the pace
-    assert o["reflection_calls_per_run"] == pytest.approx(4 / 160 * 800)       # 20 reflections per run
+    gepa = (800 * 9 * 4 + 20 * 180) / 3600                                   # ReForm-8B sets the pace; reflection time not scaled
+    assert o["gepa_parallel_h"] == pytest.approx(gepa)
+    assert o["reflection_calls_per_run"] == 20
     assert o["expected_hang_stall_h"] == pytest.approx(0.2 * 20 * 600 / 3600)  # 4 hangs x 10 min
-    assert o["total_h"] == pytest.approx(8 + 0.2 * 20 * 600 / 3600 + 2 + 0.25)
+    assert o["total_h"] == pytest.approx(gepa + 0.2 * 20 * 600 / 3600 + 2 + 0.25)
+
+
+def test_reflections_per_run_matches_the_pilot():
+    # the pilot: 158 metric calls, 3 reflections, 1 accepted: 70 + 3 x 6 + 70
+    assert chunk4.reflections_per_run(158, 70, 3, 1 / 3) == pytest.approx(3)
+    assert chunk4.reflections_per_run(800, 70, 3, 0.0) == pytest.approx(730 / 6)
+    assert chunk4.reflections_per_run(800, 70, 3, 1.0) == pytest.approx(730 / 76)
+
+
+def test_projection_reflection_terms():
+    cfg = copy.deepcopy(CFG)
+    cfg["gpu"]["usd_per_hour"] = 4.0
+    cfg["gepa"]["max_metric_calls"] = 800
+    m = {"minif2f_items": 243, "gen_s_per_item": {"qwen": 3.6, "reform": 7.2}, "api_per_output": {"qwen": 0.001, "reform": 0.002},
+         "gepa_gpu_s_per_call": 9.0, "gepa_api_per_call": 0.01, "armf_usd_per_item": 0.02, "gloss_usd": 0.001,
+         "setup_hours": 0.5, "spent_usd": 20.0, "reflections_per_run": 25, "reflection_median_s": 144, "reflection_usd": 0.1}
+    p = chunk4.projection(m, cfg)
+    assert p["gepa_api_usd"] == pytest.approx(6 * (800 * 0.01 + 25 * 0.1))
+    refl_h = 25 * 144 / 3600
+    assert p["gepa_gpu_usd_parallel"] == pytest.approx((800 * 9 * 2 / 3600 + refl_h) * 4.0)
 
 
 def test_preflight_api_error_is_a_failed_check():
@@ -260,3 +281,20 @@ def test_reflection_load_runs_concurrently_and_counts_failures(tmp_path):
     assert not bad["pass"] and "bad request" in bad["error"]
     assert all(c["pass"] and c["new_instruction"] != c["seed"] for c in out["calls"][:5])
     assert out["usd"] == pytest.approx(sum(r["usd"] for r in map(json.loads, open(costs))))
+
+
+def test_armf_rows_use_fewshot_and_compile(tmp_path):
+    posts, prompts = MockPosts(), []
+    def post(body):
+        prompts.append(body["messages"][0]["content"])
+        return posts.formalizer(body)
+    kw = dict(cache_dir=tmp_path / "llm", costs_path=tmp_path / "costs.jsonl")
+    genc = LLMClient(CFG, 4, post=post, base_url="http://mock", api_key_env=None, **kw)
+    checker = AxleChecker(CFG["axle"], client_factory=MockAxleClient, cache_dir=tmp_path / "axle")
+    items = [it for it in gepa_items("train") if it["id"] in ("pnv_004", "pnv_011")]
+    rows = chunk4.armf_rows(genc, CFG, checker, items)
+    assert [r["item_id"] for r in rows] == ["pnv_004", "pnv_011"]
+    fewshot = chunk4.load_fewshot(CFG["arms"]["F"]["fewshot"])
+    assert fewshot and all(fewshot.strip()[:200] in p for p in prompts)
+    assert all(r["finish_reason"] == "stop" and r["completion_tokens"] == 50 and not r["format_failure"] for r in rows)
+    assert all(isinstance(r["compiled"], bool) for r in rows)
