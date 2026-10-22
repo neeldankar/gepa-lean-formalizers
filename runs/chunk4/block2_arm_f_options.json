@@ -1,0 +1,44 @@
+{
+ "observed_arm_f_kimi_k3": {
+  "calls": 7,
+  "completion_tokens": [
+   6849,
+   16384,
+   778,
+   1831,
+   3430,
+   3425,
+   5470
+  ],
+  "mean_prompt_tokens": 648,
+  "hit_16k_cap": 1,
+  "mean_completion_tokens": 5452,
+  "mean_completion_tokens_under_cap": 3630,
+  "usd_logged": 0.586
+ },
+ "test_items": 247,
+ "status_quo_16k_kimi": {
+  "expected_usd": 20.68,
+  "worst_usd": 61.18,
+  "expected_items_cut_off": 35
+ },
+ "a_32k_all_arms": {
+  "arm_f_expected_usd_if_cut_off_items_run_to_32k": 29.35,
+  "arm_f_worst_usd": 121.89,
+  "reform_pilot_hit_16k": 1,
+  "reform_pilot_outputs": 30,
+  "qwen_nothink_pilot_max_tokens": 230
+ },
+ "b_16k_glm_5_3": {
+  "price_per_1m": {
+   "input": 1.4,
+   "output": 4.4
+  },
+  "expected_usd_if_kimi_like_tokens": 6.15,
+  "worst_usd": 18.03
+ },
+ "c_drop_arm_f": {
+  "usd": 0
+ },
+ "prereg_budget_line_arm_f_usd": 10
+}

@@ -321,11 +321,11 @@
   }
  },
  "costs": {
-  "usd_total": 8.357856649999997,
+  "usd_total": 10.25743629367916,
   "by_chunk": {
    "4": {
-    "calls": 426,
-    "usd": 8.357856649999997
+    "calls": 725,
+    "usd": 10.25743629367916
    }
   },
   "by_run": {
@@ -358,8 +358,8 @@
     "usd": 0.01823805
    },
    "pilot_qwen": {
-    "calls": 131,
-    "usd": 0.1599553236286013
+    "calls": 333,
+    "usd": 0.8642783545657922
    },
    "pilot_probe": {
     "calls": 3,
@@ -368,24 +368,56 @@
    "preflight": {
     "calls": 17,
     "usd": 1.3187621999999999
+   },
+   "preflight_load": {
+    "calls": 7,
+    "usd": 0.7161420000000001
+   },
+   "chunk5_dryrun": {
+    "calls": 11,
+    "usd": 0.16629141274196932
+   },
+   "D_s0": {
+    "calls": 28,
+    "usd": 0.050951550000000005
+   },
+   "chunk5_dryrun_A": {
+    "calls": 6,
+    "usd": 0.0
+   },
+   "chunk5_dryrun_final": {
+    "calls": 22,
+    "usd": 0.028126650000000003
+   },
+   "chunk5_dryrun_C": {
+    "calls": 8,
+    "usd": 0.0
+   },
+   "chunk5_dryrun_E": {
+    "calls": 10,
+    "usd": 0.0
+   },
+   "chunk5_dryrun_F": {
+    "calls": 5,
+    "usd": 0.233745
    }
   },
   "by_purpose": {
    "gpu": {
-    "calls": 41,
-    "usd": 6.949249999999999
+    "calls": 61,
+    "usd": 7.558505343679159
    },
    "generate": {
-    "calls": 240,
-    "usd": 0.352365
+    "calls": 443,
+    "usd": 0.5861099999999999
    },
    "opt_judge": {
-    "calls": 54,
-    "usd": 0.013936199999999998
+    "calls": 105,
+    "usd": 0.0287274
    },
    "ref_judge": {
-    "calls": 41,
-    "usd": 0.0614391
+    "calls": 55,
+    "usd": 0.08686019999999998
    },
    "gloss": {
     "calls": 40,
@@ -396,12 +428,12 @@
     "usd": 0.0005223
    },
    "reflection": {
-    "calls": 7,
-    "usd": 0.962106
+    "calls": 18,
+    "usd": 1.9784730000000004
    }
   }
  },
- "costs_all_chunks_usd": 8.391490880000001,
+ "costs_all_chunks_usd": 10.291070523679162,
  "stats": {
   "qwen_nothink": {
    "outputs": 30,

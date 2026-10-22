@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 in progress (pilot). The Oct 22 00:03 UTC full preflight failed (5 of 7); GEPA pilot run, chunk 5 dry run and freeze not done
-- **Status:** no pod running. Full preflight, 600 s cap per attempt: the long (15-record) reflection got HTTP 503 from Together on both attempts; arm F used all 16,384 output tokens on reasoning and gave no Lean statement. Short reflection and all 4 judge checks passed. Gate closed, nothing launched.
-- **Next:** Neel decides (see the 2026-10-22 preflight entry); then a full preflight from the laptop; then a pod, and `scripts/chunk4_pod_queue.sh` runs setup, the gate, the GEPA pilot run, the chunk 5 dry run, and stops the pod.
-- **Spent so far:** $8.39 of $300 (chunk 4: $8.36 of its $30 cap)
-- **Waiting on Neel:** what to do about Kimi-K3 (long reflection 503s; arm F hits the 16,384-token cap); then a pod; labels (`~/Desktop/chunk4_labeling.html`, rebuilt page); the three prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions)
+- **Chunk:** 4 of 7 in progress (pilot). GEPA pilot run and chunk 5 dry run done (Oct 22, pod 5); freeze not done
+- **Status:** no pod running (pod 5 stopped itself at the end of the queue, about 02:54 UTC). Pilot gate was the 3-record reflection plus judges (Neel). Both jobs exit 0, no failed API calls in either.
+- **Next:** Neel's Block 2 decisions (arm F options in the 2026-10-22 pod entry), labels, prereg drafts; then the freeze.
+- **Spent so far:** $10.29 of $300 (chunk 4: $10.26 of its $30 cap). Pod setup time is not metered (about 10 min on pod 5).
+- **Waiting on Neel:** Block 2 arm F choice (32k cap for all arms / keep 16k and move arm F to GLM-5.3 / drop arm F); labels (`~/Desktop/chunk4_labeling.html`); the three prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions). Pod 4 (64.247.201.45, started 00:40 UTC) went unreachable mid-setup; check in the RunPod console that it is stopped.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,22 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 4 · pod 5: GEPA pilot run and chunk 5 dry run, both done
+
+- **Pod 4** (00:40 UTC): setup started, then Neel stopped the run for a new pod; it went unreachable before I could stop it. Nothing ran or pushed. The laptop load check started with it froze when the laptop slept (1 of 6 calls returned, $0.05); discarded.
+- **Pod 5** (H100 80GB HBM3), queue `scripts/chunk4_pod_queue.sh`: setup 02:32 to 02:42 UTC, both servers healthy; gate open.
+- **Run pilot_qwen** (02:42 to 02:49 UTC): Qwen3-8B, thinking off, arm A seed plus few-shot, 150 metric-call budget. Outcome: done, exit 0, 158 metric calls, 3 reflections (95 s, 164 s, 78 s), 0 failed API calls. Val: seed best at 5.7% (4/70); one candidate accepted on its minibatch scored 2.9% (2/70). API $0.70. Commit 66a2b28.
+- **Run chunk5_dryrun** (02:49 to 02:54 UTC): B_s0 and D_s0 at 10 metric calls on 5 val items, exit 0 each; sanity check no problems; final eval of all 6 arms on 5 train stand-ins, every finish reason stop. Arm F (Kimi-K3): 5 of 5 under the 16,384 cap (778 to 5,470 output tokens), 15 to 107 s each. API $0.48. The pod stopped itself. Commit 00289c9.
+- **Load check** (`reflect_load`, laptop, 02:32 UTC, during setup): 6 concurrent 3-record Kimi-K3 reflections, 6 of 6 pass, 234 s wall, 53 to 234 s per call, one HTTP 429 retried, $0.66 (`runs/chunk4/reflection_load.json`).
+- **Block 2, arm F options** (from `runs/chunk4/block2_arm_f_options.json`, script `runs/chunk4/block2_arm_f.py`; 247 test items, 7 observed Kimi-K3 arm F calls, 1 hit the 16k cap):
+  - Today (16k, Kimi-K3): about $20.68 expected, $61.18 worst; about 35 items expected cut off.
+  - (a) 32k for all arms: arm F about $29.35 expected, $121.89 worst; ReForm-8B hit 16k on 1 of 30 pilot outputs, Qwen3-8B (thinking off) max 230 tokens, so the formalizer arms barely change.
+  - (b) 16k, arm F on GLM-5.3 ($1.40 / $4.40 per 1M, third-party price lists): about $6.15 if its token use is like Kimi-K3's, $18.03 worst; untested on our prompts.
+  - (c) drop arm F: $0.
+  - The prereg budget line for arm F is under $10; only (b) and (c) fit it.
+- Merge note: laptop and pod both appended to `runs/costs.jsonl`; merged as a multiset union (781 rows = 489 laptop + 292 pod-only).
+- **Cost:** $1.90 this entry ($1.24 API and $0.61 metered GPU on pod 5, $0.05 discarded load check); chunk 4 $10.26, total $10.29.
 
 ### 2026-10-22 · chunk 4 · pilot gate narrowed (Neel); reflection load check added
 
