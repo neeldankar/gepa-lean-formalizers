@@ -33,6 +33,7 @@ Template:
 
 - **Neel:** the tripwire should catch a provider-wide outage, not one unlucky call. The old rule (3+ failed reflection attempts in 15 min) tripped on one D_s2 call stalling 3 times. New rule: trip when (a) failed reflection attempts come from 2 or more different runs within 15 minutes, or (b) any single reflection call fails for good (all 4 retries used up, or an error not worth retrying).
 - **Code:** each `api_failures.jsonl` row now has `attempt` and `final` (true on the attempt that ended the call). `tripwire.trip_reason` returns the rule that fired and its rows; rows from before the field count as not final. Logging only: no model, prompt, temperature, retry or scoring change. Tests: 231 pass (4 tripwire tests replace 2, plus 1 llm assertion set).
+- **Resume** on pod 7 at 22:34:15 UTC (job pushed the pod state first, 56f9ee5). D_s1 had reached its budget at 20:32:57 UTC before the earlier pause (DONE, 805 metric calls), so 3 runs resumed and B_s2, D_s0, D_s1 are skipped. By 22:42:41 UTC (pod watch): B_s0 iteration 7 to 8, B_s1 10 to 11, D_s2 13 to 15; 4 new reflections, all provider Together; 0 failed attempts; no STOPPED; tripwire armed. Chunk 5 $26.69 by then.
 
 ### 2026-10-22 · chunk 5 · transport fix: Kimi-K3 calls stream; replay of D_s2's failed reflection
 
