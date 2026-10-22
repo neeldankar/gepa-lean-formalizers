@@ -14,13 +14,14 @@ dryrun_test / dryrun_minif2f). It never loads a test or miniF2F item.
 """
 import copy
 import json
+import os
 import subprocess
 import sys
 import time
 from datetime import datetime, timezone
 
 from src.axle_check import AxleChecker
-from src.config import ROOT, load_config
+from src.config import ROOT, load_config, load_env
 from src.costs import GpuMeter
 from src.data.firewall import gepa_items
 from src.final_eval import eval_arm, write_rows
@@ -118,16 +119,44 @@ def run_gepa_children(cfg, plan, log_dir):
     return {**{run_id: "skipped (done)" for run_id in skipped}, **{run_id: p.returncode for run_id, (p, _) in children.items()}}
 
 
-def run_final(cfg, plan, runs_dir, final_dir, save):
+def push(message, run=subprocess.run):
+    """Commit runs/ and push, the way run_job.sh does; the token is never printed. Returns a status string."""
+    load_env()
+    remote = f"https://x-access-token:{os.environ['GITHUB_TOKEN']}@github.com/neeldankar/gepa-lean-formalizers.git"
+    run(["git", "add", "runs/"], cwd=ROOT)
+    run(["git", "commit", "-q", "-m", message], cwd=ROOT)
+    run(["git", "pull", "-q", "--rebase", remote, "main"], cwd=ROOT, capture_output=True)
+    if run([sys.executable, "scripts/secret_scan.py", "--history"], cwd=ROOT).returncode != 0:
+        return "secret scan failed; not pushed"
+    return "pushed" if run(["git", "push", "-q", remote, "HEAD:main"], cwd=ROOT, capture_output=True).returncode == 0 else "push failed"
+
+
+def final_order(cfg):
+    """Every arm, with the arms that call an outside API per item (missing_on_api_failure: arm F) last."""
+    return sorted(cfg["arms"], key=lambda a: bool(cfg["arms"][a].get("missing_on_api_failure")))
+
+
+def run_final(cfg, plan, runs_dir, final_dir, save, push=push):
     """Final eval of every arm. An API call that exhausted its retries (LLMError) or any other error is
-    returned as `error` so the job records it and exits non-zero; arms finished before it are kept."""
+    returned as `error` so the job records it and exits non-zero; arms finished before it are kept.
+    Deviation 3: arm F runs last, after the other arms are written and pushed (not in the dry run); its
+    failed calls are missing rows, counted here, not errors."""
     dry = plan["standin_ids"] is not None
     checker = AxleChecker(cfg["axle"])
     judge = LLMClient(cfg, plan["chunk"], run_id="final" if not dry else "chunk5_dryrun_final")
     index = memorization.load_index()
     items_for = standin_loader(plan) if dry else None
-    rows_per_arm, outages = {}, 0
-    for arm in cfg["arms"]:
+    rows_per_arm, outages, pushed = {}, 0, False
+    for arm in final_order(cfg):
+        if cfg["arms"][arm].get("missing_on_api_failure") and not pushed:
+            pushed = True
+            if not dry:
+                try:
+                    status = push("Results: chunk 5 final eval, every arm but " + arm)
+                except Exception as e:  # arm F still runs; run_job.sh pushes again at the end
+                    status = f"push error: {type(e).__name__}: {e}"[:300]
+                print(f"before arm {arm}: {status}", flush=True)
+                save(push_before_last_arms=status)
         try:
             gen = formalizer_client(cfg, cfg["arms"][arm]["model"], plan["chunk"],
                                     run_id=f"final_{arm}" if not dry else f"chunk5_dryrun_{arm}")
@@ -136,6 +165,7 @@ def run_final(cfg, plan, runs_dir, final_dir, save):
             return rows_per_arm, outages, f"arm {arm}: {type(e).__name__}: {e}"[:1000]
         write_rows(final_dir / f"{arm}.jsonl.gz", rows)
         rows_per_arm[arm] = {"rows": len(rows), "datasets": sorted({r["dataset"] for r in rows}),
+                             "missing_generation": sum(bool(r.get("generation_missing")) for r in rows),
                              "item_ids": sorted({r["item_id"] for r in rows}) if dry else None}
         outages += sum(r["outage"] for r in rows)
         print(f"arm {arm}: {len(rows)} rows", flush=True)

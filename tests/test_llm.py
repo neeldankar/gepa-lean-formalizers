@@ -276,3 +276,28 @@ def test_reflection_and_arm_f_share_openrouter_pinned_to_together():
     assert "moonshotai/kimi-k3" in CFG["llm"]["prices"]
     # the judges stay on Together's own API
     assert LLMClient(CFG, 5).base_url == "https://api.together.xyz/v1" and LLMClient(CFG, 5).extra_body == {}
+
+
+def test_arm_f_gets_reflection_retries_and_reflection_keeps_its_own_limits():
+    # Deviation 3: arm F calls get 4 retries with a 30 s base backoff; its 1800 s attempt limit is unchanged.
+    from src.generate import formalizer_client, reflection_client
+    arm_f, refl, qwen = formalizer_client(CFG, "arm_f", 5), reflection_client(CFG, 5), formalizer_client(CFG, "qwen3-8b", 5)
+    assert arm_f.limits("generate") == (1800, 4) and arm_f.backoff_for("generate") == 30
+    assert refl.limits("reflection") == (600, 4) and refl.backoff_for("reflection") == 30
+    assert qwen.limits("generate") == (CFG["llm"]["long_timeout_seconds"], CFG["llm"]["long_retries"])
+    assert qwen.backoff_for("generate") == CFG["llm"]["backoff_seconds"]
+
+
+def test_arm_f_retry_waits(tmp_path):
+    from src.llm import LLMError, RetryableError
+    cfg = copy.deepcopy(CFG)
+    cfg["llm"]["prices"]["m"] = {"input": 0, "output": 0}
+    def down(body):
+        raise RetryableError("HTTP 504: timeout")
+    c = LLMClient(cfg, 5, cache_dir=tmp_path / "c", costs_path=tmp_path / "costs.jsonl", post=down,
+                  limits=CFG["models"]["arm_f"]["limits"])
+    c.slept = []
+    c.sleep = c.slept.append
+    with pytest.raises(LLMError, match="gave up after 5 attempts"):
+        c.chat("m", [{"role": "user", "content": "x"}], purpose="generate")
+    assert len(c.slept) == 4 and all(0.8 * b <= w <= 1.2 * b for w, b in zip(c.slept, (30, 60, 120, 240)))

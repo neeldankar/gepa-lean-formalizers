@@ -70,7 +70,7 @@ def spent(chunk, path=COSTS_PATH):
 
 class LLMClient:
     def __init__(self, cfg, chunk, cache_dir=None, costs_path=COSTS_PATH, post=None,
-                 base_url=None, api_key_env="TOGETHER_API_KEY", run_id=None, extra_body=None, drop_params=()):
+                 base_url=None, api_key_env="TOGETHER_API_KEY", run_id=None, extra_body=None, drop_params=(), limits=None):
         llm = cfg["llm"]
         # A host's fixed request fields (OpenRouter's provider pin) and the fields it must not get (seed);
         # both apply before the cache key, so the key is exactly what is sent.
@@ -89,6 +89,7 @@ class LLMClient:
         self.long_timeout = llm.get("long_timeout_seconds", self.timeout)
         self.long_retries = llm.get("long_retries", self.retries)
         self.purpose_limits = llm.get("purpose_limits", {})  # per purpose, wins over the two above
+        self.client_limits = limits  # per client (arm F, Deviation 3), wins over everything above
         self.chunk = chunk
         self.cap = cfg["budget"]["chunk_caps_usd"][chunk]
         self.cache_dir = Path(cache_dir or ROOT / llm["cache_dir"])
@@ -151,6 +152,8 @@ class LLMClient:
 
     def limits(self, purpose):
         """(hard timeout per attempt in seconds, retries) for a call made for `purpose`."""
+        if self.client_limits:
+            return self.client_limits["timeout_seconds"], self.client_limits["retries"]
         if purpose in self.purpose_limits:
             lim = self.purpose_limits[purpose]
             return lim["timeout_seconds"], lim["retries"]
@@ -160,6 +163,8 @@ class LLMClient:
 
     def backoff_for(self, purpose):
         """Base wait in seconds before the first retry (it doubles each retry); per purpose if set."""
+        if self.client_limits and "backoff_seconds" in self.client_limits:
+            return self.client_limits["backoff_seconds"]
         return self.purpose_limits.get(purpose, {}).get("backoff_seconds", self.backoff)
 
     def retry_delay(self, attempt, purpose, error):

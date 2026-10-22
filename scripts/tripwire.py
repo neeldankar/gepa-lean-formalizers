@@ -20,7 +20,8 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from src.config import ROOT, load_config, load_env
+from scripts.chunk5_job import push
+from src.config import ROOT, load_config
 from src.costs import GpuMeter
 from src.llm import FAILURES_PATH
 
@@ -66,17 +67,6 @@ def pause(session, run=subprocess.run, kill=os.kill, sleep=time.sleep):
     for pid in left:
         kill(pid, signal.SIGKILL)
     return left
-
-
-def push(message, run=subprocess.run):
-    """Commit runs/ and push, the way run_job.sh does; the token is never printed."""
-    load_env()
-    remote = f"https://x-access-token:{os.environ['GITHUB_TOKEN']}@github.com/neeldankar/gepa-lean-formalizers.git"
-    run(["git", "add", "runs/"], cwd=ROOT)
-    run(["git", "commit", "-q", "-m", message], cwd=ROOT)
-    run(["git", "pull", "-q", "--rebase", remote, "main"], cwd=ROOT, capture_output=True)
-    if run([sys.executable, "scripts/secret_scan.py", "--history"], cwd=ROOT).returncode == 0:
-        run(["git", "push", "-q", remote, "HEAD:main"], cwd=ROOT, capture_output=True)
 
 
 def stop_pod(run=subprocess.run):

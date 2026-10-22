@@ -261,3 +261,24 @@ def test_reference_judge_false_positives_and_negatives(tmp_path):
     e = hc["judge_errors_random_part"]["A"]
     assert (e["false_positive"], e["false_negative"], e["n"]) == (len(fp_items), len(fn_items), 10)
     assert hc["judge_errors_random_part"]["all"]["false_positive"] == len(fp_items)
+
+
+def test_missing_generation_rows_are_in_no_rate_and_are_counted():
+    # Deviation 3: an arm F call that failed after its retries is missing for that item.
+    import numpy as np
+    from src import analysis
+    from src.final_eval import missing_row
+    ok = {"arm": "F", "run_id": None, "gepa_seed": None, "dataset": "test", "item_id": "pnv_1", "sample": 0,
+          "compiled": True, "format_failure": False, "truth_label": "faithful", "truth_source": "certificate",
+          "judge_score": 1, "judge_missing": False, "ref_missing": False, "certified": True, "ref_verdict": "faithful",
+          "ref_error_tag": None, "memorized": [], "outage": False, "generation_missing": False}
+    gone = missing_row("F", None, None, "test", {"id": "pnv_2"}, 0, "LLMError: gave up after 5 attempts")
+    stats = analysis.compile_stats([ok, gone], "test")["F"]
+    assert stats["outputs"] == 1 and stats["compile_rate"] == 100 and stats["format_failure_rate"] == 0
+    assert stats["missing_generation"] == 1 and stats["missing_truth_label"] == 0
+    for f in (analysis.truth_value, analysis.judge_value, analysis.false_positive):
+        assert np.isnan(f(gone))
+    mats, items = analysis.matrices([ok, gone], "test")
+    assert items == ["pnv_1", "pnv_2"]
+    assert all(np.isnan(mats["F"][k][0][1]) for k in ("truth", "judge", "fp", "compiled"))
+    assert mats["F"]["truth"][0][0] == 100

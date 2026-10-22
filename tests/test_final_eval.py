@@ -81,3 +81,21 @@ def test_missing_judge_verdicts_are_kept_not_outages(tmp_path):
     assert r["judge_missing"] and r["judge_score"] is None and r["judge_verdict"] == "missing"
     assert r["ref_missing"] and r["ref_verdict"] == "missing"
     assert r["truth_label"] in (None, "faithful")  # None unless a certificate settled it
+
+
+def test_arm_f_call_out_of_retries_is_a_missing_row_not_an_error(monkeypatch):
+    # Deviation 3: recorded as missing for that item; never a format failure or a job-ending error.
+    import pytest
+    from src.llm import LLMError
+    def down(*a, **k):
+        raise LLMError("gave up after 5 attempts: HTTP 503")
+    from src import final_eval
+    monkeypatch.setattr(final_eval, "generate", down)
+    item = {"id": "pnv_x", "informal_stmt": "x", "formal_stmt": "theorem x : True := by sorry"}
+    row = final_eval.score_row(CFG, "F", "arm_f", None, None, "test", "instructions", item, 0, None, None, None)
+    assert row["generation_missing"] and "gave up after 5 attempts" in row["generation_error"]
+    assert row["format_failure"] is None and row["compiled"] is None and row["truth_label"] is None
+    assert row["judge_score"] is None and not row["outage"] and row["truth_source"] == "generation_missing"
+    assert set(row) >= {"arm", "item_id", "dataset", "sample", "gepa_seed", "memorized"}
+    with pytest.raises(LLMError):  # any other arm still fails loudly
+        final_eval.score_row(CFG, "C", "reform-8b", None, None, "test", "instructions", item, 0, None, None, None)

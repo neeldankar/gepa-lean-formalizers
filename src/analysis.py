@@ -43,14 +43,19 @@ EXPLORATORY_CONTRASTS = {k: CONTRASTS[k] for k in ("Q1", "Q2")}
 
 # A missing judge verdict (unparseable after one re-ask) is NaN: the item drops out of that arm's
 # rate instead of counting as unfaithful. Missing counts are reported per arm (compile_stats).
+# A missing generation (Deviation 3: arm F's call failed after its retries) is NaN for every value.
+def gen_missing(row):
+    return bool(row.get("generation_missing"))
+
+
 def truth_value(row):
-    if row["truth_label"] is None:
+    if gen_missing(row) or row["truth_label"] is None:
         return np.nan
     return 1.0 if row["truth_label"] == "faithful" else 0.0
 
 
 def judge_value(row):
-    if row.get("judge_missing") or row["judge_score"] is None:
+    if gen_missing(row) or row.get("judge_missing") or row["judge_score"] is None:
         return np.nan
     return float(row["judge_score"])
 
@@ -58,6 +63,8 @@ def judge_value(row):
 def false_positive(row):
     """Compiled, the optimization judge says faithful, the truth label says unfaithful. NaN when a
     compiled output lacks either verdict."""
+    if gen_missing(row):
+        return np.nan
     if not row["compiled"]:
         return 0.0
     j, t = judge_value(row), truth_value(row)
@@ -75,7 +82,8 @@ def matrices(rows, dataset, items=None, exclude=frozenset()):
     for r in rows:
         if r["item_id"] in pos:
             acc[(r["arm"], r["gepa_seed"])][r["item_id"]].append(r)
-    values = {"truth": truth_value, "judge": judge_value, "fp": false_positive, "compiled": lambda r: float(r["compiled"])}
+    values = {"truth": truth_value, "judge": judge_value, "fp": false_positive,
+              "compiled": lambda r: np.nan if gen_missing(r) else float(r["compiled"])}
     out = defaultdict(lambda: {k: [] for k in values})
     for (arm, seed), by_item in sorted(acc.items(), key=lambda kv: (kv[0][0], -1 if kv[0][1] is None else kv[0][1])):
         for k, f in values.items():
@@ -180,7 +188,8 @@ def per_seed_rates(mats):
 def compile_stats(rows, dataset):
     out = {}
     for arm in sorted({r["arm"] for r in rows}):
-        rs = [r for r in rows if r["arm"] == arm and r["dataset"] == dataset and not r.get("outage")]
+        kept = [r for r in rows if r["arm"] == arm and r["dataset"] == dataset and not r.get("outage")]
+        rs = [r for r in kept if not gen_missing(r)]  # missing generations are in no denominator
         compiled = [r for r in rs if r["compiled"]]
         labeled = [r for r in compiled if r["truth_label"] is not None]
         out[arm] = {
@@ -193,6 +202,7 @@ def compile_stats(rows, dataset):
             "missing_opt_judge": sum(1 for r in rs if r.get("judge_missing")),
             "missing_ref_judge": sum(1 for r in rs if r.get("ref_missing")),
             "missing_truth_label": sum(1 for r in rs if r["truth_label"] is None),
+            "missing_generation": sum(1 for r in kept if gen_missing(r)),
             "outages": sum(1 for r in rows if r["arm"] == arm and r["dataset"] == dataset and r.get("outage")),
             "truth_source_share": truth_sources(rs),
         }

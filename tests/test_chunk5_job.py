@@ -145,3 +145,33 @@ def test_saved_candidate_outputs_are_never_overwritten(tmp_path):
     adapter.save_candidate("same prompt", [{**row, "output": "re-evaluated on resume"}])
     (path,) = tmp_path.glob("*.jsonl")
     assert json.loads(path.read_text().splitlines()[1])["output"] == "first"
+
+
+def final_with(monkeypatch, tmp_path, dry):
+    order, pushes = [], []
+    def eval_arm(cfg, arm, *a, **k):
+        order.append(arm)
+        return [{"dataset": "test", "item_id": "pnv_x", "outage": False, "generation_missing": arm == "F"}]
+    monkeypatch.setattr(chunk5_job, "eval_arm", eval_arm)
+    monkeypatch.setattr(chunk5_job, "write_rows", lambda path, rows: order.append(f"wrote {path.name}"))
+    plan = chunk5_job.job_plan(CFG, dry=dry)
+    def push(message):
+        pushes.append((message, list(order)))
+        return "pushed"
+    saved = {}
+    rows, _, error = chunk5_job.run_final(chunk5_job.job_cfg(CFG, plan), plan, tmp_path, tmp_path / "final", saved.update, push=push)
+    return order, pushes, rows, error, saved
+
+
+def test_arm_f_runs_last_after_the_other_arms_are_written_and_pushed(tmp_path, monkeypatch):
+    # Deviation 3. The real plan: monkeypatched eval_arm, so nothing held out is loaded.
+    order, pushes, rows, error, saved = final_with(monkeypatch, tmp_path, dry=False)
+    assert error is None and [a for a in order if len(a) == 1] == ["A", "B", "C", "D", "E", "F"]
+    assert len(pushes) == 1 and pushes[0][1][-1] == "wrote E.jsonl.gz" and "F" not in pushes[0][1]
+    assert saved["push_before_last_arms"] == "pushed"
+    assert rows["F"]["missing_generation"] == 1 and rows["A"]["missing_generation"] == 0
+
+
+def test_dry_run_never_pushes(tmp_path, monkeypatch):
+    order, pushes, rows, error, _ = final_with(monkeypatch, tmp_path, dry=True)
+    assert error is None and pushes == [] and order[-2:] == ["F", "wrote F.jsonl.gz"]

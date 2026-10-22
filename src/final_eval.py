@@ -3,6 +3,10 @@
 One row per (arm, GEPA seed, dataset, item, sample) with the raw output, the judge score, the truth
 score and memorization matches (test outputs only; miniF2F is not ProofNet). Rows with an AXLE
 outage keep `outage: true`; rerun to fill them (everything else is cached).
+
+Deviation 3: for an arm with `missing_on_api_failure` (arm F), a generation call that still fails after
+its retries becomes a `generation_missing` row: no output, no scores, left out of every rate and
+counted as missing, never a format failure or a job-ending error.
 """
 import gzip
 import json
@@ -10,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from src.data.firewall import heldout_items
 from src.generate import generate
+from src.llm import LLMError
 from src.prompting import load_fewshot, load_instructions
 from src.scoring import memorization
 from src.scoring.score import judge_score, prepare, truth_score
@@ -25,8 +30,27 @@ def arm_prompts(cfg, arm, runs_dir):
     return [(None, None, load_instructions(spec["prompt"]), load_fewshot(spec.get("fewshot")))]
 
 
+def missing_row(arm, run_id, seed, dataset, item, sample, error):
+    """A generation that failed after its retries (Deviation 3): kept so the item has a row, scored nowhere."""
+    return {
+        "arm": arm, "run_id": run_id, "gepa_seed": seed, "dataset": dataset, "item_id": item["id"], "sample": sample,
+        "generation_missing": True, "generation_error": str(error)[:500],
+        "output": None, "finish_reason": None, "completion_tokens": None, "extracted": None, "normalized": None,
+        "format_failure": None, "compile_status": None, "compiled": None,
+        "judge_verdict": None, "judge_reason": None, "judge_score": None, "judge_missing": False,
+        "certified": False, "cert_status": None, "cert_directions": None,
+        "ref_verdict": None, "ref_reason": None, "ref_error_tag": None, "ref_missing": False,
+        "truth_label": None, "truth_source": "generation_missing", "outage": False, "memorized": [],
+    }
+
+
 def score_row(cfg, arm, model_key, run_id, seed, dataset, instructions, item, sample, gen, judge, checker, fewshot=""):
-    out = generate(gen, cfg, model_key, instructions, item, sample, fewshot=fewshot)
+    try:
+        out = generate(gen, cfg, model_key, instructions, item, sample, fewshot=fewshot)
+    except LLMError as e:  # out of retries; only arms flagged in config record it instead of failing the arm
+        if not cfg["arms"][arm].get("missing_on_api_failure"):
+            raise
+        return missing_row(arm, run_id, seed, dataset, item, sample, f"{type(e).__name__}: {e}")
     p = prepare(checker, item, out["text"])
     js = judge_score(checker, judge, cfg, item, out["text"], prepared=p)
     ts = truth_score(checker, judge, cfg, item, out["text"], prepared=p)
@@ -44,6 +68,7 @@ def score_row(cfg, arm, model_key, run_id, seed, dataset, instructions, item, sa
         "ref_missing": ts["ref_missing"], "truth_label": ts["truth_label"], "truth_source": ts["truth_source"],
         # a missing judge verdict is not an outage: it is kept, counted, and left out of the rates
         "outage": ts["truth_source"] == "outage" or (js["judge_score"] is None and not js["judge_missing"]), "memorized": [],
+        "generation_missing": False,
     }
 
 

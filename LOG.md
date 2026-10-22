@@ -6,7 +6,7 @@
 - **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
 - **Next:** resume on a new pod with Kimi-K3 through OpenRouter pinned to Together (Deviation 2): the 5 stopped runs, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
 - **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
-- **Waiting on Neel:** the pod's SSH line for the resume.
+- **Waiting on Neel:** the new pod's direct TCP SSH line (`root@IP -p PORT`); the proxy line can't run rsync or remote commands.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,19 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 5 · Deviation 3: arm F last, 4 retries, failed calls missing
+
+- **Neel:** in the final eval, arm F runs last, after every other arm is done and pushed. Arm F calls get reflection's 4 retries with backoff. A call that still fails is a missing row for that item, not a format failure and not a job-ending error. Prereg Deviation 3 (a new item, Neel's pick).
+- **Code:**
+  - `LLMClient(limits=...)`, a per-client override. `models.arm_f.limits: {timeout_seconds: 1800, retries: 4, backoff_seconds: 30}`: the 1800 s attempt limit is unchanged because Neel named only retries and backoff. Worst case for one item is 5 attempts of 1800 s plus about 7.5 min of waits, across 16 parallel workers.
+  - `reflection_client` shares arm F's route but keeps reflection's own limits (600 s, 4 retries).
+  - `final_eval.score_row`: with `missing_on_api_failure` (arm F only), an `LLMError` from generation gives a `generation_missing` row. It has no output and no scores, `truth_source: generation_missing`, and is not an outage.
+  - `analysis`: such rows are NaN for truth, judge, false positive and compiled, sit in no denominator, and are counted as `missing_generation`.
+  - `chunk5_job.run_final` runs arm F last and pushes before it (`push_before_last_arms` in `job_summary.json`; never in the dry run). It records `missing_generation` per arm. `push()` moved from the tripwire into `chunk5_job`.
+  - Tests: 224 pass (6 new).
+- **Pod:** the SSH line Neel sent goes through RunPod's proxy, which refuses non-interactive commands ("Your SSH client doesn't support PTY"), so rsync and scp can't run. Waiting on the direct TCP line.
+- **Cost:** $0 this entry.
 
 ### 2026-10-22 · chunk 5 · arm F rechecked on the new route; Deviation 2 reworded; tripwire
 

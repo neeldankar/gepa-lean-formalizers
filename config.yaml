@@ -90,6 +90,9 @@ models:
     api_key_env: OPENROUTER_API_KEY
     extra_body: {provider: {only: [together], allow_fallbacks: false, require_parameters: true}}
     drop_params: [seed]
+    # Deviation 3 (Neel, 2026-10-22): reflection's 4 retries and 30 s base backoff; the 1800 s attempt limit is unchanged.
+    # Applies to arm F's own client only (the formalizers on vLLM keep llm.long_*).
+    limits: {timeout_seconds: 1800, retries: 4, backoff_seconds: 30}
 
 # Identical across arms; fixed at the freeze (Neel, 2026-10-22): temperature 0.6, 1 sample, 16,384-token cap.
 generation:
@@ -105,7 +108,8 @@ arms:
   C: {model: reform-8b, prompt: prompts/arm_C.txt}
   D: {model: reform-8b, gepa_runs: [D_s0, D_s1, D_s2]}
   E: {model: qwen3-8b, prompt: prompts/arm_E.txt, fewshot: prompts/fewshot.txt}
-  F: {model: arm_f, prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt, test_only: true}
+  # missing_on_api_failure (Deviation 3): a call that fails after its retries is a missing row, and the arm runs last
+  F: {model: arm_f, prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt, test_only: true, missing_on_api_failure: true}
 
 gepa:
   max_metric_calls: 800            # Neel, freeze (2026-10-22)
