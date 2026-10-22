@@ -1,0 +1,69 @@
+{
+ "time": "2026-10-22T07:50:47+00:00",
+ "since": "2026-10-22T06:37:03",
+ "chunk5_usd": 15.9529,
+ "failed_attempts": 28,
+ "failed_503": 28,
+ "runs": {
+  "B_s0": {
+   "max_iteration": 5,
+   "seed_val_passes": 1,
+   "proposed": 5,
+   "accepted": 4,
+   "reflection_calls": 3,
+   "saved_candidate_files": 5,
+   "STOPPED": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'",
+   "api_failures": 6
+  },
+  "B_s1": {
+   "max_iteration": 8,
+   "seed_val_passes": 1,
+   "proposed": 8,
+   "accepted": 6,
+   "reflection_calls": 6,
+   "saved_candidate_files": 7,
+   "STOPPED": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'",
+   "api_failures": 5
+  },
+  "B_s2": {
+   "max_iteration": 9,
+   "seed_val_passes": 1,
+   "proposed": 9,
+   "accepted": 8,
+   "reflection_calls": 6,
+   "saved_candidate_files": 9,
+   "STOPPED": null,
+   "api_failures": 7
+  },
+  "D_s0": {
+   "max_iteration": 17,
+   "seed_val_passes": 1,
+   "proposed": 13,
+   "accepted": 8,
+   "reflection_calls": 10,
+   "saved_candidate_files": 9,
+   "STOPPED": null,
+   "api_failures": 2
+  },
+  "D_s1": {
+   "max_iteration": 18,
+   "seed_val_passes": 1,
+   "proposed": 14,
+   "accepted": 7,
+   "reflection_calls": 11,
+   "saved_candidate_files": 8,
+   "STOPPED": null,
+   "api_failures": 2
+  },
+  "D_s2": {
+   "max_iteration": 12,
+   "seed_val_passes": 1,
+   "proposed": 8,
+   "accepted": 6,
+   "reflection_calls": 5,
+   "saved_candidate_files": 7,
+   "STOPPED": null,
+   "api_failures": 6
+  }
+ }
+}

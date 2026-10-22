@@ -3,10 +3,10 @@
 ## Now
 
 - **Chunk:** 5 of 7, session 1 done: the combined job is running on pod 6 (relaunched 2026-10-22 06:37 UTC after Deviation 1). `prereg.md` frozen at e631bdb; Deviations only (1 so far)
-- **Status:** pod 6 (`qybccgbwec39wd`, H100 80GB, no network volume) runs `scripts/chunk5_job.py` in tmux `chunk5`; it pushes results and stops the pod itself.
-- **Next:** chunk 5 session 2 ("Continue chunk 5"): invariants and health checks only, no per-arm scores.
+- **Status:** pod 6 (`qybccgbwec39wd`, H100 80GB, no network volume) runs `scripts/chunk5_job.py` in tmux `chunk5`. Together's Kimi-K3 is mostly returning 503s; B_s0 and B_s1 stopped (5 attempts used on one call), so the sanity check will fail and the job will push and stop the pod with no final eval (Neel's option 1).
+- **Next:** when the preflight gate shows Together healthy again: new pod, resume the stopped runs from their saved GEPA state, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
 - **Spent so far:** $15.13 of $300 in `runs/costs.jsonl` as pushed (to 06:36 UTC); chunk 5 $6.91 metered by 06:54 UTC on the pod plus $1.42 unmetered pod time (chunk 5 cap $180)
-- **Waiting on Neel:** "Continue chunk 5" once the job has pushed (check the repo for a `Results: chunk5` commit).
+- **Waiting on Neel:** a pod for the resume once the job has pushed (a `Results: chunk5` commit) and Kimi-K3 passes the preflight.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,13 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 5 · Kimi-K3 mostly down; two runs stopped; letting the job run out (Neel)
+
+- **Numbers** (from `runs/chunk5_health_0740.json`, counts since the 06:37 relaunch, at 07:50 UTC): 28 failed reflection attempts, all HTTP 503 after about 340 s. B_s0 stopped at 07:32 UTC (`gave up after 5 attempts`, HTTP 503), and B_s1 stopped the same way. Still running: B_s2 (iteration 9), D_s0 (17), D_s1 (18), D_s2 (12). Chunk 5 spend $15.95 by 07:50 UTC.
+- **Neel's choice** (option 1 of 3): let the job run out. The other runs keep going; the sanity check then fails, and the job pushes everything and stops the pod. No final eval in this job. Rejected: pausing now (would also pause the working D runs); another Kimi-K3 provider (a deviation, and maybe served differently); the GLM-5.3 fallback (reflection model would differ across seeds).
+- **Resume plan:** when the preflight gate opens, use a new pod and rename each STOPPED marker (keep it as a record). Rerun `run_job.sh chunk5 python -m scripts.chunk5_job`: finished runs return at once, stopped runs resume from `gepa_state.bin`, then the final eval runs.
+- **Cost:** $0 this entry.
 
 ### 2026-10-22 · chunk 5 · session 1: launch, Deviation 1, relaunch
 
