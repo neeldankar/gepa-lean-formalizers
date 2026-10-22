@@ -27,15 +27,19 @@ def test_failures_spread_out_or_old_or_not_reflection_do_not_trip():
 
 
 class FakeRun:
-    """Records commands; pgrep reports the given pids until they get SIGTERM."""
+    """Records commands; the fake /proc lists the given pids until they get SIGTERM."""
 
     def __init__(self, pids, survivors=()):
         self.calls, self.alive, self.survivors = [], set(pids), set(survivors)
 
     def __call__(self, cmd, **kw):
         self.calls.append(cmd)
-        out = " ".join(map(str, sorted(self.alive))) if cmd[0] == "pgrep" else ""
-        return type("R", (), {"returncode": 0, "stdout": out})()
+        return type("R", (), {"returncode": 0, "stdout": ""})()
+
+    def cmdlines(self):
+        procs = {p: ["/workspace/venv/bin/python", "-m", "scripts.gepa_run", "B_s0"] for p in self.alive}
+        procs[1] = ["tmux", "new-session", "-d", "-s", "chunk5", "bash", "-c", "python -m scripts.chunk5_job"]
+        return procs
 
     def kill(self, pid, sig):
         self.calls.append(["kill", pid, sig])
@@ -45,7 +49,7 @@ class FakeRun:
 
 def test_pause_kills_the_tmux_session_first_then_the_processes():
     run = FakeRun([101, 102])
-    assert tripwire.pause("chunk5", run=run, kill=run.kill, sleep=lambda s: None) == []
+    assert tripwire.pause("chunk5", run=run, kill=run.kill, sleep=lambda s: None, cmdlines=run.cmdlines) == []
     assert run.calls[0] == ["tmux", "kill-session", "-t", "chunk5"]  # before any job process dies
     assert ["kill", 101, signal.SIGTERM] in run.calls and ["kill", 102, signal.SIGTERM] in run.calls
     assert not any(c[0] == "kill" and c[2] == signal.SIGKILL for c in run.calls if c[0] == "kill")
@@ -53,7 +57,7 @@ def test_pause_kills_the_tmux_session_first_then_the_processes():
 
 def test_pause_uses_sigkill_only_on_survivors():
     run = FakeRun([101, 102], survivors=[102])
-    assert tripwire.pause("chunk5", run=run, kill=run.kill, sleep=lambda s: None) == [102]
+    assert tripwire.pause("chunk5", run=run, kill=run.kill, sleep=lambda s: None, cmdlines=run.cmdlines) == [102]
     assert ["kill", 102, signal.SIGKILL] in run.calls and ["kill", 101, signal.SIGKILL] not in run.calls
 
 
@@ -75,6 +79,7 @@ def run_trip(tmp_path, monkeypatch, keep):
         if keep and len(sleeps) == 10:  # Neel answers 5 min into the 10 min wait
             (tmp_path / "KEEP_POD").write_text("")
 
+    monkeypatch.setattr(tripwire, "proc_cmdlines", run.cmdlines)
     out = tripwire.trip([fail(20), fail(21), fail(22)], "chunk5", work=tmp_path, run=run, kill=run.kill, sleep=sleep,
                         wait=600, meter=Meter(), push=pushes.append, stop_pod=lambda: stops.append(1))
     return out, pushes, stops, run
@@ -97,3 +102,19 @@ def test_trip_keeps_the_pod_when_neel_answers(tmp_path, monkeypatch):
 def test_trip_writes_no_run_markers(tmp_path, monkeypatch):
     run_trip(tmp_path, monkeypatch, keep=False)
     assert not list(tmp_path.rglob("STOPPED")) and not list(tmp_path.rglob("DONE"))
+
+
+def test_only_python_job_processes_are_killed_never_tmux_or_the_tripwire():
+    # Pod 7: pgrep -f matched the tmux server (its argv holds run_job.sh's command) and the pause killed
+    # every tmux session, the tripwire's own included, before it could record or push anything.
+    procs = {
+        1: ["tmux", "new-session", "-d", "-s", "chunk5", "bash", "-c", "python -m scripts.chunk5_job >> log"],
+        2: ["bash", "-c", "set -o pipefail\npython -m scripts.chunk5_job >> log"],
+        3: ["python", "-m", "scripts.chunk5_job"],
+        4: ["/workspace/venv/bin/python", "-m", "scripts.gepa_run", "D_s2", "--chunk", "5"],
+        5: ["/workspace/venv/bin/python", "-m", "scripts.tripwire", "--since", "x"],
+        6: ["vllm", "serve", "Qwen/Qwen3-8B"],
+        7: ["python3", "/workspace/watch.py", "scripts.gepa_run"],
+    }
+    assert tripwire.job_pids(procs, me=5) == [3, 4]
+    assert tripwire.job_pids(procs, me=3) == [4]

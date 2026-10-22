@@ -30,7 +30,7 @@ WINDOW = timedelta(minutes=15)
 POLL_SECONDS = 30
 WAIT_FOR_NEEL = 30 * 60
 WORK = Path("/workspace")
-JOB_PATTERN = r"scripts\.chunk5_job|scripts\.gepa_run"
+JOB_MODULES = ("scripts.chunk5_job", "scripts.gepa_run")
 
 
 def recent_failures(rows, now, since, window=WINDOW):
@@ -53,10 +53,36 @@ def session_alive(session, run=subprocess.run):
     return run(["tmux", "has-session", "-t", session], capture_output=True).returncode == 0
 
 
-def pause(session, run=subprocess.run, kill=os.kill, sleep=time.sleep):
+def proc_cmdlines(root=Path("/proc")):
+    """{pid: argv} for every process we can read."""
+    out = {}
+    for d in root.iterdir():
+        if d.name.isdigit():
+            try:
+                out[int(d.name)] = (d / "cmdline").read_bytes().decode(errors="replace").split("\0")
+            except OSError:
+                continue
+    return out
+
+
+def job_pids(cmdlines, me=None):
+    """Python processes running `-m scripts.chunk5_job` or `-m scripts.gepa_run`, and nothing else: a text
+    match (pgrep -f) also hits the tmux server, whose argv holds run_job.sh's command, and killing it takes
+    every tmux session down, this tripwire's included (pod 7, 2026-10-22)."""
+    pids = []
+    for pid, argv in cmdlines.items():
+        if pid == me or not argv or not Path(argv[0]).name.startswith("python"):
+            continue
+        if any(a == "-m" and b in JOB_MODULES for a, b in zip(argv, argv[1:])):
+            pids.append(pid)
+    return sorted(pids)
+
+
+def pause(session, run=subprocess.run, kill=os.kill, sleep=time.sleep, cmdlines=None):
     """Kill the tmux session first, then every job and GEPA process (TERM, then KILL after 30 s)."""
     run(["tmux", "kill-session", "-t", session], capture_output=True)
-    pids = lambda: [int(p) for p in run(["pgrep", "-f", JOB_PATTERN], capture_output=True, text=True).stdout.split()]
+    cmdlines = cmdlines or proc_cmdlines
+    pids = lambda: job_pids(cmdlines(), me=os.getpid())
     for pid in pids():
         kill(pid, signal.SIGTERM)
     for _ in range(30):
