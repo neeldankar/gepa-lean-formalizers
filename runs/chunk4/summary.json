@@ -652,5 +652,24 @@
     "usage": null
    }
   }
+ },
+ "reflection_load": {
+  "time": "2026-10-22T02:32:52+00:00",
+  "concurrent": 6,
+  "wall_seconds": 233.9331077920001,
+  "passed": 6,
+  "usd": 0.663744,
+  "limits": {
+   "timeout_seconds": 600,
+   "retries": 1
+  },
+  "call_seconds": [
+   121.3,
+   213.8,
+   233.9,
+   52.6,
+   148.9,
+   111.0
+  ]
  }
 }
