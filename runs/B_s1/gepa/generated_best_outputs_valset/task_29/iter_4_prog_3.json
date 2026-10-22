@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_147",
+        "sample": 0,
+        "output": "```lean4\ntheorem non_zero_expression (z\u2081 z\u2082 z\u2083 z\u2084 : \u2102) (hz\u2081 : \u2016z\u2081\u2016 = 1) (hz\u2082 : \u2016z\u2082\u2016 = 1) (hz\u2083 : \u2016z\u2083\u2016 = 1) (hz\u2084 : \u2016z\u2084\u2016 = 1)\n    (hz\u2081ne\u2081 : z\u2081 \u2260 1) (hz\u2082ne\u2081 : z\u2082 \u2260 1) (hz\u2083ne\u2081 : z\u2083 \u2260 1) (hz\u2084ne\u2081 : z\u2084 \u2260 1) :\n    3 - z\u2081 - z\u2082 - z\u2083 - z\u2084 + z\u2081 * z\u2082 * z\u2083 * z\u2084 \u2260 0 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem non_zero_expression (z\u2081 z\u2082 z\u2083 z\u2084 : \u2102) (hz\u2081 : \u2016z\u2081\u2016 = 1) (hz\u2082 : \u2016z\u2082\u2016 = 1) (hz\u2083 : \u2016z\u2083\u2016 = 1) (hz\u2084 : \u2016z\u2084\u2016 = 1)\n    (hz\u2081ne\u2081 : z\u2081 \u2260 1) (hz\u2082ne\u2081 : z\u2082 \u2260 1) (hz\u2083ne\u2081 : z\u2083 \u2260 1) (hz\u2084ne\u2081 : z\u2084 \u2260 1) :\n    3 - z\u2081 - z\u2082 - z\u2083 - z\u2084 + z\u2081 * z\u2082 * z\u2083 * z\u2084 \u2260 0 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies over four complex numbers, assumes each has norm 1 and is not equal to 1, and concludes exactly the same inequality as the English statement."
+        },
+        "score": 1
+    }
+]

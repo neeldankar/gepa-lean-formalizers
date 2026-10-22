@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_028",
+        "sample": 0,
+        "output": "```lean4\ntheorem addition_in_Zn_is_associative (n : \u2115) (hn : 0 < n) :\n  \u2200 a b c : \u2124, (a + b) + c \u2261 a + (b + c) [ZMOD n] := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem addition_in_Zn_is_associative (n : \u2115) (hn : 0 < n) :\n  \u2200 a b c : \u2124, (a + b) + c \u2261 a + (b + c) [ZMOD n] := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem asserts that for any integers a, b, c, (a+b)+c \u2261 a+(b+c) [ZMOD n] with n>0, which exactly captures the associativity of addition in the residue class ring \u2124/n\u2124."
+        },
+        "score": 1
+    }
+]

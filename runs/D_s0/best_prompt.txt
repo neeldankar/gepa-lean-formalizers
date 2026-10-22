@@ -1,0 +1,39 @@
+You are given a mathematical problem stated in natural language, together with a fixed Lean 4 context (imports, opens, and definitions). Translate the problem into exactly ONE Lean 4 theorem statement that faithfully formalizes the claim. Think step by step, then verify consistency before answering.
+
+## Output format
+- Output a single theorem of the form:
+    theorem <descriptive_name> <hypotheses...> : <conclusion> := by sorry
+- Use exactly the imports/opens/definitions given in the context; add nothing else.
+- Only the statement is graded: always end with `:= by sorry`. Do not attempt a proof, do not add helper lemmas or definitions.
+
+## Hard gate: the statement MUST compile
+A statement that fails to compile scores 0 regardless of how faithful it is, and the faithfulness judge never runs. Before finalizing, mentally type-check every subterm. Known pitfalls:
+- Subtype coercions are NOT transitive/automatic. If `A : Set X` and `a : A` (type `↥A`), then `(a : closure A)` FAILS with a type mismatch ("has type ↑A but is expected to have type ↑(closure A)"). Instead write the agreement condition explicitly, e.g.:
+    ∀ a : A, g ⟨a.1, subset_closure a.2⟩ = f a
+  or quantify over the ambient type:
+    ∀ x : X, ∀ hx : x ∈ A, g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩
+  or use `Set.inclusion subset_closure : ↥A → ↥(closure A)`.
+  (Here `subset_closure : A ⊆ closure A` turns a proof of `x ∈ A` into a proof of `x ∈ closure A`.)
+- Add explicit type ascriptions where elaboration is ambiguous, e.g. `(Polynomial.X^3 + 6 * Polynomial.X + 12 : Polynomial ℚ)`.
+- Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.
+
+## Faithfulness requirements
+- Introduce EVERY hypothesis of the problem as an explicit named argument:
+  - "a is a nonzero integer" → `(a : ℤ) (ha : a ≠ 0)`
+  - "for n > m" → `(n m : ℕ) (h : m < n)`
+  - "Y is complete" → `[CompleteSpace Y]`; "metric spaces" → `[MetricSpace X] [MetricSpace Y]`
+- Formalize the conclusion exactly:
+  - "there exists a unique ..." → `∃! x, ...`
+  - "equals 1 or 2 depending on whether a is odd or even" → `= if Odd a then 1 else 2`
+  - multiple conclusion properties ("g extends f, is continuous, and is uniformly continuous") → conjoin them: `(agreement condition) ∧ Continuous g ∧ UniformContinuous g`
+  - "g extends f" means g agrees with f on the original domain — state this agreement explicitly (see coercion pitfall above).
+- Do not strengthen, weaken, reorder, or omit any condition. The formal statement must be content-equivalent to the natural language one.
+
+## Strategy
+1. Parse the problem: list the objects, their types, every hypothesis, and the exact conclusion.
+2. Map each concept to the corresponding Mathlib definition available under the given context.
+3. Write the theorem, introducing each hypothesis as a named argument and the conclusion as the target type.
+4. Verify consistency in both directions:
+   a. Compilation: check all types, coercions (especially between subtypes such as `↥A` and `↥(closure A)`), implicit/instance arguments, and name resolution.
+   b. Faithfulness: re-read the original problem and confirm every hypothesis and the conclusion are represented exactly — nothing missing, nothing added.
+5. Output only the final theorem.

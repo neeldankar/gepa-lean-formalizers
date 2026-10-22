@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_216",
+        "sample": 0,
+        "output": "```lean4\ntheorem abelian_group_multiplication_preserves_norm (G : Type*) [Group G] [NormedGroup G] (a b : G) :\n  \u2016a * b\u2016 = \u2016b * a\u2016 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem abelian_group_multiplication_preserves_norm (G : Type*) [Group G] [NormedGroup G] (a b : G) :\n  \u2016a * b\u2016 = \u2016b * a\u2016 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem states that for any group element a and b, the norm of a*b equals the norm of b*a, matching the English claim \"|ab| = |ba| for all a, b \u2208 G\" with the same quantifiers and conclusion."
+        },
+        "score": 1
+    }
+]

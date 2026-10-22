@@ -16,5 +16,25 @@
   "standin_ids": null,
   "poll_seconds": 60
  },
- "started": "2026-10-22T06:12:17+00:00"
+ "started": "2026-10-22T06:37:04+00:00",
+ "gepa_exit_codes": {
+  "B_s0": 1,
+  "B_s1": 1,
+  "B_s2": 1,
+  "D_s0": 0,
+  "D_s1": 1,
+  "D_s2": 1
+ },
+ "sanity_problems": [
+  "B_s0: STOPPED (ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }')",
+  "B_s0: no DONE marker",
+  "B_s1: STOPPED (ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }')",
+  "B_s1: no DONE marker",
+  "B_s2: STOPPED (ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }')",
+  "B_s2: no DONE marker",
+  "D_s1: STOPPED (ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 429: b'{\"id\":\"ae08b474-aws_ue2\",\"error\":{\"message\":\"All replicas for this endpoint are at capacity\",\"type)",
+  "D_s1: no DONE marker",
+  "D_s2: STOPPED (ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }')",
+  "D_s2: no DONE marker"
+ ]
 }

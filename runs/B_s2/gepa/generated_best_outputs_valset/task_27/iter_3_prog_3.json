@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_140",
+        "sample": 0,
+        "output": "```lean4\ntheorem sqrt_n_plus_1_minus_sqrt_n_tends_to_zero : Filter.Tendsto (fun n : \u2115 => (\u221a(n + 1) - \u221an)) atTop (nhds 0) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem sqrt_n_plus_1_minus_sqrt_n_tends_to_zero : Filter.Tendsto (fun n : \u2115 => (\u221a(n + 1) - \u221an)) atTop (nhds 0) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem states that the function n \u21a6 \u221a(n+1) - \u221an tends to 0 along the filter atTop on \u2115, which exactly matches the English claim of the limit as n\u2192\u221e being 0."
+        },
+        "score": 1
+    }
+]

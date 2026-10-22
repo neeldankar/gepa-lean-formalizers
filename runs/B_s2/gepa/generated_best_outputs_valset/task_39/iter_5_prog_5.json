@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_215",
+        "sample": 0,
+        "output": "```lean4\ntheorem same_order_and_inverse (G : Type*) [Group G] (x : G) :\n  orderOf x = orderOf x\u207b\u00b9 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem same_order_and_inverse (G : Type*) [Group G] (x : G) :\n  orderOf x = orderOf x\u207b\u00b9 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies over a group G and an element x, and asserts that the order of x equals the order of its inverse, matching the English statement precisely."
+        },
+        "score": 1
+    }
+]

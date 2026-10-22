@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_034",
+        "sample": 0,
+        "output": "```lean4\ntheorem infinite_order_elements_distinct (G : Type*) [Group G] (x : G) (hx : \u2200 n : \u2124, x ^ n = x ^ 0 \u2192 n = 0) :\n  \u2200 m n : \u2124, x ^ m = x ^ n \u2192 m = n := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem infinite_order_elements_distinct (G : Type*) [Group G] (x : G) (hx : \u2200 n : \u2124, x ^ n = x ^ 0 \u2192 n = 0) :\n  \u2200 m n : \u2124, x ^ m = x ^ n \u2192 m = n := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The hypothesis hx encodes that x has infinite order (only the zero exponent yields the identity), and the conclusion states that equal powers imply equal exponents, matching the English claim."
+        },
+        "score": 1
+    }
+]

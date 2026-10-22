@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_303",
+        "sample": 0,
+        "output": "```lean4\ntheorem connected_intersects_boundary (X : Type*) [TopologicalSpace X] (A : Set X) (C : Set X) :\n  IsConnected C \u2192 C \u2229 A \u2260 \u2205 \u2227 C \u2229 (Set.compl A) \u2260 \u2205 \u2192 C \u2229 frontier A \u2260 \u2205 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem connected_intersects_boundary (X : Type*) [TopologicalSpace X] (A : Set X) (C : Set X) :\n  IsConnected C \u2192 C \u2229 A \u2260 \u2205 \u2227 C \u2229 (Set.compl A) \u2260 \u2205 \u2192 C \u2229 frontier A \u2260 \u2205 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean statement captures exactly the English claim: it assumes a set A in X, a connected set C, nonempty intersections with A and its complement, and concludes a nonempty intersection with the boundary (frontier) of A."
+        },
+        "score": 1
+    }
+]

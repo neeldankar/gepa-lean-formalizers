@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_034",
+        "sample": 0,
+        "output": "```lean4\ntheorem infinite_order_elements_are_distinct (G : Type*) [Group G] (x : G) (hx : orderOf x = 0) :\n    \u2200 (n m : \u2124), n \u2260 m \u2192 x ^ n \u2260 x ^ m := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem infinite_order_elements_are_distinct (G : Type*) [Group G] (x : G) (hx : orderOf x = 0) :\n    \u2200 (n m : \u2124), n \u2260 m \u2192 x ^ n \u2260 x ^ m := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem assumes `orderOf x = 0` (infinite order) and states that for all integers n, m, if n \u2260 m then x^n \u2260 x^m, exactly matching the English statement."
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_107",
+        "sample": 0,
+        "output": "```lean4\ntheorem smallest_topology_containing_family (X : Type*) (\u03b9 : Type*) (T : \u03b9 \u2192 Set (Set X)) :\n    \u2203! (T' : Set (Set X)), (\u2200 \u03b1, is_topology X (T \u03b1)) \u2227 is_topology X T' \u2227 \u2200 (T'' : Set (Set X)), (\u2200 \u03b1, T \u03b1 \u2286 T'') \u2192 T' \u2286 T'' := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem smallest_topology_containing_family (X : Type*) (\u03b9 : Type*) (T : \u03b9 \u2192 Set (Set X)) :\n    \u2203! (T' : Set (Set X)), (\u2200 \u03b1, is_topology X (T \u03b1)) \u2227 is_topology X T' \u2227 \u2200 (T'' : Set (Set X)), (\u2200 \u03b1, T \u03b1 \u2286 T'') \u2192 T' \u2286 T'' := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies a family of topologies, asserts each is a topology, and states existence and uniqueness of a smallest topology containing them, matching the English statement."
+        },
+        "score": 1
+    }
+]

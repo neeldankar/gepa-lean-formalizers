@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_081",
+        "sample": 0,
+        "output": "```lean4\ntheorem cyclic_product_iff_coprime (G\u2081 G\u2082 : Type*) [Group G\u2081] [Group G\u2082] [Fintype G\u2081] [Fintype G\u2082] (m : \u2115) (n : \u2115) (hm : m = Fintype.card G\u2081) (hn : n = Fintype.card G\u2082) (h\u2081 : IsCyclic G\u2081) (h\u2082 : IsCyclic G\u2082) :\n    IsCyclic (G\u2081 \u00d7 G\u2082) \u2194 Nat.Coprime m n := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem cyclic_product_iff_coprime (G\u2081 G\u2082 : Type*) [Group G\u2081] [Group G\u2082] [Fintype G\u2081] [Fintype G\u2082] (m : \u2115) (n : \u2115) (hm : m = Fintype.card G\u2081) (hn : n = Fintype.card G\u2082) (h\u2081 : IsCyclic G\u2081) (h\u2082 : IsCyclic G\u2082) :\n    IsCyclic (G\u2081 \u00d7 G\u2082) \u2194 Nat.Coprime m n := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem includes cyclicity of G\u2081 and G\u2082, their finite cardinalities equal to m and n, and states exactly that G\u2081 \u00d7 G\u2082 is cyclic iff m and n are coprime, matching the English statement."
+        },
+        "score": 1
+    }
+]

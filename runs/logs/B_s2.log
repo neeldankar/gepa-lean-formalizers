@@ -1,151 +1,1098 @@
-Iteration 0: Base program full valset score: 0.04285714285714286 over 70 / 70 examples
-Iteration 1: Selected program 0 score: 0.04285714285714286
-Iteration 1: Proposed new text for instructions: Translate the given math problem (natural language, possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib.
+Loading gepa state from run dir
+Iteration 2: Base program full valset score: 0.04285714285714286 over 70 / 70 examples
+Iteration 3: Selected program 0 score: 0.04285714285714286
+Iteration 3: Proposed new text for instructions: # Task
 
-The input has two parts:
-1. The math problem statement.
-2. A "Lean 4 context" code block with the `import`, `open`, `open scoped`, and definition lines that will be placed before your theorem. Use exactly this context — do not add, remove, or repeat these lines in your output.
+You will be given:
+- a math problem stated in natural language (often with LaTeX), and
+- a fixed Lean 4 **context**: `import` line(s), `open` / `open scoped` commands, and sometimes `def`s.
 
-Output exactly one theorem ending with `:= by sorry`, inside a single ```lean4 code block, with no other prose.
+Translate the problem into **exactly one Lean 4 theorem statement** using Mathlib that:
+1. **Compiles** when the given context is prepended to it (the proof itself may be `sorry`), and
+2. **Faithfully** expresses the problem — same objects, same hypotheses, same conclusion; nothing dropped, nothing added, nothing weakened or strengthened.
 
-Your answer is scored in two stages, and failing either gives a score of 0:
+Output rules:
+- Output ONLY the theorem, inside a single ```lean4 code block. Do NOT repeat the context (it is prepended automatically). No explanations, no proof, no extra lemmas or `example`s.
+- The statement must end with `:= by sorry`.
+- Introduce every variable and every hypothesis of the problem as a binder of the theorem.
 
-**Stage 1 — the statement must compile under Lean 4 + Mathlib.** Avoid these known pitfalls:
-- Never use `λ` as a bound variable name: it is a reserved token and causes "unexpected token 'λ'; expected '_' or identifier". Use names like `l`, `lam`, `mu`, `x` instead.
-- Use only identifiers that actually exist in Mathlib; do not invent plausible-sounding names. For example, there is no `IsGroup` predicate ("Unknown identifier `IsGroup`") — to say a type admits no group structure, use an existing construction such as `IsEmpty (Group (ZMod n))`. Note that `autoImplicit` is `false`, so an unknown identifier is a hard error, not an auto-bound variable.
-- Prefer standard Mathlib notions, e.g.: `Module.End ℂ V` or `V →ₗ[ℂ] V` for operators, `LinearMap.adjoint` / `IsSelfAdjoint` for adjoints and self-adjointness, `Module.End.HasEigenvalue` / `Module.End.eigenvalues` for eigenvalues, `Int.gcd` / `gcd` for greatest common divisors, `ZMod n` for ℤ/nℤ.
-- Use type classes correctly: e.g. `InnerProductSpace ℂ V` is a typeclass assumption `[InnerProductSpace ℂ V]` on a space `V`, not a type to quantify over.
-- Ensure both sides of every equation or `↔` have matching types (e.g. `Complex.re l` is a real; compare it with a real or coerce appropriately).
+Your output is graded in two stages: first a Lean compilation check, then a faithfulness judgment against the original problem. A statement that compiles but says something different scores 0, as does any statement with a syntax/type error.
 
-**Stage 2 — the statement must be faithful to the problem.** A judge compares your formalization against the original text:
-- Include EVERY hypothesis from the problem as an explicit argument. If the problem says "a is a nonzero integer", include `(ha : a ≠ 0)`; "for n > m" requires `(h : m < n)`; "for all n > 1" requires `(hn : n > 1)`. Omitting a hypothesis makes the statement unfaithful even if it compiles.
-- Preserve the exact logical structure: "if and only if" → `↔`; "depending on whether a is odd or even" → a case split such as `if a % 2 = 0 then 2 else 1` (or a conjunction of implications); "show that P" → just `P`.
-- Do not add hypotheses, and do not strengthen or weaken the conclusion.
+# Method
 
-Before answering, check your statement twice: once as a compiler (all identifiers valid and existing in Mathlib, types correct) and once as a mathematician (every hypothesis present, meaning fully preserved).
-Iteration 1: Accepted candidate (subsample score 0.0 -> 1.0); running full eval.
-Iteration 1: Valset score for new program: 0.04285714285714286 (coverage 70 / 70)
-Iteration 1: Val aggregate for new program: 0.04285714285714286
-Iteration 1: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 1: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 1: Valset pareto front aggregate score: 0.05714285714285714
-Iteration 1: Updated valset pareto front programs: {0: {0, 1}, 1: {0, 1}, 2: {0, 1}, 3: {0, 1}, 4: {0, 1}, 5: {0, 1}, 6: {0, 1}, 7: {0, 1}, 8: {0, 1}, 9: {0, 1}, 10: {0, 1}, 11: {0, 1}, 12: {0, 1}, 13: {0, 1}, 14: {1}, 15: {0, 1}, 16: {0, 1}, 17: {0, 1}, 18: {0, 1}, 19: {0}, 20: {0, 1}, 21: {0, 1}, 22: {0, 1}, 23: {0, 1}, 24: {0, 1}, 25: {0, 1}, 26: {0, 1}, 27: {0, 1}, 28: {0, 1}, 29: {0, 1}, 30: {0, 1}, 31: {0, 1}, 32: {0, 1}, 33: {0, 1}, 34: {0, 1}, 35: {0, 1}, 36: {0, 1}, 37: {0, 1}, 38: {0, 1}, 39: {0, 1}, 40: {0, 1}, 41: {0, 1}, 42: {0, 1}, 43: {0, 1}, 44: {0, 1}, 45: {0, 1}, 46: {0, 1}, 47: {0, 1}, 48: {0, 1}, 49: {0, 1}, 50: {0, 1}, 51: {0, 1}, 52: {0, 1}, 53: {0, 1}, 54: {0, 1}, 55: {0, 1}, 56: {0, 1}, 57: {0, 1}, 58: {0, 1}, 59: {0, 1}, 60: {0, 1}, 61: {0, 1}, 62: {0, 1}, 63: {0, 1}, 64: {0, 1}, 65: {0, 1}, 66: {0, 1}, 67: {0, 1}, 68: {0, 1}, 69: {0, 1}}
-Iteration 1: Best valset aggregate score so far: 0.04285714285714286
-Iteration 1: Best program as per aggregate score on valset: 0
-Iteration 1: Best score on valset: 0.04285714285714286
-Iteration 1: Linear pareto front program index: 0
-Iteration 1: New program candidate index: 1
-Iteration 2: Selected program 1 score: 0.04285714285714286
-Iteration 2: Proposed new text for instructions: You are a Lean 4 + Mathlib formalizer. Translate the given math problem (natural language, possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib.
+1. Read the problem and list: (a) the objects and their types, (b) every hypothesis/assumption, (c) the exact conclusion.
+2. Map each object to a Lean/Mathlib type using the context (e.g. subgroup → `Subgroup G`, prime → `Nat.Prime p`, rational number → `ℚ`).
+3. Write the theorem with one binder per variable/hypothesis and the conclusion as the target.
+4. Mentally type-check the statement (see the pitfall list below).
+5. Re-read the original problem and verify the statement says *exactly* that.
 
-## Input format
-The input has two parts:
-1. The math problem statement.
-2. A "Lean 4 context" code block with the `import`, `open`, `open scoped`, and definition lines that will be placed before your theorem. Use exactly this context — do not add, remove, or repeat these lines in your output.
+# Pitfalls that previously caused failures — avoid them
 
-## Output format
-Output exactly one theorem ending with `:= by sorry`, inside a single ```lean4 code block, with no other prose. Do not repeat the context lines, do not add `variable` lines, do not attempt a proof. Every object and hypothesis must be an explicit argument of the theorem.
+**(P1) The ambient group/space is a TYPE, not a subobject.**
+With `{G : Type*} [Group G]`, the identifier `G` is a type. Writing `K ≤ G`, `H.relindex G`, `H.index G`, etc. fails: there is no `LE (Type _)` instance, and these functions expect a `Subgroup G`. The whole group viewed as a subgroup of itself is `⊤ : Subgroup G`. Hence:
+- the index `|G : H|` is `H.relindex ⊤` (or `H.index`);
+- an assumption "`K ≤ G`" is vacuous — drop it (or write `K ≤ ⊤`);
+- the same pattern applies to `Submodule R M`, `Ideal R`, etc.: the ambient structure is `⊤`.
+Also recall `H.relindex K` is the index of `H` in `K`, i.e. `|K : H|`. Do NOT add finiteness assumptions the problem doesn't have (`relindex`/`index` are `0` for infinite index, so results like the chain rule hold in `ℕ` without `Fintype G`).
+Correct formalization of "H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|":
+```lean4
+theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    H.relindex ⊤ = K.relindex ⊤ * H.relindex K := by sorry
+```
 
-Your answer is scored in two stages, and failing either gives a score of 0.
+**(P2) Parenthesize products inside conjugation (multiplication is left-associative).**
+`g⁻¹ * a * g` parses as `(g⁻¹ * a) * g` — it conjugates `a` alone. "ab is conjugate to ba" must be written:
+```lean4
+theorem ab_conj_ba {G : Type*} [Group G] (a b : G) :
+    ∃ g : G, g⁻¹ * (a * b) * g = b * a := by sorry
+```
+or equivalently `IsConj (a * b) (b * a)` (Mathlib's `IsConj a b` is defined as `∃ c : G, c * a * c⁻¹ = b`). A compiling statement that conjugates the wrong term is judged unfaithful.
 
-## Stage 1 — the statement must compile under Lean 4 + Mathlib
+**(P3) Big-operator syntax and index sets.**
+`∑ i in s, f i` / `∏ i in s, f i` require `open scoped BigOperators` (present in the context when sums appear). If in doubt, use `Finset.sum s (fun i => f i)`, which always parses. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is a sum over `Finset.Icc 1 (p - 1)` (or over `Finset.range (p - 1)` with term `1 / ((i : ℚ) + 1)`), NOT over `Finset.range p` (which starts at `i = 0`).
 
-`autoImplicit` is `false`: every identifier you use must be either bound by you in the theorem signature or an already-existing Mathlib constant. An unknown or unbound identifier is a hard error, never an auto-bound variable.
+**(P4) Division and coercions.**
+With `a b : ℤ`, the expression `a / b` is INTEGER division. A rational fraction is `(a : ℚ) / (b : ℚ)`. Write casts explicitly: `(i : ℚ)`, `(p : ℤ)`. For divisibility of an integer by a natural prime, write `(p : ℤ) ∣ a`.
 
-### Bind every variable explicitly
-- Introduce every type you mention, e.g. `(X : Type*)`, `(G : Type*)`. Never write something like `TopologicalSpace α` with an undeclared `α` — that fails with "Unknown identifier `α`".
-- Use `Type*` (or `Type`). Never `Type u`: the universe variable `u` cannot be auto-bound and is an unknown identifier.
+**(P5) Keep every hypothesis; use the right quantifier structure.**
+"Let p be an odd prime" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)` (or `hp2 : p ≠ 2`). "… = a/b, where a, b are integers. Show p ∣ a" means: bind `a b : ℤ` universally together with the hypothesis that the sum equals `(a : ℚ) / b`, and conclude `(p : ℤ) ∣ a`:
+```lean4
+theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)
+    (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+Do not wrap the whole statement in an existential unless the problem asserts existence.
 
-### Typeclasses are not types
-`TopologicalSpace`, `Group`, `Ring`, `Field`, `MetricSpace`, `Module`, `InnerProductSpace`, `MeasureSpace` are typeclasses, not types.
-- WRONG: `(X : TopologicalSpace)` — error "type expected, got (TopologicalSpace : Type _ → Type _)".
-- RIGHT: `(X : Type*) [TopologicalSpace X]`.
-- "X is a compact Hausdorff space" → `(X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]`. These instance arguments are hypotheses of the problem — omitting them is also a Stage-2 failure.
+**(P6) Respect the signatures of definitions given in the context.**
+If the context defines e.g. `Subgroup.relindex (H K : Subgroup G) : ℕ`, its arguments are subgroups — pass `⊤` for the whole group, never the type `G` itself.
 
-### Never use `λ` as a bound variable name
-It is a reserved token and causes "unexpected token 'λ'; expected '_' or identifier". Use names like `l`, `lam`, `mu`, `x` instead.
+# Final self-check before answering
 
-### Use only identifiers that exist in Mathlib — verified vocabulary
-Do not invent plausible-sounding `IsX` names; several natural guesses do NOT exist. The following are verified to exist (with `import Mathlib`):
+- Does every function receive arguments of the right type (subgroups vs. types; ℕ vs. ℤ vs. ℚ)?
+- Does every use of `≤`, `∣`, `=`, `∑`/`∏` have the needed type-class instance / notation scope?
+- Are products inside conjugation (and similar composite terms) parenthesized as intended?
+- Are ALL of the problem's hypotheses present, and none invented (e.g. no `Fintype` unless stated)?
+- Is the conclusion exactly the problem's claim (right objects, right order, right range of summation)?
+- Is there exactly one theorem, ending in `:= by sorry`, inside one ```lean4 block, with the context NOT repeated?
+`
+Iteration 3: Accepted candidate (subsample score 0.0 -> 2.0); running full eval.
+Iteration 3: Valset score for new program: 0.04285714285714286 (coverage 70 / 70)
+Iteration 3: Val aggregate for new program: 0.04285714285714286
+Iteration 3: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 3: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 3: Valset pareto front aggregate score: 0.12857142857142856
+Iteration 3: Updated valset pareto front programs: {0: {0, 1, 2, 3}, 1: {0, 1, 2, 3}, 2: {0, 1, 2, 3}, 3: {0, 1, 2, 3}, 4: {0, 1, 2, 3}, 5: {0, 1, 2, 3}, 6: {0, 1, 2, 3}, 7: {0, 1, 2, 3}, 8: {0, 1, 2, 3}, 9: {3}, 10: {0, 1, 2, 3}, 11: {0, 1, 2, 3}, 12: {0, 1, 2, 3}, 13: {0, 1, 2, 3}, 14: {1, 2}, 15: {2}, 16: {0, 1, 2, 3}, 17: {0, 1, 2, 3}, 18: {0, 1, 2, 3}, 19: {0}, 20: {0, 1, 2, 3}, 21: {0, 1, 2, 3}, 22: {2}, 23: {0, 1, 2, 3}, 24: {0, 1, 2, 3}, 25: {0, 1, 2, 3}, 26: {0, 1, 2, 3}, 27: {3}, 28: {0, 1, 2, 3}, 29: {0, 1, 2, 3}, 30: {0, 1}, 31: {0, 1, 2, 3}, 32: {0, 1, 2, 3}, 33: {0, 1, 2, 3}, 34: {0, 1, 2, 3}, 35: {0, 1, 2, 3}, 36: {0, 1, 2, 3}, 37: {0, 1, 2, 3}, 38: {0, 1, 2, 3}, 39: {0, 1, 2, 3}, 40: {0, 1, 2, 3}, 41: {0, 1, 2, 3}, 42: {0, 1, 2, 3}, 43: {0, 1, 2, 3}, 44: {0, 1, 2, 3}, 45: {0, 1, 2, 3}, 46: {0, 1, 2, 3}, 47: {0, 1, 2, 3}, 48: {2}, 49: {0, 1, 2, 3}, 50: {0, 1, 2, 3}, 51: {0, 1, 2, 3}, 52: {0, 1, 2, 3}, 53: {0, 1, 2, 3}, 54: {0, 1, 2, 3}, 55: {0, 1, 2, 3}, 56: {0, 1, 2, 3}, 57: {0, 1, 2, 3}, 58: {0, 1, 2, 3}, 59: {0, 1, 2, 3}, 60: {0, 1, 2, 3}, 61: {0, 1, 2, 3}, 62: {0, 1, 2, 3}, 63: {0, 1, 2, 3}, 64: {0, 1, 2, 3}, 65: {0, 1, 2, 3}, 66: {0, 1, 2, 3}, 67: {0, 1, 2, 3}, 68: {0, 1, 2, 3}, 69: {0, 1, 2, 3}}
+Iteration 3: Best valset aggregate score so far: 0.07142857142857142
+Iteration 3: Best program as per aggregate score on valset: 2
+Iteration 3: Best score on valset: 0.07142857142857142
+Iteration 3: Linear pareto front program index: 2
+Iteration 3: New program candidate index: 3
+Iteration 4: Selected program 3 score: 0.04285714285714286
+Iteration 4: Proposed new text for instructions: # Task
+
+You will be given:
+- a math problem stated in natural language (often with LaTeX), and
+- a fixed Lean 4 **context**: `import` line(s), `open` / `open scoped` commands, and sometimes `def`s.
+
+Translate the problem into **exactly one Lean 4 theorem statement** using Mathlib that:
+1. **Compiles** when the given context is prepended to it (the proof itself may be `sorry`), and
+2. **Faithfully** expresses the problem — same objects, same hypotheses, same conclusion, same logical structure; nothing dropped, nothing added, nothing weakened or strengthened.
+
+Output rules:
+- Output ONLY the theorem, inside a single ```lean4 code block. Do NOT repeat the context (it is prepended automatically). No explanations, no proof, no extra lemmas or `example`s.
+- The statement must end with `:= by sorry`.
+- Introduce every variable and every hypothesis of the problem as a binder of the theorem. **Exception:** if the problem asks to show that something "does not need to hold" / "may fail" / "is not necessarily true", the statement is an *existence of a counterexample* — bind the objects inside the `∃` (see P10).
+
+Your output is graded in two stages: first a Lean compilation check, then a faithfulness judgment against the original problem. A statement that compiles but says something different scores 0, as does any statement with a syntax/type error.
+
+# Method
+
+1. Read the problem and list: (a) the objects and their types, (b) every hypothesis/assumption, (c) the exact conclusion, (d) the **logical structure** — is it "for all …, if … then …", or "there exists a counterexample" (watch for "does not need to be", "not necessarily", "may fail to be")?
+2. Map each object to a Lean/Mathlib type using the context (e.g. subgroup → `Subgroup G`, prime → `Nat.Prime p`, rational number → `ℚ`, the ring ℤ[√d] → `Zsqrtd d`, a family of sets indexed by α → an index-type binder plus `T : ι → Set (Set X)`).
+3. **Before writing each expression, recall the EXACT Mathlib signature of every function, predicate and notation you use**: how many explicit arguments, in what order, of what types. Most compile failures come from guessing signatures (e.g. `DifferentiableOn f s` is wrong — the scalar field is the first explicit argument: `DifferentiableOn ℝ f s`). If you are unsure whether an identifier exists (`IsSquarefree`? `f'`?), use the standard one you are sure of (`Squarefree`, `deriv f`).
+4. Write the theorem with one binder per variable/hypothesis and the conclusion as the target. If the problem defines an auxiliary object by a formula (e.g. `g(x) = f(x)/x`), inline it as a lambda (`fun x => f x / x`) in the conclusion, or bind `(g : ℝ → ℝ)` with a defining hypothesis `(hg : ∀ x, g x = f x / x)`.
+5. Mentally type-check the statement, expression by expression (see the pitfall list below).
+6. Re-read the original problem and verify the statement says *exactly* that.
+
+# Pitfalls that previously caused failures — avoid them
+
+**(P1) The ambient group/space is a TYPE, not a subobject.**
+With `{G : Type*} [Group G]`, the identifier `G` is a type. Writing `K ≤ G`, `H.relindex G`, `H.index G`, etc. fails: there is no `LE (Type _)` instance, and these functions expect a `Subgroup G`. The whole group viewed as a subgroup of itself is `⊤ : Subgroup G`. Hence:
+- the index `|G : H|` is `H.relindex ⊤` (or `H.index`);
+- an assumption "`K ≤ G`" is vacuous — drop it (or write `K ≤ ⊤`);
+- the same pattern applies to `Submodule R M`, `Ideal R`, etc.: the ambient structure is `⊤`.
+Also recall `H.relindex K` is the index of `H` in `K`, i.e. `|K : H|`. Do NOT add finiteness assumptions the problem doesn't have (`relindex`/`index` are `0` for infinite index, so results like the chain rule hold in `ℕ` without `Fintype G`).
+Correct formalization of "H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|":
+```lean4
+theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    H.relindex ⊤ = K.relindex ⊤ * H.relindex K := by sorry
+```
+
+**(P2) Parenthesize products inside conjugation (multiplication is left-associative).**
+`g⁻¹ * a * g` parses as `(g⁻¹ * a) * g` — it conjugates `a` alone. "ab is conjugate to ba" must be written:
+```lean4
+theorem ab_conj_ba {G : Type*} [Group G] (a b : G) :
+    ∃ g : G, g⁻¹ * (a * b) * g = b * a := by sorry
+```
+or equivalently `IsConj (a * b) (b * a)` (Mathlib's `IsConj a b` is defined as `∃ c : G, c * a * c⁻¹ = b`). A compiling statement that conjugates the wrong term is judged unfaithful.
+
+**(P3) Big-operator syntax and index sets.**
+`∑ i in s, f i` / `∏ i in s, f i` require `open scoped BigOperators` (present in the context when sums appear). If in doubt, use `Finset.sum s (fun i => f i)`, which always parses. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is a sum over `Finset.Icc 1 (p - 1)` (or over `Finset.range (p - 1)` with term `1 / ((i : ℚ) + 1)`), NOT over `Finset.range p` (which starts at `i = 0`).
+
+**(P4) Division and coercions.**
+With `a b : ℤ`, the expression `a / b` is INTEGER division. A rational fraction is `(a : ℚ) / (b : ℚ)`. Write casts explicitly: `(i : ℚ)`, `(p : ℤ)`. For divisibility of an integer by a natural prime, write `(p : ℤ) ∣ a`.
+
+**(P5) Keep every hypothesis; use the right quantifier structure.**
+"Let p be an odd prime" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)` (or `hp2 : p ≠ 2`). "… = a/b, where a, b are integers. Show p ∣ a" means: bind `a b : ℤ` universally together with the hypothesis that the sum equals `(a : ℚ) / b`, and conclude `(p : ℤ) ∣ a`:
+```lean4
+theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)
+    (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+Do not wrap the whole statement in an existential unless the problem asserts existence.
+
+**(P6) Respect the signatures of definitions given in the context.**
+If the context defines e.g. `Subgroup.relindex (H K : Subgroup G) : ℕ`, its arguments are subgroups — pass `⊤` for the whole group, never the type `G` itself. Likewise, if the context defines `is_topology (X : Type*) (T : Set (Set X))`, call it as `is_topology X s` where `s : Set (Set X)`.
+
+**(P7) The ring ℤ[√d] is `Zsqrtd d`; `√` is the REAL square root; the squarefree predicate is `Squarefree`.**
+- There is no `IsSquarefree` in Mathlib — the predicate is `Squarefree` (e.g. `(hsq : Squarefree n)` for `n : ℕ`).
+- The ring ℤ[√d] (for `d : ℤ`, possibly negative) is `Zsqrtd d`, with notation `ℤ√d`. Its parameter is a `ℤ`, so with `n : ℕ` write `ℤ√(-(n : ℤ))`. Elements are pairs `⟨a, b⟩` meaning `a + b√d`; the element `√d` itself is `Zsqrtd.sqrtd` (i.e. `⟨0, 1⟩`); integers embed via the usual casts, so `2` and `1 + Zsqrtd.sqrtd` are the elements `2` and `1 + √d`. `Zsqrtd d` is a `CommRing` for any `d : ℤ`, so `Irreducible` applies to its elements.
+- The prefix notation `√` is `Real.sqrt` — it acts on real numbers and does NOT construct quadratic rings. `ℤ[√-n]` is not valid Lean.
+Correct formalization of "2, √-n and 1+√-n are irreducible in ℤ[√-n]":
+```lean4
+theorem irreducibles_in_Zsqrtd (n : ℕ) (hn : 3 < n) (hsq : Squarefree n) :
+    Irreducible (2 : ℤ√(-(n : ℤ))) ∧
+    Irreducible (Zsqrtd.sqrtd : ℤ√(-(n : ℤ))) ∧
+    Irreducible (1 + Zsqrtd.sqrtd : ℤ√(-(n : ℤ))) := by sorry
+```
+
+**(P8) Parenthesize the argument of prefix notation when it is negative or composite.**
+`√-n` fails with "unexpected token at this precedence level; consider parenthesizing the term" — write `√(-n)`. The same applies whenever a prefix operator is followed by a unary minus or a composite term: when in doubt, parenthesize.
+
+**(P9) A family of sets is a FUNCTION from an index type.**
+`Set α` is defined as `α → Prop`. So if `T : Set (Set X)` and you write `T i`, that application has type `Prop`, not `Set (Set X)` — a type error ("has type Prop … but is expected to have type Set (Set X)"). A family `𝒯_α` of sets of sets needs an index-type binder and a function:
+```lean4
+(ι : Type*) (T : ι → Set (Set X))
+```
+Then `T i : Set (Set X)` and `⋃ i, T i : Set (Set X)` (the `⋃` notation is `Set.iUnion`, available with `open Set`). The same applies to any indexed family: `H : ι → Subgroup G`, `s : ι → Set X`, etc.
+
+**(P10) "Show that P does not need to hold" / "P may fail" / "not necessarily P" = exhibit a counterexample.**
+The faithful formalization is an EXISTENCE statement (equivalently, the negation of the universal one):
+```lean4
+theorem union_of_topologies_not_topology :
+    ∃ (X : Type*) (ι : Type*) (T : ι → Set (Set X)),
+      (∀ i, is_topology X (T i)) ∧ ¬ is_topology X (⋃ i, T i) := by sorry
+```
+(`∃ X : Type*` is fine in a theorem; Lean auto-binds the universe variables.) Do NOT write `∀ …, (hypotheses) → ¬ (conclusion)` — that claims P NEVER holds, which is the opposite of "P does not need to hold" and is usually false. Conversely, do not weaken a universal problem into an existential.
+
+**(P11) Analysis: the scalar field is an explicit argument, the derivative is `deriv f`, and domain restrictions use the `…On` predicates.**
+- `DifferentiableOn`, `DifferentiableAt`, `Differentiable`, `HasDerivAt`, `fderiv` take the scalar field as the FIRST explicit argument: `DifferentiableOn ℝ f s`, `DifferentiableAt ℝ f x`. Writing `DifferentiableOn f s` passes `f` as the field and fails with a confusing "expected type Type" error. (`ContinuousOn f s` has no field argument.)
+- There is no `f'` notation in Lean. The derivative of `f : ℝ → ℝ` is the function `deriv f : ℝ → ℝ` (its value at `x` is `deriv f x`). "f′(x) exists for x ∈ s" is `DifferentiableOn ℝ f s` (or `∀ x ∈ s, DifferentiableAt ℝ f x`).
+- Match the stated domain with the `…On` predicates and the right set: `x ≥ 0` → `Set.Ici 0`, `x > 0` → `Set.Ioi 0`; continuity on a domain → `ContinuousOn f s`; monotonicity on a domain → `MonotoneOn g s`. Do NOT strengthen `MonotoneOn g (Set.Ioi 0)` to `Monotone g` when the function is only defined/considered for `x > 0` — that changes the claim.
+Correct formalization of "f continuous on x ≥ 0, f′ exists for x > 0, f(0) = 0, f′ increasing ⇒ g(x) = f(x)/x increasing on x > 0":
+```lean4
+theorem g_monotone (f : ℝ → ℝ)
+    (hf_cont : ContinuousOn f (Set.Ici 0))
+    (hf_diff : DifferentiableOn ℝ f (Set.Ioi 0))
+    (hf0 : f 0 = 0)
+    (hderiv_mono : MonotoneOn (deriv f) (Set.Ioi 0)) :
+    MonotoneOn (fun x => f x / x) (Set.Ioi 0) := by sorry
+```
+
+# Final self-check before answering
+
+- Does every identifier exist in Mathlib with exactly this spelling (`Squarefree`, `Zsqrtd`, `Zsqrtd.sqrtd`, `deriv`, `DifferentiableOn`, `ContinuousOn`, `MonotoneOn`, `Set.Ici`/`Set.Ioi`)? No invented names like `IsSquarefree`, no `f'`.
+- Does every function receive arguments of the right type AND in the right order (scalar field first for `DifferentiableOn`/`DifferentiableAt`; subgroups vs. types; ℕ vs. ℤ vs. ℚ)?
+- Does every use of `≤`, `∣`, `=`, `∑`/`∏`, `⋃` have the needed type-class instance / notation scope / `open`?
+- Are products inside conjugation (and similar composite terms) parenthesized as intended? Are arguments of prefix notation parenthesized (`√(-n)`, not `√-n`)?
+- Are indexed families modeled as functions from an explicit index-type binder (`(ι : Type*) (T : ι → Set (Set X))`), never as `T : Set (Set X)` applied to an index?
+- Does the quantifier structure match the claim — in particular, "not necessarily / does not need to / may fail" → `∃` counterexample (or `¬ ∀`), never `∀ → ¬`?
+- Are domain restrictions (`x ≥ 0`, `x > 0`) captured by `Set.Ici`/`Set.Ioi` together with `ContinuousOn`/`DifferentiableOn`/`MonotoneOn`, rather than global `Continuous`/`Monotone`?
+- Are ALL of the problem's hypotheses present, and none invented (e.g. no `Fintype` unless stated)?
+- Is the conclusion exactly the problem's claim (right objects, right order, right range of summation)?
+- Is there exactly one theorem, ending in `:= by sorry`, inside one ```lean4 block, with the context NOT repeated?
+`
+Iteration 4: Accepted candidate (subsample score 0.0 -> 3.0); running full eval.
+Iteration 4: Valset score for new program: 0.04285714285714286 (coverage 70 / 70)
+Iteration 4: Val aggregate for new program: 0.04285714285714286
+Iteration 4: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 4: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 4: Valset pareto front aggregate score: 0.12857142857142856
+Iteration 4: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4}, 1: {0, 1, 2, 3, 4}, 2: {0, 1, 2, 3, 4}, 3: {0, 1, 2, 3, 4}, 4: {0, 1, 2, 3, 4}, 5: {0, 1, 2, 3, 4}, 6: {0, 1, 2, 3, 4}, 7: {0, 1, 2, 3, 4}, 8: {0, 1, 2, 3, 4}, 9: {3}, 10: {0, 1, 2, 3, 4}, 11: {0, 1, 2, 3, 4}, 12: {0, 1, 2, 3, 4}, 13: {0, 1, 2, 3, 4}, 14: {1, 2}, 15: {2}, 16: {0, 1, 2, 3, 4}, 17: {0, 1, 2, 3, 4}, 18: {0, 1, 2, 3, 4}, 19: {0}, 20: {0, 1, 2, 3, 4}, 21: {0, 1, 2, 3, 4}, 22: {2, 4}, 23: {0, 1, 2, 3, 4}, 24: {0, 1, 2, 3, 4}, 25: {0, 1, 2, 3, 4}, 26: {0, 1, 2, 3, 4}, 27: {3, 4}, 28: {0, 1, 2, 3, 4}, 29: {0, 1, 2, 3, 4}, 30: {0, 1}, 31: {0, 1, 2, 3, 4}, 32: {0, 1, 2, 3, 4}, 33: {0, 1, 2, 3, 4}, 34: {0, 1, 2, 3, 4}, 35: {0, 1, 2, 3, 4}, 36: {0, 1, 2, 3, 4}, 37: {0, 1, 2, 3, 4}, 38: {0, 1, 2, 3, 4}, 39: {0, 1, 2, 3, 4}, 40: {0, 1, 2, 3, 4}, 41: {0, 1, 2, 3, 4}, 42: {0, 1, 2, 3, 4}, 43: {0, 1, 2, 3, 4}, 44: {0, 1, 2, 3, 4}, 45: {0, 1, 2, 3, 4}, 46: {0, 1, 2, 3, 4}, 47: {0, 1, 2, 3, 4}, 48: {2}, 49: {0, 1, 2, 3, 4}, 50: {0, 1, 2, 3, 4}, 51: {0, 1, 2, 3, 4}, 52: {0, 1, 2, 3, 4}, 53: {0, 1, 2, 3, 4}, 54: {0, 1, 2, 3, 4}, 55: {0, 1, 2, 3, 4}, 56: {0, 1, 2, 3, 4}, 57: {0, 1, 2, 3, 4}, 58: {0, 1, 2, 3, 4}, 59: {0, 1, 2, 3, 4}, 60: {0, 1, 2, 3, 4}, 61: {0, 1, 2, 3, 4}, 62: {0, 1, 2, 3, 4}, 63: {0, 1, 2, 3, 4}, 64: {0, 1, 2, 3, 4}, 65: {0, 1, 2, 3, 4}, 66: {0, 1, 2, 3, 4}, 67: {0, 1, 2, 3, 4}, 68: {0, 1, 2, 3, 4}, 69: {0, 1, 2, 3, 4}}
+Iteration 4: Best valset aggregate score so far: 0.07142857142857142
+Iteration 4: Best program as per aggregate score on valset: 2
+Iteration 4: Best score on valset: 0.07142857142857142
+Iteration 4: Linear pareto front program index: 2
+Iteration 4: New program candidate index: 4
+Iteration 5: Selected program 3 score: 0.04285714285714286
+Iteration 5: Proposed new text for instructions: # Task
+
+You will be given:
+- a math problem stated in natural language (often with LaTeX), and
+- a fixed Lean 4 **context**: `import` line(s), `open` / `open scoped` commands, and sometimes `def`s.
+
+Translate the problem into **exactly one Lean 4 theorem statement** using Mathlib that:
+1. **Compiles** when the given context is prepended to it (the proof itself may be `sorry`), and
+2. **Faithfully** expresses the problem — same objects, same hypotheses, same conclusion; nothing dropped, nothing added, nothing weakened or strengthened.
+
+# Output rules
+
+- Output ONLY the theorem, inside a single ```lean4 code block. Do NOT repeat the context (it is prepended automatically). No explanations, no proof, no extra lemmas or `example`s.
+- The statement must end with `:= by sorry`.
+- Introduce every variable and every hypothesis of the problem as a binder of the theorem.
+- `autoImplicit` is OFF: every identifier must be either a binder you introduced or an existing Mathlib definition. An **unknown identifier is a hard compile error → score 0**.
+
+# Grading
+
+Two stages: (1) a Lean compilation check, then (2) a faithfulness judgment against the original problem. A statement that compiles but says something different scores 0, as does any statement with a syntax/type error.
+
+# Method
+
+1. **Parse the problem.** List: (a) the objects and their types; (b) EVERY hypothesis and side condition — positivity ("positive integer"), parity ("odd prime"), primality, nonzeroness, minimality ("the order of", "the least such"), and modal phrases ("in general", "it is not true that"); (c) the exact conclusion; (d) the overall **quantifier structure** (∀, ∃, ∀…∃, ¬∀, "there is a counterexample").
+2. **Map objects to types** using the context (subgroup → `Subgroup G`, prime → `Nat.Prime p`, rational number → `ℚ`, …).
+3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`).
+4. **Use Mathlib's dedicated definition, not an ad-hoc unfolding.** "The order of x is n" is `orderOf x = n`, NOT `x ^ n = 1` (that drops minimality and positivity). Same for minimal polynomial (`minpoly`), rank, degree, etc. Unfolding one property of a named notion almost always loses part of its meaning → judged unfaithful.
+5. **Write the theorem** with one binder per variable/hypothesis and the conclusion as the target, preserving the problem's quantifier order and the placement of negations.
+6. **Mentally type-check** (pitfall list below).
+7. **Re-read the original problem** and verify the statement says *exactly* that: every side condition present as a binder, none invented, quantifiers in the right order, negations in the right place.
+
+# Mathlib identifier reference — use these exact spellings
 
 Topology:
-- Open/closed sets: `IsOpen s`, `IsClosed s` for `s : Set X`.
-- Open map: `IsOpenMap f` (it means `∀ U : Set X, IsOpen U → IsOpen (f '' U)`).
-- Compactness: `IsCompact s` for a set; `CompactSpace X` (a class) for the whole space.
-- Hausdorff: `T2Space X` (a class).
-- Metrizable: `MetrizableSpace X` (a Prop on a type with a `TopologicalSpace` instance). There is NO `IsMetrizable`.
-- The whole space as a set: `Set.univ`. "X = X₁ ∪ X₂" with `X₁ X₂ : Set X` → `Set.univ = X₁ ∪ X₂`.
-- Subspaces: a set `s : Set X` coerces to a type equipped with the subspace topology, so `MetrizableSpace s`, `CompactSpace s`, `T2Space s` typecheck directly.
-- Projections: `Prod.fst : X × Y → X`, `Prod.snd : X × Y → Y`. Image of a set: `f '' U`.
+- "S is connected" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S` — that identifier does not exist.
+- "interior / closure / frontier of S" → `interior S` / `closure S` / `frontier S` (all lowercase). NOT `Interior S`.
+- "S is open / closed / compact" → `IsOpen S` / `IsClosed S` / `IsCompact S`.
+- "f is continuous / continuous at x" → `Continuous f` / `ContinuousAt f x`.
+- "ball / closed ball / sphere" → `Metric.ball x r` / `Metric.closedBall x r` / `Metric.sphere x r` (available after `open Metric`).
+- "neighborhood of x" → `𝓝 x` (needs `open scoped Topology`) or `nhds x`.
+- "f tends to L" → `Tendsto f atTop (𝓝 L)` (needs `open Filter` for `atTop`).
+- "uniform convergence" → `TendstoUniformly F f atTop`.
+- "homeomorphism" → `X ≃ₜ Y`.
 
 Group theory:
-- Sylow p-subgroup: the TYPE `Sylow p G` (requires `[Group G] [Fintype G]`; the prime `p : ℕ` is the first argument). Write `(P : Sylow 3 G)`. There is NO `IsSylowSubgroup` predicate.
-- A `P : Sylow p G` coerces to `Subgroup G` (parent projection `P.toSubgroup`); e.g. normality of a Sylow subgroup: `(hP : (P : Subgroup G).Normal)` or equivalently `(hP : P.toSubgroup.Normal)`.
-- Normal subgroup: `H.Normal` (i.e. `Subgroup.Normal H`, a class) for `H : Subgroup G`. There is NO `IsNormal`.
-- "G is abelian" as a Prop: `∀ a b : G, a * b = b * a`. There is NO `IsAbelian`. Do not use `CommGroup G` as a conclusion — it is a class, and the group structure on `G` is already fixed.
-- Order of a finite group: `Fintype.card G = n` together with `[Fintype G]`.
+- "the order of an element x" (|x| = n) → `orderOf x = n` (`orderOf : G → ℕ`; it is `0` for infinite order). NOT `x ^ n = 1` and NOT an invented `order x`.
+- "a is conjugate to b" → `IsConj a b` (defined as `∃ c : G, c * a * c⁻¹ = b`).
+- "G is cyclic" → `IsCyclic G`; "subgroup generated by S" → `Subgroup.closure S`.
+- "group homomorphism" → `G →* H`; its kernel/range → `f.ker` / `f.range`.
+- "group isomorphism" → `G ≃* H`; ring isomorphism → `R ≃+* S`; linear equivalence → `M ≃ₗ[R] N`.
+- index of H in the whole group → `H.relindex ⊤` or `H.index` (see P1).
 
-Other standard notions:
-- Operators: `Module.End ℂ V` or `V →ₗ[ℂ] V`; adjoints `LinearMap.adjoint`; self-adjointness `IsSelfAdjoint`; eigenvalues `Module.End.HasEigenvalue` / `Module.End.eigenvalues`.
-- gcd: `Int.gcd` / `gcd`; modular arithmetic: `ZMod n`; "admits no group structure": `IsEmpty (Group (ZMod n))` (there is no `IsGroup` predicate).
-- `InnerProductSpace ℂ V` is a typeclass assumption `[InnerProductSpace ℂ V]` on a space `V`, not a type to quantify over.
+Number theory / algebra:
+- "p is prime" (natural) → `Nat.Prime p`; (in a general ring) → `Prime p`.
+- "even / odd" → `Even n` / `Odd n`; "coprime" → `Nat.Coprime m n`.
+- "a divides b" → `a ∣ b` (typed `\|`); integer divided by a natural prime → `(p : ℤ) ∣ a`.
+- "integers mod n" → `ZMod n`; "n choose k" → `Nat.choose n k` (or `n.choose k`); "n!" → `Nat.factorial n`.
+- "gcd / lcm of naturals" → `Nat.gcd` / `Nat.lcm`.
+- "polynomial over R" → `Polynomial R` (notation `R[X]` needs `open Polynomial`).
+- "matrix" → `Matrix m n R`; "rank / finite rank" → `Module.rank R M` / `FiniteDimensional.finrank R M`.
+- "x is a unit" → `IsUnit x`; "minimal polynomial" → `minpoly R x`.
 
-### If you are unsure whether a named predicate exists, unfold the definition from primitives
-This always compiles and stays faithful:
-- abelian group → `∀ a b : G, a * b = b * a`
-- open map → `∀ U : Set X, IsOpen U → IsOpen (f '' U)`
-- normal subgroup → `∀ g h : G, h ∈ H → g * h * g⁻¹ ∈ H`
+Analysis / sets:
+- "square root" → `Real.sqrt x` (after `open Real`, just `sqrt x`); "exp/log/sin/cos" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`.
+- "derivative" → `deriv f x` / `HasDerivAt f f' x`; "differentiable" → `Differentiable ℝ f`.
+- "interval integral" → `∫ x in a..b, f x`.
+- "sum/product over a finite set" → `∑ x in s, f x` / `∏ x in s, f x` (needs `open scoped BigOperators`) or `Finset.sum s f` / `Finset.prod s f` (always parses).
+- "finite set" → `s : Finset α`; its cardinality → `s.card`; "fintype" → `Fintype α` with `Fintype.card α`; "finite type" → `Finite α`.
+- intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`.
+- "supremum / infimum of a set" → `sSup S` / `sInf S`; "limsup/liminf" → `limsup` / `liminf` (after `open Filter`).
+- "measurable set / function" → `MeasurableSet S` / `Measurable f`.
+- reals/complex/rationals/integers → `ℝ` / `ℂ` / `ℚ` / `ℤ`; nonnegative reals → `ℝ≥0`; extended nonnegative reals → `ℝ≥0∞`.
+- absolute value → `|x|`; norm → `‖x‖`.
 
-### Types must match on both sides of every `=` and `↔`
-e.g. `Complex.re l` is a real; compare it with a real or coerce appropriately.
+If unsure of a name, prefer the standard Mathlib spelling above and fully qualify it (e.g. `Set.IsConnected`). NEVER emit a name you are not certain exists.
 
-## Stage 2 — the statement must be faithful to the problem
-- Include EVERY hypothesis from the problem as an explicit argument, including structural ones as instance arguments (`[CompactSpace X]`, `[T2Space X]`, `[Group G]`, `[Fintype G]`, ...). "a is a nonzero integer" → `(ha : a ≠ 0)`; "for n > m" → `(h : m < n)`; "for all n > 1" → `(hn : n > 1)`. Omitting a hypothesis makes the statement unfaithful even if it compiles.
-- Preserve the exact logical structure: "if and only if" → `↔`; "show that A and B" → a single theorem with conclusion `A ∧ B`; "depending on whether a is odd or even" → a case split such as `if a % 2 = 0 then 2 else 1` (or a conjunction of implications); "show that P" → just `P`.
-- Formalize the ACTUAL claim, not a related or easier-looking one. E.g. "the projections π₁ : X × Y → X and π₂ : X × Y → Y are open maps" is `IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y)` — NOT "the product of open sets is open".
-- Do not add hypotheses, and do not strengthen or weaken the conclusion.
+# Pitfalls that previously caused failures — avoid them
 
-## Worked examples (context lines omitted here; assume the given context precedes the theorem)
-
-Problem: "Let X be a compact Hausdorff space that is the union of the closed subspaces X₁ and X₂. If X₁ and X₂ are metrizable, show that X is metrizable."
+**(P1) The ambient group/space is a TYPE, not a subobject.**
+With `{G : Type*} [Group G]`, the identifier `G` is a type. Writing `K ≤ G`, `H.relindex G`, `H.index G`, etc. fails: there is no `LE (Type _)` instance, and these functions expect a `Subgroup G`. The whole group viewed as a subgroup of itself is `⊤ : Subgroup G`. Hence:
+- the index `|G : H|` is `H.relindex ⊤` (or `H.index`);
+- an assumption "`K ≤ G`" is vacuous — drop it (or write `K ≤ ⊤`);
+- the same pattern applies to `Submodule R M`, `Ideal R`, etc.: the ambient structure is `⊤`.
+Also recall `H.relindex K` is the index of `H` in `K`, i.e. `|K : H|`. Do NOT add finiteness assumptions the problem doesn't have (`relindex`/`index` are `0` for infinite index, so results like the chain rule hold in `ℕ` without `Fintype G`).
+Correct formalization of "H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|":
 ```lean4
-theorem X_is_metrizable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
-    (X₁ X₂ : Set X) (hX : Set.univ = X₁ ∪ X₂) (hX₁ : IsClosed X₁) (hX₂ : IsClosed X₂)
-    (hX₁metr : MetrizableSpace X₁) (hX₂metr : MetrizableSpace X₂) :
-    MetrizableSpace X := by sorry
+theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    H.relindex ⊤ = K.relindex ⊤ * H.relindex K := by sorry
 ```
 
-Problem: "Let G be a group of order 105. Prove that if a Sylow 3-subgroup of G is normal then G is abelian."
+**(P2) Parenthesize products inside conjugation (multiplication is left-associative).**
+`g⁻¹ * a * g` parses as `(g⁻¹ * a) * g` — it conjugates `a` alone. "ab is conjugate to ba" must be written:
 ```lean4
-theorem group_of_order_105_sylow_3_normal_implies_abelian (G : Type*) [Group G] [Fintype G]
-    (horder : Fintype.card G = 105) (P : Sylow 3 G) (hPnormal : (P : Subgroup G).Normal) :
-    ∀ a b : G, a * b = b * a := by sorry
+theorem ab_conj_ba {G : Type*} [Group G] (a b : G) :
+    ∃ g : G, g⁻¹ * (a * b) * g = b * a := by sorry
+```
+or equivalently `IsConj (a * b) (b * a)`. A compiling statement that conjugates the wrong term is judged unfaithful.
+
+**(P3) Big-operator syntax and index sets.**
+`∑ i in s, f i` / `∏ i in s, f i` require `open scoped BigOperators` (present in the context when sums appear). If in doubt, use `Finset.sum s (fun i => f i)`, which always parses. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is a sum over `Finset.Icc 1 (p - 1)` (or over `Finset.range (p - 1)` with term `1 / ((i : ℚ) + 1)`), NOT over `Finset.range p` (which starts at `i = 0`).
+
+**(P4) Division and coercions.**
+With `a b : ℤ`, the expression `a / b` is INTEGER division. A rational fraction is `(a : ℚ) / (b : ℚ)`. Write casts explicitly: `(i : ℚ)`, `(p : ℤ)`. For divisibility of an integer by a natural prime, write `(p : ℤ) ∣ a`.
+
+**(P5) Keep every hypothesis; use the right quantifier structure.**
+"Let p be an odd prime" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)` (or `hp2 : p ≠ 2`). "… = a/b, where a, b are integers. Show p ∣ a" means: bind `a b : ℤ` universally together with the hypothesis that the sum equals `(a : ℚ) / b`, and conclude `(p : ℤ) ∣ a`:
+```lean4
+theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)
+    (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+Do not wrap the whole statement in an existential unless the problem asserts existence.
+
+**(P6) Respect the signatures of definitions given in the context.**
+If the context defines e.g. `Subgroup.relindex (H K : Subgroup G) : ℕ`, its arguments are subgroups — pass `⊤` for the whole group, never the type `G` itself.
+
+**(P7) Use exact Mathlib identifier names — capitalization matters.**
+`Connected` and `Interior` do NOT exist; the correct names are `IsConnected` and `interior`. Because `autoImplicit` is false, an unknown identifier is a compile error (score 0), not an implicit variable. Before writing each notion, recall its spelling from the reference table; follow the `IsX`-for-predicates / lowercase-for-operations convention.
+
+**(P8) "It is not true in general that P ⇒ Q" is a NEGATED UNIVERSAL (or a counterexample), not a universal with a negated conclusion.**
+"Show that if S is connected, it is not true in general that its interior is connected" must be formalized as:
+```lean4
+theorem interior_not_connected_in_general :
+    ¬ ∀ S : Set ℝ, IsConnected S → IsConnected (interior S) := by sorry
+```
+or equivalently `∃ S : Set ℝ, IsConnected S ∧ ¬ IsConnected (interior S)`. Writing `(S : Set ℝ) (hS : IsConnected S) ⊢ ¬ IsConnected (interior S)` claims EVERY connected set has disconnected interior — a different, much stronger (and false) statement → unfaithful.
+
+**(P9) "Positive integer n" needs an explicit positivity binder.**
+`n : ℕ` alone allows `n = 0`. Add `(hn : 0 < n)` (or use `n : ℕ+`). The same goes for "nonzero" (`hx : x ≠ 0`), "n ≥ 2" (`(hn : 2 ≤ n)`), "odd prime" (both `Nat.Prime p` and `Odd p`). Dropping a side condition is unfaithful even when the statement compiles. Correct formalization of "for any integers a,b,c there exists a positive integer n such that √(n³+an²+bn+c) is not an integer":
+```lean4
+theorem exists_pos_n_sqrt_not_int (a b c : ℤ) :
+    ∃ n : ℕ, 0 < n ∧ ¬ ∃ k : ℤ, k ^ 2 = (n : ℤ) ^ 3 + a * (n : ℤ) ^ 2 + b * n + c := by sorry
+```
+Note the `∀ a b c` (theorem binders) then `∃ n` with positivity INSIDE the existential via `∧`.
+
+**(P10) Named notions carry their full definition — do not weaken them to one property.**
+"|x| = n" (the ORDER of a group element) is `orderOf x = n`, NOT `x ^ n = 1`: the latter says only that n is *some* exponent killing x, dropping minimality; and with `n = 0` it would even trivialize. Keep the positivity side condition too. Correct formalization of "if |x| = n for some positive integer n then x⁻¹ = xⁿ⁻¹":
+```lean4
+theorem inv_eq_pow_order_sub_one {G : Type*} [Group G] (x : G) (n : ℕ) (hn : 0 < n)
+    (hx : orderOf x = n) : x⁻¹ = x ^ (n - 1) := by sorry
+```
+The same principle applies to any "least/smallest" notion: minimal polynomial (`minpoly`), order of a group (`Nat.card G` / `Fintype.card G`), degree, rank — use the dedicated Mathlib definition.
+
+**(P11) Preserve the problem's quantifier order and the placement of negation.**
+"For any … there exists … such that …" → universal binders, then an existential target carrying ALL the stated properties. "There exists … such that for all …" → existential outside, universal inside. "Show that P does not imply Q" → `¬ (∀ …, P → Q)` or `∃ …, P ∧ ¬ Q` (see P8). Swapping ∀/∃ or moving a negation changes the meaning → unfaithful.
+
+# Final self-check before answering
+
+- Does every identifier actually exist in Mathlib with the given opens — right capitalization (`IsConnected` not `Connected`, `interior` not `Interior`, `orderOf` not `order`)?
+- Does every function receive arguments of the right type (subgroups vs. types; ℕ vs. ℤ vs. ℚ)?
+- Does every use of `≤`, `∣`, `=`, `∑`/`∏` have the needed type-class instance / notation scope?
+- Are products inside conjugation (and similar composite terms) parenthesized as intended?
+- Are ALL of the problem's hypotheses present as binders — including positivity, parity, primality, nonzeroness, minimality ("order", "least") — and none invented (e.g. no `Fintype` unless stated)?
+- Is the quantifier structure exactly the problem's (∀∃ order; `¬∀` or `∃∧¬` for "not true in general"; existential only when the problem asserts existence)?
+- Is the conclusion exactly the problem's claim (right objects, right order, right range of summation, negation in the right place)?
+- Is there exactly one theorem, ending in `:= by sorry`, inside one ```lean4 block, with the context NOT repeated?
+`
+Iteration 5: Accepted candidate (subsample score 0.0 -> 3.0); running full eval.
+Iteration 5: Found a better program on the valset with score 0.11428571428571428.
+Iteration 5: Valset score for new program: 0.11428571428571428 (coverage 70 / 70)
+Iteration 5: Val aggregate for new program: 0.11428571428571428
+Iteration 5: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 1.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 5: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 5: Valset pareto front aggregate score: 0.17142857142857143
+Iteration 5: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5}, 1: {0, 1, 2, 3, 4, 5}, 2: {0, 1, 2, 3, 4, 5}, 3: {0, 1, 2, 3, 4, 5}, 4: {0, 1, 2, 3, 4, 5}, 5: {0, 1, 2, 3, 4, 5}, 6: {0, 1, 2, 3, 4, 5}, 7: {0, 1, 2, 3, 4, 5}, 8: {0, 1, 2, 3, 4, 5}, 9: {3, 5}, 10: {0, 1, 2, 3, 4, 5}, 11: {0, 1, 2, 3, 4, 5}, 12: {0, 1, 2, 3, 4, 5}, 13: {0, 1, 2, 3, 4, 5}, 14: {1, 2}, 15: {2}, 16: {5}, 17: {0, 1, 2, 3, 4, 5}, 18: {0, 1, 2, 3, 4, 5}, 19: {0, 5}, 20: {0, 1, 2, 3, 4, 5}, 21: {0, 1, 2, 3, 4, 5}, 22: {2, 4}, 23: {0, 1, 2, 3, 4, 5}, 24: {0, 1, 2, 3, 4, 5}, 25: {0, 1, 2, 3, 4, 5}, 26: {0, 1, 2, 3, 4, 5}, 27: {3, 4, 5}, 28: {5}, 29: {0, 1, 2, 3, 4, 5}, 30: {0, 1, 5}, 31: {0, 1, 2, 3, 4, 5}, 32: {0, 1, 2, 3, 4, 5}, 33: {0, 1, 2, 3, 4, 5}, 34: {0, 1, 2, 3, 4, 5}, 35: {0, 1, 2, 3, 4, 5}, 36: {0, 1, 2, 3, 4, 5}, 37: {0, 1, 2, 3, 4, 5}, 38: {0, 1, 2, 3, 4, 5}, 39: {5}, 40: {0, 1, 2, 3, 4, 5}, 41: {0, 1, 2, 3, 4, 5}, 42: {0, 1, 2, 3, 4, 5}, 43: {0, 1, 2, 3, 4, 5}, 44: {0, 1, 2, 3, 4, 5}, 45: {0, 1, 2, 3, 4, 5}, 46: {0, 1, 2, 3, 4, 5}, 47: {0, 1, 2, 3, 4, 5}, 48: {2}, 49: {0, 1, 2, 3, 4, 5}, 50: {0, 1, 2, 3, 4, 5}, 51: {0, 1, 2, 3, 4, 5}, 52: {0, 1, 2, 3, 4, 5}, 53: {0, 1, 2, 3, 4, 5}, 54: {0, 1, 2, 3, 4, 5}, 55: {0, 1, 2, 3, 4, 5}, 56: {0, 1, 2, 3, 4, 5}, 57: {0, 1, 2, 3, 4, 5}, 58: {0, 1, 2, 3, 4, 5}, 59: {0, 1, 2, 3, 4, 5}, 60: {0, 1, 2, 3, 4, 5}, 61: {0, 1, 2, 3, 4, 5}, 62: {0, 1, 2, 3, 4, 5}, 63: {0, 1, 2, 3, 4, 5}, 64: {0, 1, 2, 3, 4, 5}, 65: {0, 1, 2, 3, 4, 5}, 66: {0, 1, 2, 3, 4, 5}, 67: {0, 1, 2, 3, 4, 5}, 68: {0, 1, 2, 3, 4, 5}, 69: {0, 1, 2, 3, 4, 5}}
+Iteration 5: Best valset aggregate score so far: 0.11428571428571428
+Iteration 5: Best program as per aggregate score on valset: 5
+Iteration 5: Best score on valset: 0.11428571428571428
+Iteration 5: Linear pareto front program index: 5
+Iteration 5: New program candidate index: 5
+Iteration 6: Selected program 5 score: 0.11428571428571428
+Iteration 6: Proposed new text for instructions: # Task
+
+You will be given:
+- a math problem stated in natural language (often with LaTeX), and
+- a fixed Lean 4 **context**: `import` line(s), `open` / `open scoped` commands, and sometimes `def`s or `local notation`s.
+
+Translate the problem into **exactly one Lean 4 theorem statement** using Mathlib that:
+1. **Compiles** when the given context is prepended to it (the proof itself may be `sorry`), and
+2. **Faithfully** expresses the problem — same objects, same hypotheses, same conclusion; nothing dropped, nothing added, nothing weakened or strengthened.
+
+# Output rules
+
+- Output ONLY the theorem, inside a single ```lean4 code block. Do NOT repeat the context (it is prepended automatically). No explanations, no proof, no extra lemmas or `example`s.
+- The statement must end with `:= by sorry`.
+- Introduce every variable and every hypothesis of the problem as a binder of the theorem.
+- `autoImplicit` is OFF: every identifier must be either a binder you introduced or an existing Mathlib definition. An **unknown identifier is a hard compile error → score 0**.
+
+# Grading
+
+Two stages: (1) a Lean compilation check, then (2) a faithfulness judgment against the original problem. A statement that compiles but says something different scores 0, as does any statement with a syntax/type error.
+
+# Method
+
+1. **Parse the problem.** List: (a) the objects and their types; (b) EVERY hypothesis and side condition — positivity ("positive integer"), parity ("odd prime"), primality, coprimality, nonzeroness, minimality ("the order of", "the least such"), **"where"-clauses that define an auxiliary object** (e.g. "where d′ is the inverse of d mod φ(N): dd′ ≡ 1 (mod φ(N))" — this is a hypothesis binder, not a comment), and modal phrases ("in general", "it is not true that"); (c) the exact conclusion; (d) the overall **quantifier structure** (∀, ∃, ∀…∃, ¬∀, "there is a counterexample").
+2. **Map objects to types** using the context. **If the context defines a `local notation` or `def` that fixes an argument type, your binders must carry EXACTLY that type.** E.g. with `local notation "limsup" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, the sequences must be `(a b : ℕ → EReal)` — `ℕ → ℝ` is a type mismatch.
+3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`).
+4. **Use Mathlib's dedicated definition, not an ad-hoc unfolding.** "The order of x is n" is `orderOf x = n`, NOT `x ^ n = 1`. Same for minimal polynomial (`minpoly`), rank, degree, totient (`Nat.totient`), etc.
+5. **Write the theorem** with one binder per variable/hypothesis and the conclusion as the target, preserving the problem's quantifier order and the placement of negations. Prefer hypothesis binders `(h : P)` over chaining `P →` in the target.
+6. **Binder audit.** Scan the finished statement left to right: every identifier that is not a Mathlib constant must appear in the binder list. Subscripted/primed names (`M₁`, `d'`) are valid Lean identifiers but must still be bound. (A real failure used `M₁` in the body without ever introducing it → unknown identifier → score 0.)
+7. **Type audit.** For every application, check argument types: `Nat.Coprime` / `Nat.totient` / `Nat.choose` / `Nat.gcd` take ℕ only; `[ZMOD n]` takes ℤ; context notations take exactly the types they declare. Insert explicit casts — `(N : ℤ)`, `(r : ℂ)`, `(i : ℚ)` — wherever types differ. Never rely on implicit coercion in mixed-type arithmetic like `r * w`.
+8. **Mentally type-check** (pitfall list below).
+9. **Re-read the original problem** and verify the statement says *exactly* that: every side condition present as a binder, none invented, quantifiers in the right order, negations in the right place.
+
+# Lean 4 syntax — hard rules (violations are parse/elaboration errors)
+
+- Anonymous functions: `fun x => e` or `fun x ↦ e`. **`λ x, e` is Lean 3 syntax and does NOT parse in Lean 4** (error: `unexpected token ','; expected '↦', '=>'`). Never emit `λ`.
+- Field projection `.foo` only works if `Namespace.foo` actually exists. Do NOT guess projections: `(w : ℂ).norm` fails because there is no `Complex.norm`. Use known functions/notation instead (`‖w‖`, `Complex.abs w`).
+- Errors like `failed to synthesize LE Type` / `OfNat Type 0` mean a notation was misparsed and Lean read a type-level comparison. When a special type is risky, use the plain base type plus an explicit hypothesis (e.g. `r : ℝ` with `(hr : 0 ≤ r)` instead of `r : ℝ≥0`).
+
+# Mathlib identifier reference — use these exact spellings
+
+Topology:
+- "S is connected" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S`.
+- "interior / closure / frontier of S" → `interior S` / `closure S` / `frontier S`. NOT `Interior S`.
+- "S is open / closed / compact" → `IsOpen S` / `IsClosed S` / `IsCompact S`.
+- "f is continuous / continuous at x" → `Continuous f` / `ContinuousAt f x`.
+- "ball / closed ball / sphere" → `Metric.ball x r` / `Metric.closedBall x r` / `Metric.sphere x r`.
+- "neighborhood of x" → `𝓝 x` (needs `open scoped Topology`) or `nhds x`.
+- "f tends to L" → `Tendsto f atTop (𝓝 L)` (needs `open Filter` for `atTop`).
+- "uniform convergence" → `TendstoUniformly F f atTop`.
+- "homeomorphism" → `X ≃ₜ Y`.
+
+Group theory:
+- "the order of an element x" (|x| = n) → `orderOf x = n` (`orderOf : G → ℕ`; `0` for infinite order). NOT `x ^ n = 1`, NOT an invented `order x`.
+- "a is conjugate to b" → `IsConj a b`.
+- "G is cyclic" → `IsCyclic G`; "subgroup generated by S" → `Subgroup.closure S`.
+- "group homomorphism" → `G →* H`; kernel/range → `f.ker` / `f.range`.
+- "group isomorphism" → `G ≃* H`; ring isomorphism → `R ≃+* S`; linear equivalence → `M ≃ₗ[R] N`.
+- index of H in the whole group → `H.relindex ⊤` or `H.index` (see P1).
+
+Number theory / algebra:
+- "p is prime" (natural) → `Nat.Prime p`; (general ring) → `Prime p`.
+- "even / odd" → `Even n` / `Odd n`.
+- "coprime" — naturals → `Nat.Coprime m n` (**arguments MUST be ℕ; passing an ℤ is a type error**); integers or a general ring → `IsCoprime x y` (Bézout: `∃ u v, u * x + v * y = 1`).
+- **Euler's totient φ(n) → `Nat.totient n`. `Nat.phi` does NOT exist.**
+- Congruence mod n — naturals → `a ≡ b [MOD n]` (`Nat.ModEq`); integers → `a ≡ b [ZMOD n]` (`Int.ModEq`). Both are global notations (no `open` needed). For `[ZMOD n]`, all of `n a b` must be ℤ; cast a natural modulus: `(N : ℤ)`.
+- "a divides b" → `a ∣ b` (typed `\|`); integer divided by a natural prime → `(p : ℤ) ∣ a`.
+- "integers mod n" → `ZMod n`; "n choose k" → `Nat.choose n k`; "n!" → `Nat.factorial n`.
+- "gcd / lcm of naturals" → `Nat.gcd` / `Nat.lcm`.
+- "polynomial over R" → `Polynomial R` (notation `R[X]` needs `open Polynomial`).
+- "matrix" → `Matrix m n R`; "rank / finite rank" → `Module.rank R M` / `FiniteDimensional.finrank R M`.
+- "x is a unit" → `IsUnit x`; "minimal polynomial" → `minpoly R x`.
+
+Analysis / sets:
+- "square root" → `Real.sqrt x` (after `open Real`, just `sqrt x`); "exp/log/sin/cos" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`.
+- **Complex absolute value / modulus → `Complex.abs w` or `‖w‖`. NOT `Complex.norm`, NOT `(w : ℂ).norm`.**
+- **Nonnegative reals: the type `ℝ≥0` (= `NNReal`) exists, but mixing it into arithmetic with `ℝ`/`ℂ` often fails to unify or coerce. PREFER `r : ℝ` with a `(hr : 0 ≤ r)` binder and explicit casts, e.g. `z = (r : ℂ) * w`.**
+- **Extended reals → `EReal`; +∞ is `⊤`, −∞ is `⊥`. "The sum is not of the form ∞ − ∞" → `¬ ((x = ⊤ ∧ y = ⊥) ∨ (x = ⊥ ∧ y = ⊤))` — it excludes BOTH mixed cases, NOT `x = ⊤ ∧ y = ⊤`.**
+- "limsup / liminf" → `Filter.limsup u atTop` / `Filter.liminf u atTop` (needs `open Filter`); if the context supplies a `local notation "limsup"`, use it with arguments of exactly the declared type.
+- "derivative" → `deriv f x` / `HasDerivAt f f' x`; "differentiable" → `Differentiable ℝ f`.
+- "interval integral" → `∫ x in a..b, f x`.
+- "sum/product over a finite set" → `∑ x in s, f x` / `∏ x in s, f x` (needs `open scoped BigOperators`) or `Finset.sum s f` / `Finset.prod s f` (always parses).
+- "finite set" → `s : Finset α`; cardinality → `s.card`; "fintype" → `Fintype α` with `Fintype.card α`; "finite type" → `Finite α`.
+- intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`.
+- "supremum / infimum of a set" → `sSup S` / `sInf S`.
+- "measurable set / function" → `MeasurableSet S` / `Measurable f`.
+- reals/complex/rationals/integers → `ℝ` / `ℂ` / `ℚ` / `ℤ`; nonnegative reals → `ℝ≥0`; extended nonnegative reals → `ℝ≥0∞`.
+- absolute value → `|x|`; norm → `‖x‖`.
+
+If unsure of a name, prefer the standard Mathlib spelling above and fully qualify it (e.g. `Set.IsConnected`). NEVER emit a name you are not certain exists.
+
+# Pitfalls that previously caused failures — avoid them
+
+**(P1) The ambient group/space is a TYPE, not a subobject.**
+With `{G : Type*} [Group G]`, writing `K ≤ G` or `H.relindex G` fails. The whole group as a subgroup is `⊤ : Subgroup G`; the index `|G : H|` is `H.relindex ⊤` (or `H.index`); `H.relindex K` means `|K : H|`. Same pattern for `Submodule R M`, `Ideal R`. Do NOT add finiteness assumptions the problem doesn't have. Correct formalization of "H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|":
+```lean4
+theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    H.relindex ⊤ = K.relindex ⊤ * H.relindex K := by sorry
 ```
 
-Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps."
+**(P2) Parenthesize products inside conjugation (multiplication is left-associative).**
+`g⁻¹ * a * g` conjugates `a` alone. "ab is conjugate to ba":
 ```lean4
-theorem pi_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
-    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+theorem ab_conj_ba {G : Type*} [Group G] (a b : G) :
+    ∃ g : G, g⁻¹ * (a * b) * g = b * a := by sorry
+```
+or equivalently `IsConj (a * b) (b * a)`.
+
+**(P3) Big-operator syntax and index sets.**
+`∑ i in s, f i` needs `open scoped BigOperators`; if in doubt use `Finset.sum s (fun i => f i)`. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is over `Finset.Icc 1 (p - 1)`, NOT `Finset.range p`.
+
+**(P4) Division and coercions.**
+With `a b : ℤ`, `a / b` is INTEGER division; a rational fraction is `(a : ℚ) / (b : ℚ)`. Write casts explicitly: `(i : ℚ)`, `(p : ℤ)`, `(r : ℂ)`, `(N : ℤ)`.
+
+**(P5) Keep every hypothesis; use the right quantifier structure.**
+"Let p be an odd prime" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)`. "… = a/b, where a, b are integers. Show p ∣ a" means: bind `a b : ℤ` universally with the hypothesis that the sum equals `(a : ℚ) / b`, conclude `(p : ℤ) ∣ a`:
+```lean4
+theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)
+    (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+Do not wrap the whole statement in an existential unless the problem asserts existence.
+
+**(P6) Respect the signatures of definitions given in the context.**
+If the context defines e.g. `Subgroup.relindex (H K : Subgroup G) : ℕ`, pass `⊤` for the whole group, never the type `G` itself. Likewise, a context `local notation` fixes the exact type of its argument — match it.
+
+**(P7) Use exact Mathlib identifier names — capitalization matters.**
+`Connected`, `Interior`, `Nat.phi`, `Complex.norm` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).
+
+**(P8) "It is not true in general that P ⇒ Q" is a NEGATED UNIVERSAL (or a counterexample), not a universal with a negated conclusion.**
+```lean4
+theorem interior_not_connected_in_general :
+    ¬ ∀ S : Set ℝ, IsConnected S → IsConnected (interior S) := by sorry
+```
+or equivalently `∃ S : Set ℝ, IsConnected S ∧ ¬ IsConnected (interior S)`.
+
+**(P9) "Positive integer n" needs an explicit positivity binder.**
+Add `(hn : 0 < n)` (or use `n : ℕ+`). Same for "nonzero" (`hx : x ≠ 0`), "n ≥ 2" (`(hn : 2 ≤ n)`), "odd prime" (both `Nat.Prime p` and `Odd p`):
+```lean4
+theorem exists_pos_n_sqrt_not_int (a b c : ℤ) :
+    ∃ n : ℕ, 0 < n ∧ ¬ ∃ k : ℤ, k ^ 2 = (n : ℤ) ^ 3 + a * (n : ℤ) ^ 2 + b * n + c := by sorry
 ```
 
-## Final checklist — run through it twice before answering
-1. As a compiler: every identifier is bound by you or exists in Mathlib; every type is introduced as `(X : Type*)`; classes appear only in `[]` instance brackets; no `λ` bound variables; no invented `IsX` names (check the verified vocabulary above); argument order is correct (e.g. `Sylow 3 G`, prime first); both sides of every `=`/`↔` have the same type.
-2. As a mathematician: every hypothesis of the problem is present (including instance-level ones like compact/Hausdorff/finite); the conclusion is exactly the problem's claim; `↔`/`∧`/case-splits are preserved; nothing is added, strengthened, or weakened.
-Iteration 2: Accepted candidate (subsample score 0.0 -> 2.0); running full eval.
-Iteration 2: Found a better program on the valset with score 0.07142857142857142.
-Iteration 2: Valset score for new program: 0.07142857142857142 (coverage 70 / 70)
-Iteration 2: Val aggregate for new program: 0.07142857142857142
-Iteration 2: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 2: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 2: Valset pareto front aggregate score: 0.1
-Iteration 2: Updated valset pareto front programs: {0: {0, 1, 2}, 1: {0, 1, 2}, 2: {0, 1, 2}, 3: {0, 1, 2}, 4: {0, 1, 2}, 5: {0, 1, 2}, 6: {0, 1, 2}, 7: {0, 1, 2}, 8: {0, 1, 2}, 9: {0, 1, 2}, 10: {0, 1, 2}, 11: {0, 1, 2}, 12: {0, 1, 2}, 13: {0, 1, 2}, 14: {1, 2}, 15: {2}, 16: {0, 1, 2}, 17: {0, 1, 2}, 18: {0, 1, 2}, 19: {0}, 20: {0, 1, 2}, 21: {0, 1, 2}, 22: {2}, 23: {0, 1, 2}, 24: {0, 1, 2}, 25: {0, 1, 2}, 26: {0, 1, 2}, 27: {0, 1, 2}, 28: {0, 1, 2}, 29: {0, 1, 2}, 30: {0, 1}, 31: {0, 1, 2}, 32: {0, 1, 2}, 33: {0, 1, 2}, 34: {0, 1, 2}, 35: {0, 1, 2}, 36: {0, 1, 2}, 37: {0, 1, 2}, 38: {0, 1, 2}, 39: {0, 1, 2}, 40: {0, 1, 2}, 41: {0, 1, 2}, 42: {0, 1, 2}, 43: {0, 1, 2}, 44: {0, 1, 2}, 45: {0, 1, 2}, 46: {0, 1, 2}, 47: {0, 1, 2}, 48: {2}, 49: {0, 1, 2}, 50: {0, 1, 2}, 51: {0, 1, 2}, 52: {0, 1, 2}, 53: {0, 1, 2}, 54: {0, 1, 2}, 55: {0, 1, 2}, 56: {0, 1, 2}, 57: {0, 1, 2}, 58: {0, 1, 2}, 59: {0, 1, 2}, 60: {0, 1, 2}, 61: {0, 1, 2}, 62: {0, 1, 2}, 63: {0, 1, 2}, 64: {0, 1, 2}, 65: {0, 1, 2}, 66: {0, 1, 2}, 67: {0, 1, 2}, 68: {0, 1, 2}, 69: {0, 1, 2}}
-Iteration 2: Best valset aggregate score so far: 0.07142857142857142
-Iteration 2: Best program as per aggregate score on valset: 2
-Iteration 2: Best score on valset: 0.07142857142857142
-Iteration 2: Linear pareto front program index: 2
-Iteration 2: New program candidate index: 2
-Iteration 3: Selected program 2 score: 0.07142857142857142
-Batched reflection failed (gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'); retrying per task.
+**(P10) Named notions carry their full definition — do not weaken them to one property.**
+"|x| = n" (the ORDER of a group element) is `orderOf x = n`, NOT `x ^ n = 1`:
+```lean4
+theorem inv_eq_pow_order_sub_one {G : Type*} [Group G] (x : G) (n : ℕ) (hn : 0 < n)
+    (hx : orderOf x = n) : x⁻¹ = x ^ (n - 1) := by sorry
+```
+Same for minimal polynomial (`minpoly`), group order (`Nat.card G` / `Fintype.card G`), degree, rank, totient (`Nat.totient`).
+
+**(P11) Preserve the problem's quantifier order and the placement of negation.**
+"For any … there exists …" → universal binders, then an existential target carrying ALL stated properties. "There exists … such that for all …" → existential outside, universal inside. "Show P does not imply Q" → `¬ (∀ …, P → Q)` or `∃ …, P ∧ ¬ Q`.
+
+**(P12) `λ` is not Lean 4.** Anonymous functions are `fun n => a n + b n`. A real failure wrote `limsup (λ n, (a n + b n))` → parse error → score 0.
+
+**(P13) Bind every symbol the problem names, and formalize every "where"-clause as a hypothesis binder.**
+If the problem says "if M₁ ≡ M^d (mod N) … where d′ satisfies d d′ ≡ 1 (mod φ(N))", then `M₁` and `d'` are binders AND `(hdd' : d * d' ≡ 1 [MOD Nat.totient N])` is a hypothesis. Leaving `M₁` free is an unknown-identifier error; dropping the `d d' ≡ 1` condition is unfaithful.
+
+**(P14) Number-type discipline for `Nat.*` functions.**
+`Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`.
+
+**(P15) Prefer `r : ℝ` + `(hr : 0 ≤ r)` over `r : ℝ≥0` when r appears in mixed-type arithmetic**, and always write casts explicitly: `(r : ℂ) * w`, never bare `r * w` across types.
+
+**(P16) Match context-notation types exactly, and translate side conditions correctly.**
+If the context's `local notation "limsup"` is defined for `u : ℕ → EReal`, the binders must be `(a b : ℕ → EReal)`. And "provided the sum is not of the form ∞ − ∞" means excluding the two mixed cases `(⊤, ⊥)` and `(⊥, ⊤)` — writing `¬ (limsup a = ⊤ ∧ limsup b = ⊤)` excludes the wrong thing and is unfaithful.
+
+# Worked corrections of real failures — study these
+
+1. "If z is complex, prove there exist r ≥ 0 and w with |w| = 1 such that z = r w":
+```lean4
+theorem complex_modulus_representation (z : ℂ) :
+    ∃ r : ℝ, 0 ≤ r ∧ ∃ w : ℂ, ‖w‖ = 1 ∧ z = (r : ℂ) * w := by sorry
+```
+(`r : ℝ` + `0 ≤ r` instead of `ℝ≥0`; `‖w‖` instead of the nonexistent `(w : ℂ).norm`; explicit cast `(r : ℂ)`.)
+
+2. RSA: "N positive integer, M coprime to N, d coprime to φ(N); if M₁ ≡ M^d (mod N) then M ≡ M₁^{d′} (mod N), where d d′ ≡ 1 (mod φ(N))":
+```lean4
+theorem RSA_decrypt_key_property (N : ℕ) (hN : 0 < N) (M : ℕ) (hM : Nat.Coprime M N)
+    (d : ℕ) (hd : Nat.Coprime d (Nat.totient N)) (M₁ d' : ℕ)
+    (hM1 : M₁ ≡ M ^ d [MOD N]) (hdd' : d * d' ≡ 1 [MOD Nat.totient N]) :
+    M ≡ M₁ ^ d' [MOD N] := by sorry
+```
+(`Nat.totient`, not `Nat.phi`; `M₁` and `d'` bound; the "where"-clause present as `hdd'`; all-ℕ so `Nat.Coprime` and `[MOD N]` typecheck. An ℤ variant would use `IsCoprime` and `[ZMOD (N : ℤ)]`.)
+
+3. "limsup(aₙ + bₙ) ≤ limsup aₙ + limsup bₙ provided the right side is not ∞ − ∞", with context notation `limsup` for `ℕ → EReal`:
+```lean4
+theorem limsup_add_le (a b : ℕ → EReal)
+    (h : ¬ ((limsup a = ⊤ ∧ limsup b = ⊥) ∨ (limsup a = ⊥ ∧ limsup b = ⊤))) :
+    limsup (fun n => a n + b n) ≤ limsup a + limsup b := by sorry
+```
+(`fun`, not `λ`; binders typed `ℕ → EReal` to match the notation; the side condition excludes both `(⊤,⊥)` and `(⊥,⊤)`.)
+
+# Final self-check before answering
+
+- **Binder audit done?** Every identifier in the statement is either bound or a known Mathlib constant — including subscripted/primed names like `M₁`, `d'`.
+- **Syntax:** `fun`, never `λ`; no guessed projections (`.norm`); no guessed names (`Nat.phi`).
+- **Types:** `Nat.*` functions receive ℕ (coprimality on ℤ is `IsCoprime`); congruences use `[MOD …]` (ℕ) / `[ZMOD …]` (ℤ) with matching types; binders match any context-provided notation exactly (e.g. `ℕ → EReal`); casts explicit wherever types mix (`(r : ℂ)`, `(N : ℤ)`, `(i : ℚ)`).
+- Does every use of `≤`, `∣`, `=`, `∑`/`∏` have the needed type-class instance / notation scope?
+- Are products inside conjugation (and similar composite terms) parenthesized as intended?
+- Are ALL of the problem's hypotheses present as binders — including "where"-clauses, positivity, parity, primality, nonzeroness, coprimality, minimality — and none invented (e.g. no `Fintype` unless stated)?
+- Is the quantifier structure exactly the problem's (∀∃ order; `¬∀` or `∃∧¬` for "not true in general"; existential only when the problem asserts existence)?
+- Is the conclusion exactly the problem's claim (right objects, right order, right range of summation, side conditions like "not ∞ − ∞" formalized as the right pair of excluded cases, negation in the right place)?
+- Is there exactly one theorem, ending in `:= by sorry`, inside one ```lean4 block, with the context NOT repeated?
+`
+Iteration 6: Accepted candidate (subsample score 0.0 -> 1.0); running full eval.
+Iteration 6: Found a better program on the valset with score 0.12857142857142856.
+Iteration 6: Valset score for new program: 0.12857142857142856 (coverage 70 / 70)
+Iteration 6: Val aggregate for new program: 0.12857142857142856
+Iteration 6: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 1.0, 30: 0.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 6: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 1.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 6: Valset pareto front aggregate score: 0.24285714285714285
+Iteration 6: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5, 6}, 1: {0, 1, 2, 3, 4, 5, 6}, 2: {0, 1, 2, 3, 4, 5, 6}, 3: {0, 1, 2, 3, 4, 5, 6}, 4: {0, 1, 2, 3, 4, 5, 6}, 5: {0, 1, 2, 3, 4, 5, 6}, 6: {0, 1, 2, 3, 4, 5, 6}, 7: {6}, 8: {0, 1, 2, 3, 4, 5, 6}, 9: {3, 5, 6}, 10: {0, 1, 2, 3, 4, 5, 6}, 11: {0, 1, 2, 3, 4, 5, 6}, 12: {0, 1, 2, 3, 4, 5, 6}, 13: {0, 1, 2, 3, 4, 5, 6}, 14: {1, 2}, 15: {2}, 16: {5}, 17: {0, 1, 2, 3, 4, 5, 6}, 18: {0, 1, 2, 3, 4, 5, 6}, 19: {0, 5}, 20: {0, 1, 2, 3, 4, 5, 6}, 21: {0, 1, 2, 3, 4, 5, 6}, 22: {2, 4}, 23: {0, 1, 2, 3, 4, 5, 6}, 24: {0, 1, 2, 3, 4, 5, 6}, 25: {0, 1, 2, 3, 4, 5, 6}, 26: {0, 1, 2, 3, 4, 5, 6}, 27: {3, 4, 5, 6}, 28: {5}, 29: {6}, 30: {0, 1, 5}, 31: {6}, 32: {0, 1, 2, 3, 4, 5, 6}, 33: {0, 1, 2, 3, 4, 5, 6}, 34: {0, 1, 2, 3, 4, 5, 6}, 35: {0, 1, 2, 3, 4, 5, 6}, 36: {0, 1, 2, 3, 4, 5, 6}, 37: {0, 1, 2, 3, 4, 5, 6}, 38: {0, 1, 2, 3, 4, 5, 6}, 39: {5, 6}, 40: {0, 1, 2, 3, 4, 5, 6}, 41: {0, 1, 2, 3, 4, 5, 6}, 42: {0, 1, 2, 3, 4, 5, 6}, 43: {0, 1, 2, 3, 4, 5, 6}, 44: {0, 1, 2, 3, 4, 5, 6}, 45: {0, 1, 2, 3, 4, 5, 6}, 46: {0, 1, 2, 3, 4, 5, 6}, 47: {0, 1, 2, 3, 4, 5, 6}, 48: {2}, 49: {0, 1, 2, 3, 4, 5, 6}, 50: {0, 1, 2, 3, 4, 5, 6}, 51: {0, 1, 2, 3, 4, 5, 6}, 52: {0, 1, 2, 3, 4, 5, 6}, 53: {0, 1, 2, 3, 4, 5, 6}, 54: {0, 1, 2, 3, 4, 5, 6}, 55: {0, 1, 2, 3, 4, 5, 6}, 56: {0, 1, 2, 3, 4, 5, 6}, 57: {6}, 58: {0, 1, 2, 3, 4, 5, 6}, 59: {0, 1, 2, 3, 4, 5, 6}, 60: {0, 1, 2, 3, 4, 5, 6}, 61: {6}, 62: {0, 1, 2, 3, 4, 5, 6}, 63: {0, 1, 2, 3, 4, 5, 6}, 64: {0, 1, 2, 3, 4, 5, 6}, 65: {0, 1, 2, 3, 4, 5, 6}, 66: {0, 1, 2, 3, 4, 5, 6}, 67: {0, 1, 2, 3, 4, 5, 6}, 68: {0, 1, 2, 3, 4, 5, 6}, 69: {0, 1, 2, 3, 4, 5, 6}}
+Iteration 6: Best valset aggregate score so far: 0.12857142857142856
+Iteration 6: Best program as per aggregate score on valset: 6
+Iteration 6: Best score on valset: 0.12857142857142856
+Iteration 6: Linear pareto front program index: 6
+Iteration 6: New program candidate index: 6
+Iteration 7: Selected program 6 score: 0.12857142857142856
+Iteration 7: Proposed new text for instructions: # Task
+
+You will be given:
+- a math problem stated in natural language (often with LaTeX), and
+- a fixed Lean 4 **context**: `import` line(s), `open` / `open scoped` commands, and sometimes `def`s or `local notation`s.
+
+Translate the problem into **exactly one Lean 4 theorem statement** using Mathlib that:
+1. **Compiles** when the given context is prepended to it (the proof itself may be `sorry`), and
+2. **Faithfully** expresses the problem — same objects, same hypotheses, same conclusion; nothing dropped, nothing added, nothing weakened or strengthened.
+
+# Output rules
+
+- Output ONLY the theorem, inside a single ```lean4 code block. Do NOT repeat the context (it is prepended automatically). No explanations, no proof, no extra lemmas or `example`s.
+- The statement must end with `:= by sorry`.
+- Introduce every variable and every hypothesis of the problem as a binder of the theorem.
+- `autoImplicit` is OFF: every identifier must be either a binder you introduced or an existing Mathlib definition. An **unknown identifier is a hard compile error → score 0**.
+
+# Grading
+
+Two stages: (1) a Lean compilation check, then (2) a faithfulness judgment against the original problem. A statement that compiles but says something different scores 0, as does any statement with a syntax/type error.
+
+# Method
+
+1. **Parse the problem.** List: (a) the objects and their types; (b) EVERY hypothesis and side condition — positivity ("positive integer"), parity ("odd prime"), primality, coprimality, nonzeroness, openness of a set ("in an open set Ω"), minimality ("the order of", "the least such"), **"where"-clauses that define an auxiliary object** (e.g. "where d′ is the inverse of d mod φ(N): dd′ ≡ 1 (mod φ(N))" — this is a hypothesis binder, not a comment), and modal phrases ("in general", "it is not true that"); (c) the exact conclusion; (d) the overall **quantifier structure** (∀, ∃, ∀…∃, ¬∀, "there is a counterexample").
+2. **Map objects to types** using the context. **If the context defines a `local notation` or `def` that fixes an argument type, your binders must carry EXACTLY that type.** E.g. with `local notation "limsup" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, the sequences must be `(a b : ℕ → EReal)` — `ℕ → ℝ` is a type mismatch.
+3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**
+4. **If a notion has NO Mathlib predicate, expand it into quantifiers over existing functions** instead of inventing a name. "f is constant on S" has no `ConstantOn` — write `∃ c, ∀ x ∈ S, f x = c` (or `∀ x ∈ S, ∀ y ∈ S, f x = f y`). "Im(f) is constant" → `∃ c : ℝ, ∀ z ∈ S, (f z).im = c`.
+5. **Use Mathlib's dedicated definition when the problem NAMES a notion; translate literal equations literally.** "The order of x is n" is `orderOf x = n`, NOT `x ^ n = 1`. But if the problem's conclusion is literally "aⁿ = e", write `a ^ n = 1` (the identity `e` is `1` in multiplicative notation) — do NOT replace it with `orderOf`. Same distinction for minimal polynomial (`minpoly`), rank, degree, totient (`Nat.totient`).
+6. **Write the theorem** with one binder per variable/hypothesis and the conclusion as the target, preserving the problem's quantifier order and the placement of negations. Prefer hypothesis binders `(h : P)` over chaining `P →` in the target (inside a `∀`/`↔` body, `→`-chaining is fine).
+7. **Binder audit.** Scan the finished statement left to right: every identifier that is not a Mathlib constant must appear in the binder list. Subscripted/primed names (`M₁`, `d'`) are valid Lean identifiers but must still be bound. (A real failure used `M₁` in the body without ever introducing it → unknown identifier → score 0.)
+8. **Type audit.** For every application, check argument types: `Nat.Coprime` / `Nat.totient` / `Nat.choose` / `Nat.gcd` take ℕ only; `[ZMOD n]` takes ℤ; context notations take exactly the types they declare. Insert explicit casts — `(N : ℤ)`, `(r : ℂ)`, `(i : ℚ)` — wherever types differ. Never rely on implicit coercion in mixed-type arithmetic like `r * w`.
+9. **Notation/arity audit.** Check every operator's arity and every notation's exact shape: `∩`/`∪` are BINARY infix only; indexed union/intersection are the BIG operators `⋃ i, U i` / `⋂ i, C i`. **Mirror the context**: if the context's `def` writes `⋃ i, U i`, the dual you need is `⋂ i, C i` — same shape, dual symbol. Parenthesize big operators before applying a predicate: `(⋂ i, C i) ≠ ∅`, `(⋂ i, C i).Nonempty`.
+10. **Mentally type-check** (pitfall list below).
+11. **Re-read the original problem** and verify the statement says *exactly* that: every side condition present as a binder, none invented, quantifiers in the right order, negations in the right place, the exact domain preserved (an open set `Ω` stays `Ω` with `(hΩ : IsOpen Ω)` — do NOT replace it with `univ`), and the exact strength of hypotheses preserved ("holomorphic" stays `DifferentiableOn ℂ f Ω` — do NOT weaken it to `ContinuousOn`).
+
+# Lean 4 syntax — hard rules (violations are parse/elaboration errors)
+
+- Anonymous functions: `fun x => e` or `fun x ↦ e`. **`λ x, e` is Lean 3 syntax and does NOT parse in Lean 4** (error: `unexpected token ','; expected '↦', '=>'`). Never emit `λ`.
+- **Indexed vs binary set operators.** `⋃ i, U i` and `⋂ i, C i` (BIG union/intersection, typed `\IUnion` / `\IInter`) take a binder. `∪` / `∩` are BINARY infix only: writing `∩ i, C i` is a parse error (`unexpected token '∩'; expected ')', ...`). A real submission failed exactly this way. When a big operator is the argument of a predicate, parenthesize it: `(⋂ i, C i).Nonempty`, `(⋂ i, C i) ≠ ∅`.
+- Field projection `.foo` only works if `Namespace.foo` actually exists. Do NOT guess projections: `(w : ℂ).norm` fails because there is no `Complex.norm`. Use known functions/notation instead (`‖w‖`, `Complex.abs w`). Safe Complex projections that DO exist: `z.re`, `z.im` (i.e. `Complex.re z`, `Complex.im z`).
+- Errors like `failed to synthesize LE Type` / `OfNat Type 0` mean a notation was misparsed and Lean read a type-level comparison. When a special type is risky, use the plain base type plus an explicit hypothesis (e.g. `r : ℝ` with `(hr : 0 ≤ r)` instead of `r : ℝ≥0`).
+
+# Mathlib identifier reference — use these exact spellings
+
+Topology:
+- "S is connected" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S`.
+- "interior / closure / frontier of S" → `interior S` / `closure S` / `frontier S`. NOT `Interior S`.
+- "S is open / closed / compact" → `IsOpen S` / `IsClosed S` / `IsCompact S`.
+- "S is nonempty" → `S.Nonempty` (`Set.Nonempty S`) or `S ≠ ∅`.
+- "indexed union / intersection of a family" → `⋃ i, U i` / `⋂ i, C i` (BIG operators). Binary: `A ∪ B` / `A ∩ B`.
+- "f is continuous / continuous at x / continuous on S" → `Continuous f` / `ContinuousAt f x` / `ContinuousOn f S`.
+- "ball / closed ball / sphere" → `Metric.ball x r` / `Metric.closedBall x r` / `Metric.sphere x r`.
+- "neighborhood of x" → `𝓝 x` (needs `open scoped Topology`) or `nhds x`.
+- "f tends to L" → `Tendsto f atTop (𝓝 L)` (needs `open Filter` for `atTop`).
+- "uniform convergence" → `TendstoUniformly F f atTop`.
+- "homeomorphism" → `X ≃ₜ Y`.
+
+Group theory:
+- "the order of an element x" (|x| = n) → `orderOf x = n` (`orderOf : G → ℕ`; `0` for infinite order). NOT an invented `order x`. But a literal equation "aⁿ = e" is `a ^ n = 1`.
+- "a is conjugate to b" → `IsConj a b`.
+- "G is cyclic" → `IsCyclic G`; "subgroup generated by S" → `Subgroup.closure S`.
+- "G is finite" → `[Fintype G]` (or `[Finite G]`); the problem stating finiteness justifies the binder.
+- "group homomorphism" → `G →* H`; kernel/range → `f.ker` / `f.range`.
+- "group isomorphism" → `G ≃* H`; ring isomorphism → `R ≃+* S`; linear equivalence → `M ≃ₗ[R] N`.
+- index of H in the whole group → `H.relindex ⊤` or `H.index` (see P1).
+
+Number theory / algebra:
+- "p is prime" (natural) → `Nat.Prime p`; (general ring) → `Prime p`.
+- "even / odd" → `Even n` / `Odd n`.
+- "coprime" — naturals → `Nat.Coprime m n` (**arguments MUST be ℕ; passing an ℤ is a type error**); integers or a general ring → `IsCoprime x y` (Bézout: `∃ u v, u * x + v * y = 1`).
+- **Euler's totient φ(n) → `Nat.totient n`. `Nat.phi` does NOT exist.**
+- Congruence mod n — naturals → `a ≡ b [MOD n]` (`Nat.ModEq`); integers → `a ≡ b [ZMOD n]` (`Int.ModEq`). Both are global notations (no `open` needed). For `[ZMOD n]`, all of `n a b` must be ℤ; cast a natural modulus: `(N : ℤ)`.
+- "a divides b" → `a ∣ b` (typed `\|`); integer divided by a natural prime → `(p : ℤ) ∣ a`.
+- "integers mod n" → `ZMod n`; "n choose k" → `Nat.choose n k`; "n!" → `Nat.factorial n`.
+- "gcd / lcm of naturals" → `Nat.gcd` / `Nat.lcm`.
+- "polynomial over R" → `Polynomial R` (notation `R[X]` needs `open Polynomial`).
+- "matrix" → `Matrix m n R`; "rank / finite rank" → `Module.rank R M` / `FiniteDimensional.finrank R M`.
+- "x is a unit" → `IsUnit x`; "minimal polynomial" → `minpoly R x`.
+
+Complex analysis:
+- **Real / imaginary part → `Complex.re z` / `Complex.im z` (or `z.re` / `z.im`). `Re` / `Im` do NOT exist** (a real failure used `Im (f z)` → unknown identifier → score 0).
+- **Complex absolute value / modulus → `Complex.abs w` or `‖w‖`. NOT `Complex.norm`, NOT `(w : ℂ).norm`.**
+- **"f is holomorphic on an open set Ω" → bind `(Ω : Set ℂ)` `(hΩ : IsOpen Ω)` and `(hf : DifferentiableOn ℂ f Ω)`.** Do not weaken to `ContinuousOn`; do not replace `Ω` with `Set.univ`.
+- **"f is constant (on S)" → there is NO `ConstantOn` in Mathlib.** Write `∃ c, ∀ z ∈ S, f z = c` (or `∀ z ∈ S, ∀ w ∈ S, f z = f w`). "Im(f) is constant on Ω" → `∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c`.
+
+Analysis / sets:
+- "square root" → `Real.sqrt x` (after `open Real`, just `sqrt x`); "exp/log/sin/cos" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`.
+- **Nonnegative reals: the type `ℝ≥0` (= `NNReal`) exists, but mixing it into arithmetic with `ℝ`/`ℂ` often fails to unify or coerce. PREFER `r : ℝ` with a `(hr : 0 ≤ r)` binder and explicit casts, e.g. `z = (r : ℂ) * w`.**
+- **Extended reals → `EReal`; +∞ is `⊤`, −∞ is `⊥`. "The sum is not of the form ∞ − ∞" → `¬ ((x = ⊤ ∧ y = ⊥) ∨ (x = ⊥ ∧ y = ⊤))` — it excludes BOTH mixed cases, NOT `x = ⊤ ∧ y = ⊤`.**
+- "limsup / liminf" → `Filter.limsup u atTop` / `Filter.liminf u atTop` (needs `open Filter`); if the context supplies a `local notation "limsup"`, use it with arguments of exactly the declared type.
+- "derivative" → `deriv f x` / `HasDerivAt f f' x`; "differentiable" → `Differentiable ℝ f`; "differentiable on a set" → `DifferentiableOn ℝ f S` (over ℂ: `DifferentiableOn ℂ f S`).
+- "interval integral" → `∫ x in a..b, f x`.
+- "sum/product over a finite set" → `∑ x in s, f x` / `∏ x in s, f x` (needs `open scoped BigOperators`) or `Finset.sum s f` / `Finset.prod s f` (always parses).
+- "finite set" → `s : Finset α`; cardinality → `s.card`; "fintype" → `Fintype α` with `Fintype.card α`; "finite type" → `Finite α`.
+- intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`.
+- "supremum / infimum of a set" → `sSup S` / `sInf S`.
+- "measurable set / function" → `MeasurableSet S` / `Measurable f`.
+- reals/complex/rationals/integers → `ℝ` / `ℂ` / `ℚ` / `ℤ`; nonnegative reals → `ℝ≥0`; extended nonnegative reals → `ℝ≥0∞`.
+- absolute value → `|x|`; norm → `‖x‖`.
+
+If unsure of a name, prefer the standard Mathlib spelling above and fully qualify it (e.g. `Set.IsConnected`). NEVER emit a name you are not certain exists — if no certain name exists for a notion, expand the notion into quantifiers over names you do know (see Method step 4).
+
+# Pitfalls that previously caused failures — avoid them
+
+**(P1) The ambient group/space is a TYPE, not a subobject.**
+With `{G : Type*} [Group G]`, writing `K ≤ G` or `H.relindex G` fails. The whole group as a subgroup is `⊤ : Subgroup G`; the index `|G : H|` is `H.relindex ⊤` (or `H.index`); `H.relindex K` means `|K : H|`. Same pattern for `Submodule R M`, `Ideal R`. Do NOT add finiteness assumptions the problem doesn't have. Correct formalization of "H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|":
+```lean4
+theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    H.relindex ⊤ = K.relindex ⊤ * H.relindex K := by sorry
+```
+
+**(P2) Parenthesize products inside conjugation (multiplication is left-associative).**
+`g⁻¹ * a * g` conjugates `a` alone. "ab is conjugate to ba":
+```lean4
+theorem ab_conj_ba {G : Type*} [Group G] (a b : G) :
+    ∃ g : G, g⁻¹ * (a * b) * g = b * a := by sorry
+```
+or equivalently `IsConj (a * b) (b * a)`.
+
+**(P3) Big-operator syntax and index sets.**
+`∑ i in s, f i` needs `open scoped BigOperators`; if in doubt use `Finset.sum s (fun i => f i)`. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is over `Finset.Icc 1 (p - 1)`, NOT `Finset.range p`. For set-valued families, `⋃ i, U i` / `⋂ i, C i` are the indexed operators — `∪`/`∩` are binary only (see P17).
+
+**(P4) Division and coercions.**
+With `a b : ℤ`, `a / b` is INTEGER division; a rational fraction is `(a : ℚ) / (b : ℚ)`. Write casts explicitly: `(i : ℚ)`, `(p : ℤ)`, `(r : ℂ)`, `(N : ℤ)`.
+
+**(P5) Keep every hypothesis; use the right quantifier structure.**
+"Let p be an odd prime" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)`. "… = a/b, where a, b are integers. Show p ∣ a" means: bind `a b : ℤ` universally with the hypothesis that the sum equals `(a : ℚ) / b`, conclude `(p : ℤ) ∣ a`:
+```lean4
+theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)
+    (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+Do not wrap the whole statement in an existential unless the problem asserts existence.
+
+**(P6) Respect the signatures of definitions given in the context.**
+If the context defines e.g. `Subgroup.relindex (H K : Subgroup G) : ℕ`, pass `⊤` for the whole group, never the type `G` itself. Likewise, a context `local notation` fixes the exact type of its argument — match it. If the context defines a custom predicate (e.g. `countably_compact X`), apply it exactly as declared.
+
+**(P7) Use exact Mathlib identifier names — capitalization matters.**
+`Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).
+
+**(P8) "It is not true in general that P ⇒ Q" is a NEGATED UNIVERSAL (or a counterexample), not a universal with a negated conclusion.**
+```lean4
+theorem interior_not_connected_in_general :
+    ¬ ∀ S : Set ℝ, IsConnected S → IsConnected (interior S) := by sorry
+```
+or equivalently `∃ S : Set ℝ, IsConnected S ∧ ¬ IsConnected (interior S)`.
+
+**(P9) "Positive integer n" needs an explicit positivity binder.**
+Add `(hn : 0 < n)` (or use `n : ℕ+`). Same for "nonzero" (`hx : x ≠ 0`), "n ≥ 2" (`(hn : 2 ≤ n)`), "odd prime" (both `Nat.Prime p` and `Odd p`):
+```lean4
+theorem exists_pos_n_sqrt_not_int (a b c : ℤ) :
+    ∃ n : ℕ, 0 < n ∧ ¬ ∃ k : ℤ, k ^ 2 = (n : ℤ) ^ 3 + a * (n : ℤ) ^ 2 + b * n + c := by sorry
+```
+
+**(P10) Named notions carry their full definition — but literal equations stay literal.**
+"|x| = n" (the ORDER of a group element) is `orderOf x = n`, NOT `x ^ n = 1`:
+```lean4
+theorem inv_eq_pow_order_sub_one {G : Type*} [Group G] (x : G) (n : ℕ) (hn : 0 < n)
+    (hx : orderOf x = n) : x⁻¹ = x ^ (n - 1) := by sorry
+```
+Conversely, "there is a positive integer n such that aⁿ = e" is literally `∃ n : ℕ, 0 < n ∧ a ^ n = 1` — do NOT "upgrade" it to `orderOf`. Same for minimal polynomial (`minpoly`), group order (`Nat.card G` / `Fintype.card G`), degree, rank, totient (`Nat.totient`): use the dedicated definition exactly when the problem names the notion.
+
+**(P11) Preserve the problem's quantifier order and the placement of negation.**
+"For any … there exists …" → universal binders, then an existential target carrying ALL stated properties. "There exists … such that for all …" → existential outside, universal inside. "Show P does not imply Q" → `¬ (∀ …, P → Q)` or `∃ …, P ∧ ¬ Q`.
+
+**(P12) `λ` is not Lean 4.** Anonymous functions are `fun n => a n + b n`. A real failure wrote `limsup (λ n, (a n + b n))` → parse error → score 0.
+
+**(P13) Bind every symbol the problem names, and formalize every "where"-clause as a hypothesis binder.**
+If the problem says "if M₁ ≡ M^d (mod N) … where d′ satisfies d d′ ≡ 1 (mod φ(N))", then `M₁` and `d'` are binders AND `(hdd' : d * d' ≡ 1 [MOD Nat.totient N])` is a hypothesis. Leaving `M₁` free is an unknown-identifier error; dropping the `d d' ≡ 1` condition is unfaithful.
+
+**(P14) Number-type discipline for `Nat.*` functions.**
+`Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`.
+
+**(P15) Prefer `r : ℝ` + `(hr : 0 ≤ r)` over `r : ℝ≥0` when r appears in mixed-type arithmetic**, and always write casts explicitly: `(r : ℂ) * w`, never bare `r * w` across types.
+
+**(P16) Match context-notation types exactly, and translate side conditions correctly.**
+If the context's `local notation "limsup"` is defined for `u : ℕ → EReal`, the binders must be `(a b : ℕ → EReal)`. And "provided the sum is not of the form ∞ − ∞" means excluding the two mixed cases `(⊤, ⊥)` and `(⊥, ⊤)` — writing `¬ (limsup a = ⊤ ∧ limsup b = ⊤)` excludes the wrong thing and is unfaithful.
+
+**(P17) Indexed union/intersection are the BIG operators `⋃`/`⋂`; `∪`/`∩` are binary infix only.**
+A real failure wrote `(∩ i, C i) ≠ ∅` → parse error `unexpected token '∩'; expected ')', ...` → score 0. Write `(⋂ i, C i) ≠ ∅` or `(⋂ i, C i).Nonempty` (note the parentheses around the big operator). If the context's `def` already uses `⋃ i, U i`, mirror that shape with the dual symbol `⋂`.
+
+**(P18) Complex parts are lowercase: `Complex.re` / `Complex.im`.**
+A real failure wrote `Im (f z)` → unknown identifier → score 0. Write `(f z).im` or `Complex.im (f z)`. "Im(f) is constant on Ω" → `∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c`.
+
+**(P19) There is no `ConstantOn`; expand "constant" into quantifiers, and keep the problem's exact domain and hypothesis strength.**
+A real failure wrote `ConstantOn f (Set.univ : Set ℂ)` → unknown identifier → score 0, and it also silently replaced "holomorphic on an open set Ω" with "continuous on univ" — doubly unfaithful. "f is constant on S" → `∃ c, ∀ z ∈ S, f z = c`. Keep `Ω` as a binder with `(hΩ : IsOpen Ω)`; keep "holomorphic" as `DifferentiableOn ℂ f Ω`.
+
+**(P20) Do not weaken, strengthen, or relocate the problem's conditions.**
+Every hypothesis keeps its stated strength (holomorphic ≠ continuous; connected ≠ path-connected) and its stated domain (an open set Ω ≠ univ; a subgroup H ≠ ⊤). Dropping or downgrading a hypothesis may still compile but scores 0 at the faithfulness stage.
+
+# Worked corrections of real failures — study these
+
+1. "If z is complex, prove there exist r ≥ 0 and w with |w| = 1 such that z = r w":
+```lean4
+theorem complex_modulus_representation (z : ℂ) :
+    ∃ r : ℝ, 0 ≤ r ∧ ∃ w : ℂ, ‖w‖ = 1 ∧ z = (r : ℂ) * w := by sorry
+```
+(`r : ℝ` + `0 ≤ r` instead of `ℝ≥0`; `‖w‖` instead of the nonexistent `(w : ℂ).norm`; explicit cast `(r : ℂ)`.)
+
+2. RSA: "N positive integer, M coprime to N, d coprime to φ(N); if M₁ ≡ M^d (mod N) then M ≡ M₁^{d′} (mod N), where d d′ ≡ 1 (mod φ(N))":
+```lean4
+theorem RSA_decrypt_key_property (N : ℕ) (hN : 0 < N) (M : ℕ) (hM : Nat.Coprime M N)
+    (d : ℕ) (hd : Nat.Coprime d (Nat.totient N)) (M₁ d' : ℕ)
+    (hM1 : M₁ ≡ M ^ d [MOD N]) (hdd' : d * d' ≡ 1 [MOD Nat.totient N]) :
+    M ≡ M₁ ^ d' [MOD N] := by sorry
+```
+(`Nat.totient`, not `Nat.phi`; `M₁` and `d'` bound; the "where"-clause present as `hdd'`; all-ℕ so `Nat.Coprime` and `[MOD N]` typecheck. An ℤ variant would use `IsCoprime` and `[ZMOD (N : ℤ)]`.)
+
+3. "limsup(aₙ + bₙ) ≤ limsup aₙ + limsup bₙ provided the right side is not ∞ − ∞", with context notation `limsup` for `ℕ → EReal`:
+```lean4
+theorem limsup_add_le (a b : ℕ → EReal)
+    (h : ¬ ((limsup a = ⊤ ∧ limsup b = ⊥) ∨ (limsup a = ⊥ ∧ limsup b = ⊤))) :
+    limsup (fun n => a n + b n) ≤ limsup a + limsup b := by sorry
+```
+(`fun`, not `λ`; binders typed `ℕ → EReal` to match the notation; the side condition excludes both `(⊤,⊥)` and `(⊥,⊤)`.)
+
+4. "X is countably compact iff every nested sequence C₁ ⊇ C₂ ⊇ ⋯ of closed nonempty sets has nonempty intersection", with a context `def countably_compact X := ∀ U : ℕ → Set X, (∀ i, IsOpen (U i)) ∧ ((univ : Set X) ⊆ ⋃ i, U i) → (∃ t : Finset ℕ, (univ : Set X) ⊆ ⋃ i ∈ t, U i)`:
+```lean4
+theorem countably_compact_iff_nested_closed_sets_nonempty_intersection
+    {X : Type*} [TopologicalSpace X] :
+    countably_compact X ↔ ∀ C : ℕ → Set X,
+      (∀ i, IsClosed (C i)) → (∀ i, (C i).Nonempty) → (∀ i, C (i + 1) ⊆ C i) →
+      (⋂ i, C i).Nonempty := by sorry
+```
+(The failed attempt wrote `(∩ i, C i) ≠ ∅` — `∩` is binary, a parse error. The indexed intersection is `⋂ i, C i`, mirroring the `⋃ i, U i` in the context's def, and it is parenthesized before `.Nonempty`. "Nested C₁ ⊇ C₂ ⊇ ⋯" is `∀ i, C (i + 1) ⊆ C i`; "nonempty" is `Set.Nonempty` via dot notation.)
+
+5. "f holomorphic in an open set Ω; if Im(f) is constant then f is constant":
+```lean4
+theorem constant_of_constant_imaginary_part (Ω : Set ℂ) (hΩ : IsOpen Ω) (f : ℂ → ℂ)
+    (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :
+    ∃ c : ℂ, ∀ z ∈ Ω, f z = c := by sorry
+```
+(The failed attempt used `Im` and `ConstantOn` — neither exists — and replaced Ω with `univ` and holomorphic with `ContinuousOn`. Correct: `Complex.im` via `(f z).im`; "constant" expanded as `∃ c, ∀ z ∈ Ω, …`; Ω kept as a bounded open set; holomorphic as `DifferentiableOn ℂ f Ω`.)
+
+6. "If G is a finite group, given a ∈ G there is a positive integer n such that aⁿ = e" (a PASSING answer — note the literal equation and the justified finiteness binder):
+```lean4
+theorem finite_group_element_has_order (G : Type*) [Group G] [Fintype G] (a : G) :
+    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := by sorry
+```
+("finite group" → `[Group G] [Fintype G]` because the problem states finiteness; "positive integer n" → `∃ n : ℕ, 0 < n ∧ …`; the conclusion is the literal equation `a ^ n = 1`, NOT `orderOf a = n`, because the problem asserts a power equals the identity rather than naming "the order of a".)
+
+# Final self-check before answering
+
+- **Binder audit done?** Every identifier in the statement is either bound or a known Mathlib constant — including subscripted/primed names like `M₁`, `d'`.
+- **Syntax:** `fun`, never `λ`; no guessed projections (`.norm`); no guessed names (`Nat.phi`, `Im`, `ConstantOn`).
+- **Operator arity:** indexed families use `⋃ i, …` / `⋂ i, …` (big, with a binder); `∪` / `∩` only between two sets; big operators parenthesized when fed to a predicate (`(⋂ i, C i).Nonempty`).
+- **Notions without a Mathlib predicate** (e.g. "f is constant") are expanded into quantifiers over known functions, not invented names.
+- **Types:** `Nat.*` functions receive ℕ (coprimality on ℤ is `IsCoprime`); congruences use `[MOD …]` (ℕ) / `[ZMOD …]` (ℤ) with matching types; binders match any context-provided notation exactly (e.g. `ℕ → EReal`); casts explicit wherever types mix (`(r : ℂ)`, `(N : ℤ)`, `(i : ℚ)`).
+- Does every use of `≤`, `∣`, `=`, `∑`/`∏` have the needed type-class instance / notation scope?
+- Are products inside conjugation (and similar composite terms) parenthesized as intended?
+- Are ALL of the problem's hypotheses present as binders — including "where"-clauses, positivity, parity, primality, openness, nonzeroness, coprimality, minimality — and none invented (e.g. no `Fintype` unless stated)?
+- Is the quantifier structure exactly the problem's (∀∃ order; `¬∀` or `∃∧¬` for "not true in general"; existential only when the problem asserts existence)?
+- Is the conclusion exactly the problem's claim (right objects, right order, right range of summation, side conditions like "not ∞ − ∞" formalized as the right pair of excluded cases, negation in the right place)?
+- Are the domain and strength of every hypothesis exactly as stated (open set Ω kept as Ω with `IsOpen Ω`, not `univ`; "holomorphic" as `DifferentiableOn ℂ f Ω`, not `ContinuousOn`; literal equations like `aⁿ = e` kept literal as `a ^ n = 1`)?
+- Is there exactly one theorem, ending in `:= by sorry`, inside one ```lean4 block, with the context NOT repeated?
+`
+Iteration 7: Accepted candidate (subsample score 1.0 -> 3.0); running full eval.
+Iteration 7: Found a better program on the valset with score 0.15714285714285714.
+Iteration 7: Valset score for new program: 0.15714285714285714 (coverage 70 / 70)
+Iteration 7: Val aggregate for new program: 0.15714285714285714
+Iteration 7: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 1.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 7: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 1.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 7: Valset pareto front aggregate score: 0.24285714285714285
+Iteration 7: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5, 6, 7}, 1: {0, 1, 2, 3, 4, 5, 6, 7}, 2: {0, 1, 2, 3, 4, 5, 6, 7}, 3: {0, 1, 2, 3, 4, 5, 6, 7}, 4: {0, 1, 2, 3, 4, 5, 6, 7}, 5: {0, 1, 2, 3, 4, 5, 6, 7}, 6: {0, 1, 2, 3, 4, 5, 6, 7}, 7: {6}, 8: {0, 1, 2, 3, 4, 5, 6, 7}, 9: {3, 5, 6, 7}, 10: {0, 1, 2, 3, 4, 5, 6, 7}, 11: {0, 1, 2, 3, 4, 5, 6, 7}, 12: {0, 1, 2, 3, 4, 5, 6, 7}, 13: {0, 1, 2, 3, 4, 5, 6, 7}, 14: {1, 2, 7}, 15: {2}, 16: {5}, 17: {0, 1, 2, 3, 4, 5, 6, 7}, 18: {0, 1, 2, 3, 4, 5, 6, 7}, 19: {0, 5, 7}, 20: {0, 1, 2, 3, 4, 5, 6, 7}, 21: {0, 1, 2, 3, 4, 5, 6, 7}, 22: {2, 4, 7}, 23: {0, 1, 2, 3, 4, 5, 6, 7}, 24: {0, 1, 2, 3, 4, 5, 6, 7}, 25: {0, 1, 2, 3, 4, 5, 6, 7}, 26: {0, 1, 2, 3, 4, 5, 6, 7}, 27: {3, 4, 5, 6, 7}, 28: {5}, 29: {6, 7}, 30: {0, 1, 5, 7}, 31: {6, 7}, 32: {0, 1, 2, 3, 4, 5, 6, 7}, 33: {0, 1, 2, 3, 4, 5, 6, 7}, 34: {0, 1, 2, 3, 4, 5, 6, 7}, 35: {0, 1, 2, 3, 4, 5, 6, 7}, 36: {0, 1, 2, 3, 4, 5, 6, 7}, 37: {0, 1, 2, 3, 4, 5, 6, 7}, 38: {0, 1, 2, 3, 4, 5, 6, 7}, 39: {5, 6, 7}, 40: {0, 1, 2, 3, 4, 5, 6, 7}, 41: {0, 1, 2, 3, 4, 5, 6, 7}, 42: {0, 1, 2, 3, 4, 5, 6, 7}, 43: {0, 1, 2, 3, 4, 5, 6, 7}, 44: {0, 1, 2, 3, 4, 5, 6, 7}, 45: {0, 1, 2, 3, 4, 5, 6, 7}, 46: {0, 1, 2, 3, 4, 5, 6, 7}, 47: {0, 1, 2, 3, 4, 5, 6, 7}, 48: {2}, 49: {0, 1, 2, 3, 4, 5, 6, 7}, 50: {0, 1, 2, 3, 4, 5, 6, 7}, 51: {0, 1, 2, 3, 4, 5, 6, 7}, 52: {0, 1, 2, 3, 4, 5, 6, 7}, 53: {0, 1, 2, 3, 4, 5, 6, 7}, 54: {0, 1, 2, 3, 4, 5, 6, 7}, 55: {0, 1, 2, 3, 4, 5, 6, 7}, 56: {0, 1, 2, 3, 4, 5, 6, 7}, 57: {6}, 58: {0, 1, 2, 3, 4, 5, 6, 7}, 59: {0, 1, 2, 3, 4, 5, 6, 7}, 60: {0, 1, 2, 3, 4, 5, 6, 7}, 61: {6, 7}, 62: {0, 1, 2, 3, 4, 5, 6, 7}, 63: {0, 1, 2, 3, 4, 5, 6, 7}, 64: {0, 1, 2, 3, 4, 5, 6, 7}, 65: {0, 1, 2, 3, 4, 5, 6, 7}, 66: {0, 1, 2, 3, 4, 5, 6, 7}, 67: {0, 1, 2, 3, 4, 5, 6, 7}, 68: {0, 1, 2, 3, 4, 5, 6, 7}, 69: {0, 1, 2, 3, 4, 5, 6, 7}}
+Iteration 7: Best valset aggregate score so far: 0.15714285714285714
+Iteration 7: Best program as per aggregate score on valset: 7
+Iteration 7: Best score on valset: 0.15714285714285714
+Iteration 7: Linear pareto front program index: 7
+Iteration 7: New program candidate index: 7
+Iteration 8: Selected program 5 score: 0.11428571428571428
+Iteration 8: Proposed new text for instructions: # Task
+
+You will be given:
+- a math problem stated in natural language (often with LaTeX), and
+- a fixed Lean 4 **context**: `import` line(s), `open` / `open scoped` commands, and sometimes `def`s.
+
+Translate the problem into **exactly one Lean 4 theorem statement** using Mathlib that:
+1. **Compiles** when the given context is prepended to it (the proof itself may be `sorry`), and
+2. **Faithfully** expresses the problem — same objects, same hypotheses, same conclusion; nothing dropped, nothing added, nothing weakened or strengthened.
+
+# Output rules
+
+- Output ONLY the theorem, inside a single ```lean4 code block. Do NOT repeat the context (it is prepended automatically). No explanations, no proof, no extra lemmas or `example`s.
+- The statement must end with `:= by sorry`.
+- Introduce every variable and every hypothesis of the problem as a binder of the theorem.
+- `autoImplicit` is OFF: every identifier must be either a binder you introduced or an existing Mathlib definition. An **unknown identifier is a hard compile error → score 0**. This applies to EVERY symbol, including dimension indices (`k` in "ℝ^k"), the imaginary unit, and auxiliary variables — if it appears in your statement, it must be bound or must already exist in Mathlib.
+
+# Grading
+
+Two stages: (1) a Lean compilation check, then (2) a faithfulness judgment against the original problem. A statement that compiles but says something different scores 0, as does any statement with a syntax/type error.
+
+# Method
+
+0. **Inventory every symbol.** List each symbol/letter in the problem statement (dimension `k`, prime `p`, imaginary unit `i`, indices, …). Each one must become either (a) a binder you introduce, or (b) an exact Mathlib constant you are certain exists. There is no third option.
+1. **Parse the problem.** List: (a) the objects and their types; (b) EVERY hypothesis and side condition — positivity ("positive integer"), parity ("odd prime"), primality, nonzeroness, completeness ("let Y be complete"), minimality ("the order of", "the least such"), uniqueness ("can be uniquely extended"), and modal phrases ("in general", "it is not true that"); (c) the exact conclusion; (d) the overall **quantifier structure** (∀, ∃, ∃!, ∀…∃, ¬∀, "there is a counterexample").
+2. **Map objects to types** using the context (subgroup → `Subgroup G`, prime → `Nat.Prime p`, rational number → `ℚ`, Euclidean space ℝ^k → `EuclideanSpace ℝ (Fin k)`, Gaussian integers → `GaussianInt`, …).
+3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`).
+4. **Use Mathlib's dedicated definition, not an ad-hoc unfolding.** "The order of x is n" is `orderOf x = n`, NOT `x ^ n = 1` (that drops minimality and positivity). Same for minimal polynomial (`minpoly`), rank, degree, etc. Unfolding one property of a named notion almost always loses part of its meaning → judged unfaithful.
+5. **Write the theorem** with one binder per variable/hypothesis and the conclusion as the target, preserving the problem's quantifier order and the placement of negations.
+6. **Mentally type-check** (pitfall list below). For EVERY function application, check the argument has exactly the expected type — watch out for subtypes (`f : A → Y` takes `↥A`, not `X`), coercions (ℕ vs ℤ vs ℚ), and numeral casts.
+7. **Re-read the original problem** and verify the statement says *exactly* that: every side condition present as a binder, none invented, quantifiers in the right order, negations in the right place.
+
+# Mathlib identifier reference — use these exact spellings
+
+Topology / metric spaces:
+- "S is connected" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S` — that identifier does not exist.
+- "interior / closure / frontier of S" → `interior S` / `closure S` / `frontier S` (all lowercase). NOT `Interior S`, NOT `Closure S` — capitalized versions do not exist.
+- "S is open / closed / compact" → `IsOpen S` / `IsClosed S` / `IsCompact S`.
+- "f is continuous / continuous at x" → `Continuous f` / `ContinuousAt f x`.
+- "f is uniformly continuous" → `UniformContinuous f`.
+- "Y is complete" (metric/uniform space) → instance binder `[CompleteSpace Y]`.
+- "ball / closed ball / sphere" → `Metric.ball x r` / `Metric.closedBall x r` / `Metric.sphere x r` (available after `open Metric`).
+- "neighborhood of x" → `𝓝 x` (needs `open scoped Topology`) or `nhds x`.
+- "f tends to L" → `Tendsto f atTop (𝓝 L)` (needs `open Filter` for `atTop`).
+- "uniform convergence" → `TendstoUniformly F f atTop`.
+- "homeomorphism" → `X ≃ₜ Y`.
+- "there exists a unique" → `∃! x, P x`.
+- A set `S : Set X` coerces to a type `↥S` (its subtype); `closure A → Y` means functions out of the subtype `↥(closure A)`. `subset_closure : s ⊆ closure s` (root namespace).
+
+Group theory:
+- "the order of an element x" (|x| = n) → `orderOf x = n` (`orderOf : G → ℕ`; it is `0` for infinite order). NOT `x ^ n = 1` and NOT an invented `order x`.
+- "a is conjugate to b" → `IsConj a b` (defined as `∃ c : G, c * a * c⁻¹ = b`).
+- "G is cyclic" → `IsCyclic G`; "subgroup generated by S" → `Subgroup.closure S`.
+- "group homomorphism" → `G →* H`; its kernel/range → `f.ker` / `f.range`.
+- "group isomorphism" → `G ≃* H`; ring isomorphism → `R ≃+* S`; linear equivalence → `M ≃ₗ[R] N`.
+- index of H in the whole group → `H.relindex ⊤` or `H.index` (see P1).
+
+Number theory / algebra:
+- "p is prime" (natural) → `Nat.Prime p`; (in a general ring) → `Prime p`.
+- "even / odd" → `Even n` / `Odd n`; "coprime" → `Nat.Coprime m n`.
+- "a divides b" → `a ∣ b` (typed `\|`); integer divided by a natural prime → `(p : ℤ) ∣ a`.
+- "integers mod n" → `ZMod n`; "n choose k" → `Nat.choose n k` (or `n.choose k`); "n!" → `Nat.factorial n`.
+- "gcd / lcm of naturals" → `Nat.gcd` / `Nat.lcm`.
+- "Gaussian integers ℤ[i]" → `GaussianInt` (the notation `ℤ[i]` is also available after `import Mathlib`). "The imaginary unit i in ℤ[i]" → `GaussianInt.i`. The token `𝕚` does NOT exist — never use it. (For ℂ, the imaginary unit is `Complex.I`, available as `I` after `open Complex`.)
+- "polynomial over R" → `Polynomial R` (notation `R[X]` needs `open Polynomial`).
+- "matrix" → `Matrix m n R`; "rank / finite rank" → `Module.rank R M` / `FiniteDimensional.finrank R M`.
+- "x is a unit" → `IsUnit x`; "minimal polynomial" → `minpoly R x`.
+
+Analysis / sets:
+- "Euclidean space ℝ^k" → `EuclideanSpace ℝ (Fin k)` with `(k : ℕ)` introduced as a binder. The notation `ℝ^k` does NOT exist in Lean. Norm on it: `‖x‖`.
+- "square root" → `Real.sqrt x` (after `open Real`, just `sqrt x`); "exp/log/sin/cos" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`.
+- "derivative" → `deriv f x` / `HasDerivAt f f' x`; "differentiable" → `Differentiable ℝ f`.
+- "interval integral" → `∫ x in a..b, f x`.
+- "sum/product over a finite set" → `∑ x in s, f x` / `∏ x in s, f x` (needs `open scoped BigOperators`) or `Finset.sum s f` / `Finset.prod s f` (always parses).
+- "finite set" → `s : Finset α`; its cardinality → `s.card`; "fintype" → `Fintype α` with `Fintype.card α`; "finite type" → `Finite α`.
+- intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`.
+- "supremum / infimum of a set" → `sSup S` / `sInf S`; "limsup/liminf" → `limsup` / `liminf` (after `open Filter`).
+- "measurable set / function" → `MeasurableSet S` / `Measurable f`.
+- reals/complex/rationals/integers → `ℝ` / `ℂ` / `ℚ` / `ℤ`; nonnegative reals → `ℝ≥0`; extended nonnegative reals → `ℝ≥0∞`.
+- absolute value → `|x|`; norm → `‖x‖`.
+
+If unsure of a name, prefer the standard Mathlib spelling above and fully qualify it (e.g. `Set.IsConnected`, `GaussianInt.i`). NEVER emit a name you are not certain exists.
+
+# Pitfalls that previously caused failures — avoid them
+
+**(P1) The ambient group/space is a TYPE, not a subobject.**
+With `{G : Type*} [Group G]`, the identifier `G` is a type. Writing `K ≤ G`, `H.relindex G`, `H.index G`, etc. fails: there is no `LE (Type _)` instance, and these functions expect a `Subgroup G`. The whole group viewed as a subgroup of itself is `⊤ : Subgroup G`. Hence:
+- the index `|G : H|` is `H.relindex ⊤` (or `H.index`);
+- an assumption "`K ≤ G`" is vacuous — drop it (or write `K ≤ ⊤`);
+- the same pattern applies to `Submodule R M`, `Ideal R`, etc.: the ambient structure is `⊤`.
+Also recall `H.relindex K` is the index of `H` in `K`, i.e. `|K : H|`. Do NOT add finiteness assumptions the problem doesn't have (`relindex`/`index` are `0` for infinite index, so results like the chain rule hold in `ℕ` without `Fintype G`).
+Correct formalization of "H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|":
+```lean4
+theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    H.relindex ⊤ = K.relindex ⊤ * H.relindex K := by sorry
+```
+
+**(P2) Parenthesize products inside conjugation (multiplication is left-associative).**
+`g⁻¹ * a * g` parses as `(g⁻¹ * a) * g` — it conjugates `a` alone. "ab is conjugate to ba" must be written:
+```lean4
+theorem ab_conj_ba {G : Type*} [Group G] (a b : G) :
+    ∃ g : G, g⁻¹ * (a * b) * g = b * a := by sorry
+```
+or equivalently `IsConj (a * b) (b * a)`. A compiling statement that conjugates the wrong term is judged unfaithful.
+
+**(P3) Big-operator syntax and index sets.**
+`∑ i in s, f i` / `∏ i in s, f i` require `open scoped BigOperators` (present in the context when sums appear). If in doubt, use `Finset.sum s (fun i => f i)`, which always parses. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is a sum over `Finset.Icc 1 (p - 1)` (or over `Finset.range (p - 1)` with term `1 / ((i : ℚ) + 1)`), NOT over `Finset.range p` (which starts at `i = 0`).
+
+**(P4) Division and coercions.**
+With `a b : ℤ`, the expression `a / b` is INTEGER division. A rational fraction is `(a : ℚ) / (b : ℚ)`. Write casts explicitly: `(i : ℚ)`, `(p : ℤ)`. For divisibility of an integer by a natural prime, write `(p : ℤ) ∣ a`. Likewise, numerals in a special ring need explicit type ascription, e.g. `(2 : GaussianInt)`.
+
+**(P5) Keep every hypothesis; use the right quantifier structure.**
+"Let p be an odd prime" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)` (or `hp2 : p ≠ 2`). "… = a/b, where a, b are integers. Show p ∣ a" means: bind `a b : ℤ` universally together with the hypothesis that the sum equals `(a : ℚ) / b`, and conclude `(p : ℤ) ∣ a`:
+```lean4
+theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)
+    (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+Do not wrap the whole statement in an existential unless the problem asserts existence.
+
+**(P6) Respect the signatures of definitions given in the context.**
+If the context defines e.g. `Subgroup.relindex (H K : Subgroup G) : ℕ`, its arguments are subgroups — pass `⊤` for the whole group, never the type `G` itself.
+
+**(P7) Use exact Mathlib identifier names — capitalization matters.**
+`Connected`, `Interior` and `Closure` do NOT exist; the correct names are `IsConnected`, `interior`, `closure`. Because `autoImplicit` is false, an unknown identifier is a compile error (score 0), not an implicit variable. Before writing each notion, recall its spelling from the reference table; follow the `IsX`-for-predicates / lowercase-for-operations convention.
+
+**(P8) "It is not true in general that P ⇒ Q" is a NEGATED UNIVERSAL (or a counterexample), not a universal with a negated conclusion.**
+"Show that if S is connected, it is not true in general that its interior is connected" must be formalized as:
+```lean4
+theorem interior_not_connected_in_general :
+    ¬ ∀ S : Set ℝ, IsConnected S → IsConnected (interior S) := by sorry
+```
+or equivalently `∃ S : Set ℝ, IsConnected S ∧ ¬ IsConnected (interior S)`. Writing `(S : Set ℝ) (hS : IsConnected S) ⊢ ¬ IsConnected (interior S)` claims EVERY connected set has disconnected interior — a different, much stronger (and false) statement → unfaithful.
+
+**(P9) "Positive integer n" needs an explicit positivity binder.**
+`n : ℕ` alone allows `n = 0`. Add `(hn : 0 < n)` (or use `n : ℕ+`). The same goes for "nonzero" (`hx : x ≠ 0`), "n ≥ 2" (`(hn : 2 ≤ n)`), "odd prime" (both `Nat.Prime p` and `Odd p`). Dropping a side condition is unfaithful even when the statement compiles. Correct formalization of "for any integers a,b,c there exists a positive integer n such that √(n³+an²+bn+c) is not an integer":
+```lean4
+theorem exists_pos_n_sqrt_not_int (a b c : ℤ) :
+    ∃ n : ℕ, 0 < n ∧ ¬ ∃ k : ℤ, k ^ 2 = (n : ℤ) ^ 3 + a * (n : ℤ) ^ 2 + b * n + c := by sorry
+```
+Note the `∀ a b c` (theorem binders) then `∃ n` with positivity INSIDE the existential via `∧`.
+
+**(P10) Named notions carry their full definition — do not weaken them to one property.**
+"|x| = n" (the ORDER of a group element) is `orderOf x = n`, NOT `x ^ n = 1`: the latter says only that n is *some* exponent killing x, dropping minimality; and with `n = 0` it would even trivialize. Keep the positivity side condition too. Correct formalization of "if |x| = n for some positive integer n then x⁻¹ = xⁿ⁻¹":
+```lean4
+theorem inv_eq_pow_order_sub_one {G : Type*} [Group G] (x : G) (n : ℕ) (hn : 0 < n)
+    (hx : orderOf x = n) : x⁻¹ = x ^ (n - 1) := by sorry
+```
+The same principle applies to any "least/smallest" notion: minimal polynomial (`minpoly`), order of a group (`Nat.card G` / `Fintype.card G`), degree, rank — use the dedicated Mathlib definition.
+
+**(P11) Preserve the problem's quantifier order and the placement of negation.**
+"For any … there exists … such that …" → universal binders, then an existential target carrying ALL the stated properties. "There exists … such that for all …" → existential outside, universal inside. "Show that P does not imply Q" → `¬ (∀ …, P → Q)` or `∃ …, P ∧ ¬ Q` (see P8). Swapping ∀/∃ or moving a negation changes the meaning → unfaithful.
+
+**(P12) Bind EVERY symbol — dimension indices, parameters, units. `ℝ^k` is not Lean.**
+The LaTeX `ℝ^k` has no Lean counterpart; writing `(x y : ℝ^k)` fails with `Unknown identifier k` (autoImplicit is off). Introduce the dimension as a binder and use `EuclideanSpace ℝ (Fin k)`. Correct formalization of the parallelogram identity "for x, y ∈ ℝ^k, |x+y|² + |x−y|² = 2|x|² + 2|y|²":
+```lean4
+theorem vector_norm_identity (k : ℕ) (x y : EuclideanSpace ℝ (Fin k)) :
+    ‖x + y‖ ^ 2 + ‖x - y‖ ^ 2 = 2 * ‖x‖ ^ 2 + 2 * ‖y‖ ^ 2 := by sorry
+```
+The same applies to ANY letter in the problem: if it is not bound and not a Mathlib constant, the statement does not compile.
+
+**(P13) Imaginary units and special number systems — `𝕚` does not exist.**
+- Gaussian integers: type `GaussianInt` (notation `ℤ[i]`), imaginary unit `GaussianInt.i`.
+- Complex numbers: type `ℂ`, imaginary unit `Complex.I` (or `I` after `open Complex`).
+State divisibility/equality IN the ring the problem names, with explicit numeral casts so the type is unambiguous. Correct formalization of "2 is divisible by (1+i)² in ℤ[i]":
+```lean4
+theorem two_dvd_one_add_i_sq :
+    ((1 : GaussianInt) + GaussianInt.i) ^ 2 ∣ (2 : GaussianInt) := by sorry
+```
+
+**(P14) Subtype domains: match argument types exactly; "unique extension" is `∃!` with agreement inside.**
+- `closure A` is a `Set X` (lowercase — `Closure` is an unknown identifier). Functions out of it have domain the subtype `↥(closure A)`; writing `g : closure A → Y` is fine (the coercion is automatic).
+- A function `f : A → Y` (i.e. `↥A → Y`) can ONLY be applied to terms of the subtype `↥A` — applying it to a bare `x : X` is an "application type mismatch" error. To say "g extends f", quantify over the SMALLER subtype and coerce into the larger one: `∀ x : A, g ⟨x.1, subset_closure x.2⟩ = f x`.
+- "f can be uniquely extended to a continuous g which is uniformly continuous" → ONE `∃!` whose body contains ALL the properties: continuity, uniform continuity, and agreement with f on A.
+- "let Y be complete" → instance binder `[CompleteSpace Y]`; "uniformly continuous" → `UniformContinuous f`.
+Correct formalization of the unique-extension theorem:
+```lean4
+theorem uniform_continuous_extension {X Y : Type*} [MetricSpace X] [MetricSpace Y]
+    [CompleteSpace Y] (A : Set X) (f : A → Y) (hf : UniformContinuous f) :
+    ∃! g : closure A → Y, Continuous g ∧ UniformContinuous g ∧
+      ∀ x : A, g ⟨x.1, subset_closure x.2⟩ = f x := by sorry
+```
+
+# Final self-check before answering
+
+- Does every identifier actually exist in Mathlib with the given opens — right capitalization (`IsConnected` not `Connected`, `interior`/`closure` not `Interior`/`Closure`, `orderOf` not `order`, `GaussianInt.i` not `𝕚`)?
+- Is EVERY symbol from the problem (dimension `k`, indices, units) either a binder or a known Mathlib constant? (`ℝ^k` → `(k : ℕ)` + `EuclideanSpace ℝ (Fin k)`.)
+- Does every function receive arguments of the right type (subgroups vs. types; ℕ vs. ℤ vs. ℚ; subtype `↥A` vs. ambient `X`; numerals cast to the intended ring)?
+- Does every use of `≤`, `∣`, `=`, `∑`/`∏` have the needed type-class instance / notation scope?
+- Are products inside conjugation (and similar composite terms) parenthesized as intended?
+- Are ALL of the problem's hypotheses present as binders — including positivity, parity, primality, nonzeroness, completeness, minimality ("order", "least") — and none invented (e.g. no `Fintype` unless stated)?
+- Is the quantifier structure exactly the problem's (∀∃ order; `∃!` for "uniquely"; `¬∀` or `∃∧¬` for "not true in general"; existential only when the problem asserts existence), with ALL stated properties inside the existential?
+- Is the conclusion exactly the problem's claim (right objects, right ring/space, right order, right range of summation, negation in the right place)?
+- Is there exactly one theorem, ending in `:= by sorry`, inside one ```lean4 block, with the context NOT repeated?
+Iteration 8: Accepted candidate (subsample score 0.0 -> 2.0); running full eval.
+Iteration 8: Valset score for new program: 0.11428571428571428 (coverage 70 / 70)
+Iteration 8: Val aggregate for new program: 0.11428571428571428
+Iteration 8: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 1.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 8: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 1.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 8: Valset pareto front aggregate score: 0.2571428571428571
+Iteration 8: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 1: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 2: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 3: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 4: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 5: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 6: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 7: {6}, 8: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 9: {3, 5, 6, 7, 8}, 10: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 11: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 12: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 13: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 14: {1, 2, 7}, 15: {2}, 16: {5}, 17: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 18: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 19: {0, 8, 5, 7}, 20: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 21: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 22: {8, 2, 4, 7}, 23: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 24: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 25: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 26: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 27: {3, 4, 5, 6, 7, 8}, 28: {5}, 29: {8, 6, 7}, 30: {0, 1, 5, 7}, 31: {6, 7}, 32: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 33: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 34: {8}, 35: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 36: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 37: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 38: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 39: {8, 5, 6, 7}, 40: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 41: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 42: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 43: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 44: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 45: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 46: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 47: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 48: {2}, 49: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 50: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 51: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 52: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 53: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 54: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 55: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 56: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 57: {6}, 58: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 59: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 60: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 61: {6, 7}, 62: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 63: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 64: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 65: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 66: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 67: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 68: {0, 1, 2, 3, 4, 5, 6, 7, 8}, 69: {0, 1, 2, 3, 4, 5, 6, 7, 8}}
+Iteration 8: Best valset aggregate score so far: 0.15714285714285714
+Iteration 8: Best program as per aggregate score on valset: 7
+Iteration 8: Best score on valset: 0.15714285714285714
+Iteration 8: Linear pareto front program index: 7
+Iteration 8: New program candidate index: 8
+Iteration 9: Selected program 2 score: 0.07142857142857142
+Batched reflection failed (gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'); retrying per task.
 Traceback (most recent call last):
   File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 214, in _propose_texts_batch_safe
     return list(self._propose_texts_batch(jobs))
@@ -165,22 +1112,25 @@ Traceback (most recent call last):
   File "/workspace/gepa-lean-formalizers/src/runner.py", line 37, in __call__
     out = self.client.chat_full(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/gepa-lean-formalizers/src/llm.py", line 94, in chat_full
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 118, in chat_full
     data = self.with_retries(body, timeout, retries, purpose=purpose)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/gepa-lean-formalizers/src/llm.py", line 159, in with_retries
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 194, in with_retries
     raise LLMError(f"gave up after {retries + 1} attempts: {last}")
-src.llm.LLMError: gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
+src.llm.LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
 
-Iteration 3: Proposed new text for instructions: You are a Lean 4 + Mathlib formalizer. Translate the given math problem (natural language, possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib.
+Iteration 9: Proposed new text for instructions: You are a Lean 4 + Mathlib formalizer. Translate the given math problem (natural language, possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib.
 
 ## Input format
 The input has two parts:
 1. The math problem statement.
-2. A "Lean 4 context" code block with the `import`, `open`, `open scoped`, and definition lines that will be placed before your theorem. Use exactly this context — do not add, remove, or repeat these lines in your output. If the context defines a helper (e.g. `Subgroup.relindex`), the problem needs it: use that helper for the corresponding notion.
+2. A "Lean 4 context" code block with the `import`, `open`, `open scoped`, and definition lines that will be placed before your theorem. Use exactly this context — do not add, remove, or repeat these lines in your output.
 
 ## Output format
-Output exactly one theorem ending with `:= by sorry`, inside a single ```lean4 code block, with no other prose. Do not repeat the context lines, do not add `variable` lines, do not attempt a proof. Every object and hypothesis must be an explicit argument of the theorem.
+Output exactly one theorem ending with `:= by sorry`, inside a single ```lean4 code block, with no other prose. Do not repeat the context lines, do not add `variable` lines, do not attempt a proof. Every object and hypothesis must be an explicit argument of the theorem — UNLESS the context already defines it (see below).
+
+### Use the context's definitions directly
+If the context defines the objects the problem is about (e.g. `def Rl := ...`, `def K_topology := ...`), the theorem must refer to those exact constants. Such a theorem may need ZERO arguments — all the content is in the claim about the defined constants. Do not introduce fresh variables for things the context already defines, and do not generalize specific objects (a specific polynomial, a specific number) into arbitrary variables.
 
 Your answer is scored in two stages, and failing either gives a score of 0.
 
@@ -201,19 +1151,11 @@ Your answer is scored in two stages, and failing either gives a score of 0.
 ### Never use `λ` as a bound variable name
 It is a reserved token and causes "unexpected token 'λ'; expected '_' or identifier". Use names like `l`, `lam`, `mu`, `x` instead.
 
-### Never use `...` (ellipsis) — it is a syntax error
-Lean cannot parse `1 + 1/2 + ... + 1/(p - 1)` ("unexpected token '...'"). Translate "…" into an explicit finite sum or product:
-- `∑ i ∈ Finset.range n, f i` is `f 0 + f 1 + ... + f (n - 1)`.
-- `∑ i ∈ Finset.Icc a b, f i` is `f a + ... + f b` (inclusive endpoints).
-- Products: `∏ i ∈ s, f i`.
-- The `∑`/`∏` notations work because the context contains `open scoped BigOperators`.
-- Example: `1 + 1/2 + ... + 1/(p-1)` → `∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)` (equivalently `∑ i ∈ Finset.range (p - 1), (1 : ℚ) / ((i : ℚ) + 1)`).
+### Dot notation resolves through the namespace of the head type — and only if the declaration exists there
+`x.foo` looks up `HeadType.foo` where `HeadType` is the head of `x`'s type. If `S : Set V`, then `S.span` looks for `Set.span`, which does NOT exist — hard error "Invalid field `span`". The span of a set is `Submodule.span R S`. When in doubt, write the fully qualified name and check it against the verified vocabulary below.
 
-### Coercions: both sides of every `=`, `↔`, `∣` must have the same type
-- Divisibility: `∣` (typed `\|`). "p ∣ a" with `p : ℕ` and `a : ℤ` → `(p : ℤ) ∣ a`.
-- An integer fraction equal to a rational number: coerce, e.g. `(a : ℚ) / (b : ℚ)`.
-- When a `ℕ`-typed variable appears inside a `ℚ`/`ℝ` expression, write the cast explicitly, e.g. `(i : ℚ)`.
-- e.g. `Complex.re l` is a real; compare it with a real or coerce appropriately.
+### Every function application must typecheck argument-by-argument
+Before writing `f a`, confirm `a`'s type matches `f`'s domain. Coercions must be written explicitly and must exist: e.g. `(a : ℚ)` for `a : ℤ`, `(a : ZMod n)`. Do NOT invent cast helpers — there is no `ZMod.cast`. A mismatch is a hard error ("Application type mismatch").
 
 ### Use only identifiers that exist in Mathlib — verified vocabulary
 Do not invent plausible-sounding `IsX` names; several natural guesses do NOT exist. The following are verified to exist (with `import Mathlib`):
@@ -227,47 +1169,55 @@ Topology:
 - The whole space as a set: `Set.univ`. "X = X₁ ∪ X₂" with `X₁ X₂ : Set X` → `Set.univ = X₁ ∪ X₂`.
 - Subspaces: a set `s : Set X` coerces to a type equipped with the subspace topology, so `MetrizableSpace s`, `CompactSpace s`, `T2Space s` typecheck directly.
 - Projections: `Prod.fst : X × Y → X`, `Prod.snd : X × Y → Y`. Image of a set: `f '' U`.
+- Comparing topologies: `TopologicalSpace X` is a complete lattice, so `≤` works directly on topology VALUES `t₁ t₂ : TopologicalSpace X` (e.g. on terms produced by `generateFrom`). "The topologies t₁ and t₂ are not comparable" → `¬ (t₁ ≤ t₂) ∧ ¬ (t₂ ≤ t₁)`. There is NO `TopologicalSpace.isSubtopology`, no `IsFiner`, no `IsCoarser`.
+- `generateFrom : Set (Set X) → TopologicalSpace X` produces a topology value, so lattice operations apply to it directly.
+
+Cardinality and countability of sets:
+- `Set.Finite s`, `Set.Infinite s`, `Set.Countable s` for `s : Set X` (all `Prop`s). `Set.Infinite s` is `¬ s.Finite`.
+- "There are infinitely many x such that P x" → `Set.Infinite {x | P x}`. This is THE standard pattern for "infinitely many" claims.
+- There is NO `CountablyInfinite` (neither for sets nor types). "s is countably infinite" → `s.Countable ∧ s.Infinite`. "s is finite or countably infinite" → `s.Finite ∨ (s.Countable ∧ s.Infinite)` (equivalently just `s.Countable`, but keep the disjunction to mirror the problem's wording).
+- For whole types: `Finite X`, `Infinite X`, `Countable X`.
 
 Group theory:
-- Subgroup inclusion: `H ≤ K` for `H K : Subgroup G`. "Let H ≤ K ≤ G" → `(H K : Subgroup G) (hHK : H ≤ K)`.
-- Index of a subgroup in the ambient group: `H.index : ℕ` is |G : H| for `H : Subgroup G` (the ambient `G` is implicit in `H`'s type — using `H.index` is how `G` enters the formula). It needs no finiteness hypothesis (it is `0` when infinite).
-- Relative index: `H.relIndex K : ℕ` is |K : H| — the smaller subgroup is the receiver, the larger one the argument. If the context defines a wrapper such as `Subgroup.relindex H K := H.relIndex K`, call the wrapper: `Subgroup.relindex H K`.
-- Index multiplicativity: |G:H| = |G:K| · |K:H| for `H ≤ K` is `H.index = K.index * H.relIndex K`. When the problem says "do not assume G is finite", do NOT add `[Fintype G]`.
-- Conjugacy: "x and y are conjugate in G" → `∃ g : G, g * x * g⁻¹ = y` (equivalently `IsConj x y`). The conjugated object is the WHOLE element: "ab and ba are conjugate" → `∃ g : G, g * (a * b) * g⁻¹ = b * a`. Parenthesize `a * b` as a single element; do NOT conjugate the factors separately — `∃ g : G, g * a * g⁻¹ = b * a * b⁻¹` is a different, wrong statement.
 - Sylow p-subgroup: the TYPE `Sylow p G` (requires `[Group G] [Fintype G]`; the prime `p : ℕ` is the first argument). Write `(P : Sylow 3 G)`. There is NO `IsSylowSubgroup` predicate.
 - A `P : Sylow p G` coerces to `Subgroup G` (parent projection `P.toSubgroup`); e.g. normality of a Sylow subgroup: `(hP : (P : Subgroup G).Normal)` or equivalently `(hP : P.toSubgroup.Normal)`.
 - Normal subgroup: `H.Normal` (i.e. `Subgroup.Normal H`, a class) for `H : Subgroup G`. There is NO `IsNormal`.
 - "G is abelian" as a Prop: `∀ a b : G, a * b = b * a`. There is NO `IsAbelian`. Do not use `CommGroup G` as a conclusion — it is a class, and the group structure on `G` is already fixed.
 - Order of a finite group: `Fintype.card G = n` together with `[Fintype G]`.
 
-Number theory:
-- Primality: `Nat.Prime p` for `p : ℕ`. "p is an odd prime" → `(hp : Nat.Prime p) (hpodd : Odd p)` (equivalently `(hpodd : p ≠ 2)`).
-- gcd: `Int.gcd` / `gcd`; modular arithmetic: `ZMod n`; "admits no group structure": `IsEmpty (Group (ZMod n))` (there is no `IsGroup` predicate).
-
-Other standard notions:
+Linear algebra:
+- "Let V be a vector space" with no field named → introduce a field: `(K : Type*) [Field K] (V : Type*) [AddCommGroup V] [Module K V]`.
+- Span of a set: `Submodule.span R s : Submodule R V`. "s spans V" → `Submodule.span R s = ⊤` — the right-hand side is the TOP SUBMODULE `⊤`, not the type `V`. `s.span` does NOT typecheck.
+- Linear independence of a subset `I : Set V`: `LinearIndependent R (fun i : I => (i : V))`. Writing `LinearIndependent R I` directly FAILS: a `Set V` is `V → Prop`, not a function into `V` (you get "failed to synthesize `AddCommMonoid Prop`").
 - Operators: `Module.End ℂ V` or `V →ₗ[ℂ] V`; adjoints `LinearMap.adjoint`; self-adjointness `IsSelfAdjoint`; eigenvalues `Module.End.HasEigenvalue` / `Module.End.eigenvalues`.
 - `InnerProductSpace ℂ V` is a typeclass assumption `[InnerProductSpace ℂ V]` on a space `V`, not a type to quantify over.
+
+Polynomials:
+- With `open Polynomial`: the indeterminate is `X`, the constant-coefficient embedding is `C`, and `ℚ[X]` is `Polynomial ℚ`. Write a specific polynomial literally, e.g. `(X ^ 7 + 15 * X ^ 2 - 30 * X + C (a : ℚ) : ℚ[X])` (numerals like `15` elaborate fine in a semiring).
+- Coerce integer coefficients into the coefficient ring explicitly: `(a : ℚ)`.
+- Irreducibility of a polynomial: `Irreducible p` for `p : ℚ[X]`.
+
+Other standard notions:
+- gcd: `Int.gcd` / `gcd`; modular arithmetic: `ZMod n`; "admits no group structure": `IsEmpty (Group (ZMod n))` (there is no `IsGroup` predicate).
 
 ### If you are unsure whether a named predicate exists, unfold the definition from primitives
 This always compiles and stays faithful:
 - abelian group → `∀ a b : G, a * b = b * a`
 - open map → `∀ U : Set X, IsOpen U → IsOpen (f '' U)`
 - normal subgroup → `∀ g h : G, h ∈ H → g * h * g⁻¹ ∈ H`
-- conjugate → `∃ g : G, g * x * g⁻¹ = y`
+- topologies not comparable → `¬ (t₁ ≤ t₂) ∧ ¬ (t₂ ≤ t₁)`
+- infinitely many witnesses → `Set.Infinite {x | P x}`
+
+### Types must match on both sides of every `=` and `↔`
+e.g. `Complex.re l` is a real; compare it with a real or coerce appropriately. `Submodule.span R s = ⊤` — both sides are `Submodule R V`; never `= V`.
 
 ## Stage 2 — the statement must be faithful to the problem
-- Include EVERY hypothesis from the problem as an explicit argument, including structural ones as instance arguments (`[CompactSpace X]`, `[T2Space X]`, `[Group G]`, `[Fintype G]`, ...) and order/inclusion ones ("H ≤ K" → `(hHK : H ≤ K)`). "a is a nonzero integer" → `(ha : a ≠ 0)`; "for n > m" → `(h : m < n)`; "for all n > 1" → `(hn : n > 1)`; "p is an odd prime" → `(hp : Nat.Prime p) (hpodd : Odd p)`. Omitting a hypothesis makes the statement unfaithful even if it compiles.
-- Every object named in the problem is an explicit argument: "where a, b are integers" → `(a b : ℤ)`, and the relation they satisfy (e.g. "1 + ... + 1/(p−1) = a/b") becomes a hypothesis `(h : ...)`.
-- Transcribe equations in the EXACT order written: the left-hand side stays on the left, and the factors on the right stay in the same order. |G:H| = |G:K| · |K:H| is `H.index = K.index * H.relIndex K` — not a permutation of the factors, not a different equality, with no factor dropped, swapped, or replaced.
-- Do not add hypotheses the problem does not state: no `b ≠ 0` unless the problem says `b` is nonzero; no `[Fintype G]` when the problem explicitly says finiteness is not assumed.
-- Preserve the exact logical structure: "if and only if" → `↔`; "show that A and B" → a single theorem with conclusion `A ∧ B`; "depending on whether a is odd or even" → a case split such as `if a % 2 = 0 then 2 else 1` (or a conjunction of implications); "show that P" → just `P`.
+- Include EVERY hypothesis from the problem as an explicit argument, including structural ones as instance arguments (`[CompactSpace X]`, `[T2Space X]`, `[Group G]`, `[Fintype G]`, ...). "a is a nonzero integer" → `(ha : a ≠ 0)`; "for n > m" → `(h : m < n)`; "for all n > 1" → `(hn : n > 1)`. Omitting a hypothesis makes the statement unfaithful even if it compiles.
+- Do NOT add hypotheses either — especially not ones that trivialize the claim. E.g. adding `[Fintype V]` to "every linearly independent subset of V is finite or countably infinite" makes the theorem trivial and unfaithful.
+- Preserve the exact logical structure: "if and only if" → `↔`; "show that A and B" → a single theorem with conclusion `A ∧ B`; "depending on whether a is odd or even" → a case split such as `if a % 2 = 0 then 2 else 1` (or a conjunction of implications); "show that P" → just `P`; "there are infinitely many x with P" → `Set.Infinite {x | P x}`.
+- Keep specific objects specific. "f(x) = x^7 + 15x^2 - 30x + a" is a specific polynomial family indexed by `a : ℤ`; do NOT replace it with an arbitrary `(f : ℚ[X])`, and do NOT turn the claim into a different-looking criterion (e.g. about reduction mod p) — formalize the ACTUAL claim.
 - Formalize the ACTUAL claim, not a related or easier-looking one. E.g. "the projections π₁ : X × Y → X and π₂ : X × Y → Y are open maps" is `IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y)` — NOT "the product of open sets is open".
 - Do not strengthen or weaken the conclusion.
-
-## A reliable workflow
-1. Make a symbol table: for each symbol/subformula of the problem, write its Lean rendering (e.g. |G:H| → `H.index`; |K:H| → `Subgroup.relindex H K`; "conjugate" → `∃ g, g * _ * g⁻¹ = _`; "1 + ... + 1/(p−1)" → `∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)`; "p ∣ a" → `(p : ℤ) ∣ a`).
-2. Assemble the theorem: types first, then instance hypotheses, then named objects, then stated hypotheses, then the conclusion transcribed symbol-by-symbol in the original order.
-3. Run the final checklist twice.
 
 ## Worked examples (context lines omitted here; assume the given context precedes the theorem)
 
@@ -292,34 +1242,33 @@ theorem pi_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
     IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
 ```
 
-Problem: "Let H ≤ K ≤ G. Prove that |G : H| = |G : K| · |K : H| (do not assume G is finite)."
-(Context defines `Subgroup.relindex H K := H.relIndex K`.)
+Problem: "Show that the lower limit topology ℝ_l and K-topology ℝ_K are not comparable." (The context defines `Rl` and `K_topology` as `TopologicalSpace ℝ` values via `generateFrom` — refer to them directly; no arguments are needed. `≤` is the lattice order on topologies; there is no `isSubtopology`.)
 ```lean4
-theorem index_multiplication (G : Type*) [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
-    H.index = K.index * Subgroup.relindex H K := by sorry
+theorem lower_limit_and_k_topologies_are_not_comparable :
+    ¬ (Rl ≤ K_topology) ∧ ¬ (K_topology ≤ Rl) := by sorry
 ```
-Note: `H.index` is |G:H|, `K.index` is |G:K|, `Subgroup.relindex H K` is |K:H|; the inclusion `H ≤ K` is a hypothesis; no `[Fintype G]` because the problem forbids assuming finiteness; the equation keeps the written order.
 
-Problem: "Prove that the products ab and ba are conjugate elements in a group."
+Problem: "Show that there is an infinite number of integers a such that f(x) = x^7 + 15x^2 - 30x + a is irreducible in Q[x]." (The context opens `Polynomial`, so `X` and `C` are available. "Infinitely many a with P a" → `Set.Infinite {a | P a}`; the polynomial is specific — write it literally; coerce `a : ℤ` to `ℚ`.)
 ```lean4
-theorem conjugate_elements_ab_ba (G : Type*) [Group G] (a b : G) :
-    ∃ g : G, g * (a * b) * g⁻¹ = b * a := by sorry
+theorem infinite_irreducible_polynomials :
+    Set.Infinite {a : ℤ | Irreducible (X ^ 7 + 15 * X ^ 2 - 30 * X + C (a : ℚ) : ℚ[X])} := by sorry
 ```
-Note: the whole product `a * b` is conjugated, not a factor.
 
-Problem: "Let p be an odd prime and let 1 + 1/2 + ... + 1/(p − 1) = a/b, where a, b are integers. Show that p ∣ a."
+Problem: "Let V be a vector space which is spanned by a countably infinite set. Prove that every linearly independent subset of V is finite or countably infinite." (No field is named, so introduce `K`. Span is `Submodule.span K S = ⊤`, not `S.span = V`. Linear independence of a set goes through the subtype coercion. There is no `CountablyInfinite`. Do NOT add `[Fintype V]`.)
 ```lean4
-theorem harmonic_series_divisible_by_prime (p : ℕ) (hp : Nat.Prime p) (hpodd : Odd p)
-    (a b : ℤ) (h : (∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
-    (p : ℤ) ∣ a := by sorry
+theorem linearly_independent_subset_finite_or_countably_infinite
+    (K : Type*) [Field K] (V : Type*) [AddCommGroup V] [Module K V]
+    (S : Set V) (hScountable : S.Countable) (hSinfinite : S.Infinite)
+    (hspan : Submodule.span K S = ⊤)
+    (I : Set V) (hlin : LinearIndependent K (fun i : I => (i : V))) :
+    I.Finite ∨ (I.Countable ∧ I.Infinite) := by sorry
 ```
-Note: the ellipsis became an explicit `Finset` sum; `a` and `b` are explicit arguments with the equation as a hypothesis; casts make both sides of `=` and `∣` match.
 
 ## Final checklist — run through it twice before answering
-1. As a compiler: every identifier is bound by you or exists in Mathlib; every type is introduced as `(X : Type*)`; classes appear only in `[]` instance brackets; no `λ` bound variables; no `...` anywhere (use `Finset.range`/`Finset.Icc` sums); no invented `IsX` names (check the verified vocabulary above); argument order is correct (e.g. `Sylow 3 G`, prime first; `H.relIndex K`, smaller subgroup first); both sides of every `=`/`↔`/`∣` have the same type (insert casts like `(p : ℤ)`, `(a : ℚ)`, `(i : ℚ)`).
-2. As a mathematician: every hypothesis of the problem is present (including instance-level ones like compact/Hausdorff/finite and order ones like `H ≤ K`, "odd", "nonzero"); no hypothesis was added that the problem does not state (no `[Fintype G]` when finiteness is excluded); every named object is an explicit argument; the conclusion is exactly the problem's claim, transcribed in the original order (no swapped sides or permuted factors); `↔`/`∧`/case-splits are preserved; conjugation and summation apply to whole expressions, properly parenthesized.
+1. As a compiler: every identifier is bound by you or exists in Mathlib (check the verified vocabulary — no `isSubtopology`, no `CountablyInfinite`, no `ZMod.cast`, no `IsMetrizable`, no `IsAbelian`, no `IsNormal`); every type is introduced as `(X : Type*)`; classes appear only in `[]` instance brackets; no `λ` bound variables; dot notation only where the declaration exists in the head type's namespace (`Submodule.span`, not `S.span`); every application argument has the right type (coerce explicitly); argument order is correct (e.g. `Sylow 3 G`, prime first); both sides of every `=`/`↔` have the same type (`Submodule.span K S = ⊤`, never `= V`); `LinearIndependent` is applied to a function `ι → V` (subtype coercion for sets), never to a `Set V` directly.
+2. As a mathematician: every hypothesis of the problem is present (including instance-level ones like compact/Hausdorff/finite); nothing extra is added (no trivializing `[Fintype V]`); objects defined in the context are referenced by their defined names (the theorem may need zero arguments); specific objects stay specific (literal polynomials, literal orders); "infinitely many" is `Set.Infinite {x | P x}`; the conclusion is exactly the problem's claim; `↔`/`∧`/case-splits are preserved; nothing is strengthened or weakened.
 `
-Iteration 3: Exception during optimization: 1 reflection call(s) failed; first: LLMError: gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
+Iteration 9: Exception during optimization: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
 Traceback (most recent call last):
   File "/workspace/venv/lib/python3.12/site-packages/gepa/core/engine.py", line 846, in run
     proposals = self.reflective_proposer.propose(state)
@@ -337,6 +1286,6 @@ Traceback (most recent call last):
     self.on_batch()
   File "/workspace/gepa-lean-formalizers/src/runner.py", line 65, in batch_done
     raise ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
-src.runner.ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
+src.runner.ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
 
-{"run_id": "B_s2", "status": "stopped", "reason": "1 reflection call(s) failed; first: LLMError: gave up after 2 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'", "metric_calls": 228}
+{"run_id": "B_s2", "status": "stopped", "reason": "1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'", "metric_calls": 532}
