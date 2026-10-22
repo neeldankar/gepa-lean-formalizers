@@ -1,0 +1,117 @@
+{
+ "dry_run": true,
+ "plan": {
+  "chunk": 4,
+  "runs_dir": "runs/dryrun_chunk5",
+  "final_dir": "runs/dryrun_chunk5/final",
+  "run_ids": [
+   "B_s0",
+   "D_s0"
+  ],
+  "override": {
+   "max_metric_calls": 10,
+   "val_limit": 5
+  },
+  "standin_ids": [
+   "pnv_004",
+   "pnv_011",
+   "pnv_019",
+   "pnv_029",
+   "pnv_042"
+  ],
+  "poll_seconds": 15
+ },
+ "started": "2026-10-22T02:49:24+00:00",
+ "gepa_exit_codes": {
+  "B_s0": 0,
+  "D_s0": 0
+ },
+ "sanity_problems": [],
+ "final": {
+  "A": {
+   "rows": 10,
+   "datasets": [
+    "dryrun_minif2f",
+    "dryrun_test"
+   ],
+   "item_ids": [
+    "pnv_004",
+    "pnv_011",
+    "pnv_019",
+    "pnv_029",
+    "pnv_042"
+   ]
+  },
+  "B": {
+   "rows": 10,
+   "datasets": [
+    "dryrun_minif2f",
+    "dryrun_test"
+   ],
+   "item_ids": [
+    "pnv_004",
+    "pnv_011",
+    "pnv_019",
+    "pnv_029",
+    "pnv_042"
+   ]
+  },
+  "C": {
+   "rows": 10,
+   "datasets": [
+    "dryrun_minif2f",
+    "dryrun_test"
+   ],
+   "item_ids": [
+    "pnv_004",
+    "pnv_011",
+    "pnv_019",
+    "pnv_029",
+    "pnv_042"
+   ]
+  },
+  "D": {
+   "rows": 10,
+   "datasets": [
+    "dryrun_minif2f",
+    "dryrun_test"
+   ],
+   "item_ids": [
+    "pnv_004",
+    "pnv_011",
+    "pnv_019",
+    "pnv_029",
+    "pnv_042"
+   ]
+  },
+  "E": {
+   "rows": 10,
+   "datasets": [
+    "dryrun_minif2f",
+    "dryrun_test"
+   ],
+   "item_ids": [
+    "pnv_004",
+    "pnv_011",
+    "pnv_019",
+    "pnv_029",
+    "pnv_042"
+   ]
+  },
+  "F": {
+   "rows": 5,
+   "datasets": [
+    "dryrun_test"
+   ],
+   "item_ids": [
+    "pnv_004",
+    "pnv_011",
+    "pnv_019",
+    "pnv_029",
+    "pnv_042"
+   ]
+  }
+ },
+ "outages": 0,
+ "finished": "2026-10-22T02:54:29+00:00"
+}

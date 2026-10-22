@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_228",
+        "sample": 0,
+        "output": "```lean4\ntheorem Cauchy_abelian_subgroup (G : Type _) [Fintype G] [Group G] [IsAbelian G] (n : \u2115) (hn : n \u2223 #G) :\n  \u2203 (H : Subgroup G), #H = n := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Cauchy_abelian_subgroup (G : Type _) [Fintype G] [Group G] [IsAbelian G] (n : \u2115) (hn : n \u2223 #G) :\n  \u2203 (H : Subgroup G), #H = n := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:84-7:86: error: unexpected token '#'; expected term\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

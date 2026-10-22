@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_342",
+        "sample": 0,
+        "output": "```lean4\ntheorem limit_sqrt_n_squared_plus_n_minus_n_eq_half : \n  Filter.Tendsto (fun n : \u2115 \u21d2 \u221a(n^2 + n) - n) atTop (nhds (1 / 2)) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem limit_sqrt_n_squared_plus_n_minus_n_eq_half : \n  Filter.Tendsto (fun n : \u2115 \u21d2 \u221a(n^2 + n) - n) atTop (nhds (1 / 2)) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:27-8:29: error: unexpected token '\u21d2'; expected '\u21a6', '=>'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

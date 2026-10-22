@@ -1,0 +1,21 @@
+[
+    {
+        "item_id": "pnv_147",
+        "sample": 0,
+        "output": "```lean4\ntheorem complex_inequality (z\u2081 z\u2082 z\u2083 z\u2084 : \u2102) (hz\u2081 : |z\u2081| = 1) (hz\u2082 : |z\u2082| = 1) (hz\u2083 : |z\u2083| = 1) (hz\u2084 : |z\u2084| = 1)\n    (nz\u2081 : z\u2081 \u2260 1) (nz\u2082 : z\u2082 \u2260 1) (nz\u2083 : z\u2083 \u2260 1) (nz\u2084 : z\u2084 \u2260 1) :\n    3 - z\u2081 - z\u2082 - z\u2083 - z\u2084 + z\u2081 * z\u2082 * z\u2083 * z\u2084 \u2260 0 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem complex_inequality (z\u2081 z\u2082 z\u2083 z\u2084 : \u2102) (hz\u2081 : |z\u2081| = 1) (hz\u2082 : |z\u2082| = 1) (hz\u2083 : |z\u2083| = 1) (hz\u2084 : |z\u2084| = 1)\n    (nz\u2081 : z\u2081 \u2260 1) (nz\u2082 : z\u2082 \u2260 1) (nz\u2083 : z\u2083 \u2260 1) (nz\u2084 : z\u2084 \u2260 1) :\n    3 - z\u2081 - z\u2082 - z\u2083 - z\u2084 + z\u2081 * z\u2082 * z\u2083 * z\u2084 \u2260 0 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:6:43-6:47: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Lattice \u2102\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:6:60-6:64: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Lattice \u2102\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:6:77-6:81: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Lattice \u2102\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:6:94-6:98: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Lattice \u2102\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

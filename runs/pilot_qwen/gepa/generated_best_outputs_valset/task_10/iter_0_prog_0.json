@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_035",
+        "sample": 0,
+        "output": "```lean4\ntheorem non_isomorphic_multiplicative_groups (f : GroupHom (MulGroup \u211d) (MulGroup \u2102)) : False := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem non_isomorphic_multiplicative_groups (f : GroupHom (MulGroup \u211d) (MulGroup \u2102)) : False := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:23-7:31: error(lean.unknownIdentifier): Unknown identifier `GroupHom`\n\nNote: It is not possible to treat `GroupHom` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

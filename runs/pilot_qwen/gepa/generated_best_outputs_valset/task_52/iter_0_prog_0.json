@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_278",
+        "sample": 0,
+        "output": "```lean4\ntheorem distinct_roots_of_x_m_minus_x (p : \u2115) (hp : Nat.Prime p) (n : \u2115) :\n  Disjoint (Polynomial.rootSet (Polynomial.X ^ (p ^ n) - Polynomial.X) \u2124) (Polynomial.derivative (Polynomial.X ^ (p ^ n) - Polynomial.X)).rootSet \u2124 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem distinct_roots_of_x_m_minus_x (p : \u2115) (hp : Nat.Prime p) (n : \u2115) :\n  Disjoint (Polynomial.rootSet (Polynomial.X ^ (p ^ n) - Polynomial.X) \u2124) (Polynomial.derivative (Polynomial.X ^ (p ^ n) - Polynomial.X)).rootSet \u2124 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:74-8:145: error: Application type mismatch: The argument\n  (derivative (X ^ p ^ n - X)).rootSet\nhas type\n  (S : Type ?u.7646) \u2192 [inst : CommRing S] \u2192 [IsDomain S] \u2192 [Algebra ?m.44 S] \u2192 Set S\nof sort\n  Type (max (?u.7646 + 1) ?u.7647)\nbut is expected to have type\n  Set \u2124\nof sort `Type` in the application\n  Disjoint ((X ^ p ^ n - X).rootSet \u2124) (derivative (X ^ p ^ n - X)).rootSet\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

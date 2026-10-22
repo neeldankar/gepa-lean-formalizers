@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_071",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_of_order_5_is_abelian (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 5) : Abelian G := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_of_order_5_is_abelian (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 5) : Abelian G := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:78-7:85: error(lean.unknownIdentifier): Unknown identifier `Abelian`\n\nNote: It is not possible to treat `Abelian` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

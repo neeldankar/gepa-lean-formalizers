@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_234",
+        "sample": 0,
+        "output": "```lean4\ntheorem characteristic_normal_implies_normal (G : Group) (H K : Subgroup G) (hHK : H \u2264 K) \n  (hChar : Characteristic H K) (hNorm : Normal K G) : Normal H G := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem characteristic_normal_implies_normal (G : Group) (H K : Subgroup G) (hHK : H \u2264 K) \n  (hChar : Characteristic H K) (hNorm : Normal K G) : Normal H G := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:23-7:28: error: type expected, got\n  (Group : Type ?u.2 \u2192 Type ?u.2)\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

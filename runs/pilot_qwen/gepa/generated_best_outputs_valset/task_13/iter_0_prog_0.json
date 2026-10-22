@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_051",
+        "sample": 0,
+        "output": "```lean4\ntheorem Sylow_subgroup_inheritance (G : Type) [Group G] (p : Nat.Prime) (P : Subgroup G) (H : Subgroup G)\n  (sylow : Sylow p P) (contains : P \u2264 H) : Sylow p (P \u2229 H) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Sylow_subgroup_inheritance (G : Type) [Group G] (p : Nat.Prime) (P : Subgroup G) (H : Subgroup G)\n  (sylow : Sylow p P) (contains : P \u2264 H) : Sylow p (P \u2229 H) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:44-7:53: error: type expected, got\n  (Nat.Prime : \u2115 \u2192 Prop)\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_089",
+        "sample": 0,
+        "output": "```lean4\ntheorem irreducibility_of_cyclotomic_polynomial (p : \u2115) (hp : Nat.Prime p) :\n  Irreducible (Polynomial.ofFun (fun n : \u2115 => 1) (fun n : \u2115 => n + 1) (p - 1)) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem irreducibility_of_cyclotomic_polynomial (p : \u2115) (hp : Nat.Prime p) :\n  Irreducible (Polynomial.ofFun (fun n : \u2115 => 1) (fun n : \u2115 => n + 1) (p - 1)) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:15-8:31: error(lean.unknownIdentifier): Unknown constant `Polynomial.ofFun`\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

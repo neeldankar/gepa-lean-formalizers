@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_261",
+        "sample": 0,
+        "output": "```lean4\ntheorem characteristic_subgroup_of_abelian_group (p : \u2115) (n m : \u2115) (hp : Nat.Prime p) (hpm : p \u2226 m) (G : Type) [Group G] [Fintype G] [DecidableEq G] :\n  Fintype.card G = p^n * m \u2192\n  \u2200 (H : Subgroup G) (hH : Fintype.card H = p^n) \u2192\n  IsCharacteristic H := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem characteristic_subgroup_of_abelian_group (p : \u2115) (n m : \u2115) (hp : Nat.Prime p) (hpm : p \u2226 m) (G : Type) [Group G] [Fintype G] [DecidableEq G] :\n  Fintype.card G = p^n * m \u2192\n  \u2200 (H : Subgroup G) (hH : Fintype.card H = p^n) \u2192\n  IsCharacteristic H := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:64: error: expected token\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

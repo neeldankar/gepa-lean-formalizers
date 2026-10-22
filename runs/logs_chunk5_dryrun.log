@@ -1,0 +1,10 @@
+[2026-10-22T02:49:23Z] start chunk5_dryrun: python -m scripts.chunk5_job --dry-run
+GEPA runs: ['B_s0', 'D_s0']
+sanity check passed
+arm A: 10 rows
+arm B: 10 rows
+arm C: 10 rows
+arm D: 10 rows
+arm E: 10 rows
+arm F: 5 rows
+[2026-10-22T02:54:29Z] end chunk5_dryrun: exit 0

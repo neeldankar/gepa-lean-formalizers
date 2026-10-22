@@ -1,0 +1,53 @@
+[
+  {
+    "i": 0,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      1,
+      33,
+      36
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          1,
+          33,
+          36
+        ],
+        "subsample_scores": [
+          1.0,
+          1.0,
+          0.0
+        ],
+        "new_subsample_scores": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "subsample_scores": [
+      1.0,
+      1.0,
+      0.0
+    ],
+    "new_subsample_scores": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "new_program_idx": 1,
+    "new_program_indices": [
+      1
+    ],
+    "evaluated_val_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  }
+]

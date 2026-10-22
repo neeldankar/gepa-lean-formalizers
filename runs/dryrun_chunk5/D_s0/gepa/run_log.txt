@@ -1,0 +1,49 @@
+Iteration 0: Base program full valset score: 0.6 over 5 / 5 examples
+Iteration 1: Selected program 0 score: 0.6
+Iteration 1: Proposed new text for instructions: You are given a mathematical problem stated in natural language, together with a Lean 4 context (imports, opens, and possibly definitions, all from Mathlib). Your task is to translate the problem into EXACTLY ONE Lean 4 theorem statement that (1) compiles under the given context and (2) faithfully expresses the mathematical claim. Do NOT prove the theorem — end the statement with `:= by sorry`. Do not add imports, helper lemmas, or definitions.
+
+## Output format
+A single theorem in a ```lean4 code block:
+  theorem <name> <binders> : <statement> := by sorry
+
+## Faithfulness requirements
+- Use exactly the same objects, hypotheses, and conclusion as the natural-language problem: no extra hypotheses, no missing conditions, no stronger or weaker claims.
+- Preserve case distinctions as conjunctions of implications. E.g., "the gcd is 1 or 2 depending on whether a is odd or even" becomes:
+    (Odd a → Int.gcd (a^(2^n) + 1) (a^(2^m) + 1) = 1) ∧
+    (Even a → Int.gcd (a^(2^n) + 1) (a^(2^m) + 1) = 2)
+- Translate "there exists a unique ..." as `∃!`.
+- Include all given hypotheses as binders, e.g., `(ha : a ≠ 0)`, `(hnm : n > m)`.
+- Choose the right types and add explicit type ascriptions to fix ambiguity, e.g.:
+    Irreducible (Polynomial.X^3 + 6 * Polynomial.X + 12 : Polynomial ℚ)
+
+## Compilation requirements (crucial — a non-compiling statement scores 0)
+- The most common failure is using identifiers that do not exist in Mathlib. NEVER invent plausible-sounding lemma/constant names. For example, `closure.mem_of_mem_insert` does NOT exist and caused a failure.
+- Only use well-known identifiers that certainly exist, e.g.: `Polynomial.X`, `Irreducible`, `Int.gcd`, `Odd`, `Even`, `MetricSpace`, `CompleteSpace`, `closure`, `subset_closure`, `Continuous`, `UniformContinuous`, `Set`, subtype notation `{x : X // x ∈ A}`.
+- Useful known fact: `subset_closure : s ⊆ closure s` exists in Mathlib. To view an element `x : {x : X // x ∈ A}` as an element of `{x : X // x ∈ closure A}`, write:
+    ⟨x.val, subset_closure x.property⟩
+- If you are unsure whether a lemma name exists, RESTRUCTURE the statement to avoid it (use `subset_closure`, explicit membership hypotheses, or quantification over the base type) instead of guessing a name.
+- Keep the statement as simple as possible while remaining faithful; deeply nested or clever term constructions increase the risk of unknown identifiers and type errors.
+- Correct instance/binder patterns: `(X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y]`, `(a : ℤ)`, `(n m : ℕ)`, `(A : Set X)`, `(f : {x : X // x ∈ A} → Y)`, `(hf : UniformContinuous f)`.
+
+## Verification step (perform before finalizing)
+Mentally type-check the statement:
+1. Every identifier is either a bound variable, opened by the given context, or a Mathlib constant you are certain exists.
+2. Binder types and type-class instances are correct.
+3. Hypotheses exactly match the problem statement.
+4. The conclusion exactly matches the problem's claim (including case splits and uniqueness).
+5. The whole term would elaborate with only the given imports/opens.
+
+## Procedure
+Think step by step: (a) restate the problem's objects, hypotheses, and conclusion; (b) map each component to Lean/Mathlib constructs you are certain exist; (c) assemble the theorem; (d) run the verification checklist above for both compilability and faithfulness; then output only the final theorem.
+Iteration 1: Accepted candidate (subsample score 2.0 -> 3.0); running full eval.
+Iteration 1: Valset score for new program: 0.4 (coverage 5 / 5)
+Iteration 1: Val aggregate for new program: 0.4
+Iteration 1: Individual valset scores for new program: {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0, 4: 0.0}
+Iteration 1: New valset pareto front scores: {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0, 4: 0.0}
+Iteration 1: Valset pareto front aggregate score: 0.6
+Iteration 1: Updated valset pareto front programs: {0: {0, 1}, 1: {0, 1}, 2: {0}, 3: {0, 1}, 4: {0, 1}}
+Iteration 1: Best valset aggregate score so far: 0.6
+Iteration 1: Best program as per aggregate score on valset: 0
+Iteration 1: Best score on valset: 0.6
+Iteration 1: Linear pareto front program index: 0
+Iteration 1: New program candidate index: 1

@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_239",
+        "sample": 0,
+        "output": "```lean4\ntheorem Groupprops_exercise_simple_group_order_2907 (G : Type) [Fintype G] [Group G] (h : Fintype.card G = 2907) : \u00acIsSimple G := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Groupprops_exercise_simple_group_order_2907 (G : Type) [Fintype G] [Group G] (h : Fintype.card G = 2907) : \u00acIsSimple G := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:82-7:90: error(lean.unknownIdentifier): Unknown identifier `IsSimple`\n\nNote: It is not possible to treat `IsSimple` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

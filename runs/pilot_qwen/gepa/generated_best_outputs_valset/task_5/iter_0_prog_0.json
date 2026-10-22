@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_022",
+        "sample": 0,
+        "output": "```lean4\ntheorem Bessel_inequality (u v : InnerProductSpace \u03b1) (a : \u03b1) :\n  inner u v = 0 \u2194 \u2200 a : \u03b1, norm u \u2264 norm (u + a \u2022 v) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Bessel_inequality (u v : InnerProductSpace \u03b1) (a : \u03b1) :\n  inner u v = 0 \u2194 \u2200 a : \u03b1, norm u \u2264 norm (u + a \u2022 v) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:43-7:44: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

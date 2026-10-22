@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_001",
+        "sample": 0,
+        "output": "```lean4\ntheorem abelian_generated_by_commuting_elements (G : Type _) [Group G] (a b : G) :\n  \u2200 (H : Subgroup G) (hH : H = \u27e8a, b\u27e9), Abelian H := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem abelian_generated_by_commuting_elements (G : Type _) [Group G] (a b : G) :\n  \u2200 (H : Subgroup G) (hH : H = \u27e8a, b\u27e9), Abelian H := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:32-8:33: error: Application type mismatch: The argument\n  a\nhas type\n  G\nbut is expected to have type\n  Submonoid G\nin the application\n  Subgroup.mk a\n",
+            "-:8:40-8:47: error(lean.unknownIdentifier): Unknown identifier `Abelian`\n\nNote: It is not possible to treat `Abelian` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

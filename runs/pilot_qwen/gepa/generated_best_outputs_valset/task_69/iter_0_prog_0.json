@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_367",
+        "sample": 0,
+        "output": "```lean4\ntheorem Ahlfors_exercise_2_2 (f : \u2102 \u2192 \u2102) (hf : \u2200 z \u2208 UnitDisc, HasDerivativeAt f z) (hb : BoundedOn f UnitDisc) (h0 : \u00ac \u2200 z \u2208 UnitDisc, f z = 0) :\n  \u2211' (n : \u2115) (1 - |(z n)|) < \u221e := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Ahlfors_exercise_2_2 (f : \u2102 \u2192 \u2102) (hf : \u2200 z \u2208 UnitDisc, HasDerivativeAt f z) (hb : BoundedOn f UnitDisc) (h0 : \u00ac \u2200 z \u2208 UnitDisc, f z = 0) :\n  \u2211' (n : \u2115) (1 - |(z n)|) < \u221e := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:14-8:15: error: unexpected token; expected '_' or identifier\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]
