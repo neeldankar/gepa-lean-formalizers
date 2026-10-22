@@ -209,7 +209,9 @@ class LLMClient:
         after = getattr(error, "retry_after", None)
         return max(delay, min(after, MAX_RETRY_AFTER)) if after is not None else delay
 
-    def log_failure(self, body, purpose, error, seconds):
+    def log_failure(self, body, purpose, error, seconds, attempt=None, final=False):
+        """One row per failed attempt; `final` marks the attempt that ended the call (retries used up or
+        a non-retryable error), which the chunk 5 tripwire watches for."""
         with self.lock:
             self.failures_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.failures_path, "a") as f:
@@ -217,7 +219,7 @@ class LLMClient:
                     "time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "chunk": self.chunk,
                     "run_id": self.run_id, "purpose": purpose, "model": body.get("model"),
                     "kind": "timeout" if isinstance(error, CallTimeout) else type(error).__name__,
-                    "error": str(error)[:300], "seconds": round(seconds, 1),
+                    "error": str(error)[:300], "seconds": round(seconds, 1), "attempt": attempt, "final": final,
                 }) + "\n")
 
     def with_retries(self, body, timeout, retries, purpose=None):
@@ -233,12 +235,12 @@ class LLMClient:
                     raise RetryableError(f"reply without choices: {str(data.get('error'))[:300]}")
                 return data
             except RetryableError as e:
-                self.log_failure(body, purpose, e, time.monotonic() - t0)
+                self.log_failure(body, purpose, e, time.monotonic() - t0, attempt, final=attempt == retries)
                 last = e
                 if attempt < retries:
                     self.sleep(self.retry_delay(attempt, purpose, e))
             except LLMError as e:
-                self.log_failure(body, purpose, e, time.monotonic() - t0)
+                self.log_failure(body, purpose, e, time.monotonic() - t0, attempt, final=True)
                 raise
         raise LLMError(f"gave up after {retries + 1} attempts: {last}")
 

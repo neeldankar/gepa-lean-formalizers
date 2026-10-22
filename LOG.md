@@ -6,7 +6,7 @@
 - **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
 - **Next:** resume on a new pod with Kimi-K3 through OpenRouter pinned to Together (Deviation 2): the 5 stopped runs, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
 - **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
-- **Waiting on Neel:** resume or hold after the D_s2 replays (streamed replay 1 failed at 300.8 s; replay 2 completed in 125.2 s). Pod 7 is kept up (Neel), paused since 20:43 UTC.
+- **Waiting on Neel:** nothing. Resuming B_s0, B_s1, D_s1, D_s2 on pod 7 with streaming and the new tripwire rule (Neel, 2026-10-22); then the final eval, then the pod stops itself.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,11 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 5 · tripwire rule: provider-wide outages only
+
+- **Neel:** the tripwire should catch a provider-wide outage, not one unlucky call. The old rule (3+ failed reflection attempts in 15 min) tripped on one D_s2 call stalling 3 times. New rule: trip when (a) failed reflection attempts come from 2 or more different runs within 15 minutes, or (b) any single reflection call fails for good (all 4 retries used up, or an error not worth retrying).
+- **Code:** each `api_failures.jsonl` row now has `attempt` and `final` (true on the attempt that ended the call). `tripwire.trip_reason` returns the rule that fired and its rows; rows from before the field count as not final. Logging only: no model, prompt, temperature, retry or scoring change. Tests: 231 pass (4 tripwire tests replace 2, plus 1 llm assertion set).
 
 ### 2026-10-22 · chunk 5 · transport fix: Kimi-K3 calls stream; replay of D_s2's failed reflection
 

@@ -1,5 +1,8 @@
-"""Chunk 5 tripwire (Neel, 2026-10-22): if reflection attempts start failing (3 or more failed attempts
-within 15 minutes), pause every GEPA run cleanly before any run uses up its retries and stops for good.
+"""Chunk 5 tripwire (Neel, 2026-10-22): pause every GEPA run cleanly when Kimi-K3 looks down provider-wide.
+It trips when (a) failed reflection attempts come from 2 or more different runs within 15 minutes, or (b) any
+single reflection call ends in failure (its retries used up, or an error not worth retrying). One unlucky call
+retrying in one run is not an outage: the first rule (3+ failed attempts in 15 min, any runs) tripped pod 7
+on three ~300 s stalls of a single D_s2 call that then completed on a plain retry.
 
 Usage on the pod, in its own tmux session next to the job:
   python -m scripts.tripwire --since ISO_TIME [--session chunk5]
@@ -25,7 +28,7 @@ from src.config import ROOT, load_config
 from src.costs import GpuMeter
 from src.llm import FAILURES_PATH
 
-THRESHOLD = 3
+MIN_RUNS = 2
 WINDOW = timedelta(minutes=15)
 POLL_SECONDS = 30
 WAIT_FOR_NEEL = 30 * 60
@@ -39,8 +42,19 @@ def recent_failures(rows, now, since, window=WINDOW):
     return [r for r in rows if r.get("purpose") == "reflection" and datetime.fromisoformat(r["time"]) >= start]
 
 
-def should_trip(rows, now, since, threshold=THRESHOLD, window=WINDOW):
-    return len(recent_failures(rows, now, since, window)) >= threshold
+def trip_reason(rows, now, since, window=WINDOW):
+    """(rule, failures) when the tripwire should trip, else None."""
+    recent = recent_failures(rows, now, since, window)
+    final = [r for r in recent_failures(rows, now, since, now - since) if r.get("final")]
+    if final:
+        return "a reflection call failed for good (retries used up or not retryable)", final
+    if len({r.get("run_id") for r in recent}) >= MIN_RUNS:
+        return f"failed reflection attempts in {MIN_RUNS}+ different runs within {WINDOW}", recent
+    return None
+
+
+def should_trip(rows, now, since, window=WINDOW):
+    return trip_reason(rows, now, since, window) is not None
 
 
 def read_failures(path=FAILURES_PATH):
@@ -100,18 +114,18 @@ def stop_pod(run=subprocess.run):
     run(["runpodctl", "stop", "pod", env["RUNPOD_POD_ID"]], env={**os.environ, "RUNPOD_API_KEY": env["RUNPOD_API_KEY"]})
 
 
-def trip(failures, session, work=WORK, run=subprocess.run, kill=os.kill, sleep=time.sleep, wait=WAIT_FOR_NEEL,
+def trip(rule, failures, session, work=WORK, run=subprocess.run, kill=os.kill, sleep=time.sleep, wait=WAIT_FOR_NEEL,
          meter=None, push=push, stop_pod=stop_pod):
     """Pause, record why, push, then wait for Neel before stopping the pod."""
     left = pause(session, run=run, kill=kill, sleep=sleep)
     now = datetime.now(timezone.utc)
-    reason = {"time": now.isoformat(timespec="seconds"), "rule": f"{THRESHOLD}+ failed reflection attempts in {WINDOW}",
+    reason = {"time": now.isoformat(timespec="seconds"), "rule": rule,
               "failures": [{k: r.get(k) for k in ("time", "run_id", "kind", "seconds", "error")} for r in failures],
               "killed_with_sigkill": left, "action": "paused; GEPA state kept; no STOPPED or DONE written"}
     (work / "TRIPWIRE").write_text(json.dumps(reason, indent=1) + "\n")
     (ROOT / "runs/chunk5").mkdir(parents=True, exist_ok=True)
     (ROOT / "runs/chunk5/tripwire.json").write_text(json.dumps(reason, indent=1) + "\n")
-    push(f"TRIPWIRE: chunk 5 paused, {len(failures)} failed reflection attempts in 15 min")
+    push(f"TRIPWIRE: chunk 5 paused: {rule}")
     meter = meter or GpuMeter(load_config(), 5, "tripwire_wait")  # the job's meter died with the job
     waited = 0
     while waited < wait and not (work / "KEEP_POD").exists():
@@ -128,13 +142,14 @@ def trip(failures, session, work=WORK, run=subprocess.run, kill=os.kill, sleep=t
 def main(argv):
     since = datetime.fromisoformat(argv[argv.index("--since") + 1])
     session = argv[argv.index("--session") + 1] if "--session" in argv else "chunk5"
-    print(f"tripwire armed: {THRESHOLD}+ failed reflection attempts in {WINDOW}, since {since.isoformat()}", flush=True)
+    print(f"tripwire armed: failed reflection attempts in {MIN_RUNS}+ runs within {WINDOW}, or one reflection call"
+          f" failed for good; since {since.isoformat()}", flush=True)
     while session_alive(session):
         now = datetime.now(timezone.utc)
-        failures = recent_failures(read_failures(), now, since)
-        if len(failures) >= THRESHOLD:
-            print(f"tripped at {now.isoformat(timespec='seconds')}: {len(failures)} failed attempts", flush=True)
-            print(trip(failures, session), flush=True)
+        reason = trip_reason(read_failures(), now, since)
+        if reason:
+            print(f"tripped at {now.isoformat(timespec='seconds')}: {reason[0]}", flush=True)
+            print(trip(*reason, session), flush=True)
             return
         time.sleep(POLL_SECONDS)
     print("job session ended without a trip", flush=True)

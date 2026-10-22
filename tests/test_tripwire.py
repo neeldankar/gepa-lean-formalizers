@@ -1,4 +1,5 @@
-"""The chunk 5 tripwire: 3+ failed reflection attempts in 15 minutes pause every run cleanly."""
+"""The chunk 5 tripwire: failed reflection attempts in 2+ runs within 15 minutes, or one reflection call failed
+for good, pause every run cleanly."""
 import json
 import signal
 from datetime import datetime, timedelta, timezone
@@ -8,22 +9,39 @@ from scripts import tripwire
 SINCE = datetime(2026, 10, 22, 19, 0, tzinfo=timezone.utc)
 
 
-def fail(minutes, purpose="reflection"):
+def fail(minutes, purpose="reflection", run_id="B_s0", attempt=0, final=False):
     return {"time": (SINCE + timedelta(minutes=minutes)).isoformat(timespec="seconds"), "purpose": purpose,
-            "run_id": "B_s0", "kind": "RetryableError", "seconds": 340.0, "error": "HTTP 503"}
+            "run_id": run_id, "kind": "RetryableError", "seconds": 340.0, "error": "HTTP 503",
+            "attempt": attempt, "final": final}
 
 
-def test_three_failures_in_fifteen_minutes_trip():
+def test_one_call_retrying_in_one_run_does_not_trip():
+    # Pod 7, 20:43 UTC: one D_s2 call stalled ~300 s on 3 attempts, and the same request later completed
     now = SINCE + timedelta(minutes=30)
-    assert not tripwire.should_trip([fail(20), fail(25)], now, SINCE)
-    assert tripwire.should_trip([fail(16), fail(20), fail(29)], now, SINCE)
+    stalls = [fail(16, run_id="D_s2", attempt=0), fail(21.5, run_id="D_s2", attempt=1), fail(27.5, run_id="D_s2", attempt=2)]
+    assert not tripwire.should_trip(stalls, now, SINCE)
+    assert not tripwire.should_trip(stalls + [fail(28.5, run_id="D_s2", attempt=3)], now, SINCE)
 
 
-def test_failures_spread_out_or_old_or_not_reflection_do_not_trip():
+def test_failures_in_two_runs_within_fifteen_minutes_trip():
     now = SINCE + timedelta(minutes=30)
-    assert not tripwire.should_trip([fail(1), fail(10), fail(29)], now, SINCE)  # only one inside the last 15 min
-    assert not tripwire.should_trip([fail(-5), fail(-3), fail(20), fail(25)], SINCE + timedelta(minutes=10), SINCE + timedelta(minutes=0))
-    assert not tripwire.should_trip([fail(20, "generate"), fail(21, "generate"), fail(22, "ref_judge")], now, SINCE)
+    rule, failures = tripwire.trip_reason([fail(20, run_id="D_s2"), fail(25, run_id="B_s1")], now, SINCE)
+    assert "2+ different runs" in rule and len(failures) == 2
+    assert not tripwire.should_trip([fail(5, run_id="D_s2"), fail(25, run_id="B_s1")], now, SINCE)  # 20 min apart
+
+
+def test_a_call_that_used_up_its_retries_trips_even_alone():
+    now = SINCE + timedelta(minutes=60)
+    rows = [fail(10 + i, run_id="D_s2", attempt=i, final=i == 4) for i in range(5)]
+    rule, failures = tripwire.trip_reason(rows, now, SINCE)  # the last attempt is 46 min old: still trips
+    assert "for good" in rule and [r["attempt"] for r in failures] == [4]
+
+
+def test_failures_old_or_not_reflection_do_not_trip():
+    now = SINCE + timedelta(minutes=30)
+    assert not tripwire.should_trip([fail(-5, run_id="D_s2", final=True), fail(-3, run_id="B_s1")], now, SINCE)
+    assert not tripwire.should_trip([fail(20, "generate", "final_F", final=True), fail(21, "ref_judge", "final")], now, SINCE)
+    assert not tripwire.should_trip([{k: v for k, v in fail(20).items() if k != "final"}], now, SINCE)  # rows before the field
 
 
 class FakeRun:
@@ -80,16 +98,16 @@ def run_trip(tmp_path, monkeypatch, keep):
             (tmp_path / "KEEP_POD").write_text("")
 
     monkeypatch.setattr(tripwire, "proc_cmdlines", run.cmdlines)
-    out = tripwire.trip([fail(20), fail(21), fail(22)], "chunk5", work=tmp_path, run=run, kill=run.kill, sleep=sleep,
+    out = tripwire.trip("rule", [fail(20), fail(21), fail(22)], "chunk5", work=tmp_path, run=run, kill=run.kill, sleep=sleep,
                         wait=600, meter=Meter(), push=pushes.append, stop_pod=lambda: stops.append(1))
     return out, pushes, stops, run
 
 
 def test_trip_records_why_pushes_and_stops_the_pod_if_no_answer(tmp_path, monkeypatch):
     out, pushes, stops, run = run_trip(tmp_path, monkeypatch, keep=False)
-    assert out == "stopped" and stops == [1] and len(pushes) == 2 and pushes[0].startswith("TRIPWIRE")
+    assert out == "stopped" and stops == [1] and len(pushes) == 2 and pushes[0].startswith("TRIPWIRE") and "rule" in pushes[0]
     reason = json.loads((tmp_path / "TRIPWIRE").read_text())
-    assert len(reason["failures"]) == 3 and "no STOPPED or DONE" in reason["action"]
+    assert reason["rule"] == "rule" and len(reason["failures"]) == 3 and "no STOPPED or DONE" in reason["action"]
     assert json.loads((tmp_path / "runs/chunk5/tripwire.json").read_text()) == reason
     assert run.calls[0][:2] == ["tmux", "kill-session"]
 

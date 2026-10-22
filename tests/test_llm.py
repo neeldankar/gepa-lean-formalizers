@@ -159,6 +159,7 @@ def test_reflection_retries_four_times_with_exponential_backoff_and_jitter(tmp_p
         assert 0.8 * base <= wait <= 1.2 * base
     rows = [json.loads(l) for l in (tmp_path / "api_failures.jsonl").read_text().splitlines()]
     assert len(rows) == 4 and all(r["purpose"] == "reflection" for r in rows)
+    assert [r["attempt"] for r in rows] == [0, 1, 2, 3] and not any(r["final"] for r in rows)  # the call succeeded
 
 
 def test_reflection_gives_up_after_five_attempts(tmp_path):
@@ -171,6 +172,8 @@ def test_reflection_gives_up_after_five_attempts(tmp_path):
     with pytest.raises(LLMError, match="gave up after 5 attempts"):
         c.chat("m", [{"role": "user", "content": "r"}], purpose="reflection")
     assert len(calls) == 5 and len(c.slept) == 4
+    rows = [json.loads(l) for l in (tmp_path / "api_failures.jsonl").read_text().splitlines()]
+    assert [r["final"] for r in rows] == [False] * 4 + [True]  # the tripwire's "failed for good" signal
 
 
 def test_jitter_varies_the_waits(tmp_path):
