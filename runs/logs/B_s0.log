@@ -1,136 +1,41 @@
 Loading gepa state from run dir
-Iteration 2: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
-Iteration 3: Selected program 1 score: 0.04285714285714286
-Iteration 3: Proposed new text for instructions: Translate the given math problem into a single Lean 4 theorem statement using Mathlib.
-
-## Input format
-You are given:
-1. A math problem stated in English/LaTeX.
-2. A "Lean 4 context": the exact `import`, `open`, `open scoped` (and possibly definition) lines that will be prepended before your theorem. Rely only on this context — do not add imports or opens, and do not repeat the context lines in your answer. You may (and should) refer to any constants defined in the context by their exact names. Write exactly one theorem.
-
-## Output format
-- Output exactly one theorem inside a single ```lean4 code block.
-- The theorem must end with `:= by sorry` (no proof is required).
-- Give the theorem a descriptive snake_case name.
-
-## Grading criteria
-1. **Compilation**: the statement must compile under the given context with `autoImplicit = false`. Every identifier must be either bound in your theorem or an existing Mathlib name in scope; an unknown identifier is a hard error, never an auto-bound variable. Never invent plausible-looking identifiers (e.g. `𝕚`, `Nat.phi`) — only use names you are certain exist in Mathlib. Notations must be written in their exact full form: e.g. modular congruence is only valid as `a ≡ b [MOD n]` or `a ≡ b [ZMOD n]`; a bare `a ≡ b` is a parse error ("unexpected token ... expected '[MOD', '[PMOD', '[SMOD' or '[ZMOD'").
-2. **Faithfulness**: a judge compares your statement against the English text. A statement that compiles still fails if it drops, weakens, or alters any part of the problem.
-
-## Faithfulness rules
-- Include EVERY hypothesis from the English text as an explicit named argument. Examples: "a is a nonzero integer" → `(a : ℤ) (ha : a ≠ 0)`; "for n > m" → `(m n : ℕ) (h : m < n)`. Omitting a hypothesis (e.g. forgetting `ha : a ≠ 0`) is a classic faithfulness failure even when the statement compiles.
-- "Prove that if P then Q": bind every variable occurring in P and Q as its own argument, add P as a named hypothesis, and make Q the conclusion. Do not substitute P into Q or drop the conditional structure.
-- Reproduce the conclusion exactly, including case splits: "… is 1 or 2 depending on whether a is odd or even" can be encoded as `... = if a % 2 = 0 then 2 else 1`.
-- "There exists a unique" → `∃!`.
-- "X and Y are not comparable" (topologies, or any ordered objects) → `¬ (X ≤ Y) ∧ ¬ (Y ≤ X)`.
-- "a is divisible by b" → `b ∣ a` (the divisor goes on the LEFT of `∣`).
-- "m is relatively prime to n" → `Nat.Coprime m n` for naturals, `IsCoprime m n` for integers/rings. Never paraphrase coprimality as `m % n ≠ 0` — that is a different, weaker statement.
-- Map objects to the right types: integers `ℤ`, naturals `ℕ`, rationals `ℚ`, reals `ℝ`; a polynomial over ℚ is `Polynomial ℚ` with indeterminate `X`, e.g. `(X^3 + 6*X + 12 : Polynomial ℚ)`; "irreducible in ℚ" → `Irreducible (p : Polynomial ℚ)`; the Gaussian integers ℤ[i] are the type `GaussianInt` (see below).
-
-## Mathlib facts and compilation pitfalls
-- Topological closure is `closure` (lowercase). `Closure` does not exist and raises "unknown identifier".
-- Other exact names: `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `Irreducible`, `Polynomial`, `subset_closure` (of type `s ⊆ closure s`), `Set.inclusion` (of type `s ⊆ t → s → t`).
-- Euler's φ-function is `Nat.totient : ℕ → ℕ`. `Nat.phi` does NOT exist.
-- Gaussian integers: the type is `GaussianInt` (also available via the notation `ℤ[i]`); the imaginary unit is `GaussianInt.I`. There is no identifier `𝕚` — using it is an unknown-identifier error. Write e.g. `(1 + GaussianInt.I)^2 ∣ (2 : GaussianInt)`.
-- Modular congruence: `a ≡ b [MOD n]` is `Nat.ModEq` (for `a b n : ℕ`); `a ≡ b [ZMOD n]` is `Int.ModEq` (for `a b n : ℤ`). The bracketed suffix is mandatory.
-- Do not mix number types: `Nat.gcd`, `Nat.Coprime`, `Nat.totient`, and `[MOD n]` take natural-number arguments only — passing a `(M : ℤ)` to them is a type error. Either keep the whole statement in `ℕ`, or use the integer analogues (`gcd` on `ℤ`, `IsCoprime`, `[ZMOD n]`) with explicit coercions like `(N : ℤ)` where the two meet.
-- Exponents: `a^n` with `n : ℕ` works in any monoid. `a^d` with `d : ℤ` is `zpow` and requires a group — on `ℤ` it silently introduces integer division and changes the meaning. Declare exponents as `ℕ` unless the problem is genuinely about negative powers.
-- Subtypes and coercions: if `A : Set X` and `f : A → Y`, then `f` expects an element of the subtype `↥A` (a pair `⟨x, hx⟩`), not a bare `x : X`; writing `f x` with `x : X` is a type mismatch. To express that `g : closure A → Y` extends `f`, write e.g.
-  `∀ x : A, g ⟨x.1, subset_closure x.2⟩ = f x`
-  or `g ∘ Set.inclusion subset_closure = f`.
-- `gcd` on `ℤ` (Mathlib's `GCDMonoid ℤ` instance) returns a non-negative `ℤ`, so it can be compared directly with the literals `1` and `2`.
-- Annotate types where literals are ambiguous, e.g. `(... : Polynomial ℚ)`, `(2 : GaussianInt)`; write multiplication explicitly as in `6*X`.
-- `MetricSpace X`, `CompleteSpace Y` etc. are typeclasses — supply them as instance arguments `[MetricSpace X]`.
-
-## Strategy
-1. Parse the problem into: variables with types, hypotheses, and conclusion.
-2. Introduce one named argument per variable and per hypothesis — never drop one.
-3. State the conclusion with precise Mathlib predicates (`∃!` for uniqueness, if-then-else for case splits, `∣` for divisibility, `[MOD n]` / `[ZMOD n]` for congruences, `Nat.Coprime` / `IsCoprime` for relative primality).
-4. Mentally type-check every application: exact spelling and capitalization of every identifier against Mathlib, full form of every notation, consistent number types (no `ℤ` arguments passed to `Nat` functions), natural-number exponents, and subtype/coercion correctness.
-5. Emit only the theorem in a ```lean4 code block ending with `:= by sorry`.
-
-## Worked examples
-Problem: "Prove that $x^3 + 6x + 12$ is irreducible in $\mathbb{Q}$."
-Good output:
-```lean4
-theorem irreducible_x_cubed_plus_six_x_plus_twelve : Irreducible (X^3 + 6*X + 12 : Polynomial ℚ) := by sorry
-```
-
-Problem: "If $a$ is a nonzero integer, then for $n>m$ show that $(a^{2^{n}}+1, a^{2^{m}}+1)=1$ or 2 depending on whether $a$ is odd or even."
-Good output (note the `ha : a ≠ 0` hypothesis — omitting it makes the statement unfaithful):
-```lean4
-theorem gcd_power_two_exponents (a : ℤ) (ha : a ≠ 0) (m n : ℕ) (hm : m < n) :
-    gcd (a^(2^n) + 1) (a^(2^m) + 1) = if a % 2 = 0 then 2 else 1 := by sorry
-```
-
-Problem: "Let $(X,d_X)$ and $(Y,d_Y)$ be metric spaces with $Y$ complete, and let $A \subset X$. Show that a uniformly continuous $f : A \to Y$ extends uniquely to a continuous $g : \bar{A} \to Y$, and $g$ is uniformly continuous."
-Good output (note lowercase `closure` and the subtype-correct extension condition):
-```lean4
-theorem uniform_continuous_extension (X Y : Type) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y]
-    (A : Set X) (f : A → Y) (hf : UniformContinuous f) :
-    ∃! g : closure A → Y, Continuous g ∧ UniformContinuous g ∧
-      ∀ x : A, g ⟨x.1, subset_closure x.2⟩ = f x := by sorry
-```
-
-Problem: "Show that the lower limit topology $\mathbb{R}_l$ and $K$-topology $\mathbb{R}_K$ are not comparable." (with `Rl` and `K_topology` defined in the context)
-Good output ("not comparable" = neither `≤` holds; refer to the context's definitions by name):
-```lean4
-theorem lower_limit_and_k_topologies_not_comparable :
-    ¬ (Rl ≤ K_topology) ∧ ¬ (K_topology ≤ Rl) := by sorry
-```
-
-Problem: "Show that 2 is divisible by $(1+i)^{2}$ in $\mathbb{Z}[i]$."
-Good output (the imaginary unit is `GaussianInt.I` — `𝕚` does not exist; the divisor goes on the left of `∣`):
-```lean4
-theorem two_divisible_by_one_plus_i_squared : (1 + GaussianInt.I)^2 ∣ (2 : GaussianInt) := by sorry
-```
-
-Problem: "Let $N$ be a positive integer. Let $M$ be an integer relatively prime to $N$ and let $d$ be an integer relatively prime to $\varphi(N)$, where $\varphi$ denotes Euler's $\varphi$-function. Prove that if $M_{1} \equiv M^{d} \pmod N$ then $M \equiv M_{1}^{d^{\prime}} \pmod N$ where $d^{\prime}$ is the inverse of $d \bmod \varphi(N)$: $d d^{\prime} \equiv 1 \pmod {\varphi(N)}$."
-Good output (note: `Nat.totient`, not `Nat.phi`; the mandatory `[MOD n]` / `[ZMOD n]` suffixes; exponents kept in `ℕ` so `^` is monoid power; `ℤ` and `ℕ` never mixed without coercion; the "if" hypothesis and every variable — including $M_1$ and $d'$ — bound explicitly):
-```lean4
-theorem rsa_encryption_property (N : ℕ) (hN : 0 < N) (M : ℤ) (hM : IsCoprime M (N : ℤ))
-    (d : ℕ) (hd : Nat.Coprime d (Nat.totient N)) (d' : ℕ)
-    (hdd' : d * d' ≡ 1 [MOD Nat.totient N])
-    (M₁ : ℤ) (hM₁ : M₁ ≡ M ^ d [ZMOD (N : ℤ)]) :
-    M ≡ M₁ ^ d' [ZMOD (N : ℤ)] := by sorry
-```
-`
-Iteration 3: Accepted candidate (subsample score 1.0 -> 2.0); running full eval.
-Iteration 3: Valset score for new program: 0.02857142857142857 (coverage 70 / 70)
-Iteration 3: Val aggregate for new program: 0.02857142857142857
-Iteration 3: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 3: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 3: Valset pareto front aggregate score: 0.14285714285714285
-Iteration 3: Updated valset pareto front programs: {0: {0, 1, 2, 3}, 1: {0, 1, 2, 3}, 2: {0, 1, 2, 3}, 3: {0, 1, 2, 3}, 4: {0, 1, 2, 3}, 5: {0, 1, 2, 3}, 6: {0, 1, 2, 3}, 7: {0, 1, 2, 3}, 8: {0, 1, 2, 3}, 9: {2}, 10: {0, 1, 2, 3}, 11: {0, 1, 2, 3}, 12: {0, 1, 2, 3}, 13: {0, 1, 2, 3}, 14: {0, 1, 2, 3}, 15: {0, 1, 2, 3}, 16: {0, 1, 2, 3}, 17: {0, 1, 2, 3}, 18: {0, 1, 2, 3}, 19: {0, 1}, 20: {0, 1, 2, 3}, 21: {0, 1, 2, 3}, 22: {1, 3}, 23: {0, 1, 2, 3}, 24: {0, 1, 2, 3}, 25: {0, 1, 2, 3}, 26: {0, 1, 2, 3}, 27: {0, 2}, 28: {2}, 29: {0, 1, 2, 3}, 30: {0, 3}, 31: {2}, 32: {0, 1, 2, 3}, 33: {0, 1, 2, 3}, 34: {1}, 35: {0, 1, 2, 3}, 36: {0, 1, 2, 3}, 37: {0, 1, 2, 3}, 38: {0, 1, 2, 3}, 39: {0, 1, 2, 3}, 40: {0, 1, 2, 3}, 41: {0, 1, 2, 3}, 42: {0, 1, 2, 3}, 43: {0, 1, 2, 3}, 44: {0, 1, 2, 3}, 45: {0, 1, 2, 3}, 46: {0, 1, 2, 3}, 47: {0, 1, 2, 3}, 48: {0, 1, 2, 3}, 49: {0, 1, 2, 3}, 50: {0, 1, 2, 3}, 51: {0, 1, 2, 3}, 52: {0, 1, 2, 3}, 53: {0, 1, 2, 3}, 54: {0, 1, 2, 3}, 55: {0, 1, 2, 3}, 56: {0, 1, 2, 3}, 57: {0, 1, 2, 3}, 58: {0, 1, 2, 3}, 59: {0, 1, 2, 3}, 60: {0, 1, 2, 3}, 61: {0, 1, 2, 3}, 62: {0, 1, 2, 3}, 63: {0, 1, 2, 3}, 64: {2}, 65: {0, 1, 2, 3}, 66: {0, 2}, 67: {0, 1, 2, 3}, 68: {0, 1, 2, 3}, 69: {0, 1, 2, 3}}
-Iteration 3: Best valset aggregate score so far: 0.08571428571428572
-Iteration 3: Best program as per aggregate score on valset: 2
-Iteration 3: Best score on valset: 0.08571428571428572
-Iteration 3: Linear pareto front program index: 2
-Iteration 3: New program candidate index: 3
-Iteration 4: Selected program 0 score: 0.05714285714285714
-Iteration 4: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib.
+Iteration 4: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
+Iteration 5: Selected program 4 score: 0.05714285714285714
+Iteration 5: Proposed new text for instructions: # Task
+Translate a math problem stated in natural language (possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib. The statement will be compiled under a given fixed context; it must (1) compile, and (2) faithfully capture the problem.
 
 ## Input format
 You will receive:
 1. A math problem stated in natural language (possibly with LaTeX).
-2. A "Lean 4 context" code block with the `import`, `open`, and `open scoped` lines (and sometimes definitions) that will be prepended to your answer when it is checked. Do NOT repeat these lines; write only the theorem, relying on the context being in scope.
+2. A "Lean 4 context" code block with the `import`, `open`, and `open scoped` lines (and sometimes `local notation` or auxiliary definitions) that will be prepended to your answer when it is checked. Do NOT repeat these lines; write only the theorem, relying on the context being in scope.
+
+IMPORTANT: read the context carefully. If it defines `local notation` or auxiliary definitions, note their exact signatures and make sure every use in your theorem matches the expected types (see the EReal pitfall below).
 
 ## Output format (strict)
 - Output exactly one ```lean4 code block containing exactly one `theorem` (not `lemma`/`def`/`example`), ending with `:= by sorry`. No prose outside the code block.
 - The theorem name must be a valid identifier (start with a letter or underscore).
 
 ## Correctness requirement (critical)
-Your statement is first compiled with Lean 4 + Mathlib under the given context. **If it does not compile, the score is 0 and nothing else is checked.** Only after compiling does a judge check that the statement faithfully captures the problem. So: use only real Lean 4 syntax and real Mathlib names, ensure every needed typeclass instance is synthesizable, and do not weaken or distort the problem.
+Your statement is first compiled with Lean 4 + Mathlib under the given context. **If it does not compile, the score is 0 and nothing else is checked.** Only after compiling does a judge check that the statement faithfully captures the problem. So: use only real Lean 4 syntax and real Mathlib names, ensure every needed typeclass instance is synthesizable, and do not weaken or distort the problem. NEVER invent identifiers: every function, predicate, and class you mention must exist in Mathlib with that exact spelling and capitalization. If you are unsure a fancy name exists, rephrase using more basic, certainly-existing concepts.
+
+## Observed compiler errors and what they mean
+- "unexpected token '∈'; expected ','" → you wrote `∀ z₁ z₂ ∈ Ω, ...` with several binders before `∈`. Bounded quantifiers take ONE binder per `∈` (see below).
+- "Unknown identifier `X`" (with the note that `autoImplicit` is false) → the name does not exist in Mathlib. Find the real name or rephrase with basic concepts. (Observed: `IsSimple`, `OpenSet`, `Im`, `real_part` are NOT real.)
+- "Type mismatch ... has type ℕ → ℝ but is expected to have type ℕ → EReal" → the context's notation/definition expects EReal-valued sequences; coerce or change the sequence type (see below).
+- "failed to synthesize instance ..." → a typeclass assumption is missing; add it explicitly or use a bundled subtype that carries it.
 
 ## Lean 4 syntax pitfalls (observed failures — avoid them)
 - Anonymous functions: write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` — it gives "unexpected token ','; expected '↦', '=>'".
-- `λ` is a reserved token and can never be a variable/binder name ("unexpected token 'λ'; expected '_' or identifier"). For eigenvalues use `μ`, `l`, etc.
+- `λ` is a reserved token and can never be a variable/binder name. For eigenvalues use `μ`, `l`, etc.
 - There is no postfix derivative notation `f'`. The derivative of `f : ℝ → ℝ` is the function `deriv f`; at a point, `deriv f x`.
 - Limits: `Tendsto g atTop (nhds 0)` expresses "g(x) → 0 as x → +∞" (with `open Topology Filter`).
+- Bounded set quantifiers bind ONE variable per `∈`. Write `∀ z₁ ∈ Ω, ∀ z₂ ∈ Ω, ...` or `∀ z₁, z₁ ∈ Ω → ∀ z₂, z₂ ∈ Ω → ...`. NEVER write `∀ z₁ z₂ ∈ Ω, ...`.
 
 ## Typeclass pitfalls (observed failures — avoid them)
 - Structures are typeclasses on a carrier type, not types. Write `(K : Type) [Field K]`, `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`. NEVER write `(V : InnerProductSpace ℂ)`.
 - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.
+- Prop-valued classes CAN appear (also negated) in conclusions: `IsDomain S`, `IsSimpleGroup G`, `IsSelfAdjoint T`, `IsStarNormal T`.
+- There is NO `OpenSet` typeclass. "Ω is open" is a Prop hypothesis: `(Ω : Set ℂ) (hΩ : IsOpen Ω)` (more generally `Ω : Set X` with `[TopologicalSpace X]`).
 - Instance synthesis must succeed. E.g. using `IntegralDomain R` with only `[Ring R]` declared fails with "failed to synthesize instance ... CommSemiring R". Either declare all needed instances explicitly or, better, use bundled subtypes that carry instances automatically.
 
 ## Mathlib names/patterns that exist and typecheck
@@ -140,158 +45,87 @@ Your statement is first compiled with Lean 4 + Mathlib under the given context. 
 - Adjoint: `LinearMap.adjoint T` (dot notation `T.adjoint`). Self-adjoint: `IsSelfAdjoint T`. Normal: `IsStarNormal T`, or explicitly `T.adjoint * T = T * T.adjoint`.
 - "μ is an eigenvalue of T": `Module.End.HasEigenvalue T μ`.
 - "μ is real" for `μ : ℂ`: `μ.im = 0` or `(μ.re : ℂ) = μ`. Note `μ.re : ℝ`, so `μ.re = μ` does NOT typecheck without a coercion.
+- Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For "|G| = n" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.
+- Open set: `(Ω : Set ℂ) (hΩ : IsOpen Ω)`. There is NO `OpenSet` class.
+- "f is holomorphic on an open set Ω": `(hf : DifferentiableOn ℂ f Ω)` together with `(hΩ : IsOpen Ω)`.
+- Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`.
+- "f is constant on Ω": `∃ w, ∀ z ∈ Ω, f z = w` (or `∀ z₁ ∈ Ω, ∀ z₂ ∈ Ω, f z₁ = f z₂`). Do NOT reference a specific point like `f 0` — that point need not lie in Ω.
+- EReal (extended reals): if the context fixes notation like `local notation "limsup" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, then either declare the sequences as `(a b : ℕ → EReal)` (pointwise `a + b` works) or coerce real sequences pointwise, e.g. `limsup (fun n => ((a n : ℝ) : EReal))`. Passing `ℕ → ℝ` where `ℕ → EReal` is expected is a type mismatch. `⊤`/`⊥` are `+∞`/`-∞`; EReal addition is total, which is the idiomatic way to absorb side conditions like "provided the sum is not of the form ∞ − ∞" (otherwise add such a condition as an explicit hypothesis).
 
 ## Worked corrections of typical mistakes
 - Bad: `Tendsto (λ x, f (x + 1) - f x) atTop (nhds 0)` → Good: `Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0)`
 - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`
 - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`
+- Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`
+- Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`
+- Bad (when the context's `limsup` expects `ℕ → EReal`): `(a b : ℕ → ℝ) : limsup (a + b) ≤ limsup a + limsup b` → Good: `theorem limsup_add_le (a b : ℕ → EReal) : limsup (a + b) ≤ limsup a + limsup b := by sorry` (or keep `a b : ℕ → ℝ` and coerce each use: `limsup (fun n => ((a n + b n : ℝ) : EReal)) ≤ limsup (fun n => ((a n : ℝ) : EReal)) + limsup (fun n => ((b n : ℝ) : EReal))`).
 
 ## General strategy
 1. Parse the problem into objects, hypotheses, and conclusion.
 2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances.
-3. Declare structures as instance arguments `[...]` and Prop hypotheses as `(...)`.
-4. State the conclusion using existing Mathlib Prop predicates, faithfully matching the problem.
-5. Mentally compile before answering: valid Lean 4 syntax (no `λ` binders, no `λ x,` lambdas), all identifiers exist in Mathlib, and every typeclass the statement mentions is derivable from your declared instances. If unsure whether a fancy name exists, rephrase using more basic, certainly-existing concepts.
+3. Declare structures as instance arguments `[...]` and Prop hypotheses as `(...)`. Include all hypotheses the problem states (e.g. openness of Ω) — the judge checks faithfulness.
+4. State the conclusion using existing Mathlib Prop predicates, faithfully matching the problem. "P implies Q" becomes `(hP : P) : Q` or `P → Q`; "G is not simple" becomes `¬IsSimpleGroup G`.
+5. Check the context's `local notation`/definitions: your uses must match their declared types exactly; insert coercions (e.g. ℝ → EReal) or choose the expected type (e.g. `ℕ → EReal`) where needed.
+6. Mentally compile before answering: valid Lean 4 syntax (no `λ` binders, no `λ x,` lambdas, one binder per `∈`), every identifier exists in Mathlib with exact spelling and capitalization, and every typeclass the statement mentions is derivable from your declared instances. If unsure whether a fancy name exists, rephrase using more basic, certainly-existing concepts.
+Iteration 5: Accepted candidate (subsample score 0.0 -> 1.0); running full eval.
+Iteration 5: Found a better program on the valset with score 0.1.
+Iteration 5: Valset score for new program: 0.1 (coverage 70 / 70)
+Iteration 5: Val aggregate for new program: 0.1
+Iteration 5: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 1.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 5: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 1.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 5: Valset pareto front aggregate score: 0.18571428571428572
+Iteration 5: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5}, 1: {0, 1, 2, 3, 4, 5}, 2: {0, 1, 2, 3, 4, 5}, 3: {0, 1, 2, 3, 4, 5}, 4: {0, 1, 2, 3, 4, 5}, 5: {0, 1, 2, 3, 4, 5}, 6: {0, 1, 2, 3, 4, 5}, 7: {0, 1, 2, 3, 4, 5}, 8: {0, 1, 2, 3, 4, 5}, 9: {2}, 10: {0, 1, 2, 3, 4, 5}, 11: {0, 1, 2, 3, 4, 5}, 12: {0, 1, 2, 3, 4, 5}, 13: {0, 1, 2, 3, 4, 5}, 14: {0, 1, 2, 3, 4, 5}, 15: {0, 1, 2, 3, 4, 5}, 16: {0, 1, 2, 3, 4, 5}, 17: {0, 1, 2, 3, 4, 5}, 18: {0, 1, 2, 3, 4, 5}, 19: {0, 1, 4, 5}, 20: {0, 1, 2, 3, 4, 5}, 21: {0, 1, 2, 3, 4, 5}, 22: {1, 3, 5}, 23: {0, 1, 2, 3, 4, 5}, 24: {0, 1, 2, 3, 4, 5}, 25: {0, 1, 2, 3, 4, 5}, 26: {0, 1, 2, 3, 4, 5}, 27: {0, 2, 4, 5}, 28: {2}, 29: {0, 1, 2, 3, 4, 5}, 30: {0, 3}, 31: {2}, 32: {0, 1, 2, 3, 4, 5}, 33: {0, 1, 2, 3, 4, 5}, 34: {1}, 35: {0, 1, 2, 3, 4, 5}, 36: {5}, 37: {0, 1, 2, 3, 4, 5}, 38: {0, 1, 2, 3, 4, 5}, 39: {0, 1, 2, 3, 4, 5}, 40: {0, 1, 2, 3, 4, 5}, 41: {0, 1, 2, 3, 4, 5}, 42: {0, 1, 2, 3, 4, 5}, 43: {0, 1, 2, 3, 4, 5}, 44: {0, 1, 2, 3, 4, 5}, 45: {5}, 46: {0, 1, 2, 3, 4, 5}, 47: {0, 1, 2, 3, 4, 5}, 48: {0, 1, 2, 3, 4, 5}, 49: {0, 1, 2, 3, 4, 5}, 50: {0, 1, 2, 3, 4, 5}, 51: {0, 1, 2, 3, 4, 5}, 52: {0, 1, 2, 3, 4, 5}, 53: {0, 1, 2, 3, 4, 5}, 54: {0, 1, 2, 3, 4, 5}, 55: {0, 1, 2, 3, 4, 5}, 56: {0, 1, 2, 3, 4, 5}, 57: {0, 1, 2, 3, 4, 5}, 58: {0, 1, 2, 3, 4, 5}, 59: {0, 1, 2, 3, 4, 5}, 60: {0, 1, 2, 3, 4, 5}, 61: {0, 1, 2, 3, 4, 5}, 62: {0, 1, 2, 3, 4, 5}, 63: {0, 1, 2, 3, 4, 5}, 64: {2, 4, 5}, 65: {4}, 66: {0, 2, 5}, 67: {0, 1, 2, 3, 4, 5}, 68: {0, 1, 2, 3, 4, 5}, 69: {0, 1, 2, 3, 4, 5}}
+Iteration 5: Best valset aggregate score so far: 0.1
+Iteration 5: Best program as per aggregate score on valset: 5
+Iteration 5: Best score on valset: 0.1
+Iteration 5: Linear pareto front program index: 5
+Iteration 5: New program candidate index: 5
+Iteration 6: Selected program 0 score: 0.05714285714285714
+Iteration 6: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib. Use exactly the imports, opens, and definitions given in the "Lean 4 context" — do not add, remove, or alter them, and do not add any other commands (no auxiliary `def`s or lemmas; exactly one `theorem`). End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block and output nothing else.
+
+The statement MUST compile under the given context (with `sorry` as its proof), and it must faithfully capture the full mathematical meaning of the problem. Before finalizing, mentally type-check every identifier, application, and type-class requirement.
+
+## How to construct the statement
+1. Identify the objects, hypotheses, and conclusion of the problem.
+2. Introduce every object as a binder (variable/hypothesis) or define it inline (lambda or `let`). NEVER reference an identifier that is not bound in the statement or already defined in Mathlib. For example, if the problem says "put g(x) = f(x)/x", either add `(g : ℝ → ℝ)` and `(hg : g = fun x => f x / x)`, or simply use `fun x => f x / x` directly. There is no `f'` notation in Lean — the derivative of `f : ℝ → ℝ` is `deriv f`.
+3. Express the conclusion with the correct Mathlib predicate (see the reference below).
+4. Check syntax, argument order, and type-class instances. Malformed terms (e.g., passing a predicate as a function argument) produce parse errors like "unexpected token ':='; expected ','".
+
+## Capturing the meaning — common patterns
+- "There are infinitely many integers a such that P(a)" → `Set.Infinite {a : ℤ | P a}` (NOT `∃ a, P a`, which asserts only one exists). Similarly `{a : ℕ | ...}` for naturals.
+- "P(x) holds for every nonzero element x of H" → `∀ x ∈ H, x ≠ 0 → P x`. Do not drop the `x ∈ H` condition.
+- "H = 0 or H = ℚ" for a subgroup H → `H = ⊥ ∨ H = ⊤`. `⊥` is the trivial subgroup and `⊤` is the whole group; a subgroup term can never be equal to the type `ℚ` itself.
+- If a function is only meaningful on a subset (e.g., `f x / x` for `x > 0`), state the property on that set: `MonotoneOn (fun x => f x / x) (Set.Ioi 0)`, not `Monotone g`.
+
+## Mathlib reference (names, argument order, known pitfalls)
+- Irreducibility of a polynomial `p`: `Irreducible p`. It is a `Prop`-valued predicate — never pass it as an argument (e.g., `f.map (...) IsIrreducible` is invalid).
+- Polynomials: type `Polynomial ℚ`. When `Polynomial` is opened, build them with `X` and `C`, e.g., `X ^ 7 + 15 * X ^ 2 - 30 * X + C (a : ℚ)`; otherwise write `Polynomial.X` / `Polynomial.C`. Cast an integer to a rational with `(a : ℚ)`.
+- Differentiability at a point: `DifferentiableAt ℝ f x` — the field `ℝ` is an EXPLICIT first argument; `DifferentiableAt f x` fails with an application type mismatch. On a set: `DifferentiableOn ℝ f s`.
+- Derivative: `deriv f`; its value at `x` is `deriv f x`.
+- Monotonicity: `Monotone f` (whole domain) or `MonotoneOn f s` (on a set).
+- Continuity on a set: `ContinuousOn f s`.
+- Intervals: ALWAYS use the `Set.` prefix: `Set.Ici 0`, `Set.Ioi 0`, `Set.Icc a b`, etc. When `Finset` is opened, bare `Ici`/`Ioi` can resolve to `Finset.Ici`/`Finset.Ioi`, causing type-class synthesis failures such as `LocallyFiniteOrderTop ℕ`.
+- Subgroups: `Subgroup G` requires a multiplicative `Group G` instance. ℚ under addition has no `Group` instance, so "a subgroup of the additive group of ℚ" must be `AddSubgroup ℚ` (likewise for any additive group). The error `failed to synthesize Group ℚ` means you should have used `AddSubgroup`.
+- Type-class sanity check: every structure you use must have its required instances available (`Subgroup G` needs `[Group G]`, `AddSubgroup G` needs `[AddGroup G]`). A synthesis failure almost always means you chose the wrong structure.
+
+## Examples of correct style (each under its own given context)
+Infinitely many integers a with x^7 + 15x^2 − 30x + a irreducible in ℚ[x] (context opens `Polynomial`):
+```lean4
+theorem irreducible_infinite_number_of_a :
+    Set.Infinite {a : ℤ | Irreducible (X ^ 7 + 15 * X ^ 2 - 30 * X + C (a : ℚ) : Polynomial ℚ)} := by sorry
+```
+
+g(x) = f(x)/x is monotonically increasing on x > 0 (context opens `Topology`, `Finset`, etc.):
+```lean4
+theorem g_monotonic_increasing (f : ℝ → ℝ) (hf_cont : ContinuousOn f (Set.Ici 0))
+    (hf_diff : ∀ x > 0, DifferentiableAt ℝ f x) (hf0 : f 0 = 0)
+    (hf_prime_mono : MonotoneOn (deriv f) (Set.Ioi 0)) :
+    MonotoneOn (fun x => f x / x) (Set.Ioi 0) := by sorry
+```
+
+Additive subgroup H of ℚ with 1/x ∈ H for every nonzero x ∈ H is 0 or ℚ:
+```lean4
+theorem subgroup_rat_inv_closed (H : AddSubgroup ℚ)
+    (h : ∀ x ∈ H, x ≠ 0 → (1 / x) ∈ H) : H = ⊥ ∨ H = ⊤ := by sorry
+```
 `
-Iteration 4: Accepted candidate (subsample score 0.0 -> 2.0); running full eval.
-Iteration 4: Valset score for new program: 0.05714285714285714 (coverage 70 / 70)
-Iteration 4: Val aggregate for new program: 0.05714285714285714
-Iteration 4: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 4: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 4: Valset pareto front aggregate score: 0.15714285714285714
-Iteration 4: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4}, 1: {0, 1, 2, 3, 4}, 2: {0, 1, 2, 3, 4}, 3: {0, 1, 2, 3, 4}, 4: {0, 1, 2, 3, 4}, 5: {0, 1, 2, 3, 4}, 6: {0, 1, 2, 3, 4}, 7: {0, 1, 2, 3, 4}, 8: {0, 1, 2, 3, 4}, 9: {2}, 10: {0, 1, 2, 3, 4}, 11: {0, 1, 2, 3, 4}, 12: {0, 1, 2, 3, 4}, 13: {0, 1, 2, 3, 4}, 14: {0, 1, 2, 3, 4}, 15: {0, 1, 2, 3, 4}, 16: {0, 1, 2, 3, 4}, 17: {0, 1, 2, 3, 4}, 18: {0, 1, 2, 3, 4}, 19: {0, 1, 4}, 20: {0, 1, 2, 3, 4}, 21: {0, 1, 2, 3, 4}, 22: {1, 3}, 23: {0, 1, 2, 3, 4}, 24: {0, 1, 2, 3, 4}, 25: {0, 1, 2, 3, 4}, 26: {0, 1, 2, 3, 4}, 27: {0, 2, 4}, 28: {2}, 29: {0, 1, 2, 3, 4}, 30: {0, 3}, 31: {2}, 32: {0, 1, 2, 3, 4}, 33: {0, 1, 2, 3, 4}, 34: {1}, 35: {0, 1, 2, 3, 4}, 36: {0, 1, 2, 3, 4}, 37: {0, 1, 2, 3, 4}, 38: {0, 1, 2, 3, 4}, 39: {0, 1, 2, 3, 4}, 40: {0, 1, 2, 3, 4}, 41: {0, 1, 2, 3, 4}, 42: {0, 1, 2, 3, 4}, 43: {0, 1, 2, 3, 4}, 44: {0, 1, 2, 3, 4}, 45: {0, 1, 2, 3, 4}, 46: {0, 1, 2, 3, 4}, 47: {0, 1, 2, 3, 4}, 48: {0, 1, 2, 3, 4}, 49: {0, 1, 2, 3, 4}, 50: {0, 1, 2, 3, 4}, 51: {0, 1, 2, 3, 4}, 52: {0, 1, 2, 3, 4}, 53: {0, 1, 2, 3, 4}, 54: {0, 1, 2, 3, 4}, 55: {0, 1, 2, 3, 4}, 56: {0, 1, 2, 3, 4}, 57: {0, 1, 2, 3, 4}, 58: {0, 1, 2, 3, 4}, 59: {0, 1, 2, 3, 4}, 60: {0, 1, 2, 3, 4}, 61: {0, 1, 2, 3, 4}, 62: {0, 1, 2, 3, 4}, 63: {0, 1, 2, 3, 4}, 64: {2, 4}, 65: {4}, 66: {0, 2}, 67: {0, 1, 2, 3, 4}, 68: {0, 1, 2, 3, 4}, 69: {0, 1, 2, 3, 4}}
-Iteration 4: Best valset aggregate score so far: 0.08571428571428572
-Iteration 4: Best program as per aggregate score on valset: 2
-Iteration 4: Best score on valset: 0.08571428571428572
-Iteration 4: Linear pareto front program index: 2
-Iteration 4: New program candidate index: 4
-Iteration 5: Selected program 2 score: 0.08571428571428572
-Batched reflection failed (gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'); retrying per task.
-Traceback (most recent call last):
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 214, in _propose_texts_batch_safe
-    return list(self._propose_texts_batch(jobs))
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 184, in _propose_texts_batch
-    results = list(reflect_many(jobs))
-                   ^^^^^^^^^^^^^^^^^^
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflection_lm.py", line 168, in reflect_many
-    raw_outputs = self._batch_complete([r[2] for r in rendered], [r[3] for r in rendered])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflection_lm.py", line 139, in _batch_complete
-    return [self.lm(prompts[0])]
-            ^^^^^^^^^^^^^^^^^^^
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/lm.py", line 231, in __call__
-    result = self._fn(prompt)
-             ^^^^^^^^^^^^^^^^
-  File "/workspace/gepa-lean-formalizers/src/runner.py", line 37, in __call__
-    out = self.client.chat_full(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/gepa-lean-formalizers/src/llm.py", line 118, in chat_full
-    data = self.with_retries(body, timeout, retries, purpose=purpose)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/gepa-lean-formalizers/src/llm.py", line 194, in with_retries
-    raise LLMError(f"gave up after {retries + 1} attempts: {last}")
-src.llm.LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
-
-Iteration 5: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib.
-
-You are given a "Lean 4 context" (imports, opens, and possibly definitions). Your answer will be compiled with exactly that context prepended, with the `autoImplicit` option set to `false`. If it compiles, a judge then checks that the statement faithfully formalizes the original problem. A statement that does not compile scores 0, no matter how close the mathematics is.
-
-Output requirements:
-- Output exactly one theorem declaration inside a single ```lean4 code block. Do not repeat the imports/opens, and do not include proofs, comments, or explanations. Choose any reasonable theorem name.
-- End the statement with `:= by sorry`.
-- Every identifier must be bound in the theorem or defined in Mathlib (reachable via the given opens). Unknown identifiers are hard errors because `autoImplicit` is false. NEVER invent identifiers or notation — `converges_to`, `Simple`, and `Span` are all made-up names that caused real failures. If you are not certain a name exists in Mathlib, rephrase using only the verified vocabulary below.
-- The statement must be a faithful translation: match the quantifier structure, hypotheses, and conclusion of the problem. Do not weaken or strengthen it, do not drop any hypothesis, and do not introduce spurious variables. EVERY assumption of the problem (continuity, cardinality, density, ...) must appear as a hypothesis, and the conclusion must be the actual mathematical claim, not a trivial restatement. If the context provides definitions, use them where relevant.
-
-Method (follow in order):
-1. Map each object of the problem to a Mathlib type/class: metric space → `[MetricSpace X]`; group → `[Group G]`; finite type → `[Fintype G]`; vector space over F → `[AddCommGroup V] [Module F V]`; subset → `(P : Set X)`.
-2. List every hypothesis and the conclusion; make sure each appears exactly once in the statement.
-3. Compose the statement using only verified identifiers; keep each notation (e.g. a `∑` expression) on a single line.
-4. Run the final self-check.
-
-Mathlib facts and pitfalls (each of these has caused a real compilation failure — check for them before finalizing):
-
-1. Spans and submodules
-   - The span of a set is `Submodule.span R s` (lowercase `span`, also available unqualified when `Submodule` is opened). There is NO identifier `Span`.
-   - The whole space viewed as a submodule is `(⊤ : Submodule F V)`; never use the type `V` itself where a `Submodule F V` is expected.
-   - "Proper subspace" is `W ≠ ⊤` (or `W < ⊤`). Submodules do not support `⊂` (there is no `HasSSubset (Submodule F V)` instance).
-   - To take a union of submodules as sets, coerce each one: `⋃ i, (W i : Set V)`; the whole carrier set is `Set.univ`.
-   - A family of subspaces indexed by `Fin n` is a function `W : Fin n → Submodule F V`; bind indices with `∀ i, ...` inside the proposition — do not existentially quantify a stray index `i : Fin n`.
-
-2. Linear independence of a set
-   - `LinearIndependent R v` expects a FUNCTION `v : ι → M`. For `S : Set M`, write `LinearIndependent R ((↑) : S → M)` (equivalently `LinearIndependent R (fun s : S => (s : M))`). Writing `LinearIndependent R S` directly makes Lean treat `S` as a map `M → Prop` and fails with `failed to synthesize instance AddCommMonoid Prop`.
-
-3. Countability
-   - For `S : Set α`, both `Countable S` (via coercion to the subtype `↥S`) and `S.Countable` (`Set.Countable`) work. In Mathlib, `Countable` includes finite sets, so "finite or countably infinite" is expressed as just `Countable S`.
-   - "V is spanned by a countable set" is NOT a typeclass; state it as a named hypothesis, e.g. `(h : ∃ s : Set V, Countable s ∧ Submodule.span ℚ s = ⊤)`.
-
-4. Existentials with side conditions
-   - Never write `∃ r : ℝ ≥ 0, ...`; Lean parses `ℝ ≥ 0` as a type and fails (`LE Type`, `OfNat Type 0` errors). Write `∃ r : ℝ, 0 ≤ r ∧ ...` instead. (The bounded-exists syntax `∃ r ≥ 0, ...` exists but cannot be combined with a type ascription.)
-
-5. Complex numbers
-   - The modulus of `w : ℂ` is `‖w‖` or `Complex.abs w`. The notation `|w|` does NOT work for `ℂ` (it requires a `Lattice ℂ` instance, which does not exist). In particular, "z lies on the unit circle" is `‖z‖ = 1`, never `|z| = 1`.
-   - For `r : ℝ` and `w : ℂ`, `r • w` works (ℂ is an ℝ-module); alternatively cast: `(r : ℂ) * w`.
-   - When a natural number appears in a complex or real expression, cast it explicitly, e.g. `z ^ n / (n : ℂ)`.
-
-6. Typeclasses vs. hypotheses
-   - Supply structure assumptions as instance arguments, e.g. `(F : Type) [Field F] [Infinite F] (V : Type) [AddCommGroup V] [Module F V]`; a vector space over ℚ needs `[AddCommGroup V] [Module ℚ V]`.
-   - Only genuine typeclasses go in `[]`; everything else (existential assumptions, equalities, etc.) goes in `()` as named hypotheses.
-
-7. Membership and quantifying over a whole type
-   - `x ∈ s` requires `s` to be set-like (`Set X`, `Finset X`, a coerced submodule, ...). If `X : Type` is the whole space, "for all p in X" is `∀ p : X, ...`. Writing `∀ p ∈ X, ...` fails with `failed to synthesize instance of type class Membership ?m Type`.
-   - `∀ p ∈ P, ...` is correct when `P : Set X`.
-
-8. Convergence, limits, and series
-   - There is NO identifier `converges_to`. Use Mathlib's actual notions:
-     - "the series ∑ aₙ converges" → `Summable a` (with `a : ℕ → ℂ`, `ℕ → ℝ`, ...).
-     - "the series converges to L" → `HasSum a L`.
-     - "f n tends to L as n → ∞" → `Tendsto f atTop (nhds L)` (`atTop` requires `Filter` to be opened, otherwise write `Filter.atTop`; `𝓝 L` is alternative notation for `nhds L`).
-     - "the partial sums converge" → `∃ L : ℂ, Tendsto (fun n : ℕ => ∑ i in Finset.range n, a i) atTop (nhds L)`.
-   - Big-operator syntax is exactly `∑ i in s, f i` (requires `open scoped BigOperators`); write it on one line with no stray parentheses or commas.
-   - Never express convergence as an equation between partial sums and themselves; the conclusion must mention `Summable`, `HasSum`, or `Tendsto`.
-
-9. Group theory
-   - "G is a simple group" is the Prop-valued typeclass `IsSimpleGroup G`; "G is not simple" is `¬IsSimpleGroup G`. There is NO identifier `Simple`.
-   - The order of a finite group is `Fintype.card G` (needs `[Fintype G]`) or `Nat.card G`.
-
-10. Metric spaces, continuity, density
-   - "metric space X" → `[MetricSpace X]`. This automatically provides the `TopologicalSpace X` instance needed by `Continuous`, `Dense`, `nhds`, etc.; do not substitute `[TopologicalSpace X]` when the problem says metric space.
-   - "f is a continuous mapping" → `(hf : Continuous f)`. If the problem says both f and g are continuous, include BOTH `(hf : Continuous f)` and `(hg : Continuous g)` — dropping them is a faithfulness error even if the statement compiles.
-   - "P is a dense subset of X" → `(P : Set X) (hP : Dense P)`.
-
-Compilable reference patterns (adapt names and content to the actual problem):
-- `theorem ex1 (V : Type) [AddCommGroup V] [Module ℚ V] (h : ∃ s : Set V, Countable s ∧ Submodule.span ℚ s = ⊤) : ∀ S : Set V, LinearIndependent ℚ ((↑) : S → V) → Countable S := by sorry`
-- `theorem ex2 (z : ℂ) : ∃ r : ℝ, 0 ≤ r ∧ ∃ w : ℂ, ‖w‖ = 1 ∧ z = r • w := by sorry`
-- `theorem ex3 (F : Type) [Field F] [Infinite F] (V : Type) [AddCommGroup V] [Module F V] : ∀ (n : ℕ) (W : Fin n → Submodule F V), (∀ i, W i ≠ ⊤) → (⋃ i, (W i : Set V)) ≠ Set.univ := by sorry`
-- `theorem ex4 (z : ℂ) (hz : ‖z‖ = 1) (hz1 : z ≠ 1) : Summable (fun n : ℕ => z ^ n / (n : ℂ)) := by sorry`
-- `theorem ex5 (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`
-- `theorem ex6 (X Y : Type) [MetricSpace X] [MetricSpace Y] (f g : X → Y) (hf : Continuous f) (hg : Continuous g) (P : Set X) (hP : Dense P) (hfg : ∀ p ∈ P, f p = g p) : ∀ x : X, f x = g x := by sorry`
-
-Final self-check before answering:
-(a) Does every token resolve under the given opens? If you cannot point to where a name lives in Mathlib, replace it with a construction you are sure of.
-(b) Does every notation's typeclass exist for the types at hand (`‖·‖` needs a `Norm` instance — fine for ℂ and ℝ; `∈` needs a set-like right-hand side, not a bare `Type`; `∑` needs the `BigOperators` scope)?
-(c) Reading the formal statement back in English, does it say exactly what the problem says?
-(d) Does every hypothesis of the problem appear, neither weakened nor strengthened?
-(e) Is the conclusion the real mathematical claim (e.g. `Summable`/`HasSum`/`Tendsto` for convergence), not a vacuous or trivial restatement?
-`
-Iteration 5: Exception during optimization: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
-Traceback (most recent call last):
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/core/engine.py", line 846, in run
-    proposals = self.reflective_proposer.propose(state)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 550, in propose
-    child_evals = self._batch_evaluate(child_items)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 236, in _batch_evaluate
-    return default_batch_evaluate(self.adapter, items)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/venv/lib/python3.12/site-packages/gepa/core/adapter.py", line 227, in default_batch_evaluate
-    return [adapter.evaluate(batch, candidate, capture_traces=True) for candidate, batch in items]
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/gepa-lean-formalizers/src/gepa_adapter.py", line 105, in evaluate
-    self.on_batch()
-  File "/workspace/gepa-lean-formalizers/src/runner.py", line 65, in batch_done
-    raise ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
-src.runner.ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
-
-{"run_id": "B_s0", "status": "stopped", "reason": "1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'", "metric_calls": 228}

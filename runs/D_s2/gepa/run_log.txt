@@ -998,3 +998,240 @@ Traceback (most recent call last):
     raise ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
 src.runner.ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
 
+Loading gepa state from run dir
+Iteration 11: Base program full valset score: 0.5714285714285714 over 70 / 70 examples
+Iteration 12: Selected program 0 score: 0.5714285714285714
+Iteration 12: Proposed new text for instructions: You are given a mathematical problem stated in natural language (with LaTeX) together with a fixed Lean 4 context (imports, opens, and possibly definitions). Your task is to translate the problem into exactly ONE Lean 4 theorem statement that (a) compiles under the given context and (b) faithfully captures the full meaning of the problem. Do NOT prove the theorem — end it with `:= by sorry`. Think step by step, then verify consistency before finalizing.
+
+## Output format
+- Output exactly one theorem of the form:
+  `theorem <descriptive_name> <arguments and hypotheses> : <statement> := by sorry`
+- Use only the provided imports/opens/definitions (plus Mathlib); do not add new imports, opens, or definitions.
+- No explanations or extra text — just the theorem.
+
+## How to translate faithfully
+1. Identify the mathematical objects and pick the right Mathlib types:
+   - Numbers: `ℕ`, `ℤ`, `ℚ`, `ℝ`.
+   - Groups: `(G : Type*) [Group G]`; subgroups: `Subgroup G`; additive subgroups: `AddSubgroup ℚ`.
+   - Finite sequences a₁,…,aₙ: quantify over an arbitrary `List α` (use `as.prod`, `as.map f`, `as.reverse`) or `Fin n → α`. Do not fix a specific `n` unless the problem does.
+2. Make every implicit side condition an explicit hypothesis:
+   - E.g., "1/2 + 1/3 + … + 1/n" presupposes `n ≥ 2`, so add `(hn : n ≥ 2)`.
+   - "for every nonzero element x of H" becomes `∀ x : ℚ, x ∈ H → x ≠ 0 → …`.
+3. Mirror the exact logical structure of the claim:
+   - "P is not an integer" → `¬ ∃ m : ℤ, P = ↑m` (insert the coercion `↑` so types match).
+   - "H = 0 or ℚ" (a subgroup is trivial or everything) → `H = ⊥ ∨ H = ⊤`.
+   - "(a₁a₂…aₙ)⁻¹ = aₙ⁻¹…a₁⁻¹" → `(as.prod)⁻¹ = (as.map (fun a => a⁻¹)).reverse.prod`.
+
+## Lean 4 / Mathlib syntax pitfalls (these cause compile errors — check carefully)
+- Big operators: the correct binder syntax is `∑ k ∈ s, f k` and `∏ k ∈ s, f k`. Do NOT write `∑ k in s, …` — the `in` keyword is rejected ("unexpected token 'in'; expected ','").
+- When summing over an interval, write `Finset.Icc a b` (not bare `Icc`, which may resolve to `Set.Icc`); the collection after `∈` must be a `Finset`.
+- Make the summand type match the target type, e.g. `(1 : ℚ) / k` for a rational-valued sum; use coercions like `↑m` when comparing across types (e.g. ℤ vs ℚ).
+- Put instance arguments in square brackets: `[Group G]`, `[Fintype α]`.
+- Check that parentheses balance and every binder (`∀`, `∃`, `∑`, `∏`) is well formed.
+
+## Final consistency verification (do this mentally before answering)
+- Compile check: does every identifier exist under the given opens? Are all tokens valid Lean 4? Do the types line up, with coercions inserted where needed?
+- Faithfulness check in both directions: no missing hypothesis, no extra assumption, quantifiers range over the right domains, and the conclusion says exactly what the problem claims (including negations and disjunctions).
+- Remember: a statement that does not compile scores 0 regardless of faithfulness, so syntactic validity is the first priority, then exact semantic match.
+Iteration 12: New subsample score 2.0 is not better than old score 2.0, skipping
+Iteration 13: Selected program 5 score: 0.5714285714285714
+Batched reflection failed (IncompleteRead(539 bytes read)); retrying per task.
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/http/client.py", line 584, in _get_chunk_left
+    chunk_left = self._read_next_chunk_size()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 551, in _read_next_chunk_size
+    return int(line, 16)
+           ^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 16: b''
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/http/client.py", line 600, in _read_chunked
+    while (chunk_left := self._get_chunk_left()) is not None:
+                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 586, in _get_chunk_left
+    raise IncompleteRead(b'')
+http.client.IncompleteRead: IncompleteRead(0 bytes read)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 214, in _propose_texts_batch_safe
+    return list(self._propose_texts_batch(jobs))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 184, in _propose_texts_batch
+    results = list(reflect_many(jobs))
+                   ^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflection_lm.py", line 168, in reflect_many
+    raw_outputs = self._batch_complete([r[2] for r in rendered], [r[3] for r in rendered])
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflection_lm.py", line 139, in _batch_complete
+    return [self.lm(prompts[0])]
+            ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/lm.py", line 231, in __call__
+    result = self._fn(prompt)
+             ^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/runner.py", line 37, in __call__
+    out = self.client.chat_full(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 124, in chat_full
+    data = self.with_retries(body, timeout, retries, purpose=purpose)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 196, in with_retries
+    data = self.call_with_deadline(body, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 226, in call_with_deadline
+    raise box["error"]
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 216, in run
+    box["data"] = self._post(body, timeout) if self.post == self._post else self.post(body)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 238, in _post
+    return json.load(resp)
+           ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+                 ^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 478, in read
+    return self._read_chunked(amt)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 612, in _read_chunked
+    raise IncompleteRead(b''.join(value)) from exc
+http.client.IncompleteRead: IncompleteRead(539 bytes read)
+
+Iteration 13: Proposed new text for instructions: You are given a mathematical problem stated in natural language, together with a Lean 4 context consisting of `import` statements, `open` / `open scoped` commands, and possibly auxiliary definitions. Your task is to translate the problem into exactly ONE Lean 4 theorem statement that faithfully captures the problem, and then verify (a) that the statement compiles and (b) that it is consistent with the natural-language problem. Think step by step before producing the final answer.
+
+## Input format
+- A natural-language math problem (prove/show/verify ...).
+- A "Lean 4 context" block with the exact imports, opens, and definitions you must use.
+
+## Output format
+- Use exactly the imports, opens, and definitions given in the context. Do not add, remove, or rename them. When the context provides a definition (e.g. `is_topology`), use it VERBATIM — same spelling, same capitalization, same argument order. If the context defines `is_topology (X : Type*) (T : Set (Set X))`, then `is_topology X T` is the ONLY way to say "T is a topology on X". Capitalized or re-spelled variants (`IsTopologicalSpace`, `TopologicalSpace.IsTopology`, `isTopology`, ...) DO NOT EXIST and fail with `unknown identifier`.
+- Write exactly one `theorem` (not `lemma`, `def`, or `example`) with a descriptive name.
+- The theorem must end with `:= by sorry`. Only the statement is being graded; the proof is intentionally omitted.
+- Output the theorem in a ```lean4 code block.
+
+## CRITICAL: the statement MUST compile
+A parse or elaboration error scores 0 regardless of faithfulness. Check ALL of the following before answering:
+
+1. **Never write a bare `let x := v` on its own line inside a theorem statement.** In term mode, `let x := v` must either be followed by `;` and the body on the same logical line (`let x := v; body`), or the body must be indented strictly more than the `let` keyword. A `let` whose body sits at the same indentation produces the error "expected '{' or indented tactic sequence" and leaves unsolved metavariable goals (`⊢ ?m._`).
+   - Safest option: avoid `let` in the statement entirely — inline the expression where it is used. For example, write
+     `MonotoneOn (fun x => f x / x) (Set.Ioi 0)`
+     instead of
+     `let g := fun x => f x / x` (newline) `MonotoneOn g (Set.Ioi 0)`.
+   - If a `let` is truly needed, put it on one line with a semicolon: `let g := fun x => f x / x; MonotoneOn g (Set.Ioi 0)`.
+
+2. **Give every bound variable an explicit type when it cannot be inferred**, e.g. `(n : ℕ)`, `(f : ℝ → ℝ)`, `(X : Type*)`. Typeclass assumptions go in square brackets, e.g. `[MetricSpace X]`, `[CompleteSpace Y]`.
+
+3. **Insert coercions explicitly where needed**, e.g. `(-(n : ℤ))` when a natural number is used where an integer is expected.
+
+4. **Use only identifiers that really exist in Mathlib (or in the given context). Never invent constructors or constant names.** A single `unknown constant` / `unknown identifier` error scores 0.
+   - Type synonyms/abbreviations do NOT get their own constructors. The Gaussian integers ℤ[i] are `GaussianInt`, which Mathlib defines as `Zsqrtd (-1)`; there is NO `GaussianInt.mk`. Build the element a + bi as `(Zsqrtd.mk a b : GaussianInt)` or with the anonymous constructor `(⟨a, b⟩ : GaussianInt)`.
+   - If you are unsure whether a name like `Foo.bar` exists, reformulate using primitives you are certain of (anonymous constructors `⟨...⟩`, arithmetic operations, quantifiers, and the standard predicates listed below) instead of guessing.
+   - Divisibility in a ring `R` is written `(a : R) ∣ b` (typed `\dvd`).
+
+5. **Subtype coherence: never apply a function defined on one subtype to an argument of a different subtype.** If `g : {x : X // x ∈ closure A} → Y` and `a : {x : X // x ∈ A}`, then `g a` fails with "Application type mismatch", even though mathematically `A ⊆ closure A`. Lean does not insert this inclusion automatically. Fixes:
+   - Insert the inclusion term explicitly: `g ⟨a, subset_closure a.property⟩`; or
+   - Re-quantify over the base type: `∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩`.
+   - The standard fact is `subset_closure : A ⊆ closure A`.
+   - Even safer: avoid subtypes altogether. Take functions on the whole ambient type and restrict them with predicates: `ContinuousOn f s`, `UniformContinuousOn f s`, `DifferentiableOn ℝ f s`, `MonotoneOn f s`, `Set.EqOn f g s`, and quantifiers `∀ x ∈ s, ...`. Likewise, prefer element-wise statements (`∀ v : V, v ∈ W → S v ∈ W`) over subtype machinery.
+
+6. **Reserved tokens can NEVER be used as variable names.** `λ` is reserved in Lean 4 (it is alternative syntax for `fun`), so `∀ λ : F, ...` or `fun λ => ...` fails at parse time with "unexpected token 'λ'; expected '(', '[', '_', '{' or identifier". When the mathematics uses λ (e.g. an eigenvalue in "T − λI"), RENAME it — `μ`, `l`, or `lam` are all fine. The same applies to every Lean keyword (`fun`, `let`, `in`, `by`, `have`, `show`, `where`, `match`, `if`, `then`, `else`, `do`, `theorem`, `def`, `section`, ...): never use one as a binder name. Other Greek letters (`α β γ δ μ ν σ τ φ ω ...`) are valid identifiers.
+
+7. **`TopologicalSpace X` is a structure, NOT a set of sets.** There is NO coercion `TopologicalSpace X → Set (Set X)`, so both `(TopologicalSpace.generateFrom A : Set (Set X))` and `s ∈ TopologicalSpace.generateFrom A` fail with "Type mismatch: generateFrom A has type TopologicalSpace X but is expected to have type Set (Set X)".
+   - To view the open sets of a topology `t : TopologicalSpace X` as a `Set (Set X)`, write `{s : Set X | t.IsOpen s}`, e.g. `{s : Set X | (TopologicalSpace.generateFrom A).IsOpen s}`.
+   - `TopologicalSpace.generateFrom : Set (Set X) → TopologicalSpace X` builds a topology structure from a generating collection.
+   - BEST OPTION when the context defines `is_topology` on `Set (Set X)`: stay entirely in the `Set (Set X)` world and never mention `TopologicalSpace X` at all. "The topology generated by A" is then the set of all unions of subcollections of A: `{s : Set X | ∃ B : Set (Set X), B ⊆ A ∧ s = ⋃₀ B}`. Use `⋃₀ S` (sUnion) for the union of a set of sets and `⋂₀ S` (sInter) for the intersection of a set of sets; both notations are available with `import Mathlib`.
+
+8. **Ensure the statement is one complete `Prop`** with no dangling metavariables, balanced parentheses, and correct indentation, followed by `:= by sorry`.
+
+## Faithfulness requirements
+- Include EVERY hypothesis of the natural-language problem as a separate named hypothesis, using standard Mathlib predicates. Typical translations:
+  - "f is continuous for x ≥ 0" → `(hcont : ContinuousOn f (Set.Ici 0))`
+  - "f'(x) exists for x > 0" → `(hdiff : DifferentiableOn ℝ f (Set.Ioi 0))`
+  - "f(0) = 0" → `(hf0 : f 0 = 0)`
+  - "f' is monotonically increasing" → `(hmono : MonotoneOn (deriv f) (Set.Ioi 0))`
+  - "n is a squarefree integer greater than 3" → `(n : ℕ) (hn_sq : Squarefree n) (hn_gt : n > 3)`
+  - "(X, d_X) and (Y, d_Y) are metric spaces, Y complete" → `(X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y]`
+  - "A ⊆ X" → `(A : Set X)`; the closure of A → `closure A`
+  - "f : A → Y is uniformly continuous" → either `(f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f)` or `(f : X → Y) (hf : UniformContinuousOn f A)`
+  - "a sequence {x_n} in X" → `(x : ℕ → X)`; "{x_n} is a Cauchy sequence" → `CauchySeq x`; "the image sequence {f(x_n)}" → `f ∘ x` (or `fun n => f (x n)`)
+  - "S, T ∈ L(V)" (linear operators on an F-vector space) → `{F V : Type*} [Field F] [AddCommGroup V] [Module F V] (S T : V →ₗ[F] V)`
+  - "ST = TS" (commuting operators) → `(h : S ∘ₗ T = T ∘ₗ S)` (`∘ₗ` is `LinearMap.comp`)
+  - "T − λI" → `T - μ • LinearMap.id` (remember: λ must be renamed, e.g. to `μ`)
+  - "v ∈ null(T − λI)" → `(T - μ • LinearMap.id) v = 0` (equivalently `v ∈ LinearMap.ker (T - μ • LinearMap.id)`)
+  - "null(T − λI) is invariant under S" → `∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0`
+  - "the intersection of all topologies on X containing A" (with context's `is_topology`) → `⋂₀ {T : Set (Set X) | is_topology X T ∧ A ⊆ T}`
+  - "A is a basis for a topology on X" (with context's `is_topology`) → `(h_basis : is_topology X {s : Set X | ∃ B : Set (Set X), B ⊆ A ∧ s = ⋃₀ B})`
+- The conclusion must match the problem exactly, including the domain/quantifiers (e.g. monotonicity on `Set.Ioi 0` when the statement is about x > 0).
+- Standard object translations:
+  - Vectors in ℝ^k → `(k : ℕ) (x y : Fin k → ℝ)`; norms `‖x‖`, sums and differences work directly on `Fin k → ℝ`.
+  - The ring ℤ[√-n] → `Zsqrtd (-(n : ℤ))`; its element √-n → `(Zsqrtd.mk 0 1 : Zsqrtd (-(n : ℤ)))`; 1 + √-n → `(Zsqrtd.mk 1 1 : Zsqrtd (-(n : ℤ)))`; the ring element 2 → `(2 : Zsqrtd (-(n : ℤ)))`.
+  - The Gaussian integers ℤ[i] → `GaussianInt` (which is `Zsqrtd (-1)`); a + bi → `(Zsqrtd.mk a b : GaussianInt)` or `(⟨a, b⟩ : GaussianInt)`; "a divides b in ℤ[i]" → `(a : GaussianInt) ∣ b`.
+  - "is irreducible" → `Irreducible`.
+  - "monotonically increasing" on a set → `MonotoneOn f s`; on the whole domain → `Monotone f`.
+  - "uniformly continuous" on the whole domain → `UniformContinuous f`; on a set → `UniformContinuousOn f s`.
+  - "there exists a unique ..." → `∃! x, P x`.
+  - "g extends f" / "g agrees with f on A": if both functions are on the same ambient type, use `Set.EqOn g f A`; if `g` is on the subtype `{x // x ∈ closure A}` and `f` on `{x // x ∈ A}`, use `∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩`. Note: `∃! g : X → Y, ...` over total functions is usually WRONG for extension problems, because the values of g outside `closure A` are unconstrained, so g is not unique; keep g on the subtype, or state uniqueness as agreement on `closure A`.
+  - Several things to prove at once → join them with `∧`.
+- **Counterexample problems**: if the problem asks to show that something "does not need to hold" / "need not be" / asks for a counterexample, state the EXISTENCE of a counterexample rather than a universal or negated-universal claim. For example, "show that ⋃ 𝒯_α does not need to be a topology on X" becomes
+  `∃ (α : Type*) (T : α → Set (Set X)), (∀ i, is_topology X (T i)) ∧ ¬ is_topology X (⋃ i, T i)`.
+
+## General strategies
+- Translate quantifier-by-quantifier, preserving the order, domains, and logical structure of the English sentence.
+- Prefer element-wise statements (`∀ v : V, P v → Q (S v)`) over subtypes, submodules, or set-inclusion juggling whenever they express the same mathematics.
+- When a problem is about "topologies as sets of open sets" and the context defines `is_topology` on `Set (Set X)`, do EVERYTHING with `Set (Set X)`, set-builders `{s | p s}`, `⋃₀`, and `⋂₀`. Do not mix in Mathlib's `TopologicalSpace` structure unless the problem forces you to; if it does, convert with `{s : Set X | t.IsOpen s}`.
+
+## Known-good patterns (these shapes compiled and were judged faithful — reuse them)
+- Parallelogram law in ℝ^k:
+  `theorem vector_parallelogram_identity (k : ℕ) (x y : Fin k → ℝ) : ‖x + y‖^2 + ‖x - y‖^2 = 2 * ‖x‖^2 + 2 * ‖y‖^2 := by sorry`
+- Divisibility in ℤ[i]:
+  `theorem gaussian_integer_divisibility : ((Zsqrtd.mk 1 1 : GaussianInt)^2) ∣ (2 : GaussianInt) := by sorry`
+- Unique extension of a uniformly continuous map to the closure (note the explicit inclusion `⟨x, subset_closure hx⟩`):
+  `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`
+- Uniformly continuous maps send Cauchy sequences to Cauchy sequences:
+  `theorem uniformly_continuous_preserves_cauchy_sequences (X Y : Type*) [MetricSpace X] [MetricSpace Y] (f : X → Y) (hf : UniformContinuous f) : ∀ (x : ℕ → X), CauchySeq x → CauchySeq (f ∘ x) := by sorry`
+- Commuting linear operators, null space of T − λI invariant under S (note λ renamed to μ):
+  `theorem invariant_null_space {F V : Type*} [Field F] [AddCommGroup V] [Module F V] (S T : V →ₗ[F] V) (h : S ∘ₗ T = T ∘ₗ S) : ∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0 := by sorry`
+- Topology generated by a basis A equals the intersection of all topologies containing A (pure `is_topology` formulation — safest):
+  `theorem generated_topology_eq_sInter (X : Type*) (A : Set (Set X)) (h_basis : is_topology X {s : Set X | ∃ B : Set (Set X), B ⊆ A ∧ s = ⋃₀ B}) : {s : Set X | ∃ B : Set (Set X), B ⊆ A ∧ s = ⋃₀ B} = ⋂₀ {T : Set (Set X) | is_topology X T ∧ A ⊆ T} := by sorry`
+- Same statement via Mathlib's `generateFrom` (note the `.IsOpen` set-builder — NO coercion):
+  `theorem generated_topology_eq_sInter (X : Type*) (A : Set (Set X)) (h_basis : ∀ s : Set X, (TopologicalSpace.generateFrom A).IsOpen s ↔ ∃ B : Set (Set X), B ⊆ A ∧ s = ⋃₀ B) : {s : Set X | (TopologicalSpace.generateFrom A).IsOpen s} = ⋂₀ {T : Set (Set X) | is_topology X T ∧ A ⊆ T} := by sorry`
+
+## Known-bad patterns (each of these scored 0 — never produce them)
+- `(GaussianInt.mk 1 1)^2 ∣ (2 : GaussianInt)` — fails with `Unknown constant GaussianInt.mk`. `GaussianInt` is a synonym for `Zsqrtd (-1)` and has no constructor of its own; use `Zsqrtd.mk 1 1` or `⟨1, 1⟩`.
+- `... ∀ (a : {a : X // a ∈ A}), g a = f a` where `g : {a : X // a ∈ closure A} → Y` — fails with "Application type mismatch: argument a has type {a // a ∈ A} but is expected to have type {a // a ∈ closure A}". Insert the inclusion `⟨a, subset_closure a.property⟩` or re-quantify over `X` as shown above.
+- `∀ λ : F, (T - λ • LinearMap.id) v = 0 → ...` — parse error "unexpected token 'λ'": `λ` is reserved syntax for `fun` and can never be a variable name. Rename it to `μ` (or `l`, `lam`).
+- `(TopologicalSpace.generateFrom A : Set (Set X))` or `s ∈ TopologicalSpace.generateFrom A` — type mismatch: `generateFrom A : TopologicalSpace X` is a structure with NO coercion to `Set (Set X)`. Use `{s : Set X | (TopologicalSpace.generateFrom A).IsOpen s}`, or avoid `TopologicalSpace` entirely and work with `is_topology` and `⋃₀`/`⋂₀`.
+- `IsTopologicalSpace T` (or any other capitalized/respelled variant) when the context defines `is_topology` — fails with `unknown identifier`. Use the context's definition verbatim: `is_topology X T`.
+- `⨅ (T : Set (Set X)) (hT : ...) (hA : ...), T` — fragile dependent-binder infimum; prefer the robust `⋂₀ {T : Set (Set X) | is_topology X T ∧ A ⊆ T}`.
+
+## Verification procedure (perform before finalizing)
+1. Read the natural-language problem and your Lean statement side by side; confirm every hypothesis and the conclusion are present, with matching meaning, domains, and quantifier structure.
+2. Mentally run the Lean parser over the statement: check the `let` rule above, indentation, parentheses, explicit types and coercions, and the final `:= by sorry`.
+3. **Reserved-token audit**: scan every binder name; confirm none is a Lean keyword — in particular, never bind a variable named `λ` (rename eigenvalues to `μ`).
+4. Audit every identifier: is each constant, constructor, and predicate one you are CERTAIN exists in Mathlib or in the given context? Is every name taken from the context (like `is_topology`) spelled exactly as given, with the same arguments in the same order? Replace any guessed name with a known-safe formulation (e.g. `Zsqrtd.mk` / `⟨...⟩` instead of an invented `.mk`).
+5. Audit every function application for type mismatch, with special attention to subtypes (`{x // p x}` vs `{x // q x}`), numeric coercions (ℕ → ℤ → ℝ), set inclusions such as `A ⊆ closure A`, and any place where a `TopologicalSpace X` structure is used as if it were a `Set (Set X)` (there is no such coercion — use `{s | t.IsOpen s}`).
+6. Fix any issue found and only then output the final theorem.
+`
+Iteration 13: Exception during optimization: 1 reflection call(s) failed; first: IncompleteRead: IncompleteRead(539 bytes read)
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/core/engine.py", line 846, in run
+    proposals = self.reflective_proposer.propose(state)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 550, in propose
+    child_evals = self._batch_evaluate(child_items)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 236, in _batch_evaluate
+    return default_batch_evaluate(self.adapter, items)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/core/adapter.py", line 227, in default_batch_evaluate
+    return [adapter.evaluate(batch, candidate, capture_traces=True) for candidate, batch in items]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/gepa_adapter.py", line 107, in evaluate
+    self.on_batch()
+  File "/workspace/gepa-lean-formalizers/src/runner.py", line 65, in batch_done
+    raise ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
+src.runner.ReflectionFailed: 1 reflection call(s) failed; first: IncompleteRead: IncompleteRead(539 bytes read)
+

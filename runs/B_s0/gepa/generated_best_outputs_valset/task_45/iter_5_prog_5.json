@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_239",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_of_order_2907_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 2907) : \u00acIsSimpleGroup G := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_of_order_2907_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 2907) : \u00acIsSimpleGroup G := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem states exactly the English claim: a group G with cardinality 2907 (via `Fintype.card G = 2907`) is not simple (`\u00acIsSimpleGroup G`). No extra or missing assumptions are present."
+        },
+        "score": 1
+    }
+]

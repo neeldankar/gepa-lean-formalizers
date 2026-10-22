@@ -956,3 +956,6 @@ Traceback (most recent call last):
     raise ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
 src.runner.ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
 
+Loading gepa state from run dir
+Iteration 7: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
+Iteration 8: Selected program 2 score: 0.11428571428571428

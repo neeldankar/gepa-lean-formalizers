@@ -834,5 +834,45 @@
       68,
       69
     ]
+  },
+  {
+    "i": 11,
+    "selected_program_candidate": 0,
+    "subsample_ids": [
+      32,
+      25,
+      27
+    ],
+    "n_tasks": 1,
+    "tasks": [
+      {
+        "parent_idx": 0,
+        "subsample_ids": [
+          32,
+          25,
+          27
+        ],
+        "subsample_scores": [
+          0.0,
+          1.0,
+          1.0
+        ],
+        "new_subsample_scores": [
+          0.0,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "subsample_scores": [
+      0.0,
+      1.0,
+      1.0
+    ],
+    "new_subsample_scores": [
+      0.0,
+      1.0,
+      1.0
+    ]
   }
 ]
