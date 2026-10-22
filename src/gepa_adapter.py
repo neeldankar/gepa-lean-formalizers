@@ -40,6 +40,8 @@ def feedback_text(trace):
         lean = f"Lean: the statement does not compile ({trace['compile_status']}). Errors:\n{errors}"
     if trace["judge"] is None:
         judge = "Judge: not run (the statement must compile first)."
+    elif trace.get("judge_missing"):
+        judge = "Judge: its reply could not be read twice, so there is no verdict (scored 0 here)."
     else:
         judge = f"Judge verdict: {trace['judge']['verdict']}. Judge reason: {trace['judge']['reason']}"
     return f"Score: {trace['score']}\n{lean}\n{judge}"
@@ -61,13 +63,14 @@ class FormalizerAdapter:
     def score_one(self, instructions, item, sample):
         out = generate(self.gen_client, self.cfg, self.model_key, instructions, item, sample, fewshot=self.fewshot)
         js = judge_score(self.checker, self.judge_client, self.cfg, item, out["text"])
-        if js["judge_score"] is None:
+        if js["judge_score"] is None and not js["judge_missing"]:
             raise AxleOutage(f"AXLE outage on {item['id']}: {js['lean_errors'][:1]}")
-        return {"item_id": item["id"], "sample": sample, "output": out["text"], "finish_reason": out["finish_reason"],
+        # GEPA needs a number: a missing judge verdict scores 0 here and is saved as "missing"
+        return {"judge_missing": js["judge_missing"],"item_id": item["id"], "sample": sample, "output": out["text"], "finish_reason": out["finish_reason"],
                 "extracted": js["extracted"], "format_failure": js["format_failure"],
                 "format_reason": js["format_reason"], "compiled": js["compiled"],
                 "compile_status": js["compile_status"], "lean_errors": js["lean_errors"],
-                "judge": js["judge"], "score": js["judge_score"]}
+                "judge": js["judge"], "score": js["judge_score"] or 0}
 
     def save_candidate(self, instructions, results):
         self.candidates_dir.mkdir(parents=True, exist_ok=True)

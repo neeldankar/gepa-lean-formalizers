@@ -64,3 +64,20 @@ def test_fewshot_goes_to_a_b_e_f_only(tmp_path):
         want = shots if arm in ("A", "B", "E", "F") else ""
         assert all(p[3] == want for p in prompts), arm
         assert all("Example 1:" not in p[2] for p in prompts), arm  # the block is never in the instructions
+
+
+def test_missing_judge_verdicts_are_kept_not_outages(tmp_path):
+    from src.data.firewall import gepa_items
+    from src.final_eval import score_row
+    posts = MockPosts()
+    garbage = lambda body: posts._reply("no JSON here")  # both judges, both attempts
+    kw = dict(cache_dir=tmp_path / "llm", costs_path=tmp_path / "costs.jsonl")
+    gen = LLMClient(CFG, 5, post=posts.formalizer, base_url="http://mock", api_key_env=None, **kw)
+    judge = LLMClient(CFG, 5, post=garbage, **kw)
+    checker = AxleChecker(CFG["axle"], client_factory=MockAxleClient, cache_dir=tmp_path / "axle")
+    item = next(it for it in gepa_items("train") if it["id"] == "pnv_004")
+    r = score_row(CFG, "A", "qwen3-8b", None, None, "dryrun_test", "Translate.", item, 0, gen, judge, checker)
+    assert r["compiled"] and not r["outage"]
+    assert r["judge_missing"] and r["judge_score"] is None and r["judge_verdict"] == "missing"
+    assert r["ref_missing"] and r["ref_verdict"] == "missing"
+    assert r["truth_label"] in (None, "faithful")  # None unless a certificate settled it

@@ -41,17 +41,29 @@ DECOMPOSITIONS = {"A_to_B": ("A", "B"), "C_to_D": ("C", "D")}
 EXPLORATORY_CONTRASTS = {k: CONTRASTS[k] for k in ("Q1", "Q2")}
 
 
+# A missing judge verdict (unparseable after one re-ask) is NaN: the item drops out of that arm's
+# rate instead of counting as unfaithful. Missing counts are reported per arm (compile_stats).
 def truth_value(row):
+    if row["truth_label"] is None:
+        return np.nan
     return 1.0 if row["truth_label"] == "faithful" else 0.0
 
 
 def judge_value(row):
-    return float(row["judge_score"] or 0)
+    if row.get("judge_missing") or row["judge_score"] is None:
+        return np.nan
+    return float(row["judge_score"])
 
 
 def false_positive(row):
-    """Compiled, the optimization judge says faithful, the truth label says unfaithful."""
-    return 1.0 if row["compiled"] and judge_value(row) == 1 and row["truth_label"] != "faithful" else 0.0
+    """Compiled, the optimization judge says faithful, the truth label says unfaithful. NaN when a
+    compiled output lacks either verdict."""
+    if not row["compiled"]:
+        return 0.0
+    j, t = judge_value(row), truth_value(row)
+    if np.isnan(j) or np.isnan(t):
+        return np.nan
+    return 1.0 if j == 1 and t == 0 else 0.0
 
 
 def matrices(rows, dataset, items=None, exclude=frozenset()):
@@ -69,7 +81,8 @@ def matrices(rows, dataset, items=None, exclude=frozenset()):
         for k, f in values.items():
             v = np.full(len(item_ids), np.nan)
             for i, rs in by_item.items():
-                v[pos[i]] = np.mean([f(r) for r in rs])
+                vals = [f(r) for r in rs]
+                v[pos[i]] = np.nan if all(np.isnan(vals)) else np.nanmean(vals)
             out[arm][k].append(v)
     return {arm: {k: np.array(v) * 100 for k, v in d.items()} for arm, d in out.items()}, item_ids
 
@@ -82,13 +95,15 @@ def arm_means(mats, idx=None, seed_draws=None):
         pick = (lambda m: m[seeds]) if idx is None else (lambda m: m[np.ix_(seeds, idx)])
         for score in ("truth", "judge"):
             out[(arm, score)] = float(np.nanmean(pick(d[score])))
-        if "fp" in d:
-            fp, comp = np.nansum(pick(d["fp"]), axis=1), np.nansum(pick(d["compiled"]), axis=1)
+        if "fp" in d:  # the denominator counts only compiled outputs that have both verdicts
+            fpm = pick(d["fp"])
+            fp, comp = np.nansum(fpm, axis=1), np.nansum(np.where(np.isnan(fpm), np.nan, pick(d["compiled"])), axis=1)
             with np.errstate(invalid="ignore", divide="ignore"):
                 per_seed = np.where(comp > 0, 100 * fp / comp, np.nan)
             out[(arm, "fpr")] = float(np.nanmean(per_seed)) if np.isfinite(per_seed).any() else float("nan")
-        if "compiled" in d:  # pooled over the drawn seeds and items, so truth = c * f / 100 exactly
-            comp, tr = pick(d["compiled"]), pick(d["truth"])
+        if "compiled" in d:  # pooled over the drawn seeds and items with a truth label, so truth = c * f / 100 exactly
+            tr = pick(d["truth"])
+            comp = np.where(np.isnan(tr), np.nan, pick(d["compiled"]))
             out[(arm, "c")] = float(np.nanmean(comp))
             total = np.nansum(comp)
             out[(arm, "f")] = float(100 * np.nansum(tr) / total) if total > 0 else float("nan")
@@ -167,13 +182,17 @@ def compile_stats(rows, dataset):
     for arm in sorted({r["arm"] for r in rows}):
         rs = [r for r in rows if r["arm"] == arm and r["dataset"] == dataset and not r.get("outage")]
         compiled = [r for r in rs if r["compiled"]]
+        labeled = [r for r in compiled if r["truth_label"] is not None]
         out[arm] = {
             "outputs": len(rs),
             "compile_rate": 100 * len(compiled) / len(rs) if rs else None,
-            "faithful_given_compiled": 100 * sum(truth_value(r) for r in compiled) / len(compiled) if compiled else None,
+            "faithful_given_compiled": 100 * sum(truth_value(r) for r in labeled) / len(labeled) if labeled else None,
             "format_failure_rate": 100 * sum(r["format_failure"] for r in rs) / len(rs) if rs else None,
             "memorization_rate": 100 * sum(bool(r["memorized"]) for r in rs) / len(rs) if rs else None,
-            "cert_judge_disagreements": sum(1 for r in compiled if r["certified"] and r["ref_verdict"] != "faithful"),
+            "cert_judge_disagreements": sum(1 for r in compiled if r["certified"] and r["ref_verdict"] == "unfaithful"),
+            "missing_opt_judge": sum(1 for r in rs if r.get("judge_missing")),
+            "missing_ref_judge": sum(1 for r in rs if r.get("ref_missing")),
+            "missing_truth_label": sum(1 for r in rs if r["truth_label"] is None),
             "outages": sum(1 for r in rows if r["arm"] == arm and r["dataset"] == dataset and r.get("outage")),
             "truth_source_share": truth_sources(rs),
         }
@@ -188,6 +207,7 @@ def truth_sources(rs):
     n = len(rs)
     src = Counter(r["truth_source"] for r in rs)
     return {"certificate": 100 * src["certificate"] / n, "ref_judge": 100 * src["ref_judge"] / n,
+            "ref_judge_missing": 100 * src["ref_judge_missing"] / n,
             "compile_failure": 100 * (src["compile"] + src["format"]) / n, "of_which_format": 100 * src["format"] / n}
 
 

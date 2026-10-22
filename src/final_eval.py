@@ -38,11 +38,12 @@ def score_row(cfg, arm, model_key, run_id, seed, dataset, instructions, item, sa
         "extracted": p["extracted"], "normalized": p["normalized"], "format_failure": p["format_failure"],
         "compile_status": p["compile_status"], "compiled": p["compiled"],
         "judge_verdict": (js["judge"] or {}).get("verdict"), "judge_reason": (js["judge"] or {}).get("reason"),
-        "judge_score": js["judge_score"], "certified": cert.get("certified", False),
+        "judge_score": js["judge_score"], "judge_missing": js["judge_missing"], "certified": cert.get("certified", False),
         "cert_status": cert.get("status"), "cert_directions": cert.get("directions"),
         "ref_verdict": ref.get("verdict"), "ref_reason": ref.get("reason"), "ref_error_tag": ref.get("error_tag"),
-        "truth_label": ts["truth_label"], "truth_source": ts["truth_source"],
-        "outage": ts["truth_source"] == "outage" or js["judge_score"] is None, "memorized": [],
+        "ref_missing": ts["ref_missing"], "truth_label": ts["truth_label"], "truth_source": ts["truth_source"],
+        # a missing judge verdict is not an outage: it is kept, counted, and left out of the rates
+        "outage": ts["truth_source"] == "outage" or (js["judge_score"] is None and not js["judge_missing"]), "memorized": [],
     }
 
 

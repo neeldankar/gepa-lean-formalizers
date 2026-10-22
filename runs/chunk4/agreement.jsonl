@@ -1,4 +1,4 @@
-{"label_id": "P01", "config": "reform", "item_id": "pnv_024", "label": "unfaithful", "ref_judge": "unfaithful", "truth_label": "unfaithful", "opt_judge": "unparseable", "certified": false}
+{"label_id": "P01", "config": "reform", "item_id": "pnv_024", "label": "unfaithful", "ref_judge": "unfaithful", "truth_label": "unfaithful", "opt_judge": "missing", "certified": false}
 {"label_id": "P02", "config": "reform", "item_id": "pnv_092", "label": "faithful", "ref_judge": "faithful", "truth_label": "faithful", "opt_judge": "faithful", "certified": true}
 {"label_id": "P03", "config": "reform", "item_id": "pnv_215", "label": "faithful", "ref_judge": "faithful", "truth_label": "faithful", "opt_judge": "faithful", "certified": true}
 {"label_id": "P04", "config": "qwen_a3", "item_id": "pnv_158", "label": "unfaithful", "ref_judge": "unfaithful", "truth_label": "unfaithful", "opt_judge": "unfaithful", "certified": false}
@@ -17,4 +17,4 @@
 {"label_id": "P17", "config": "reform", "item_id": "pnv_305", "label": "faithful", "ref_judge": "faithful", "truth_label": "faithful", "opt_judge": "faithful", "certified": false}
 {"label_id": "P18", "config": "qwen_a3", "item_id": "pnv_260", "label": "unfaithful", "ref_judge": "unfaithful", "truth_label": "unfaithful", "opt_judge": "unfaithful", "certified": false}
 {"label_id": "P19", "config": "qwen_a3", "item_id": "pnv_258", "label": "unfaithful", "ref_judge": "unfaithful", "truth_label": "unfaithful", "opt_judge": "unfaithful", "certified": false}
-{"label_id": "P20", "config": "qwen_nothink", "item_id": "pnv_285", "label": "unfaithful", "ref_judge": "unparseable", "truth_label": "unfaithful", "opt_judge": "unfaithful", "certified": false}
+{"label_id": "P20", "config": "qwen_nothink", "item_id": "pnv_285", "label": "unfaithful", "ref_judge": "missing", "truth_label": "missing", "opt_judge": "unfaithful", "certified": false}

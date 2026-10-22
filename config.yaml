@@ -51,7 +51,8 @@ llm:
     qwen3-8b: {input: 0, output: 0}   # served by vLLM on the pod; GPU time is logged separately
     reform-8b: {input: 0, output: 0}
 
-# Placeholders until the pilot (chunk 4): two different non-Qwen families.
+# Fixed at the freeze (Neel, 2026-10-22): two different non-Qwen families. A reply still unparseable after
+# one re-ask is a missing verdict, never faithful or unfaithful.
 judges:
   optimization: openai/gpt-oss-120b
   reference: deepseek-ai/DeepSeek-V4.1-Flash
@@ -68,7 +69,7 @@ models:
   qwen3-8b:
     hf_id: Qwen/Qwen3-8B
     base_url: http://localhost:8000/v1
-    enable_thinking: false     # decide in pilot
+    enable_thinking: false     # Neel, chunk 4 (2026-10-18): thinking off for every Qwen3-8B arm
   reform-8b:
     hf_id: GuoxinChen/ReForm-8B
     base_url: http://localhost:8010/v1   # not 8001: RunPod's nginx proxy listens there
@@ -78,11 +79,11 @@ models:
     api_key_env: TOGETHER_API_KEY
     enable_thinking: false
   arm_f:                       # arm F's frontier model, through Together; Neel's pick, chunk 4
-    served_name: zai-org/GLM-5.3   # Neel, Block 2 option b (2026-10-22): Kimi-K3 ran past the shared 16k cap
+    served_name: moonshotai/Kimi-K3   # Neel, freeze (2026-10-22): GLM-5.3 compiled 1 of 5 train items (4 hit the 16k cap)
     base_url: https://api.together.xyz/v1
     api_key_env: TOGETHER_API_KEY
 
-# Identical across arms; decide in pilot.
+# Identical across arms; fixed at the freeze (Neel, 2026-10-22): temperature 0.6, 1 sample, 16,384-token cap.
 generation:
   temperature: 0.6
   samples: 1
@@ -99,8 +100,8 @@ arms:
   F: {model: arm_f, prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt, test_only: true}
 
 gepa:
-  max_metric_calls: 800            # decide in pilot
-  reflection_model: moonshotai/Kimi-K3     # Neel's pick, chunk 4 (fallback zai-org/GLM-5.3 if the projection goes over); not Qwen, not the reference judge's family
+  max_metric_calls: 800            # Neel, freeze (2026-10-22)
+  reflection_model: moonshotai/Kimi-K3     # Neel, freeze (2026-10-22); not Qwen, not the reference judge's family
   reflection_max_tokens: 32000     # Kimi-K3 reasons first; 8000 cut off a 15-record reflection (chunk 4 preflight)
   runs:
     B_s0: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}
@@ -141,6 +142,6 @@ pod:
   max_model_len: 40960
 
 analysis:
-  threshold_points: 5              # placeholder; Neel confirms at the freeze
+  threshold_points: 5              # Neel, freeze (2026-10-22)
   bootstrap_resamples: 10000
   seed: 0

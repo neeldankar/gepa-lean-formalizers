@@ -594,25 +594,33 @@ def label(cfg, summary, argv=()):
 
 def agreement(rows, mapping, labels):
     """Agreement of the reference judge, the truth label and the optimization judge with hand labels.
-    `agree` counts out of all labeled items (an unsure label never agrees); `n_decided` excludes unsure."""
+    `missing` (top level) counts items without a hand label; an unsure label never agrees. A judge verdict
+    that is missing (unparseable after one re-ask), or a truth label resting on one, is counted as missing
+    for that scorer, not as a disagreement: `of` is every item where the scorer has a verdict (unsure still counts and never agrees)."""
+    from src.scoring.judge import is_missing
     by_key = {(r["config"], r["item_id"]): r for r in rows}
     out = {"n": len(mapping), "unsure": 0, "missing": 0}
-    counts = {"ref_judge": 0, "truth_label": 0, "opt_judge": 0}
+    counts = {k: {"agree": 0, "of": 0, "missing": 0} for k in ("ref_judge", "truth_label", "opt_judge")}
     per = []
     for m in mapping:
         lab = labels.get(m["label_id"], "")
         r = by_key[(m["config"], m["item_id"])]
         verdicts = {"ref_judge": r["ref_verdict"], "truth_label": r["truth_label"], "opt_judge": r["judge_verdict"]}
+        gone = {"ref_judge": is_missing(r["ref_verdict"]), "opt_judge": is_missing(r["judge_verdict"]),
+                "truth_label": r["truth_label"] is None or (r.get("compiled", True) and not r["certified"] and is_missing(r["ref_verdict"]))}
         if lab == "unsure":
             out["unsure"] += 1
         elif lab not in ("faithful", "unfaithful"):
             out["missing"] += 1
-        else:
-            for k, v in verdicts.items():
-                counts[k] += v == lab
-        per.append({**m, "label": lab, **verdicts, "certified": r["certified"]})
+        for k, v in verdicts.items():
+            if gone[k]:
+                counts[k]["missing"] += 1
+            else:
+                counts[k]["of"] += 1
+                counts[k]["agree"] += lab in ("faithful", "unfaithful") and v == lab
+        per.append({**m, "label": lab, **{k: "missing" if gone[k] else v for k, v in verdicts.items()}, "certified": r["certified"]})
     out["n_decided"] = out["n"] - out["unsure"] - out["missing"]
-    out.update({k: {"agree": v, "of": out["n"]} for k, v in counts.items()})
+    out.update(counts)
     return out, per
 
 

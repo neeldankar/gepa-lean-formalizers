@@ -1,4 +1,6 @@
-"""LLM judges. Both return JSON; one re-ask on unparseable output, then verdict `unparseable`.
+"""LLM judges. Both return JSON; one re-ask on unparseable output, then the verdict is missing
+(`verdict: "missing"`, `missing: True`). A missing verdict is never scored as faithful or unfaithful
+(Neel, chunk 4 freeze); results count it per arm.
 
 The optimization judge sees only the English and the candidate. The reference judge also sees the
 reference and tags unfaithful items with one error type from ProofNet-Verified's taxonomy.
@@ -18,7 +20,12 @@ ERROR_TAGS = [
     "Adding extra conclusion",
 ]
 VERDICTS = ("faithful", "unfaithful")
-UNPARSEABLE = "unparseable"
+MISSING = "missing"
+OLD_MISSING = "unparseable"  # what pilot rows (before the freeze) recorded for the same case
+
+
+def is_missing(verdict):
+    return verdict in (MISSING, OLD_MISSING)
 
 
 def load_prompt(name):
@@ -54,7 +61,7 @@ def run_judge(client, model, prompt, purpose, need_tag, max_tokens):
         parsed = parse_json_reply(reply, need_tag)
         if parsed:
             return parsed
-    return {"verdict": UNPARSEABLE, "reason": reply[-500:], **({"error_tag": None} if need_tag else {})}
+    return {"verdict": MISSING, "missing": True, "reason": reply[-500:], **({"error_tag": None} if need_tag else {})}
 
 
 def optimization_judge(client, cfg, english, candidate):

@@ -55,9 +55,24 @@ def test_agreement_counts_unsure_as_disagreeing():
     mapping = [{"label_id": f"P{k}", "config": "reform", "item_id": f"i{k}"} for k in range(4)]
     labels = {"P0": "faithful", "P1": "unfaithful", "P2": "unfaithful", "P3": "unsure"}
     out, per = chunk4.agreement(rows, mapping, labels)
-    assert out["ref_judge"] == {"agree": 3, "of": 4} and out["truth_label"] == {"agree": 2, "of": 4}
-    assert out["opt_judge"] == {"agree": 1, "of": 4} and out["unsure"] == 1 and out["n_decided"] == 3
+    assert out["ref_judge"] == {"agree": 3, "of": 4, "missing": 0} and out["truth_label"] == {"agree": 2, "of": 4, "missing": 0}
+    assert out["opt_judge"] == {"agree": 1, "of": 4, "missing": 0} and out["unsure"] == 1 and out["n_decided"] == 3
     assert per[1]["label"] == "unfaithful" and per[1]["ref_judge"] == "unfaithful"
+
+
+def test_agreement_sets_missing_verdicts_apart():
+    rows = [{"config": "reform", "item_id": "i0", "ref_verdict": "unparseable", "truth_label": "unfaithful", "judge_verdict": "faithful",
+             "certified": False, "compiled": True},   # pilot row: the old unparseable value, truth resting on it
+            {"config": "reform", "item_id": "i1", "ref_verdict": "missing", "truth_label": "faithful", "judge_verdict": "missing",
+             "certified": True, "compiled": True},    # certified: the truth label stands without the judge
+            {"config": "reform", "item_id": "i2", "ref_verdict": "faithful", "truth_label": "faithful", "judge_verdict": "unfaithful",
+             "certified": False, "compiled": True}]
+    mapping = [{"label_id": f"P{k}", "config": "reform", "item_id": f"i{k}"} for k in range(3)]
+    out, per = chunk4.agreement(rows, mapping, {"P0": "unfaithful", "P1": "faithful", "P2": "faithful"})
+    assert out["ref_judge"] == {"agree": 1, "of": 1, "missing": 2}
+    assert out["truth_label"] == {"agree": 2, "of": 2, "missing": 1}
+    assert out["opt_judge"] == {"agree": 0, "of": 2, "missing": 1}
+    assert per[0]["ref_judge"] == "missing" and per[0]["truth_label"] == "missing"
 
 
 @pytest.mark.parametrize("rate,agree,em,total,expected", [

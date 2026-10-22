@@ -243,3 +243,23 @@ def test_a_hung_judge_or_formalizer_call_stops_the_run_and_says_so(tmp_path, rol
     assert result["status"] == "stopped" and "gave up after 2 attempts" in result["reason"]
     assert "no reply within" in (out / "STOPPED").read_text() and not (out / "DONE").exists()
     assert time.monotonic() - t0 < 20
+
+
+def test_adapter_scores_a_missing_judge_verdict_zero_without_stopping(tmp_path):
+    import copy as _copy
+    from src.axle_check import AxleChecker
+    from src.data.firewall import gepa_items
+    from src.llm import LLMClient
+    from src.mocks import MockAxleClient, MockPosts
+    cfg = _copy.deepcopy(load_config())
+    posts = MockPosts()
+    kw = dict(cache_dir=tmp_path / "llm", costs_path=tmp_path / "costs.jsonl")
+    gen = LLMClient(cfg, 3, post=posts.formalizer, base_url="http://mock", api_key_env=None, **kw)
+    judge = LLMClient(cfg, 3, post=lambda body: posts._reply("no JSON here"), **kw)
+    checker = AxleChecker(cfg["axle"], client_factory=MockAxleClient, cache_dir=tmp_path / "axle")
+    adapter = gepa_adapter.FormalizerAdapter(cfg, "qwen3-8b", gen, judge, checker)
+    item = next(it for it in gepa_items("train") if it["id"] == "pnv_004")
+    r = adapter.score_one("Translate.", item, 0)
+    assert r["compiled"] and r["judge_missing"] and r["score"] == 0
+    text = gepa_adapter.feedback_text({**r, "judge": r["judge"]})
+    assert "could not be read" in text and "unfaithful" not in text

@@ -76,10 +76,25 @@ def test_no_certificate_falls_back_to_judge():
     assert out["certificate"] is None and out["truth_label"] == "unfaithful" and out["truth_source"] == "ref_judge"
 
 
-def test_unparseable_judge_is_not_faithful():
+def test_unparseable_judge_is_missing_after_one_retry():
     client = Client("I refuse to answer in JSON.")
     out = score.judge_score(Checker(), client, CFG, ITEM, GOOD)
-    assert out["judge"]["verdict"] == "unparseable" and out["judge_score"] == 0 and len(client.prompts) == 2
+    assert out["judge"]["verdict"] == "missing" and out["judge_missing"] and out["judge_score"] is None
+    assert len(client.prompts) == 2  # one retry, then missing; never scored as a verdict
+
+
+def test_unparseable_reference_judge_leaves_truth_missing():
+    cfg = copy.deepcopy(CFG)
+    cfg["scoring"]["certificates"] = False
+    out = score.truth_score(Checker(), Client("no json"), cfg, ITEM, GOOD)
+    assert out["ref_missing"] and out["truth_label"] is None and out["truth_source"] == "ref_judge_missing"
+
+
+def test_certificate_still_settles_truth_when_the_judge_is_missing():
+    from src.scoring.certificate import TACTICS, attempt_name
+    noh = [attempt_name(d, k, False) for d in ("c2r", "r2c") for k in range(len(TACTICS))]
+    out = score.truth_score(Checker(failed=noh), Client("no json"), CFG, ITEM, GOOD)
+    assert out["ref_missing"] and out["truth_label"] == "faithful" and out["truth_source"] == "certificate"
 
 
 def test_judge_sees_normalized_candidate_only():

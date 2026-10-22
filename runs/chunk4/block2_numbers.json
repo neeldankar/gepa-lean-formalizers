@@ -28,15 +28,18 @@
   "n_decided": 20,
   "ref_judge": {
    "agree": 19,
-   "of": 20
+   "of": 19,
+   "missing": 1
   },
   "truth_label": {
-   "agree": 20,
-   "of": 20
+   "agree": 19,
+   "of": 19,
+   "missing": 1
   },
   "opt_judge": {
    "agree": 16,
-   "of": 20
+   "of": 19,
+   "missing": 1
   }
  },
  "reflections_per_run": {

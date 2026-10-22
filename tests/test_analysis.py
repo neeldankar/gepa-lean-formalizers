@@ -228,7 +228,25 @@ def test_split_reported_with_intervals():
 
 def test_truth_source_shares():
     stats = analysis.compile_stats(split_rows(), "test")
-    assert stats["A"]["truth_source_share"] == {"certificate": 0.0, "ref_judge": 50.0, "compile_failure": 50.0, "of_which_format": 0.0}
+    assert stats["A"]["truth_source_share"] == {"certificate": 0.0, "ref_judge": 50.0, "ref_judge_missing": 0.0,
+                                                 "compile_failure": 50.0, "of_which_format": 0.0}
+
+
+def test_missing_verdicts_drop_out_of_rates_and_are_counted():
+    rows = split_rows()
+    a = [r for r in rows if r["arm"] == "A"]
+    # A items 0 and 1: compiled, faithful, judge score 1. Item 0 loses both judges; item 1 only the opt judge.
+    a[0].update(judge_score=None, judge_missing=True, ref_missing=True, ref_verdict="missing", truth_label=None,
+                truth_source="ref_judge_missing")
+    a[1].update(judge_score=None, judge_missing=True)
+    mats, _ = analysis.matrices(rows, "test")
+    m = analysis.arm_means(mats)
+    assert m[("A", "truth")] == pytest.approx(100 * 19 / 99)    # 19 faithful of the 99 items with a truth label
+    assert m[("A", "judge")] == pytest.approx(100 * 18 / 98)    # judge score over the 98 items with a judge verdict
+    assert m[("A", "c")] * m[("A", "f")] / 100 == pytest.approx(m[("A", "truth")])  # the split stays exact
+    stats = analysis.compile_stats(rows, "test")["A"]
+    assert (stats["missing_opt_judge"], stats["missing_ref_judge"], stats["missing_truth_label"]) == (2, 1, 1)
+    assert stats["outages"] == 0 and stats["outputs"] == 100   # missing is not an outage
 
 
 def test_reference_judge_false_positives_and_negatives(tmp_path):
