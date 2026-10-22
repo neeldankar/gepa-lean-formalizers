@@ -187,10 +187,16 @@ def test_preflight_gate():
     now = datetime(2026, 10, 22, 2, 0, tzinfo=timezone.utc)
     passing = {"time": "2026-10-21T21:40:00+00:00", "checks": [{"name": n, "pass": True, "reasons": []} for n in chunk4.PREFLIGHT_CHECKS]}
     assert chunk4.preflight_gate(passing, now) == (True, [])
-    one_failed = {**passing, "checks": [{**c, "pass": c["name"] != "reflection_long_15", "reasons": ["finish_reason length"]} for c in passing["checks"]]}
-    assert not chunk4.preflight_gate(one_failed, now)[0]
-    missing = {**passing, "checks": passing["checks"][1:]}
-    assert not chunk4.preflight_gate(missing, now)[0]
+    # Neel, 2026-10-22: the 15-record reflection and arm F are reported but do not gate the pilot
+    not_gating = {**passing, "checks": [{**c, "pass": c["name"] not in ("reflection_long_15", "arm_f_generate"), "reasons": ["x"]}
+                                        for c in passing["checks"]]}
+    assert chunk4.preflight_gate(not_gating, now) == (True, [])
+    for name in chunk4.GATE_CHECKS:
+        one_failed = {**passing, "checks": [{**c, "pass": c["name"] != name, "reasons": ["finish_reason length"]} for c in passing["checks"]]}
+        assert not chunk4.preflight_gate(one_failed, now)[0]
+        missing = {**passing, "checks": [c for c in passing["checks"] if c["name"] != name]}
+        assert not chunk4.preflight_gate(missing, now)[0]
+    assert set(chunk4.GATE_CHECKS) == set(chunk4.PREFLIGHT_CHECKS) - {"reflection_long_15", "arm_f_generate"}
     stale = {**passing, "time": "2026-10-20T21:40:00+00:00"}
     ok, reasons = chunk4.preflight_gate(stale, now)
     assert not ok and "old" in reasons[0]
@@ -234,3 +240,23 @@ def test_preflight_limits_cap_and_once():
     chunk4.preflight_limits(cfg, ["--once"])
     client = LLMClient(cfg, 4, run_id="preflight")
     assert all(client.limits(p)[1] == 0 for p in ("reflection", "generate", "judge"))
+
+
+def test_reflection_load_runs_concurrently_and_counts_failures(tmp_path):
+    import threading
+    posts, barrier = MockPosts(), threading.Barrier(6, timeout=10)
+    def post(body):
+        barrier.wait()  # passes only if all 6 calls are in flight at once
+        if "seed 5" in body["messages"][0]["content"]:
+            raise ValueError("bad request")  # not retryable: a failed call
+        return posts.reflection(body)
+    costs = tmp_path / "costs.jsonl"
+    client = LLMClient(CFG, 4, post=post, cache_dir=tmp_path / "llm", costs_path=costs)
+    seeds = [f"seed {i}" for i in range(6)]
+    prompts = [f"Instruction:\n```\n{s}\n```\nexamples" for s in seeds]
+    out = chunk4.reflection_load(client, "moonshotai/Kimi-K3", 32000, prompts, seeds, costs_path=costs)
+    assert out["concurrent"] == 6 and out["passed"] == 5 and out["new_cost_rows"] == 5
+    bad = out["calls"][5]
+    assert not bad["pass"] and "bad request" in bad["error"]
+    assert all(c["pass"] and c["new_instruction"] != c["seed"] for c in out["calls"][:5])
+    assert out["usd"] == pytest.approx(sum(r["usd"] for r in map(json.loads, open(costs))))

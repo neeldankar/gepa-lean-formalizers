@@ -29,6 +29,12 @@ Template:
 - Next:
 ```
 
+### 2026-10-22 · chunk 4 · pilot gate narrowed (Neel); reflection load check added
+
+- **Did:** Neel's change of plan. The pod's gate (`chunk4 preflight_ok`) now needs only the 3-record reflection and the 4 judge checks (`GATE_CHECKS`). Reason (Neel): GEPA reflects on minibatches of 3, so a 15-record reflection never happens in a run; GEPA never calls arm F. Both checks still run and are reported. On the 00:21 UTC preflight the gate reads open.
+- Reflection limit for the pilot: already 600 s per attempt, 1 retry (`llm.purpose_limits.reflection`); no config change. Arm F and `generation.max_tokens` unchanged (Neel).
+- New step `chunk4 reflect_load`: 6 concurrent live 3-record reflections on different pilot minibatches (chunk 5's load), information only, written to `runs/chunk4/reflection_load.json`; it never touches the gate file. Tests: 190 pass.
+
 ### 2026-10-22 · chunk 4 · full preflight rerun, 600 s cap: failed (5 of 7)
 
 - **Did:** new preflight flag `--cap S` (every per-attempt timeout at most S seconds, preflight only; `config.yaml` unchanged). Fixed `--once`: it now also zeroes the per-purpose retries (reflection kept 1). Test added; 189 tests pass.

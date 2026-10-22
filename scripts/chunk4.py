@@ -289,13 +289,16 @@ def preflight_verdict(check):
 
 PREFLIGHT_CHECKS = ("reflection_minibatch_3", "reflection_long_15", "arm_f_generate",
                     "opt_judge_pnv_258", "ref_judge_pnv_258", "opt_judge_pnv_260", "ref_judge_pnv_260")
+# The checks that gate the GEPA pilot (Neel, 2026-10-22): GEPA reflects on minibatches of 3, so a
+# 15-record reflection never happens in a run, and GEPA never calls arm F. Both still run and are reported.
+GATE_CHECKS = ("reflection_minibatch_3", "opt_judge_pnv_258", "ref_judge_pnv_258", "opt_judge_pnv_260", "ref_judge_pnv_260")
 
 
 def preflight_gate(report, now, max_age_hours=24):
-    """(ok, reasons): every preflight check present and passed, the latest run under max_age_hours old."""
+    """(ok, reasons): every gate check present and passed, the latest run under max_age_hours old."""
     reasons = []
     by_name = {c["name"]: c for c in report.get("checks", [])}
-    for name in PREFLIGHT_CHECKS:
+    for name in GATE_CHECKS:
         if name not in by_name:
             reasons.append(f"{name}: missing")
         elif not by_name[name]["pass"]:
@@ -308,7 +311,7 @@ def preflight_gate(report, now, max_age_hours=24):
 
 
 def preflight_ok(cfg, summary, argv=()):
-    """Exit 0 only if the committed preflight passed in full and is recent (the pod's gate before GEPA)."""
+    """Exit 0 only if the committed preflight passed its gate checks and is recent (the pod's gate before GEPA)."""
     ok, reasons = preflight_gate(json.loads((RUN_DIR / "api_preflight.json").read_text()), datetime.now(timezone.utc))
     print("preflight gate:", "open" if ok else "closed", *reasons, sep="\n  ")
     if not ok:
@@ -320,6 +323,71 @@ def fresh_cache_dir(root=ROOT / "cache/preflight"):
     path = root / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     assert not path.exists()
     return path
+
+
+def feedback_records(checker, val, rows):
+    """GEPA's reflection records (Inputs, Generated Outputs, Feedback) for saved pilot rows on val items."""
+    from src.gepa_adapter import feedback_text
+    from src.scoring.score import prepare
+    out = []
+    for r in rows:
+        p = prepare(checker, val[r["item_id"]], r["output"])
+        trace = {**p, "judge": {"verdict": r["judge_verdict"], "reason": r["judge_reason"]} if r["compiled"] else None,
+                 "score": r["judge_score"] or 0}
+        out.append({"Inputs": user_message("", val[r["item_id"]]).lstrip("\n"),
+                    "Generated Outputs": p["extracted"] or "(no Lean statement found)", "Feedback": feedback_text(trace)})
+    return out
+
+
+def reflection_load(client, model, max_tokens, prompts, seeds, costs_path=COSTS_PATH):
+    """All prompts as concurrent reflection calls (chunk 5 runs six GEPA runs at once). Per call: time,
+    usage, cost and preflight_verdict; plus wall time and passes. Information only: it gates nothing."""
+    from gepa.strategies.instruction_proposal import InstructionProposalSignature
+    count = lambda: sum(1 for _ in open(costs_path)) if costs_path.exists() else 0
+    before, t0 = count(), time.monotonic()
+
+    def one(i):
+        start = time.monotonic()
+        try:
+            out, error = client.chat_full(model, [{"role": "user", "content": prompts[i]}], purpose="reflection",
+                                          max_tokens=max_tokens), None
+        except Exception as e:
+            out, error = {}, f"{type(e).__name__}: {e}"[:300]
+        text = out.get("text") or ""
+        c = {"name": f"reflection_load_{i}", "kind": "reflection", "model": model, "records": 3,
+             "seconds": time.monotonic() - start, "new_cost_rows": 1 if out else 0, "error": error,
+             "finish_reason": out.get("finish_reason"), "usage": out.get("usage"),
+             "usd": client.cost(model, out["usage"]) if out else 0, "seed": seeds[i],
+             "new_instruction": InstructionProposalSignature.output_extractor(text)["new_instruction"] if text else ""}
+        return {**c, **preflight_verdict(c)}
+
+    with ThreadPoolExecutor(len(prompts)) as pool:
+        calls = list(pool.map(one, range(len(prompts))))
+    return {"calls": calls, "concurrent": len(prompts), "wall_seconds": time.monotonic() - t0,
+            "passed": sum(c["pass"] for c in calls), "new_cost_rows": count() - before,
+            "usd": sum(c["usd"] for c in calls)}
+
+
+def reflect_load(cfg, summary, argv=()):
+    """Six concurrent live 3-record reflections on different pilot minibatches (Neel, 2026-10-22).
+    Writes runs/chunk4/reflection_load.json; never touches api_preflight.json, so the gate can't change."""
+    from gepa.strategies.instruction_proposal import InstructionProposalSignature
+    n = int(argv[argv.index("--n") + 1]) if "--n" in argv else 6
+    checker = AxleChecker(cfg["axle"])
+    val = {it["id"]: it for it in gepa_items("val")}
+    rows = read_rows(RERUN_OUT["qwen_a3"])
+    seed = load_instructions("prompts/arm_A.txt")
+    prompts = [InstructionProposalSignature.prompt_renderer(
+        {"current_instruction_doc": seed, "dataset_with_feedback": feedback_records(checker, val, rows[3 * i:3 * i + 3])})
+        for i in range(n)]
+    client = LLMClient(cfg, CHUNK, run_id="preflight_load", cache_dir=fresh_cache_dir())
+    t = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    out = reflection_load(client, cfg["gepa"]["reflection_model"], cfg["gepa"]["reflection_max_tokens"], prompts, [seed] * n)
+    out = {"time": t, "limits": dict(zip(("timeout_seconds", "retries"), client.limits("reflection"))), **out}
+    (RUN_DIR / "reflection_load.json").write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n")
+    summary["reflection_load"] = {k: out[k] for k in ("time", "concurrent", "wall_seconds", "passed", "usd", "limits")}
+    summary["reflection_load"]["call_seconds"] = [round(c["seconds"], 1) for c in out["calls"]]
+    print(json.dumps(summary["reflection_load"]))
 
 
 def preflight_limits(cfg, argv):
@@ -341,7 +409,6 @@ def preflight_limits(cfg, argv):
 def preflight(cfg, summary, argv=()):
     """Live tests of every API model GEPA and the final eval need, before paying for a pod."""
     from gepa.strategies.instruction_proposal import InstructionProposalSignature
-    from src.gepa_adapter import feedback_text
     from src.runner import ReflectionLM
     from src.scoring import judge as judges
     from src.scoring.score import prepare
@@ -365,15 +432,7 @@ def preflight(cfg, summary, argv=()):
     seed = load_instructions("prompts/arm_A.txt")
     checks = []
 
-    def records(rs):
-        out = []
-        for r in rs:
-            p = prepare(checker, val[r["item_id"]], r["output"])
-            trace = {**p, "judge": {"verdict": r["judge_verdict"], "reason": r["judge_reason"]} if r["compiled"] else None,
-                     "score": r["judge_score"] or 0}
-            out.append({"Inputs": user_message("", val[r["item_id"]]).lstrip("\n"),
-                        "Generated Outputs": p["extracted"] or "(no Lean statement found)", "Feedback": feedback_text(trace)})
-        return out
+    records = lambda rs: feedback_records(checker, val, rs)
 
     for label, rs in (("reflection_minibatch_3", rows[:3]), ("reflection_long_15", rows[3:18])):
         if not want(label):
@@ -787,7 +846,7 @@ def relabel(cfg, summary, argv=()):
     summary["relabel"] = {"records": len(records), "page_key": "chunk4-pilot", "out": str(out)}
 
 
-STEPS = {"preflight_ok": preflight_ok, "relabel": relabel, "preflight": preflight, "fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
+STEPS = {"preflight_ok": preflight_ok, "reflect_load": reflect_load, "relabel": relabel, "preflight": preflight, "fewshot": fewshot, "pod": pod, "rerun": rerun, "stats": stats, "diagnose": diagnose, "gen": gen, "armf": armf, "label": label, "gepa": gepa, "gpu": gpu, "agree": agree,
          "costs": costs, "project": project}
 
 
