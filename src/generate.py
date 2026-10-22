@@ -6,7 +6,8 @@ from src.prompting import user_message
 def formalizer_client(cfg, model_key, chunk, run_id=None, **kwargs):
     m = cfg["models"][model_key]
     return LLMClient(cfg, chunk, base_url=m["base_url"], api_key_env=m.get("api_key_env"), run_id=run_id,
-                     extra_body=m.get("extra_body"), drop_params=m.get("drop_params", ()), limits=m.get("limits"), **kwargs)
+                     extra_body=m.get("extra_body"), drop_params=m.get("drop_params", ()), limits=m.get("limits"),
+                     stream=m.get("stream", False), **kwargs)
 
 
 def reflection_client(cfg, chunk, run_id=None, **kwargs):
@@ -15,7 +16,8 @@ def reflection_client(cfg, chunk, run_id=None, **kwargs):
     keeps its own limits (llm.purpose_limits.reflection), not arm F's."""
     m = cfg["models"][cfg["gepa"]["reflection_host"]]
     return LLMClient(cfg, chunk, base_url=m["base_url"], api_key_env=m.get("api_key_env"), run_id=run_id,
-                     extra_body=m.get("extra_body"), drop_params=m.get("drop_params", ()), **kwargs)
+                     extra_body=m.get("extra_body"), drop_params=m.get("drop_params", ()), stream=m.get("stream", False),
+                     **kwargs)
 
 
 def served_name(cfg, model_key):

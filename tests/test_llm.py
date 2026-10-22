@@ -333,3 +333,51 @@ def test_a_reply_cut_off_mid_body_is_retried(tmp_path, monkeypatch):
         return REPLY
     c = retry_client(tmp_path, flaky)
     assert c.chat("m", [{"role": "user", "content": "r"}], purpose="reflection") == "ok" and len(calls) == 2
+
+
+SSE = [b": OPENROUTER PROCESSING\n", b"\n",
+       b'data: {"provider": "Together", "choices": [{"delta": {"role": "assistant", "content": "", "reasoning": "think"}}]}\n', b"\n",
+       b'data: {"provider": "Together", "choices": [{"delta": {"content": "The new "}}]}\n', b"\n",
+       b": OPENROUTER PROCESSING\n",
+       b'data: {"provider": "Together", "choices": [{"delta": {"content": "instruction"}, "finish_reason": "stop"}]}\n', b"\n",
+       b'data: {"provider": "Together", "choices": [], "usage": {"prompt_tokens": 971, "completion_tokens": 3065}}\n', b"\n",
+       b"data: [DONE]\n"]
+
+
+def test_a_streamed_reply_is_assembled_into_the_same_reply():
+    from src.llm import assemble_stream
+    out = assemble_stream(SSE)
+    assert out["choices"][0]["message"]["content"] == "The new instruction"  # reasoning deltas are not content
+    assert out["choices"][0]["finish_reason"] == "stop" and out["provider"] == "Together"
+    assert out["usage"] == {"prompt_tokens": 971, "completion_tokens": 3065}
+
+
+def test_a_broken_stream_is_retryable():
+    from src.llm import RetryableError, assemble_stream
+    with pytest.raises(RetryableError, match="without a finish_reason"):
+        assemble_stream(SSE[:6])  # cut before the last content chunk
+    err = b'data: {"error": {"code": 502, "message": "upstream"}, "choices": [{"delta": {"content": ""}, "finish_reason": "error"}]}\n'
+    with pytest.raises(RetryableError, match="stream error"):
+        assemble_stream(SSE[:5] + [err])
+
+
+def test_streaming_clients_send_stream_and_parse_server_sent_events(tmp_path, monkeypatch):
+    # Transport fix (chunk 5): Kimi-K3 calls (reflection and arm F) stream; the judges and vLLM do not.
+    import io
+    import json as js
+    import src.llm as llm
+    from src.generate import formalizer_client, reflection_client
+    assert reflection_client(CFG, 5).stream and formalizer_client(CFG, "arm_f", 5).stream
+    assert not LLMClient(CFG, 5).stream and not formalizer_client(CFG, "qwen3-8b", 5).stream
+    seen = []
+    def urlopen(req, timeout=None):
+        seen.append(js.loads(req.data))
+        return io.BytesIO(b"".join(SSE))
+    monkeypatch.setattr(llm.urllib.request, "urlopen", urlopen)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test")
+    c = reflection_client(CFG, 5, cache_dir=tmp_path / "c", costs_path=tmp_path / "costs.jsonl")
+    out = c.chat_full(CFG["gepa"]["reflection_model"], [{"role": "user", "content": "r"}], purpose="reflection")
+    assert seen[0]["stream"] is True and seen[0]["provider"]["only"] == ["together"] and "seed" not in seen[0]
+    assert out["text"] == "The new instruction" and out["finish_reason"] == "stop"
+    row = js.loads((tmp_path / "costs.jsonl").read_text().splitlines()[0])
+    assert row["provider"] == "Together" and row["completion_tokens"] == 3065

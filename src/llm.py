@@ -62,6 +62,34 @@ def retry_after_seconds(value, now=None):
         return None
 
 
+def assemble_stream(lines):
+    """A server-sent-events reply (OpenRouter, `stream: true`) as one non-streaming reply: the content deltas
+    joined, the last finish_reason, usage and provider. Keep-alive comments are skipped. An error chunk, a
+    finish_reason of "error" or a stream without a finish_reason is a RetryableError."""
+    text, finish, usage, provider, error = [], None, {}, None, None
+    for raw in lines:
+        line = (raw.decode("utf-8", errors="replace") if isinstance(raw, bytes) else raw).strip()
+        if not line.startswith("data:"):
+            continue  # blank separators and ": OPENROUTER PROCESSING" keep-alives
+        data = line[len("data:"):].strip()
+        if data == "[DONE]":
+            break
+        chunk = json.loads(data)
+        error = chunk.get("error") or error
+        provider = chunk.get("provider") or provider
+        usage = chunk.get("usage") or usage
+        for c in chunk.get("choices") or []:
+            text.append((c.get("delta") or {}).get("content") or "")
+            finish = c.get("finish_reason") or finish
+            error = c.get("error") or error
+    if error or finish == "error":
+        raise RetryableError(f"stream error: {str(error)[:300]}")
+    if finish is None:
+        raise RetryableError("stream ended without a finish_reason")
+    return {"choices": [{"message": {"content": "".join(text)}, "finish_reason": finish}], "usage": usage,
+            **({"provider": provider} if provider else {})}
+
+
 def spent(chunk, path=COSTS_PATH):
     if not Path(path).exists():
         return 0.0
@@ -71,11 +99,15 @@ def spent(chunk, path=COSTS_PATH):
 
 class LLMClient:
     def __init__(self, cfg, chunk, cache_dir=None, costs_path=COSTS_PATH, post=None,
-                 base_url=None, api_key_env="TOGETHER_API_KEY", run_id=None, extra_body=None, drop_params=(), limits=None):
+                 base_url=None, api_key_env="TOGETHER_API_KEY", run_id=None, extra_body=None, drop_params=(), limits=None,
+                 stream=False):
         llm = cfg["llm"]
         # A host's fixed request fields (OpenRouter's provider pin) and the fields it must not get (seed);
         # both apply before the cache key, so the key is exactly what is sent.
         self.extra_body, self.drop_params = dict(extra_body or {}), tuple(drop_params)
+        # Transport only: a streamed reply is assembled into the same reply (OpenRouter's gateway cuts
+        # non-streaming requests off at about 300 s; chunk 5, D_s2).
+        self.stream = stream
         self.base_url = (base_url or llm["base_url"]).rstrip("/")
         self.api_key_env = api_key_env
         self.run_id = run_id
@@ -111,6 +143,8 @@ class LLMClient:
                 "max_tokens": max_tokens, "seed": seed, **(extra or {}), **self.extra_body}
         for k in self.drop_params:
             body.pop(k, None)
+        if self.stream:
+            body["stream"] = True
         key = hashlib.sha256(json.dumps({**body, "sample": sample}, sort_keys=True).encode()).hexdigest()
         path = self.cache_dir / f"{key}.json"
         if path.exists():
@@ -236,7 +270,7 @@ class LLMClient:
                                      method="POST", headers=headers)
         try:
             with urllib.request.urlopen(req, timeout=timeout or self.timeout) as resp:
-                return json.load(resp)
+                return assemble_stream(resp) if body.get("stream") else json.load(resp)
         except urllib.error.HTTPError as e:
             if e.code in (408, 429, 500, 502, 503, 504):
                 after = retry_after_seconds(e.headers.get("Retry-After")) if e.code == 429 and e.headers else None

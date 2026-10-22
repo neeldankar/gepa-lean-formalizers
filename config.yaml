@@ -93,6 +93,9 @@ models:
     # Deviation 3 (Neel, 2026-10-22): reflection's 4 retries and 30 s base backoff; the 1800 s attempt limit is unchanged.
     # Applies to arm F's own client only (the formalizers on vLLM keep llm.long_*).
     limits: {timeout_seconds: 1800, retries: 4, backoff_seconds: 30}
+    # Transport fix (Neel, 2026-10-22): stream every call (reflection too). OpenRouter's gateway cut D_s2's
+    # non-streaming reflection off at 300 s three times. No model, prompt, temperature or scoring change.
+    stream: true
 
 # Identical across arms; fixed at the freeze (Neel, 2026-10-22): temperature 0.6, 1 sample, 16,384-token cap.
 generation:
