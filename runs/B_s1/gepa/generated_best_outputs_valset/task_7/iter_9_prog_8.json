@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_028",
+        "sample": 0,
+        "output": "```lean4\ntheorem zmod_addition_is_associative (n : \u2115) :\n    \u2200 a b c : ZMod n, (a + b) + c = a + (b + c) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem zmod_addition_is_associative (n : \u2115) :\n    \u2200 a b c : ZMod n, (a + b) + c = a + (b + c) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies over three elements of ZMod n and asserts (a + b) + c = a + (b + c), exactly matching the claim that addition on \u2124/n\u2124 is associative."
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_333",
+        "sample": 0,
+        "output": "```lean4\ntheorem lower_bound_le_upper_bound (\u03b1 \u03b2 : \u211d) (E : Set \u211d) (hE : E.Nonempty) (h\u03b1 : \u2200 x \u2208 E, \u03b1 \u2264 x) (h\u03b2 : \u2200 x \u2208 E, x \u2264 \u03b2) : \u03b1 \u2264 \u03b2 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem lower_bound_le_upper_bound (\u03b1 \u03b2 : \u211d) (E : Set \u211d) (hE : E.Nonempty) (h\u03b1 : \u2200 x \u2208 E, \u03b1 \u2264 x) (h\u03b2 : \u2200 x \u2208 E, x \u2264 \u03b2) : \u03b1 \u2264 \u03b2 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem uses \u211d as the total ordered set and includes precisely the nonemptiness of E, the lower\u2011bound condition (\u2200 x \u2208 E, \u03b1 \u2264 x), the upper\u2011bound condition (\u2200 x \u2208 E, x \u2264 \u03b2), and concludes \u03b1 \u2264 \u03b2, exactly mirroring the English statement."
+        },
+        "score": 1
+    }
+]

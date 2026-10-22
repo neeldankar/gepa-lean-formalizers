@@ -1,131 +1,88 @@
 Loading gepa state from run dir
-Iteration 4: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
-Iteration 5: Selected program 4 score: 0.05714285714285714
-Iteration 5: Proposed new text for instructions: # Task
-Translate a math problem stated in natural language (possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib. The statement will be compiled under a given fixed context; it must (1) compile, and (2) faithfully capture the problem.
+Iteration 5: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
+Iteration 6: Selected program 4 score: 0.05714285714285714
+Iteration 6: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib.
 
 ## Input format
 You will receive:
 1. A math problem stated in natural language (possibly with LaTeX).
-2. A "Lean 4 context" code block with the `import`, `open`, and `open scoped` lines (and sometimes `local notation` or auxiliary definitions) that will be prepended to your answer when it is checked. Do NOT repeat these lines; write only the theorem, relying on the context being in scope.
-
-IMPORTANT: read the context carefully. If it defines `local notation` or auxiliary definitions, note their exact signatures and make sure every use in your theorem matches the expected types (see the EReal pitfall below).
+2. A "Lean 4 context" code block with the `import`, `open`, and `open scoped` lines (and sometimes definitions) that will be prepended to your answer when it is checked. Do NOT repeat these lines; write only the theorem, relying on the context being in scope.
 
 ## Output format (strict)
 - Output exactly one ```lean4 code block containing exactly one `theorem` (not `lemma`/`def`/`example`), ending with `:= by sorry`. No prose outside the code block.
 - The theorem name must be a valid identifier (start with a letter or underscore).
 
 ## Correctness requirement (critical)
-Your statement is first compiled with Lean 4 + Mathlib under the given context. **If it does not compile, the score is 0 and nothing else is checked.** Only after compiling does a judge check that the statement faithfully captures the problem. So: use only real Lean 4 syntax and real Mathlib names, ensure every needed typeclass instance is synthesizable, and do not weaken or distort the problem. NEVER invent identifiers: every function, predicate, and class you mention must exist in Mathlib with that exact spelling and capitalization. If you are unsure a fancy name exists, rephrase using more basic, certainly-existing concepts.
+Your statement is first compiled with Lean 4 + Mathlib under the given context. **If it does not compile, the score is 0 and nothing else is checked.** Only after compiling does a judge check that the statement faithfully captures the problem. So: use only real Lean 4 syntax and real Mathlib names, ensure every needed typeclass instance is synthesizable, and do not weaken or distort the problem.
 
-## Observed compiler errors and what they mean
-- "unexpected token '∈'; expected ','" → you wrote `∀ z₁ z₂ ∈ Ω, ...` with several binders before `∈`. Bounded quantifiers take ONE binder per `∈` (see below).
-- "Unknown identifier `X`" (with the note that `autoImplicit` is false) → the name does not exist in Mathlib. Find the real name or rephrase with basic concepts. (Observed: `IsSimple`, `OpenSet`, `Im`, `real_part` are NOT real.)
-- "Type mismatch ... has type ℕ → ℝ but is expected to have type ℕ → EReal" → the context's notation/definition expects EReal-valued sequences; coerce or change the sequence type (see below).
-- "failed to synthesize instance ..." → a typeclass assumption is missing; add it explicitly or use a bundled subtype that carries it.
+## Faithfulness requirement (critical — checked by a judge after compilation)
+Compiling is necessary but NOT sufficient. A judge then compares your statement to the original problem. Observed unfaithfulness failures to avoid:
+- **Do not drop hypotheses.** Every hypothesis in the problem must appear. E.g. "H is a subgroup of (ℚ,+) with the property that 1/x ∈ H for every nonzero x ∈ H" REQUIRES the hypothesis `(hH : ∀ x ∈ H, x ≠ 0 → (1 / x) ∈ H)` — stating only the conclusion `H = ⊥ ∨ H = ⊤` is unfaithful.
+- **Do not arbitrarily restrict domains.** "f is continuous for x ≥ 0" is `ContinuousOn f (Set.Ici 0)`, NOT `ContinuousOn f (Set.Ico 0 1)`.
+- **Do not widen conclusions beyond the problem's domain.** If the object is only defined/considered on a subdomain (e.g. `g(x) = f(x)/x` only for `x > 0`), the conclusion must be scoped: `MonotoneOn (fun x => f x / x) (Set.Ioi 0)`, NOT the global `Monotone (fun x => f x / x)` (which wrongly includes `x = 0` where `f x / x` is undefined).
+- **Match the quantifier structure exactly.** "There are infinitely many a such that P a" is `Set.Infinite {a | P a}` — NOT `∃ a, ∀ a', a = a'` (that says the opposite). "For all ... exists ..." must keep its order.
+- **Use the specific objects given.** If the problem names a concrete polynomial/function (e.g. `x^7 + 15x^2 - 30x + a`), write it out explicitly; do not replace it with an arbitrary variable `(f : ℚ[X])`.
 
 ## Lean 4 syntax pitfalls (observed failures — avoid them)
 - Anonymous functions: write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` — it gives "unexpected token ','; expected '↦', '=>'".
-- `λ` is a reserved token and can never be a variable/binder name. For eigenvalues use `μ`, `l`, etc.
+- `λ` is a reserved token and can never be a variable/binder name ("unexpected token 'λ'; expected '_' or identifier"). For eigenvalues use `μ`, `l`, etc.
 - There is no postfix derivative notation `f'`. The derivative of `f : ℝ → ℝ` is the function `deriv f`; at a point, `deriv f x`.
 - Limits: `Tendsto g atTop (nhds 0)` expresses "g(x) → 0 as x → +∞" (with `open Topology Filter`).
-- Bounded set quantifiers bind ONE variable per `∈`. Write `∀ z₁ ∈ Ω, ∀ z₂ ∈ Ω, ...` or `∀ z₁, z₁ ∈ Ω → ∀ z₂, z₂ ∈ Ω → ...`. NEVER write `∀ z₁ z₂ ∈ Ω, ...`.
+- **Instance binders `[...]` are ONLY for typeclasses** such as `[Field K]` or `[NormedAddCommGroup V]`. Prop-valued predicates (`Irreducible p`, `IsDomain S`, `Monotone f`, `Continuous f`) are NOT typeclasses: declare them as regular hypotheses `(h : Irreducible p)`, never `[H : Irreducible p]`.
+- **No instance binders inside `∃`.** `∃ (a : ℚ) [H : Irreducible f], ...` fails with "unexpected token '['; expected ','". Inside an existential use plain binders and conjunctions: `∃ a, P a ∧ Q a`, or `∃ a (h : P a), Q a`.
 
 ## Typeclass pitfalls (observed failures — avoid them)
 - Structures are typeclasses on a carrier type, not types. Write `(K : Type) [Field K]`, `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`. NEVER write `(V : InnerProductSpace ℂ)`.
 - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.
-- Prop-valued classes CAN appear (also negated) in conclusions: `IsDomain S`, `IsSimpleGroup G`, `IsSelfAdjoint T`, `IsStarNormal T`.
-- There is NO `OpenSet` typeclass. "Ω is open" is a Prop hypothesis: `(Ω : Set ℂ) (hΩ : IsOpen Ω)` (more generally `Ω : Set X` with `[TopologicalSpace X]`).
 - Instance synthesis must succeed. E.g. using `IntegralDomain R` with only `[Ring R]` declared fails with "failed to synthesize instance ... CommSemiring R". Either declare all needed instances explicitly or, better, use bundled subtypes that carry instances automatically.
+
+## Bundled subobjects: use `⊥` and `⊤`, never coerced `0` or the whole type (observed failures)
+For `H : AddSubgroup G` / `Subgroup G` / `Subring R` / `Ideal R` / `Submodule R M`:
+- The trivial (smallest) subobject is `⊥`; the whole (largest) one is `⊤`. "H = 0 or H = ℚ" becomes `H = ⊥ ∨ H = ⊤`.
+- NEVER write `H = (0 : G)` — error: "Type mismatch: 0 has type G but is expected to have type AddSubgroup G".
+- NEVER write `H = (G : AddSubgroup G)` — error: "Type mismatch: G has type Type ... but is expected to have type AddSubgroup G".
+- Membership works directly: `x ∈ H`, and bounded quantifiers `∀ x ∈ H, P x` are fine.
+- Coerce to a set with `(H : Set G)` if needed.
+- For a group written additively (e.g. ℚ under +), use `AddSubgroup`, not `Subgroup`.
+
+## Sets of ℝ and localized predicates (observed failures — avoid them)
+- Domain sets: "x ≥ a" → `Set.Ici a`; "x > a" → `Set.Ioi a`; "x ≤ a" → `Set.Iic a`; "x < a" → `Set.Iio a`; "a ≤ x ≤ b" → `Set.Icc a b`; "a ≤ x < b" → `Set.Ico a b`.
+- When a property holds only on a subset, use the `...On` predicates, not the global ones:
+  - `ContinuousOn f s` (vs global `Continuous f`)
+  - `DifferentiableOn ℝ f s` (vs `∀ x, DifferentiableAt ℝ f x`)
+  - `MonotoneOn g s`, `StrictMonoOn g s` (vs global `Monotone g`, `StrictMono g`)
+- "f differentiable for all x > 0": `∀ x > 0, DifferentiableAt ℝ f x` (expands to `∀ x, x > 0 → ...`; fine).
+- "f' is monotonically increasing for x > 0": `MonotoneOn (deriv f) (Set.Ioi 0)`.
+
+## "Infinitely many"
+- "There are infinitely many a : ℤ such that P a": `Set.Infinite {a : ℤ | P a}` (equivalently `¬ {a : ℤ | P a}.Finite`). The set-builder form is standard and always available under `import Mathlib`.
+
+## Polynomials
+- With `open Polynomial`, build polynomials from `X` (indeterminate) and `C` (constant embedding `R → R[X]`); `R[X]` is notation for `Polynomial R`.
+- Example: `X ^ 7 + C 15 * X ^ 2 - C 30 * X + C a`. Numerals like `15` elaborate in any ring via `OfNat`.
+- To use an integer coefficient `a : ℤ` in a polynomial over ℚ, coerce: `C (a : ℚ)`.
+- If the coefficient ring is ambiguous, ascribe the whole expression: `(X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ) : ℚ[X])`.
+- Irreducibility is the Prop predicate `Irreducible p` (a hypothesis `(h : Irreducible p)`, never an instance).
 
 ## Mathlib names/patterns that exist and typecheck
 - Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`.
-- "f differentiable for all x > 0": `∀ x > 0, DifferentiableAt ℝ f x`.
 - Linear operator on a complex inner-product space: `(T : V →ₗ[ℂ] V)` with `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`.
 - Adjoint: `LinearMap.adjoint T` (dot notation `T.adjoint`). Self-adjoint: `IsSelfAdjoint T`. Normal: `IsStarNormal T`, or explicitly `T.adjoint * T = T * T.adjoint`.
 - "μ is an eigenvalue of T": `Module.End.HasEigenvalue T μ`.
 - "μ is real" for `μ : ℂ`: `μ.im = 0` or `(μ.re : ℂ) = μ`. Note `μ.re : ℝ`, so `μ.re = μ` does NOT typecheck without a coercion.
-- Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For "|G| = n" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.
-- Open set: `(Ω : Set ℂ) (hΩ : IsOpen Ω)`. There is NO `OpenSet` class.
-- "f is holomorphic on an open set Ω": `(hf : DifferentiableOn ℂ f Ω)` together with `(hΩ : IsOpen Ω)`.
-- Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`.
-- "f is constant on Ω": `∃ w, ∀ z ∈ Ω, f z = w` (or `∀ z₁ ∈ Ω, ∀ z₂ ∈ Ω, f z₁ = f z₂`). Do NOT reference a specific point like `f 0` — that point need not lie in Ω.
-- EReal (extended reals): if the context fixes notation like `local notation "limsup" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, then either declare the sequences as `(a b : ℕ → EReal)` (pointwise `a + b` works) or coerce real sequences pointwise, e.g. `limsup (fun n => ((a n : ℝ) : EReal))`. Passing `ℕ → ℝ` where `ℕ → EReal` is expected is a type mismatch. `⊤`/`⊥` are `+∞`/`-∞`; EReal addition is total, which is the idiomatic way to absorb side conditions like "provided the sum is not of the form ∞ − ∞" (otherwise add such a condition as an explicit hypothesis).
 
 ## Worked corrections of typical mistakes
 - Bad: `Tendsto (λ x, f (x + 1) - f x) atTop (nhds 0)` → Good: `Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0)`
 - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`
 - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`
-- Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`
-- Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`
-- Bad (when the context's `limsup` expects `ℕ → EReal`): `(a b : ℕ → ℝ) : limsup (a + b) ≤ limsup a + limsup b` → Good: `theorem limsup_add_le (a b : ℕ → EReal) : limsup (a + b) ≤ limsup a + limsup b := by sorry` (or keep `a b : ℕ → ℝ` and coerce each use: `limsup (fun n => ((a n + b n : ℝ) : EReal)) ≤ limsup (fun n => ((a n : ℝ) : EReal)) + limsup (fun n => ((b n : ℝ) : EReal))`).
+- Bad (syntax error from `[...]` inside `∃`; Prop used as instance; logic says "unique" instead of "infinitely many"; concrete polynomial replaced by a variable): `theorem irreducible_polynomial_infinity (f : ℚ[X]) : ∃ (a : ℚ) [H : Irreducible f], ∀ (a' : ℚ) [H' : Irreducible (f.eval a')], a = a' := by sorry` → Good: `theorem irreducible_polynomial_infinity : Set.Infinite {a : ℤ | Irreducible (X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ) : ℚ[X])} := by sorry`
+- Bad (unfaithful: continuity restricted to `Set.Ico 0 1` instead of all `x ≥ 0`; conclusion not restricted to `x > 0`; hypotheses not scoped to the problem's domains): `(hf_cont : ContinuousOn f (Set.Ico 0 1)) (hf_diff : ∀ x > 0, DifferentiableAt ℝ f x) (hf0 : f 0 = 0) (hfdiff_monotonic : Monotone (deriv f)) : Monotone (fun x => f x / x)` → Good: `(hf_cont : ContinuousOn f (Set.Ici 0)) (hf_diff : ∀ x > 0, DifferentiableAt ℝ f x) (hf0 : f 0 = 0) (hf_mono : MonotoneOn (deriv f) (Set.Ioi 0)) : MonotoneOn (fun x => f x / x) (Set.Ioi 0)`
+- Bad (type mismatches: `0` is not an `AddSubgroup`, `ℚ` is a `Type` not an `AddSubgroup`; key hypothesis dropped): `(H : AddSubgroup ℚ) : H = (0 : ℚ) ∨ H = (ℚ : AddSubgroup ℚ)` → Good: `(H : AddSubgroup ℚ) (hH : ∀ x ∈ H, x ≠ 0 → (1 / x) ∈ H) : H = ⊥ ∨ H = ⊤`
 
 ## General strategy
-1. Parse the problem into objects, hypotheses, and conclusion.
-2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances.
-3. Declare structures as instance arguments `[...]` and Prop hypotheses as `(...)`. Include all hypotheses the problem states (e.g. openness of Ω) — the judge checks faithfulness.
-4. State the conclusion using existing Mathlib Prop predicates, faithfully matching the problem. "P implies Q" becomes `(hP : P) : Q` or `P → Q`; "G is not simple" becomes `¬IsSimpleGroup G`.
-5. Check the context's `local notation`/definitions: your uses must match their declared types exactly; insert coercions (e.g. ℝ → EReal) or choose the expected type (e.g. `ℕ → EReal`) where needed.
-6. Mentally compile before answering: valid Lean 4 syntax (no `λ` binders, no `λ x,` lambdas, one binder per `∈`), every identifier exists in Mathlib with exact spelling and capitalization, and every typeclass the statement mentions is derivable from your declared instances. If unsure whether a fancy name exists, rephrase using more basic, certainly-existing concepts.
-Iteration 5: Accepted candidate (subsample score 0.0 -> 1.0); running full eval.
-Iteration 5: Found a better program on the valset with score 0.1.
-Iteration 5: Valset score for new program: 0.1 (coverage 70 / 70)
-Iteration 5: Val aggregate for new program: 0.1
-Iteration 5: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 1.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 5: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 1.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 1.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
-Iteration 5: Valset pareto front aggregate score: 0.18571428571428572
-Iteration 5: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5}, 1: {0, 1, 2, 3, 4, 5}, 2: {0, 1, 2, 3, 4, 5}, 3: {0, 1, 2, 3, 4, 5}, 4: {0, 1, 2, 3, 4, 5}, 5: {0, 1, 2, 3, 4, 5}, 6: {0, 1, 2, 3, 4, 5}, 7: {0, 1, 2, 3, 4, 5}, 8: {0, 1, 2, 3, 4, 5}, 9: {2}, 10: {0, 1, 2, 3, 4, 5}, 11: {0, 1, 2, 3, 4, 5}, 12: {0, 1, 2, 3, 4, 5}, 13: {0, 1, 2, 3, 4, 5}, 14: {0, 1, 2, 3, 4, 5}, 15: {0, 1, 2, 3, 4, 5}, 16: {0, 1, 2, 3, 4, 5}, 17: {0, 1, 2, 3, 4, 5}, 18: {0, 1, 2, 3, 4, 5}, 19: {0, 1, 4, 5}, 20: {0, 1, 2, 3, 4, 5}, 21: {0, 1, 2, 3, 4, 5}, 22: {1, 3, 5}, 23: {0, 1, 2, 3, 4, 5}, 24: {0, 1, 2, 3, 4, 5}, 25: {0, 1, 2, 3, 4, 5}, 26: {0, 1, 2, 3, 4, 5}, 27: {0, 2, 4, 5}, 28: {2}, 29: {0, 1, 2, 3, 4, 5}, 30: {0, 3}, 31: {2}, 32: {0, 1, 2, 3, 4, 5}, 33: {0, 1, 2, 3, 4, 5}, 34: {1}, 35: {0, 1, 2, 3, 4, 5}, 36: {5}, 37: {0, 1, 2, 3, 4, 5}, 38: {0, 1, 2, 3, 4, 5}, 39: {0, 1, 2, 3, 4, 5}, 40: {0, 1, 2, 3, 4, 5}, 41: {0, 1, 2, 3, 4, 5}, 42: {0, 1, 2, 3, 4, 5}, 43: {0, 1, 2, 3, 4, 5}, 44: {0, 1, 2, 3, 4, 5}, 45: {5}, 46: {0, 1, 2, 3, 4, 5}, 47: {0, 1, 2, 3, 4, 5}, 48: {0, 1, 2, 3, 4, 5}, 49: {0, 1, 2, 3, 4, 5}, 50: {0, 1, 2, 3, 4, 5}, 51: {0, 1, 2, 3, 4, 5}, 52: {0, 1, 2, 3, 4, 5}, 53: {0, 1, 2, 3, 4, 5}, 54: {0, 1, 2, 3, 4, 5}, 55: {0, 1, 2, 3, 4, 5}, 56: {0, 1, 2, 3, 4, 5}, 57: {0, 1, 2, 3, 4, 5}, 58: {0, 1, 2, 3, 4, 5}, 59: {0, 1, 2, 3, 4, 5}, 60: {0, 1, 2, 3, 4, 5}, 61: {0, 1, 2, 3, 4, 5}, 62: {0, 1, 2, 3, 4, 5}, 63: {0, 1, 2, 3, 4, 5}, 64: {2, 4, 5}, 65: {4}, 66: {0, 2, 5}, 67: {0, 1, 2, 3, 4, 5}, 68: {0, 1, 2, 3, 4, 5}, 69: {0, 1, 2, 3, 4, 5}}
-Iteration 5: Best valset aggregate score so far: 0.1
-Iteration 5: Best program as per aggregate score on valset: 5
-Iteration 5: Best score on valset: 0.1
-Iteration 5: Linear pareto front program index: 5
-Iteration 5: New program candidate index: 5
-Iteration 6: Selected program 0 score: 0.05714285714285714
-Iteration 6: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib. Use exactly the imports, opens, and definitions given in the "Lean 4 context" — do not add, remove, or alter them, and do not add any other commands (no auxiliary `def`s or lemmas; exactly one `theorem`). End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block and output nothing else.
-
-The statement MUST compile under the given context (with `sorry` as its proof), and it must faithfully capture the full mathematical meaning of the problem. Before finalizing, mentally type-check every identifier, application, and type-class requirement.
-
-## How to construct the statement
-1. Identify the objects, hypotheses, and conclusion of the problem.
-2. Introduce every object as a binder (variable/hypothesis) or define it inline (lambda or `let`). NEVER reference an identifier that is not bound in the statement or already defined in Mathlib. For example, if the problem says "put g(x) = f(x)/x", either add `(g : ℝ → ℝ)` and `(hg : g = fun x => f x / x)`, or simply use `fun x => f x / x` directly. There is no `f'` notation in Lean — the derivative of `f : ℝ → ℝ` is `deriv f`.
-3. Express the conclusion with the correct Mathlib predicate (see the reference below).
-4. Check syntax, argument order, and type-class instances. Malformed terms (e.g., passing a predicate as a function argument) produce parse errors like "unexpected token ':='; expected ','".
-
-## Capturing the meaning — common patterns
-- "There are infinitely many integers a such that P(a)" → `Set.Infinite {a : ℤ | P a}` (NOT `∃ a, P a`, which asserts only one exists). Similarly `{a : ℕ | ...}` for naturals.
-- "P(x) holds for every nonzero element x of H" → `∀ x ∈ H, x ≠ 0 → P x`. Do not drop the `x ∈ H` condition.
-- "H = 0 or H = ℚ" for a subgroup H → `H = ⊥ ∨ H = ⊤`. `⊥` is the trivial subgroup and `⊤` is the whole group; a subgroup term can never be equal to the type `ℚ` itself.
-- If a function is only meaningful on a subset (e.g., `f x / x` for `x > 0`), state the property on that set: `MonotoneOn (fun x => f x / x) (Set.Ioi 0)`, not `Monotone g`.
-
-## Mathlib reference (names, argument order, known pitfalls)
-- Irreducibility of a polynomial `p`: `Irreducible p`. It is a `Prop`-valued predicate — never pass it as an argument (e.g., `f.map (...) IsIrreducible` is invalid).
-- Polynomials: type `Polynomial ℚ`. When `Polynomial` is opened, build them with `X` and `C`, e.g., `X ^ 7 + 15 * X ^ 2 - 30 * X + C (a : ℚ)`; otherwise write `Polynomial.X` / `Polynomial.C`. Cast an integer to a rational with `(a : ℚ)`.
-- Differentiability at a point: `DifferentiableAt ℝ f x` — the field `ℝ` is an EXPLICIT first argument; `DifferentiableAt f x` fails with an application type mismatch. On a set: `DifferentiableOn ℝ f s`.
-- Derivative: `deriv f`; its value at `x` is `deriv f x`.
-- Monotonicity: `Monotone f` (whole domain) or `MonotoneOn f s` (on a set).
-- Continuity on a set: `ContinuousOn f s`.
-- Intervals: ALWAYS use the `Set.` prefix: `Set.Ici 0`, `Set.Ioi 0`, `Set.Icc a b`, etc. When `Finset` is opened, bare `Ici`/`Ioi` can resolve to `Finset.Ici`/`Finset.Ioi`, causing type-class synthesis failures such as `LocallyFiniteOrderTop ℕ`.
-- Subgroups: `Subgroup G` requires a multiplicative `Group G` instance. ℚ under addition has no `Group` instance, so "a subgroup of the additive group of ℚ" must be `AddSubgroup ℚ` (likewise for any additive group). The error `failed to synthesize Group ℚ` means you should have used `AddSubgroup`.
-- Type-class sanity check: every structure you use must have its required instances available (`Subgroup G` needs `[Group G]`, `AddSubgroup G` needs `[AddGroup G]`). A synthesis failure almost always means you chose the wrong structure.
-
-## Examples of correct style (each under its own given context)
-Infinitely many integers a with x^7 + 15x^2 − 30x + a irreducible in ℚ[x] (context opens `Polynomial`):
-```lean4
-theorem irreducible_infinite_number_of_a :
-    Set.Infinite {a : ℤ | Irreducible (X ^ 7 + 15 * X ^ 2 - 30 * X + C (a : ℚ) : Polynomial ℚ)} := by sorry
-```
-
-g(x) = f(x)/x is monotonically increasing on x > 0 (context opens `Topology`, `Finset`, etc.):
-```lean4
-theorem g_monotonic_increasing (f : ℝ → ℝ) (hf_cont : ContinuousOn f (Set.Ici 0))
-    (hf_diff : ∀ x > 0, DifferentiableAt ℝ f x) (hf0 : f 0 = 0)
-    (hf_prime_mono : MonotoneOn (deriv f) (Set.Ioi 0)) :
-    MonotoneOn (fun x => f x / x) (Set.Ioi 0) := by sorry
-```
-
-Additive subgroup H of ℚ with 1/x ∈ H for every nonzero x ∈ H is 0 or ℚ:
-```lean4
-theorem subgroup_rat_inv_closed (H : AddSubgroup ℚ)
-    (h : ∀ x ∈ H, x ≠ 0 → (1 / x) ∈ H) : H = ⊥ ∨ H = ⊤ := by sorry
-```
-`
+1. Parse the problem into objects, hypotheses, and conclusion. List EVERY hypothesis explicitly — each one must appear in your statement.
+2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `AddSubgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances. For bundled subobjects use `⊥`/`⊤` for trivial/whole, and `x ∈ H` for membership.
+3. Declare typeclasses as instance arguments `[...]` and Prop hypotheses as regular arguments `(...)`. Never mix these up.
+4. Identify the exact domain of every quantifier and every property (`x ≥ 0` vs `x > 0` vs all `x`; integers vs rationals) and choose `Set.Ici`/`Set.Ioi`/etc. together with `ContinuousOn`/`MonotoneOn`/`DifferentiableOn` accordingly. Scope hypotheses AND the conclusion to exactly the domains in the problem — no more, no less.
+5. State the conclusion with existing Mathlib Prop predicates, faithfully matching the problem's logical structure: "infinitely many" → `Set.Infinite {x | P x}`; "for all" / "there exists" in the right order; concrete given objects written out explicitly.
+6. Mentally compile before answering: valid Lean 4 syntax (no `λ` binders, no `λ x,` lambdas, no `[...]` around Props, no `[...]` inside `∃`), all identifiers exist in Mathlib, every typeclass mentioned is derivable from your declared instances, and every term has the right type (an `AddSubgroup`/`Subgroup` is neither a `Type` nor an element of the group). If unsure whether a fancy name exists, rephrase using more basic, certainly-existing concepts.
