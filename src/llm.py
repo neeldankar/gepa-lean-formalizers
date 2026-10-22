@@ -7,6 +7,7 @@ checked against its cap in config.yaml; reaching it raises BudgetExceeded.
 """
 import email.utils
 import hashlib
+import http.client
 import json
 import os
 import random
@@ -243,3 +244,5 @@ class LLMClient:
             raise LLMError(f"HTTP {e.code}: {e.read()[:300]!r}") from None
         except (urllib.error.URLError, TimeoutError, OSError) as e:
             raise RetryableError(f"network error: {e}") from None
+        except (http.client.HTTPException, json.JSONDecodeError) as e:  # a reply cut off mid-body (IncompleteRead)
+            raise RetryableError(f"broken reply: {type(e).__name__}: {e}") from None

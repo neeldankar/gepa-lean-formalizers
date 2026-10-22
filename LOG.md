@@ -29,6 +29,15 @@ Template:
 - Next:
 ```
 
+### 2026-10-22 · chunk 5 · pod 7 resume: D_s2 stopped on an unretried cut-off reply; paused, fixed
+
+- **Pod 7:** H100 80GB HBM3, id `3wnioa4duv6h2a`, no network volume. Setup 19:58 to 20:06 UTC, both servers healthy. The 5 STOPPED markers were renamed to `STOPPED_before_resume_2026-10-22`. Resume launched at 20:06:45 UTC: 5 GEPA children, D_s0 skipped, tripwire armed.
+- **By 20:24 UTC:** B_s0, B_s2, D_s1 and D_s2 had new reflections past their saved iterations, every one served by Together. B_s0 and B_s1 each had 1 timeout (600 s, no reply) and were retrying.
+- **Bug:** D_s2 stopped at 20:21:47 UTC with `ReflectionFailed: IncompleteRead(539 bytes read)`. OpenRouter's connection dropped mid-reply. `_post` treated only URL and OS errors as retryable, so the `http.client.IncompleteRead` went straight to `ReflectionLM`. No retry, no `api_failures` row, so the tripwire never saw it.
+- **Pause** (20:25 UTC): the job's tmux session was killed first, then all processes (`tripwire.pause`). GEPA state is kept; only D_s2's STOPPED marker exists.
+- **Fix:** `http.client.HTTPException` (IncompleteRead, RemoteDisconnected) and a truncated JSON body are now `RetryableError("broken reply: ...")`: retried with backoff, logged, counted by the tripwire. Test added; 225 pass.
+- **Cost:** chunk 5 $23.01 metered by 20:24 UTC (pod 7 watch).
+
 ### 2026-10-22 · chunk 5 · Deviation 3: arm F last, 4 retries, failed calls missing
 
 - **Neel:** in the final eval, arm F runs last, after every other arm is done and pushed. Arm F calls get reflection's 4 retries with backoff. A call that still fails is a missing row for that item, not a format failure and not a job-ending error. Prereg Deviation 3 (a new item, Neel's pick).

@@ -301,3 +301,35 @@ def test_arm_f_retry_waits(tmp_path):
     with pytest.raises(LLMError, match="gave up after 5 attempts"):
         c.chat("m", [{"role": "user", "content": "x"}], purpose="generate")
     assert len(c.slept) == 4 and all(0.8 * b <= w <= 1.2 * b for w, b in zip(c.slept, (30, 60, 120, 240)))
+
+
+def test_a_reply_cut_off_mid_body_is_retried(tmp_path, monkeypatch):
+    # Chunk 5, pod 7: OpenRouter's connection dropped mid-reply (http.client.IncompleteRead); it was not
+    # retried and stopped D_s2. Now it is a retryable error, logged like any failed attempt.
+    import http.client
+    import io
+    import src.llm as llm
+    from src.llm import RetryableError
+    monkeypatch.setenv("TOGETHER_API_KEY", "test")
+    c = retry_client(tmp_path, None)
+
+    class Cut(io.BytesIO):
+        def __enter__(self):
+            return self
+        def __exit__(self, *a):
+            return False
+        def read(self, *a):
+            raise http.client.IncompleteRead(b"{" * 539)
+
+    for reply in (Cut(), io.BytesIO(b'{"choices": [')):
+        monkeypatch.setattr(llm.urllib.request, "urlopen", lambda *a, r=reply, **k: r)
+        with pytest.raises(RetryableError, match="broken reply"):
+            c._post({"model": "m"})
+    calls = []
+    def flaky(body):
+        calls.append(1)
+        if len(calls) == 1:
+            raise RetryableError("broken reply: IncompleteRead: IncompleteRead(539 bytes read)")
+        return REPLY
+    c = retry_client(tmp_path, flaky)
+    assert c.chat("m", [{"role": "user", "content": "r"}], purpose="reflection") == "ok" and len(calls) == 2
