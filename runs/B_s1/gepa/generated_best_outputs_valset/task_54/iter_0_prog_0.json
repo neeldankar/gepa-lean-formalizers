@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_286",
+        "sample": 0,
+        "output": "```lean4\ntheorem wilson_theorem_extension (p : \u2115) (hp : Nat.Prime p) (k : \u2115) :\n  (Finset.sum (Finset.range p) fun n => n^k) \u2261 0 [ZMOD p] \u2194 \u00ac (p - 1) \u2223 k :=\n  by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem wilson_theorem_extension (p : \u2115) (hp : Nat.Prime p) (k : \u2115) :\n  (Finset.sum (Finset.range p) fun n => n^k) \u2261 0 [ZMOD p] \u2194 \u00ac (p - 1) \u2223 k :=\n  by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement only handles the case where the sum is congruent to 0 when p\u20111 does not divide k and omits the case where it should be congruent to -1 when p\u20111 divides k; also it sums over `Finset.range p` (including 0) instead of 1 to p\u20111."
+        },
+        "score": 0
+    }
+]

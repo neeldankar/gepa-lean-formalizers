@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_260",
+        "sample": 0,
+        "output": "```lean4\ntheorem all_subgroups_normal_imp_conjugate (G : Type) [Group G] (a b : G) :\n  \u2203 j : \u2115, b * a = a ^ j * b := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem all_subgroups_normal_imp_conjugate (G : Type) [Group G] (a b : G) :\n  \u2203 j : \u2115, b * a = a ^ j * b := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement omits the crucial hypothesis that every subgroup of\u202fG is normal, and it restricts the exponent j to \u2115, whereas the English statement does not specify such a restriction."
+        },
+        "score": 0
+    }
+]

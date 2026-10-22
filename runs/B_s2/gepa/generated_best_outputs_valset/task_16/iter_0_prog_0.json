@@ -1,0 +1,22 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_081",
+        "sample": 0,
+        "output": "```lean4\ntheorem Hungerford_exercise_2_2_2 (m n : \u2115) (G1 : CyclicGroup m) (G2 : CyclicGroup n) :\n  CyclicGroup (G1 \u00d7 G2) \u2194 Coprime m n := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Hungerford_exercise_2_2_2 (m n : \u2115) (G1 : CyclicGroup m) (G2 : CyclicGroup n) :\n  CyclicGroup (G1 \u00d7 G2) \u2194 Coprime m n := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:34-7:45: error(lean.unknownIdentifier): Unknown identifier `CyclicGroup`\n\nNote: It is not possible to treat `CyclicGroup` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:55-7:66: error(lean.unknownIdentifier): Unknown identifier `CyclicGroup`\n\nNote: It is not possible to treat `CyclicGroup` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:2-8:13: error(lean.unknownIdentifier): Unknown identifier `CyclicGroup`\n\nNote: It is not possible to treat `CyclicGroup` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:26-8:33: error(lean.unknownIdentifier): Unknown identifier `Coprime`\n\nNote: It is not possible to treat `Coprime` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

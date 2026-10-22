@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_114",
+        "sample": 0,
+        "output": "```lean4\ntheorem Tychonoff_sequential_characterization (I : Type) (X : I \u2192 TopologicalSpace) (x : \u220f i : I, (X i).carrier) :\n  x \u2208 Filter.tendsto (\u03bb i, x i) atTop (Filter.top) \u2194 \u2200 \u03b1 : I, Filter.tendsto (\u03bb i, (X \u03b1).continuousMap x i) atTop (Filter.top) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Tychonoff_sequential_characterization (I : Type) (X : I \u2192 TopologicalSpace) (x : \u220f i : I, (X i).carrier) :\n  x \u2208 Filter.tendsto (\u03bb i, x i) atTop (Filter.top) \u2194 \u2200 \u03b1 : I, Filter.tendsto (\u03bb i, (X \u03b1).continuousMap x i) atTop (Filter.top) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:25-8:26: error: unexpected token ','; expected '\u21a6', '=>'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

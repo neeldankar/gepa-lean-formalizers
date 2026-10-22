@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_112",
+        "sample": 0,
+        "output": "<think>\n\nLet me break down this problem:\n\n1. We have a topological space X\n2. U is open in X\n3. A is closed in X\n4. We need to show that U - A is open in X\n5. And A - U is closed in X\n\nIn Lean 4, I need to:\n- Use the topological space structure\n- Express that U is open (using `IsOpen`)\n- Express that A is closed (using `IsClosed`)\n- Express the set difference (using `\\` or `Set.diff`)\n- Show that U - A is open\n- Show that A - U is closed\n\nLet me think about the Lean 4 syntax:\n\n```lean4\ntheorem open_closed_set_difference (X : Type*) [TopologicalSpace X] (U A : Set X) \n  (hU : IsOpen U) (hA : IsClosed A) : \n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry\n```\n\nWait, let me check if this is the right way to express it. In Lean 4 with mathlib:\n- `IsOpen` is used for open sets\n- `IsClosed` is used for closed sets\n- `Set.diff` or `\\` is used for set difference\n- `TopologicalSpace` is the typeclass for topological spaces\n\nActually, let me be more careful about the imports and make sure I'm using the right notation.```lean4\nimport Mathlib\nimport Aesop\n\nset_option maxHeartbeats 0\n\nopen BigOperators Real Nat Topology\n\ntheorem open_closed_set_difference (X : Type*) [TopologicalSpace X] (U A : Set X) \n  (hU : IsOpen U) (hA : IsClosed A) : \n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry\n```\n\nI need to assess if my formalization accurately translates the given math problem into a Formal Statement.\n1. Math Assertion Analysis: The problem involves a topological space X, subsets U (open) and A (closed), and requires proving that U-A is open and A-U is closed. The key components are the topological space, the openness of U, the closedness of A, and the set difference operations.\n2. Lean Statement Analysis: The theorem defines X as a Type* with a TopologicalSpace instance. U and A are sets in X. The hypotheses hU (IsOpen U) and hA (IsClosed A) match the problem's conditions. The conclusion IsOpen (U \\ A) \u2227 IsClosed (A \\ U) directly corresponds to the required proofs.\n3. Comparative Verification: The Lean statement correctly captures all mathematical components: the topological space, the openness/closedness of U/A, and the set difference operations. The use of \\ for set difference aligns with the problem's U-A and A-U. The conjunction \u2227 properly combines the two required conclusions. No extraneous elements or missing constraints are present.\n4. Conclusion: The Lean statement matches the problem's structure, variables, and logical requirements.\n5. Accuracy Confirmation: The Lean statement correctly formalizes the problem. All components (topological space, open/closed sets, set differences, and required conclusions) are preserved without addition or omission.\n\nAfter this assessment, the consistency verification indicates:\nCorrect\n\n</think>\nWith successful consistency check, presenting the final Lean 4 Formal Statement:\n```lean4\nimport Mathlib\nimport Aesop\n\nset_option maxHeartbeats 0\n\nopen BigOperators Real Nat Topology\n\ntheorem open_closed_set_difference (X : Type*) [TopologicalSpace X] (U A : Set X) \n  (hU : IsOpen U) (hA : IsClosed A) : \n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry\n```\n",
+        "finish_reason": "stop",
+        "extracted": "theorem open_closed_set_difference (X : Type*) [TopologicalSpace X] (U A : Set X) \n  (hU : IsOpen U) (hA : IsClosed A) : \n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem exactly mirrors the English statement: it assumes U is open and A is closed in a topological space X, and concludes that U\\A is open and A\\U is closed."
+        },
+        "score": 1
+    }
+]

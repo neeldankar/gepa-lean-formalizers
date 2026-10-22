@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_158",
+        "sample": 0,
+        "output": "```lean4\ntheorem convergence_implies_absolute_convergence (s : \u2115 \u2192 \u211d) (hs : Filter.Tendsto s (atTop) (nhds 0)) :\n  Filter.Tendsto (fun n => abs (s n)) (atTop) (nhds 0) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem convergence_implies_absolute_convergence (s : \u2115 \u2192 \u211d) (hs : Filter.Tendsto s (atTop) (nhds 0)) :\n  Filter.Tendsto (fun n => abs (s n)) (atTop) (nhds 0) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The English statement concerns sequences in \u2102 converging to any limit, while the Lean code uses \u211d\u2011valued sequences converging specifically to 0, and only proves convergence of `abs` to 0, omitting the complex setting and general limit."
+        },
+        "score": 0
+    }
+]

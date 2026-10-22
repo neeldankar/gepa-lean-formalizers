@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_219",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_product_isomorphism (A B : Type) [Group A] [Group B] :\n  IsIsomorphism (prod.map id id) (A \u00d7 B) (B \u00d7 A) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_product_isomorphism (A B : Type) [Group A] [Group B] :\n  IsIsomorphism (prod.map id id) (A \u00d7 B) (B \u00d7 A) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:2-8:15: error(lean.unknownIdentifier): Unknown identifier `IsIsomorphism`\n\nNote: It is not possible to treat `IsIsomorphism` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

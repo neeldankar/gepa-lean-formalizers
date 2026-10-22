@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_333",
+        "sample": 0,
+        "output": "```lean4\ntheorem lower_bound_le_upper_bound {\u03b1 : Type} [TotalOrder \u03b1] (E : Set \u03b1) (hE : E.Nonempty) \n  (\u03b1l : LowerBound E) (\u03b1u : UpperBound E) : \u03b1l \u2264 \u03b1u := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem lower_bound_le_upper_bound {\u03b1 : Type} [TotalOrder \u03b1] (E : Set \u03b1) (hE : E.Nonempty) \n  (\u03b1l : LowerBound E) (\u03b1u : UpperBound E) : \u03b1l \u2264 \u03b1u := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:30-7:40: error(lean.unknownIdentifier): Unknown identifier `TotalOrder`\n\nNote: It is not possible to treat `TotalOrder` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

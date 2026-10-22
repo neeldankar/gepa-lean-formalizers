@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_323",
+        "sample": 0,
+        "output": "```lean4\ntheorem constant_function_condition (f : \u211d \u2192 \u211d) :\n  \u2200 t x : \u211d, |f t - f x| \u2264 |t - x|\u00b2 \u2192 \u2200 x : \u211d, f x = f 0 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem constant_function_condition (f : \u211d \u2192 \u211d) :\n  \u2200 t x : \u211d, |f t - f x| \u2264 |t - x|\u00b2 \u2192 \u2200 x : \u211d, f x = f 0 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:34-8:35: error: unexpected token '\u00b2'; expected ':=', 'where' or '|'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

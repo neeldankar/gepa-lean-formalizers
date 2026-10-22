@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_257",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_with_three_consecutive_powers_abelian (G : Type*) [Group G] \n    (i : \u2124) (h1 : \u2200 a b : G, (a * b) ^ (i) = a ^ (i) * b ^ (i)) \n    (h2 : \u2200 a b : G, (a * b) ^ (i + 1) = a ^ (i + 1) * b ^ (i + 1)) \n    (h3 : \u2200 a b : G, (a * b) ^ (i + 2) = a ^ (i + 2) * b ^ (i + 2)) :\n    \u2200 a b : G, a * b = b * a := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_with_three_consecutive_powers_abelian (G : Type*) [Group G] \n    (i : \u2124) (h1 : \u2200 a b : G, (a * b) ^ (i) = a ^ (i) * b ^ (i)) \n    (h2 : \u2200 a b : G, (a * b) ^ (i + 1) = a ^ (i + 1) * b ^ (i + 1)) \n    (h3 : \u2200 a b : G, (a * b) ^ (i + 2) = a ^ (i + 2) * b ^ (i + 2)) :\n    \u2200 a b : G, a * b = b * a := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem assumes a group G, an integer i, and the three equalities for i, i+1, i+2 for all elements, exactly matching the English condition of three consecutive integers, and concludes commutativity for all elements."
+        },
+        "score": 1
+    }
+]

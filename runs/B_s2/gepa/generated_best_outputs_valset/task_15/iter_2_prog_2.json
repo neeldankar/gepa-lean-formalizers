@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_071",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_of_order_5_must_be_abelian (G : Type*) [Group G] [Fintype G] (horder : Fintype.card G = 5) :\n    \u2200 a b : G, a * b = b * a := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_of_order_5_must_be_abelian (G : Type*) [Group G] [Fintype G] (horder : Fintype.card G = 5) :\n    \u2200 a b : G, a * b = b * a := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies a group G with a Group and Fintype instance, assumes its cardinality is 5, and concludes that every pair of elements commutes, exactly matching the English claim that any group of order 5 is abelian."
+        },
+        "score": 1
+    }
+]

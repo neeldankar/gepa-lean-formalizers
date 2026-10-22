@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_285",
+        "sample": 0,
+        "output": "```lean4\ntheorem primitive_root_mod_fermat_prime (p : \u2115) (n : \u2115) (hp : p = 2 ^ n + 1) (hfermat : Nat.Prime p) :\n    IsPrimitiveRoot (3 : \u2124) p := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem primitive_root_mod_fermat_prime (p : \u2115) (n : \u2115) (hp : p = 2 ^ n + 1) (hfermat : Nat.Prime p) :\n    IsPrimitiveRoot (3 : \u2124) p := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem includes exactly the hypotheses \"p = 2 ^ n + 1\" and \"p is prime\" (a Fermat prime) and concludes that 3 is a primitive root modulo p, matching the English statement."
+        },
+        "score": 1
+    }
+]

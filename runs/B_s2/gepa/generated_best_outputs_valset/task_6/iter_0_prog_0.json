@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_024",
+        "sample": 0,
+        "output": "```lean4\ntheorem orthogonal_complement_characterization (V : Module \u211d \u211a) (U : Submodule \u211d \u211a V) :\n  U.orthogonalComplement = \u22a5 \u2194 U = \u22a4 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem orthogonal_complement_characterization (V : Module \u211d \u211a) (U : Submodule \u211d \u211a V) :\n  U.orthogonalComplement = \u22a5 \u2194 U = \u22a4 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:40-7:55: error: Function expected at\n  Submodule \u211d \u211a\nbut this term has type\n  Type\n\nNote: Expected a function because this term is being applied to the argument\n  V\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

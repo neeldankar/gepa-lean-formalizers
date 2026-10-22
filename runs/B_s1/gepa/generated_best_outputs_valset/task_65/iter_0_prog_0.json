@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_347",
+        "sample": 0,
+        "output": "```lean4\ntheorem non_continuous_function_exists (f : \u211d \u2192 \u211d) : \u2203 (f : \u211d \u2192 \u211d), \u2200 (x : \u211d), Filter.Tendsto (\u03bb h : \u211d, f(x + h) - f(x - h)) (nhds 0) (nhds 0) \u2227 \u00ac Continuous f := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem non_continuous_function_exists (f : \u211d \u2192 \u211d) : \u2203 (f : \u211d \u2192 \u211d), \u2200 (x : \u211d), Filter.Tendsto (\u03bb h : \u211d, f(x + h) - f(x - h)) (nhds 0) (nhds 0) \u2227 \u00ac Continuous f := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:81-7:82: error: unexpected token ','; expected '\u21a6', '=>'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

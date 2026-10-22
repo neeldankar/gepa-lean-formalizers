@@ -1,0 +1,121 @@
+Iteration 0: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
+Iteration 1: Selected program 0 score: 0.05714285714285714
+Iteration 1: Proposed new text for instructions: Translate the given math problem into a single Lean 4 theorem statement using Mathlib.
+
+## Input format
+You are given:
+1. A math problem stated in English/LaTeX.
+2. A "Lean 4 context": the exact `import`, `open`, `open scoped` (and possibly definition) lines that will be prepended before your theorem. Rely only on this context — do not add imports or opens, and do not repeat the context lines in your answer. Write exactly one theorem.
+
+## Output format
+- Output exactly one theorem inside a single ```lean4 code block.
+- The theorem must end with `:= by sorry` (no proof is required).
+- Give the theorem a descriptive snake_case name.
+
+## Grading criteria
+1. **Compilation**: the statement must compile under the given context with `autoImplicit = false`. Every identifier must be either bound in your theorem or an existing Mathlib name in scope; an unknown identifier is a hard error, never an auto-bound variable.
+2. **Faithfulness**: a judge compares your statement against the English text. A statement that compiles still fails if it drops, weakens, or alters any part of the problem.
+
+## Faithfulness rules
+- Include EVERY hypothesis from the English text as an explicit named argument. Examples: "a is a nonzero integer" → `(a : ℤ) (ha : a ≠ 0)`; "for n > m" → `(m n : ℕ) (h : m < n)`. Omitting a hypothesis (e.g. forgetting `ha : a ≠ 0`) is a classic faithfulness failure even when the statement compiles.
+- Reproduce the conclusion exactly, including case splits: "… is 1 or 2 depending on whether a is odd or even" can be encoded as `... = if a % 2 = 0 then 2 else 1`.
+- "There exists a unique" → `∃!`.
+- Map objects to the right types: integers `ℤ`, naturals `ℕ`, rationals `ℚ`, reals `ℝ`; a polynomial over ℚ is `Polynomial ℚ` with indeterminate `X`, e.g. `(X^3 + 6*X + 12 : Polynomial ℚ)`; "irreducible in ℚ" → `Irreducible (p : Polynomial ℚ)`.
+
+## Mathlib facts and compilation pitfalls
+- Topological closure is `closure` (lowercase). `Closure` does not exist and raises "unknown identifier".
+- Other exact names: `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `Irreducible`, `Polynomial`, `subset_closure` (of type `s ⊆ closure s`), `Set.inclusion` (of type `s ⊆ t → s → t`).
+- Subtypes and coercions: if `A : Set X` and `f : A → Y`, then `f` expects an element of the subtype `↥A` (a pair `⟨x, hx⟩`), not a bare `x : X`; writing `f x` with `x : X` is a type mismatch. To express that `g : closure A → Y` extends `f`, write e.g.
+  `∀ x : A, g ⟨x.1, subset_closure x.2⟩ = f x`
+  or `g ∘ Set.inclusion subset_closure = f`.
+- `gcd` on `ℤ` (Mathlib's `GCDMonoid ℤ` instance) returns a non-negative `ℤ`, so it can be compared directly with the literals `1` and `2`.
+- Annotate types where literals are ambiguous, e.g. `(... : Polynomial ℚ)`; write multiplication explicitly as in `6*X`.
+- `MetricSpace X`, `CompleteSpace Y` etc. are typeclasses — supply them as instance arguments `[MetricSpace X]`.
+
+## Strategy
+1. Parse the problem into: variables with types, hypotheses, and conclusion.
+2. Introduce one named argument per variable and per hypothesis — never drop one.
+3. State the conclusion with precise Mathlib predicates (`∃!` for uniqueness, if-then-else for case splits).
+4. Mentally type-check every application, especially where subtypes/coercions are involved, and verify the exact spelling and capitalization of every identifier against Mathlib.
+5. Emit only the theorem in a ```lean4 code block ending with `:= by sorry`.
+
+## Worked examples
+Problem: "Prove that $x^3 + 6x + 12$ is irreducible in $\mathbb{Q}$."
+Good output:
+```lean4
+theorem irreducible_x_cubed_plus_six_x_plus_twelve : Irreducible (X^3 + 6*X + 12 : Polynomial ℚ) := by sorry
+```
+
+Problem: "If $a$ is a nonzero integer, then for $n>m$ show that $(a^{2^{n}}+1, a^{2^{m}}+1)=1$ or 2 depending on whether $a$ is odd or even."
+Good output (note the `ha : a ≠ 0` hypothesis — omitting it makes the statement unfaithful):
+```lean4
+theorem gcd_power_two_exponents (a : ℤ) (ha : a ≠ 0) (m n : ℕ) (hm : m < n) :
+    gcd (a^(2^n) + 1) (a^(2^m) + 1) = if a % 2 = 0 then 2 else 1 := by sorry
+```
+
+Problem: "Let $(X,d_X)$ and $(Y,d_Y)$ be metric spaces with $Y$ complete, and let $A \subset X$. Show that a uniformly continuous $f : A \to Y$ extends uniquely to a continuous $g : \bar{A} \to Y$, and $g$ is uniformly continuous."
+Good output (note lowercase `closure` and the subtype-correct extension condition):
+```lean4
+theorem uniform_continuous_extension (X Y : Type) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y]
+    (A : Set X) (f : A → Y) (hf : UniformContinuous f) :
+    ∃! g : closure A → Y, Continuous g ∧ UniformContinuous g ∧
+      ∀ x : A, g ⟨x.1, subset_closure x.2⟩ = f x := by sorry
+```
+`
+Iteration 1: Accepted candidate (subsample score 1.0 -> 3.0); running full eval.
+Iteration 1: Valset score for new program: 0.04285714285714286 (coverage 70 / 70)
+Iteration 1: Val aggregate for new program: 0.04285714285714286
+Iteration 1: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 0.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 1: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 1: Valset pareto front aggregate score: 0.08571428571428572
+Iteration 1: Updated valset pareto front programs: {0: {0, 1}, 1: {0, 1}, 2: {0, 1}, 3: {0, 1}, 4: {0, 1}, 5: {0, 1}, 6: {0, 1}, 7: {0, 1}, 8: {0, 1}, 9: {0, 1}, 10: {0, 1}, 11: {0, 1}, 12: {0, 1}, 13: {0, 1}, 14: {0, 1}, 15: {0, 1}, 16: {0, 1}, 17: {0, 1}, 18: {0, 1}, 19: {0, 1}, 20: {0, 1}, 21: {0, 1}, 22: {1}, 23: {0, 1}, 24: {0, 1}, 25: {0, 1}, 26: {0, 1}, 27: {0}, 28: {0, 1}, 29: {0, 1}, 30: {0}, 31: {0, 1}, 32: {0, 1}, 33: {0, 1}, 34: {1}, 35: {0, 1}, 36: {0, 1}, 37: {0, 1}, 38: {0, 1}, 39: {0, 1}, 40: {0, 1}, 41: {0, 1}, 42: {0, 1}, 43: {0, 1}, 44: {0, 1}, 45: {0, 1}, 46: {0, 1}, 47: {0, 1}, 48: {0, 1}, 49: {0, 1}, 50: {0, 1}, 51: {0, 1}, 52: {0, 1}, 53: {0, 1}, 54: {0, 1}, 55: {0, 1}, 56: {0, 1}, 57: {0, 1}, 58: {0, 1}, 59: {0, 1}, 60: {0, 1}, 61: {0, 1}, 62: {0, 1}, 63: {0, 1}, 64: {0, 1}, 65: {0, 1}, 66: {0}, 67: {0, 1}, 68: {0, 1}, 69: {0, 1}}
+Iteration 1: Best valset aggregate score so far: 0.05714285714285714
+Iteration 1: Best program as per aggregate score on valset: 0
+Iteration 1: Best score on valset: 0.05714285714285714
+Iteration 1: Linear pareto front program index: 0
+Iteration 1: New program candidate index: 1
+Iteration 2: Selected program 0 score: 0.05714285714285714
+Iteration 2: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib.
+
+You are given a "Lean 4 context" (imports, opens, and possibly definitions). Your answer will be compiled with exactly that context prepended, with the `autoImplicit` option set to `false`. If it compiles, a judge then checks that the statement faithfully formalizes the original problem. A statement that does not compile scores 0, no matter how close the mathematics is.
+
+Output requirements:
+- Output exactly one theorem declaration inside a single ```lean4 code block. Do not repeat the imports/opens, and do not include proofs, comments, or explanations. Choose any reasonable theorem name.
+- End the statement with `:= by sorry`.
+- Every identifier must be bound in the theorem or defined in Mathlib (reachable via the given opens). Unknown identifiers are hard errors because `autoImplicit` is false.
+- The statement must be a faithful translation: match the quantifier structure, hypotheses, and conclusion of the problem. Do not weaken or strengthen it, and do not introduce spurious variables. If the context provides definitions, use them where relevant.
+
+Mathlib facts and pitfalls (each of these has caused a real compilation failure — check for them before finalizing):
+
+1. Spans and submodules
+   - The span of a set is `Submodule.span R s` (lowercase `span`, also available unqualified when `Submodule` is opened). There is NO identifier `Span`.
+   - The whole space viewed as a submodule is `(⊤ : Submodule F V)`; never use the type `V` itself where a `Submodule F V` is expected.
+   - "Proper subspace" is `W ≠ ⊤` (or `W < ⊤`). Submodules do not support `⊂` (there is no `HasSSubset (Submodule F V)` instance).
+   - To take a union of submodules as sets, coerce each one: `⋃ i, (W i : Set V)`; the whole carrier set is `Set.univ`.
+   - A family of subspaces indexed by `Fin n` is a function `W : Fin n → Submodule F V`; bind indices with `∀ i, ...` inside the proposition — do not existentially quantify a stray index `i : Fin n`.
+
+2. Linear independence of a set
+   - `LinearIndependent R v` expects a FUNCTION `v : ι → M`. For `S : Set M`, write `LinearIndependent R ((↑) : S → M)` (equivalently `LinearIndependent R (fun s : S => (s : M))`). Writing `LinearIndependent R S` directly makes Lean treat `S` as a map `M → Prop` and fails with `failed to synthesize instance AddCommMonoid Prop`.
+
+3. Countability
+   - For `S : Set α`, both `Countable S` (via coercion to the subtype `↥S`) and `S.Countable` (`Set.Countable`) work. In Mathlib, `Countable` includes finite sets, so "finite or countably infinite" is expressed as just `Countable S`.
+   - "V is spanned by a countable set" is NOT a typeclass; state it as a named hypothesis, e.g. `(h : ∃ s : Set V, Countable s ∧ Submodule.span ℚ s = ⊤)`.
+
+4. Existentials with side conditions
+   - Never write `∃ r : ℝ ≥ 0, ...`; Lean parses `ℝ ≥ 0` as a type and fails (`LE Type`, `OfNat Type 0` errors). Write `∃ r : ℝ, 0 ≤ r ∧ ...` instead. (The bounded-exists syntax `∃ r ≥ 0, ...` exists but cannot be combined with a type ascription.)
+
+5. Complex numbers
+   - The modulus of `w : ℂ` is `‖w‖` or `Complex.abs w`. The notation `|w|` does NOT work for `ℂ` (it requires a `Lattice ℂ` instance, which does not exist).
+   - For `r : ℝ` and `w : ℂ`, `r • w` works (ℂ is an ℝ-module); alternatively cast: `(r : ℂ) * w`.
+
+6. Typeclasses vs. hypotheses
+   - Supply structure assumptions as instance arguments, e.g. `(F : Type) [Field F] [Infinite F] (V : Type) [AddCommGroup V] [Module F V]`; a vector space over ℚ needs `[AddCommGroup V] [Module ℚ V]`.
+   - Only genuine typeclasses go in `[]`; everything else (existential assumptions, equalities, etc.) goes in `()` as named hypotheses.
+
+Compilable reference patterns (adapt names and content to the actual problem):
+- `theorem ex1 (V : Type) [AddCommGroup V] [Module ℚ V] (h : ∃ s : Set V, Countable s ∧ Submodule.span ℚ s = ⊤) : ∀ S : Set V, LinearIndependent ℚ ((↑) : S → V) → Countable S := by sorry`
+- `theorem ex2 (z : ℂ) : ∃ r : ℝ, 0 ≤ r ∧ ∃ w : ℂ, ‖w‖ = 1 ∧ z = r • w := by sorry`
+- `theorem ex3 (F : Type) [Field F] [Infinite F] (V : Type) [AddCommGroup V] [Module F V] : ∀ (n : ℕ) (W : Fin n → Submodule F V), (∀ i, W i ≠ ⊤) → (⋃ i, (W i : Set V)) ≠ Set.univ := by sorry`
+
+Final self-check before answering: (a) does every token resolve under the given opens? (b) does every notation's typeclass exist for the types at hand? (c) reading the formal statement back in English, does it say exactly what the problem says?
+`

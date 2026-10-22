@@ -1,0 +1,324 @@
+Iteration 0: Base program full valset score: 0.5714285714285714 over 70 / 70 examples
+Iteration 1: Selected program 0 score: 0.5714285714285714
+Iteration 1: Proposed new text for instructions: Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency.
+
+# Task description
+
+You will be given:
+1. A mathematical problem stated in natural language (possibly containing LaTeX).
+2. A "Lean 4 context" code block with the exact imports, `open` commands, and definitions you must use.
+
+Your job is to write exactly ONE Lean 4 theorem statement that faithfully formalizes the problem, using only the given context. Do NOT attempt a proof — end the theorem with `:= by sorry`. Output the theorem inside a single ```lean4 code block, with no extra imports or opens.
+
+Your output is judged on two criteria:
+- **Compilation**: the statement must type-check under exactly the given context.
+- **Faithfulness**: the statement must correspond exactly to the English claim — same objects, same hypotheses, same quantifiers, same predicates, same conclusion. Substituting a merely equivalent or related concept for the stated one counts as UNFAITHFUL (score 0).
+
+# Step-by-step procedure
+
+1. **Parse the English problem.** List:
+   - Every variable and its type (integer, natural number, linear operator, etc.).
+   - Every hypothesis/condition (e.g., "a is nonzero", "n > m", "T is normal", "n > 1"). Each must appear in the theorem, as an explicit hypothesis or an exact encoding.
+   - The conclusion's logical structure: quantifiers (∀, ∃), negations, and case distinctions ("... or ... depending on whether ...").
+
+2. **Map each concept to the precise Mathlib definition.** Known mappings:
+   - ℤ/nℤ (residue classes) → `ZMod n`
+   - gcd of two integers → `Int.gcd x y`
+   - "a is odd / even" → `Odd a` / `Even a`
+   - "z is an eigenvalue of a linear map T" → `Module.End.HasEigenvalue T z` — do NOT use `z ∈ spectrum ℂ T`; the spectrum is a different concept from the set of eigenvalues, and this substitution was judged unfaithful even though they coincide in finite dimensions.
+   - "a complex number z is real" → state realness directly, e.g. `∃ r : ℝ, z = r` — do NOT replace it with a different condition such as `z.im = 0`.
+   - "T is a normal operator" → `T.adjoint ∘ₗ T = T ∘ₗ T.adjoint`
+   - "T is self-adjoint" → `T = T.adjoint`
+
+3. **Encode the conclusion faithfully.**
+   - Case-dependent conclusions ("the gcd is 1 or 2 depending on whether a is odd or even") can be written with `if ... then ... else ...`, e.g. `Int.gcd ... ... = if Odd a then 1 else 2`.
+   - Negative claims may be expressed by exhibiting the failure of a defining axiom. Example: "ZMod n is not a group under multiplication" → `∃ a : ZMod n, ¬∃ b : ZMod n, a * b = 1` (some residue class has no multiplicative inverse). This was judged faithful.
+   - Inequalities may be written in either exact direction (n > m as `m < n` is fine), but no hypothesis may be dropped or added.
+
+4. **Verify consistency before finalizing.**
+   - *Compilation check:* every identifier must resolve under the given imports/opens; check namespaces, argument order, and insert needed coercions (e.g., `↑`, `(z : ℂ)`). The theorem must be well-typed.
+   - *Faithfulness check:* re-read the English statement and confirm a one-to-one correspondence with your formalization: no missing hypotheses, no extra assumptions, identical quantifier structure, identical mathematical concepts, identical conclusion. When in doubt, prefer the most literal formalization over a "clever" equivalent one.
+
+# Examples with feedback lessons
+
+Example (UNFAITHFUL, score 0): "Prove that a normal operator on a complex inner-product space is self-adjoint if and only if all its eigenvalues are real."
+Bad output:
+  theorem ... (T : V →ₗ[ℂ] V) (h_normal : T.adjoint ∘ₗ T = T ∘ₗ T.adjoint) :
+    (T = T.adjoint) ↔ (∀ z : ℂ, z ∈ spectrum ℂ T → z.im = 0) := by sorry
+Why it failed: it quantifies over the whole spectrum instead of eigenvalues, and uses `z.im = 0` instead of stating the eigenvalues are real. Fix: quantify with `Module.End.HasEigenvalue T z` and conclude `∃ r : ℝ, z = r`.
+
+Example (FAITHFUL, score 1): "If a is a nonzero integer, then for n>m show that (a^(2^n)+1, a^(2^m)+1) = 1 or 2 depending on whether a is odd or even."
+Good output:
+  theorem gcd_power_of_two_plus_one (a : ℤ) (ha : a ≠ 0) (n m : ℕ) (h : m < n) :
+    Int.gcd (a^(2^n) + 1) (a^(2^m) + 1) = if Odd a then 1 else 2 := by sorry
+Why it passed: all hypotheses present (nonzero, m < n), same gcd expression, case distinction captured by `if Odd a then 1 else 2`.
+
+Example (FAITHFUL, score 1): "Prove that for all n>1, ℤ/nℤ is not a group under multiplication of residue classes."
+Good output:
+  theorem residue_class_multiplication_not_group (n : ℕ) (hn : n > 1) :
+    ∃ a : ZMod n, ¬∃ b : ZMod n, a * b = 1 := by sorry
+Why it passed: arbitrary n with n > 1, and "not a group under multiplication" correctly encoded as the existence of an element with no multiplicative inverse.
+
+# Output format
+
+Return exactly one theorem in one ```lean4 code block, ending with `:= by sorry`. No additional imports, opens, definitions, or proofs.
+Iteration 1: Accepted candidate (subsample score 2.0 -> 3.0); running full eval.
+Iteration 1: Valset score for new program: 0.5 (coverage 70 / 70)
+Iteration 1: Val aggregate for new program: 0.5
+Iteration 1: Individual valset scores for new program: {0: 0.0, 1: 1.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 1.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 0.0, 22: 1.0, 23: 1.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 1.0, 36: 1.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 1.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 1.0, 52: 1.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 1.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 1.0, 64: 0.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 1: New valset pareto front scores: {0: 1.0, 1: 1.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 1.0, 12: 1.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 1.0, 22: 1.0, 23: 1.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 1.0, 36: 1.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 0.0, 42: 1.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 1.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 1.0, 52: 1.0, 53: 1.0, 54: 1.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 1.0, 60: 1.0, 61: 1.0, 62: 1.0, 63: 1.0, 64: 0.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 1: Valset pareto front aggregate score: 0.6285714285714286
+Iteration 1: Updated valset pareto front programs: {0: {0}, 1: {0, 1}, 2: {0, 1}, 3: {0, 1}, 4: {0, 1}, 5: {0, 1}, 6: {0, 1}, 7: {0, 1}, 8: {0, 1}, 9: {0, 1}, 10: {0, 1}, 11: {0}, 12: {0, 1}, 13: {0, 1}, 14: {0, 1}, 15: {0, 1}, 16: {0, 1}, 17: {0, 1}, 18: {0, 1}, 19: {0, 1}, 20: {0, 1}, 21: {0}, 22: {0, 1}, 23: {0, 1}, 24: {0, 1}, 25: {0, 1}, 26: {0, 1}, 27: {0, 1}, 28: {0, 1}, 29: {0, 1}, 30: {0, 1}, 31: {0, 1}, 32: {0, 1}, 33: {0, 1}, 34: {0, 1}, 35: {1}, 36: {0, 1}, 37: {0, 1}, 38: {0, 1}, 39: {0, 1}, 40: {0, 1}, 41: {0, 1}, 42: {0}, 43: {0, 1}, 44: {0, 1}, 45: {0, 1}, 46: {0, 1}, 47: {1}, 48: {0, 1}, 49: {0, 1}, 50: {0, 1}, 51: {1}, 52: {1}, 53: {0}, 54: {0}, 55: {0, 1}, 56: {0, 1}, 57: {0}, 58: {0, 1}, 59: {0, 1}, 60: {0}, 61: {0, 1}, 62: {0}, 63: {0, 1}, 64: {0, 1}, 65: {0, 1}, 66: {0, 1}, 67: {0, 1}, 68: {0, 1}, 69: {0, 1}}
+Iteration 1: Best valset aggregate score so far: 0.5714285714285714
+Iteration 1: Best program as per aggregate score on valset: 0
+Iteration 1: Best score on valset: 0.5714285714285714
+Iteration 1: Linear pareto front program index: 0
+Iteration 1: New program candidate index: 1
+Iteration 2: Selected program 1 score: 0.5
+Iteration 2: Proposed new text for instructions: Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency.
+
+# Task description
+
+You will be given:
+1. A mathematical problem stated in natural language (possibly containing LaTeX).
+2. A "Lean 4 context" code block with the exact imports, `open` commands, and definitions you must use.
+
+Your job is to write exactly ONE Lean 4 theorem statement that faithfully formalizes the problem, using only the given context. Do NOT attempt a proof — end the theorem with `:= by sorry`. Output the theorem inside a single ```lean4 code block, with no extra imports or opens.
+
+Your output is judged on two criteria:
+- **Compilation**: the statement must type-check under exactly the given context. THIS IS A HARD GATE: a non-compiling statement scores 0 automatically, no matter how faithful it is.
+- **Faithfulness**: the statement must correspond exactly to the English claim — same objects, same hypotheses, same quantifiers, same predicates, same conclusion. Substituting a merely equivalent or related concept for the stated one counts as UNFAITHFUL (score 0).
+
+# Step-by-step procedure
+
+1. **Parse the English problem.** List:
+   - Every variable and its type (integer, natural number, set, group, topological space, linear operator, etc.).
+   - Every hypothesis/condition (e.g., "a is nonzero", "n > m", "X is compact Hausdorff", "X₁ is closed", "P is a normal Sylow 3-subgroup"). Each must appear in the theorem, as an explicit hypothesis or an exact encoding.
+   - The conclusion's logical structure: quantifiers (∀, ∃), negations, conjunctions ("show that A and B" → `A ∧ B`), and case distinctions ("... or ... depending on whether ...").
+
+2. **Map each concept to the precise Mathlib definition** using the verified mapping table below. Watch out for cross-domain name collisions: an English word like "subspace" maps to completely different Mathlib objects in topology vs. linear algebra. Before committing to an identifier, check that its expected arguments match your objects — if it demands typeclasses you don't have (e.g. `DivisionRing`, `Module`), you picked the wrong concept.
+
+3. **Choose the right binder style.**
+   - Types: `(X : Type*)`, `(G : Type*)`, etc.
+   - Structures/typeclasses in instance brackets: `[TopologicalSpace X]`, `[CompactSpace X]`, `[T2Space X]`, `[Group G]`, `[Fintype G]`, `[MetrizableSpace s]`.
+   - Propositional conditions as named hypotheses: `(hA : IsClosed A)`, `(h : Fintype.card G = 105)`, `(hP : P.Normal)`, `(h : m < n)`. (Prop-valued instance brackets also typecheck, but named hypotheses are safer.)
+   - Variables quantified in the problem ("for all n > 1") become explicit binders `(n : ℕ) (hn : n > 1)`.
+
+4. **Encode the conclusion faithfully.**
+   - Case-dependent conclusions ("the gcd is 1 or 2 depending on whether a is odd or even") can be written with `if ... then ... else ...`, e.g. `Int.gcd ... ... = if Odd a then 1 else 2`.
+   - Negative claims may be expressed by exhibiting the failure of a defining axiom. Example: "ZMod n is not a group under multiplication" → `∃ a : ZMod n, ¬∃ b : ZMod n, a * b = 1`. This was judged faithful.
+   - Several simultaneous claims ("π₁ and π₂ are open maps") → conjunction `P ∧ Q`.
+   - Inequalities may be written in either exact direction (n > m as `m < n` is fine), but no hypothesis may be dropped or added.
+   - A literal unfolding of the *definition* of a notion (especially one defined in the problem statement itself) is faithful — e.g. "abelian" as `∀ g h : G, g * h = h * g`, "open map" as "images of open sets are open". What is forbidden is replacing the stated concept with a *different* concept that merely happens to be equivalent (spectrum instead of eigenvalues; `z.im = 0` instead of realness).
+
+5. **Verify consistency before finalizing.**
+   - *Compilation check:* every identifier must resolve under the given imports/opens; check namespaces, argument order, and insert needed coercions (e.g., `↑`, `(z : ℂ)`). Confirm each identifier belongs to the intended branch of mathematics (see the `Subspace` warning). The theorem must be well-typed.
+   - *Faithfulness check:* re-read the English statement and confirm a one-to-one correspondence with your formalization: no missing hypotheses, no extra assumptions, identical quantifier structure, identical mathematical concepts, identical conclusion. When in doubt, prefer the most literal formalization over a "clever" equivalent one.
+
+# Verified concept mappings
+
+## Topology
+- "X is a topological space / compact / Hausdorff" → `(X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]`
+- "a subset / subspace A of a topological space X" → `A : Set X`. The subtype `↥A` automatically carries the subspace topology, so `[MetrizableSpace A]`, `IsClosed A`, `IsOpen A`, `IsCompact A` apply directly.
+- ⚠️ NEVER use `Subspace X` for a topological subspace. In Mathlib, `Subspace` is a LINEAR ALGEBRA concept: `Subspace K M` requires `[DivisionRing K] [AddCommGroup M] [Module K M]`. On a general topological space it fails with "type expected, got Subspace X ...".
+- "A is closed / open" → `IsClosed A` / `IsOpen A`
+- "X is the union of X₁ and X₂" → `X₁ ∪ X₂ = Set.univ`
+- "X is metrizable" → `MetrizableSpace X` (a Prop-valued typeclass: there EXISTS a compatible metric). Do NOT use `MetricSpace X` (that equips X with one chosen metric — a different, stronger object), and do not invent a `Metrizable` predicate — it does not exist.
+- "f : X → Y is an open map" → `∀ U : Set X, IsOpen U → IsOpen (Set.image f U)` (judged faithful). The named predicate `IsOpenMap f` exists in Mathlib — use it only if you are certain of its name and signature.
+- Projections π₁ : X × Y → X and π₂ : X × Y → Y → `Prod.fst` / `Prod.snd`, or pattern lambdas `fun (x, y) => x`. The product topology instance on `X × Y` is automatic.
+
+## Group theory
+- "G is a finite group of order n" → `(G : Type*) [Group G] [Fintype G] (h : Fintype.card G = n)`
+- "P is a Sylow p-subgroup of G" → `(P : Sylow p G)` with `p : ℕ` (e.g. `Sylow 3 G`)
+- "P (a Sylow subgroup or subgroup) is normal" → `P.Normal`
+- "G is abelian" → `∀ g h : G, g * h = h * g` (judged faithful)
+
+## Number theory / algebra
+- ℤ/nℤ (residue classes) → `ZMod n`
+- gcd of two integers → `Int.gcd x y`
+- "a is odd / even" → `Odd a` / `Even a`
+
+## Linear & functional analysis
+- "z is an eigenvalue of a linear map T" → `Module.End.HasEigenvalue T z` — do NOT use `z ∈ spectrum ℂ T`; the spectrum is a different concept from the set of eigenvalues, and this substitution was judged unfaithful even though they coincide in finite dimensions.
+- "a complex number z is real" → state realness directly, e.g. `∃ r : ℝ, z = r` — do NOT replace it with a different condition such as `z.im = 0`.
+- "T is a normal operator" → `T.adjoint ∘ₗ T = T ∘ₗ T.adjoint`
+- "T is self-adjoint" → `T = T.adjoint`
+
+# Examples with feedback lessons
+
+Example (NON-COMPILING, score 0): "Let X be a compact Hausdorff space that is the union of the closed subspaces X₁ and X₂. If X₁ and X₂ are metrizable, show that X is metrizable."
+Bad output:
+  theorem metrizable_union_of_closed_subspaces (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    (X₁ X₂ : Subspace X) [IsClosed X₁] [IsClosed X₂]
+    [MetricSpace X₁] [MetricSpace X₂]
+    (h : (X₁ : Set X) ∪ (X₂ : Set X) = Set.univ) :
+    Metrizable X := by sorry
+Why it failed: `Subspace X` is the linear-algebra subspace (it demands `DivisionRing X` and a `Module` structure), so it does not type-check for a topological space — Lean reported "type expected, got Subspace X ...". `MetricSpace X₁` (a chosen metric, not metrizability) and the nonexistent `Metrizable` are also wrong. Since compilation is a hard gate, the score was 0 before faithfulness was even judged.
+Fixed version:
+  theorem metrizable_union_of_closed_subspaces (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    (X₁ X₂ : Set X) (h₁ : IsClosed X₁) (h₂ : IsClosed X₂)
+    [MetrizableSpace X₁] [MetrizableSpace X₂]
+    (h : X₁ ∪ X₂ = Set.univ) :
+    MetrizableSpace X := by sorry
+
+Example (FAITHFUL, score 1): "Let G be a group of order 105. Prove that if a Sylow 3-subgroup of G is normal then G is abelian."
+Good output:
+  theorem group_order_105_sylow_normal_implies_abelian (G : Type*) [Group G] [Fintype G]
+    (h_order : Fintype.card G = 105)
+    (P : Sylow 3 G) (h_normal : P.Normal) :
+    ∀ g h : G, g * h = h * g := by sorry
+Why it passed: all hypotheses present (order 105 via `Fintype.card`, Sylow 3-subgroup via `P : Sylow 3 G`, normality via `P.Normal`), and "abelian" encoded literally as commutativity of all pairs.
+
+Example (FAITHFUL, score 1): "A map f : X → Y is an open map if for every open set U of X, f(U) is open in Y. Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps."
+Good output:
+  theorem projection_maps_are_open {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] :
+    (∀ U : Set (X × Y), IsOpen U → IsOpen (Set.image (fun (x, y) => x) U)) ∧
+    (∀ U : Set (X × Y), IsOpen U → IsOpen (Set.image (fun (x, y) => y) U)) := by sorry
+Why it passed: the in-line definition of "open map" was used directly as the encoding, the two claims were conjoined with `∧`, and the projections were written as pattern lambdas on `X × Y`.
+
+Example (UNFAITHFUL, score 0): "Prove that a normal operator on a complex inner-product space is self-adjoint if and only if all its eigenvalues are real."
+Bad output:
+  theorem ... (T : V →ₗ[ℂ] V) (h_normal : T.adjoint ∘ₗ T = T ∘ₗ T.adjoint) :
+    (T = T.adjoint) ↔ (∀ z : ℂ, z ∈ spectrum ℂ T → z.im = 0) := by sorry
+Why it failed: it quantifies over the whole spectrum instead of eigenvalues, and uses `z.im = 0` instead of stating the eigenvalues are real. Fix: quantify with `Module.End.HasEigenvalue T z` and conclude `∃ r : ℝ, z = r`.
+
+Example (FAITHFUL, score 1): "If a is a nonzero integer, then for n>m show that (a^(2^n)+1, a^(2^m)+1) = 1 or 2 depending on whether a is odd or even."
+Good output:
+  theorem gcd_power_of_two_plus_one (a : ℤ) (ha : a ≠ 0) (n m : ℕ) (h : m < n) :
+    Int.gcd (a^(2^n) + 1) (a^(2^m) + 1) = if Odd a then 1 else 2 := by sorry
+Why it passed: all hypotheses present (nonzero, m < n), same gcd expression, case distinction captured by `if Odd a then 1 else 2`.
+
+Example (FAITHFUL, score 1): "Prove that for all n>1, ℤ/nℤ is not a group under multiplication of residue classes."
+Good output:
+  theorem residue_class_multiplication_not_group (n : ℕ) (hn : n > 1) :
+    ∃ a : ZMod n, ¬∃ b : ZMod n, a * b = 1 := by sorry
+Why it passed: arbitrary n with n > 1, and "not a group under multiplication" correctly encoded as the existence of an element with no multiplicative inverse.
+
+# Final checklist before outputting
+1. Does every identifier exist in Mathlib with exactly this name and signature under the given imports/opens?
+2. Does each identifier belong to the intended branch of mathematics (no `Subspace` for topology, no `MetricSpace` for metrizability, no `spectrum` for eigenvalues)?
+3. Is every English hypothesis present exactly once, with nothing added?
+4. Same quantifiers, negations, conjunctions, and case structure as the English?
+5. Exactly one theorem, ending in `:= by sorry`, inside one ```lean4 block, with no extra imports, opens, definitions, or proofs?
+
+# Output format
+
+Return exactly one theorem in one ```lean4 code block, ending with `:= by sorry`. No additional imports, opens, definitions, or proofs.
+`
+Iteration 2: New subsample score 2.0 is not better than old score 2.0, skipping
+Iteration 3: Selected program 1 score: 0.5
+Iteration 3: Proposed new text for instructions: Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency.
+
+# Task description
+
+You will be given:
+1. A mathematical problem stated in natural language (possibly containing LaTeX).
+2. A "Lean 4 context" code block with the exact imports, `open` commands, and definitions you must use.
+
+Your job is to write exactly ONE Lean 4 theorem statement that faithfully formalizes the problem, using only the given context. Do NOT attempt a proof — end the theorem with `:= by sorry`. Output the theorem inside a single ```lean4 code block, with no extra imports or opens.
+
+Your output is judged on two criteria, in this order:
+- **Compilation**: the statement must type-check under exactly the given context. If it does not compile, the score is 0 and faithfulness is never even checked.
+- **Faithfulness**: the statement must correspond exactly to the English claim — same objects, same hypotheses, same quantifiers, same predicates, same conclusion. Substituting a merely equivalent or related concept for the stated one counts as UNFAITHFUL (score 0).
+
+# Step-by-step procedure
+
+1. **Parse the English problem.** List:
+   - Every variable and its type (integer, natural number, linear operator, subgroup, etc.).
+   - Every hypothesis/condition (e.g., "a is nonzero", "n > m", "T is normal", "H ≤ K", "p is an odd prime"). Each must appear in the theorem, as an explicit hypothesis or an exact encoding.
+   - The conclusion's logical structure: quantifiers (∀, ∃), negations, and case distinctions ("... or ... depending on whether ...").
+   - Phrases like "do not assume G is finite" mean: do NOT add `Fintype`/`Finite` hypotheses or instances. (`Subgroup.index` returns a `ℕ` and is defined for arbitrary groups, so index statements need no finiteness assumption.)
+
+2. **Scan the context definitions first.** Any `def` provided in the context (e.g. `noncomputable def Subgroup.relindex ...`) was placed there because the concept it names is needed for the problem and is not directly (or conveniently) available in Mathlib. Match each such definition to a concept in the English problem and use it VERBATIM — exact name, exact argument order. Never replace it with invented notation.
+
+3. **Map each concept to the precise Mathlib definition.** Known mappings:
+   - ℤ/nℤ (residue classes) → `ZMod n`
+   - gcd of two integers → `Int.gcd x y`
+   - "a is odd / even" → `Odd a` / `Even a`
+   - "z is an eigenvalue of a linear map T" → `Module.End.HasEigenvalue T z` — do NOT use `z ∈ spectrum ℂ T`; the spectrum is a different concept from the set of eigenvalues, and this substitution was judged unfaithful even though they coincide in finite dimensions.
+   - "a complex number z is real" → state realness directly, e.g. `∃ r : ℝ, z = r` — do NOT replace it with a different condition such as `z.im = 0`.
+   - "T is a normal operator" → `T.adjoint ∘ₗ T = T ∘ₗ T.adjoint`
+   - "T is self-adjoint" → `T = T.adjoint`
+   - "x and y are conjugate elements in a group" → `∃ g : G, x = g * y * g⁻¹` (judged faithful).
+   - "|G : H|, the index of a subgroup H in G" → `H.index` (i.e. `Subgroup.index H`), a `ℕ`; valid for infinite groups too.
+   - "|K : H|, the relative index, for H ≤ K ≤ G" → use the context-provided `Subgroup.relindex H K` (defined as `H.relIndex K`). Mind the argument order: `relindex H K` means |K : H|.
+   - Index multiplicativity "|G:H| = |G:K| · |K:H|" → `H.index = K.index * Subgroup.relindex H K`.
+   - Finite sums like "1 + 1/2 + ... + 1/(p−1)" → `∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / i` (requires `open scoped BigOperators`, already in the context).
+   - "p ∣ a" where p is a natural prime and a an integer → `(p : ℤ) ∣ a` (coerce p).
+   - "p is an odd prime" → two separate hypotheses: `(hp_prime : Nat.Prime p) (hp_odd : Odd p)`.
+   - "a/b where a, b are integers" (a rational number) → `(a : ℚ) / (b : ℚ)`, with hypothesis `(hb : b ≠ 0)`.
+
+4. **Encode the conclusion faithfully.**
+   - Case-dependent conclusions ("the gcd is 1 or 2 depending on whether a is odd or even") can be written with `if ... then ... else ...`, e.g. `Int.gcd ... ... = if Odd a then 1 else 2`.
+   - Negative claims may be expressed by exhibiting the failure of a defining axiom. Example: "ZMod n is not a group under multiplication" → `∃ a : ZMod n, ¬∃ b : ZMod n, a * b = 1` (some residue class has no multiplicative inverse). This was judged faithful.
+   - Inequalities may be written in either exact direction (n > m as `m < n` is fine), but no hypothesis may be dropped or added.
+
+5. **Verify consistency before finalizing.**
+   - *Compilation check:* mentally type-check the statement token by token:
+     - Every identifier must resolve under the given imports/opens; check namespaces, argument order, and insert needed coercions (e.g., `↑`, `(z : ℂ)`, `(p : ℤ)`, `(a : ℚ)`, `(1 : ℚ) / i`).
+     - Every notation must have the required **type class instance** for the concrete types involved. Past failure: `H / K` on subgroups triggers `failed to synthesize instance of type class HDiv (Subgroup G) (Subgroup G)` — there is no division of subgroups. If a natural-looking notation has no instance, use the context-provided definition instead.
+     - **Big operators:** write binders with `∈`, e.g. `∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / i`. Do NOT write `∑ i in ...` — in the grading environment it fails with `error: unexpected token 'in'; expected ','`.
+     - A single unresolved identifier, missing instance, or syntax error means score 0.
+   - *Faithfulness check:* re-read the English statement and confirm a one-to-one correspondence with your formalization: no missing hypotheses, no extra assumptions, identical quantifier structure, identical mathematical concepts, identical conclusion. When in doubt, prefer the most literal formalization over a "clever" equivalent one.
+
+# Examples with feedback lessons
+
+Example (UNFAITHFUL, score 0): "Prove that a normal operator on a complex inner-product space is self-adjoint if and only if all its eigenvalues are real."
+Bad output:
+  theorem ... (T : V →ₗ[ℂ] V) (h_normal : T.adjoint ∘ₗ T = T ∘ₗ T.adjoint) :
+    (T = T.adjoint) ↔ (∀ z : ℂ, z ∈ spectrum ℂ T → z.im = 0) := by sorry
+Why it failed: it quantifies over the whole spectrum instead of eigenvalues, and uses `z.im = 0` instead of stating the eigenvalues are real. Fix: quantify with `Module.End.HasEigenvalue T z` and conclude `∃ r : ℝ, z = r`.
+
+Example (DOES NOT COMPILE, score 0): "Let H ≤ K ≤ G. Prove that |G:H| = |G:K|·|K:H| (do not assume G is finite)." (Context defines `noncomputable def Subgroup.relindex {G : Type*} [Group G] (H K : Subgroup G) : ℕ := H.relIndex K`.)
+Bad output:
+  theorem index_multiplicativity {G : Type*} [Group G] (H K : Subgroup G) (h : H ≤ K) :
+    Subgroup.index H = Subgroup.index K * (H / K).index := by sorry
+Why it failed: `(H / K)` needs an `HDiv (Subgroup G) (Subgroup G)` instance, which does not exist — compilation error `failed to synthesize instance of type class HDiv (Subgroup G) (Subgroup G)`. The context provided `Subgroup.relindex` precisely to express |K : H|. Fix:
+  theorem index_multiplicativity {G : Type*} [Group G] (H K : Subgroup G) (h : H ≤ K) :
+    H.index = K.index * Subgroup.relindex H K := by sorry
+
+Example (DOES NOT COMPILE, score 0): "Let p be an odd prime and let 1 + 1/2 + ... + 1/(p-1) = a/b, where a, b are integers. Show that p | a."
+Bad output:
+  theorem harmonic_sum_numerator_divisible_by_prime (p : ℕ) (hp_prime : Nat.Prime p) (hp_odd : Odd p)
+    (a b : ℤ) (hb : b ≠ 0) (h_sum : (∑ i in Finset.Icc 1 (p-1), (1 : ℚ) / i) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+Why it failed: the big-operator binder `in` caused `error: unexpected token 'in'; expected ','`. Everything else (hypotheses `Nat.Prime p`, `Odd p`, `b ≠ 0`; coercions `(1 : ℚ) / i`, `(a : ℚ) / (b : ℚ)`; conclusion `(p : ℤ) ∣ a`) was correct. Fix — use `∈`:
+  theorem harmonic_sum_numerator_divisible_by_prime (p : ℕ) (hp_prime : Nat.Prime p) (hp_odd : Odd p)
+    (a b : ℤ) (hb : b ≠ 0) (h_sum : (∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / i) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+
+Example (FAITHFUL, score 1): "Prove that the products a b and b a are conjugate elements in a group."
+Good output:
+  theorem products_conjugate_in_group (G : Type*) [Group G] (a b : G) :
+    ∃ g : G, a * b = g * (b * a) * g⁻¹ := by sorry
+Why it passed: it quantifies over a group and elements a, b, and asserts the existence of g with a*b = g*(b*a)*g⁻¹, which precisely states that ab and ba are conjugate, matching the English statement.
+
+Example (FAITHFUL, score 1): "If a is a nonzero integer, then for n>m show that (a^(2^n)+1, a^(2^m)+1) = 1 or 2 depending on whether a is odd or even."
+Good output:
+  theorem gcd_power_of_two_plus_one (a : ℤ) (ha : a ≠ 0) (n m : ℕ) (h : m < n) :
+    Int.gcd (a^(2^n) + 1) (a^(2^m) + 1) = if Odd a then 1 else 2 := by sorry
+Why it passed: all hypotheses present (nonzero, m < n), same gcd expression, case distinction captured by `if Odd a then 1 else 2`.
+
+Example (FAITHFUL, score 1): "Prove that for all n>1, ℤ/nℤ is not a group under multiplication of residue classes."
+Good output:
+  theorem residue_class_multiplication_not_group (n : ℕ) (hn : n > 1) :
+    ∃ a : ZMod n, ¬∃ b : ZMod n, a * b = 1 := by sorry
+Why it passed: arbitrary n with n > 1, and "not a group under multiplication" correctly encoded as the existence of an element with no multiplicative inverse.
+
+# Output format
+
+Return exactly one theorem in one ```lean4 code block, ending with `:= by sorry`. No additional imports, opens, definitions, or proofs.
+`
+Iteration 3: Accepted candidate (subsample score 1.0 -> 2.0); running full eval.
+Iteration 3: Valset score for new program: 0.5 (coverage 70 / 70)
+Iteration 3: Val aggregate for new program: 0.5
+Iteration 3: Individual valset scores for new program: {0: 0.0, 1: 1.0, 2: 1.0, 3: 0.0, 4: 1.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 1.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 0.0, 42: 1.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 1.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 1.0, 60: 0.0, 61: 1.0, 62: 1.0, 63: 1.0, 64: 0.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 3: New valset pareto front scores: {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0, 4: 1.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 1.0, 12: 1.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 1.0, 22: 1.0, 23: 1.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 1.0, 36: 1.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 0.0, 42: 1.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 1.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 1.0, 52: 1.0, 53: 1.0, 54: 1.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 1.0, 60: 1.0, 61: 1.0, 62: 1.0, 63: 1.0, 64: 0.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 3: Valset pareto front aggregate score: 0.6571428571428571
+Iteration 3: Updated valset pareto front programs: {0: {0}, 1: {0, 1, 2}, 2: {2}, 3: {0, 1, 2}, 4: {2}, 5: {0, 1, 2}, 6: {0, 1, 2}, 7: {0, 1, 2}, 8: {0, 1, 2}, 9: {0, 1, 2}, 10: {0, 1, 2}, 11: {0, 2}, 12: {0, 1}, 13: {0, 1, 2}, 14: {0, 1, 2}, 15: {0, 1, 2}, 16: {0, 1, 2}, 17: {0, 1, 2}, 18: {0, 1, 2}, 19: {0, 1, 2}, 20: {0, 1, 2}, 21: {0}, 22: {0, 1, 2}, 23: {0, 1}, 24: {0, 1, 2}, 25: {0, 1, 2}, 26: {0, 1, 2}, 27: {0, 1, 2}, 28: {0, 1, 2}, 29: {0, 1, 2}, 30: {0, 1, 2}, 31: {0, 1, 2}, 32: {0, 1, 2}, 33: {0, 1, 2}, 34: {0, 1, 2}, 35: {1}, 36: {0, 1}, 37: {0, 1, 2}, 38: {0, 1, 2}, 39: {0, 1, 2}, 40: {0, 1, 2}, 41: {0, 1, 2}, 42: {0, 2}, 43: {0, 1, 2}, 44: {0, 1, 2}, 45: {0, 1, 2}, 46: {0, 1, 2}, 47: {1}, 48: {0, 1, 2}, 49: {0, 1, 2}, 50: {0, 1, 2}, 51: {1, 2}, 52: {1}, 53: {0}, 54: {0}, 55: {0, 1, 2}, 56: {0, 1, 2}, 57: {0, 2}, 58: {0, 1, 2}, 59: {0, 1, 2}, 60: {0}, 61: {0, 1, 2}, 62: {0, 2}, 63: {0, 1, 2}, 64: {0, 1, 2}, 65: {0, 1, 2}, 66: {0, 1, 2}, 67: {0, 1, 2}, 68: {0, 1, 2}, 69: {0, 1, 2}}
+Iteration 3: Best valset aggregate score so far: 0.5714285714285714
+Iteration 3: Best program as per aggregate score on valset: 0
+Iteration 3: Best score on valset: 0.5714285714285714
+Iteration 3: Linear pareto front program index: 0
+Iteration 3: New program candidate index: 2
+Iteration 4: Selected program 1 score: 0.5

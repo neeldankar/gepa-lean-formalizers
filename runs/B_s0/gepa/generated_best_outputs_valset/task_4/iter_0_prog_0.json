@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_020",
+        "sample": 0,
+        "output": "```lean4\ntheorem Axler_exercise_4_15 (V : Type) [FiniteDimensional \u2102 V] (T : LinearMap \u2102 V V) :\n  \u2200 v : V, \u2203 \u03bb : \u2102, T v = \u03bb \u2022 v \u2192 T = LinearMap.id \ud835\udd42 \u2022 (ScalarMultiplication.scalar \u03bb) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Axler_exercise_4_15 (V : Type) [FiniteDimensional \u2102 V] (T : LinearMap \u2102 V V) :\n  \u2200 v : V, \u2203 \u03bb : \u2102, T v = \u03bb \u2022 v \u2192 T = LinearMap.id \ud835\udd42 \u2022 (ScalarMultiplication.scalar \u03bb) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:12-8:14: error: unexpected token '\u03bb'; expected '(', '_' or identifier\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

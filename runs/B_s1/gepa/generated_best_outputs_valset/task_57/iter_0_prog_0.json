@@ -1,0 +1,23 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_303",
+        "sample": 0,
+        "output": "```lean4\ntheorem connected_intersects_boundary (X : TopologicalSpace \u03b1) (A : Set \u03b1) (C : Set \u03b1) :\n  Connected C \u2192 C \u2229 A \u2260 \u2205 \u2227 C \u2229 (Set.compl A) \u2260 \u2205 \u2192 C \u2229 Set.boundary A \u2260 \u2205 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem connected_intersects_boundary (X : TopologicalSpace \u03b1) (A : Set \u03b1) (C : Set \u03b1) :\n  Connected C \u2192 C \u2229 A \u2260 \u2205 \u2227 C \u2229 (Set.compl A) \u2260 \u2205 \u2192 C \u2229 Set.boundary A \u2260 \u2205 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:40-7:41: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:52-7:53: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:64-7:65: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:2-8:11: error(lean.unknownIdentifier): Unknown identifier `Connected`\n\nNote: It is not possible to treat `Connected` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:56-8:68: error(lean.unknownIdentifier): Unknown constant `Set.boundary`\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

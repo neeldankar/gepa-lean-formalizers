@@ -1,0 +1,23 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_241",
+        "sample": 0,
+        "output": "```lean4\ntheorem rotman_exercise_5_3 (G : Type _) [Group G] (p : \u2115) (hp : Nat.Prime p) (P : Subgroup G) (H : Subgroup G)\n  (normal_P : IsNormal P) (P_Sylow : Sylow p P) (H_sub : H \u2264 G) :\n  IsSylow p (P \u2229 H) \u2227 \u2200 Q : Subgroup G, Q \u2264 H \u2192 IsSylow p Q \u2192 Q = P \u2229 H := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem rotman_exercise_5_3 (G : Type _) [Group G] (p : \u2115) (hp : Nat.Prime p) (P : Subgroup G) (H : Subgroup G)\n  (normal_P : IsNormal P) (P_Sylow : Sylow p P) (H_sub : H \u2264 G) :\n  IsSylow p (P \u2229 H) \u2227 \u2200 Q : Subgroup G, Q \u2264 H \u2192 IsSylow p Q \u2192 Q = P \u2229 H := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:14-8:22: error(lean.unknownIdentifier): Unknown identifier `IsNormal`\n\nNote: It is not possible to treat `IsNormal` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:57-8:62: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  LE (Type ?u.2)\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:9:2-9:9: error(lean.unknownIdentifier): Unknown identifier `IsSylow`\n\nNote: It is not possible to treat `IsSylow` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:48-9:55: error(lean.unknownIdentifier): Unknown identifier `IsSylow`\n\nNote: It is not possible to treat `IsSylow` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:9:66-9:71: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Inter (Subgroup G)\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

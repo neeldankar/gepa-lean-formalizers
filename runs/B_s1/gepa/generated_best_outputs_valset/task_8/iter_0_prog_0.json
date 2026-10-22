@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_031",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_commutativity_equivalences (G : Type) [Group G] (x y : G) :\n  x * y = y * x \u2194 y\u207b\u00b9 * x * y = x \u2194 x\u207b\u00b9 * y\u207b\u00b9 * x * y = 1 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_commutativity_equivalences (G : Type) [Group G] (x y : G) :\n  x * y = y * x \u2194 y\u207b\u00b9 * x * y = x \u2194 x\u207b\u00b9 * y\u207b\u00b9 * x * y = 1 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:33-8:35: error: unexpected token '\u2194'; expected ':=', 'where' or '|'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

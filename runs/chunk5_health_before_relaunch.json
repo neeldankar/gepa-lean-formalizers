@@ -1,0 +1,286 @@
+{
+ "time": "2026-10-22T06:36:05+00:00",
+ "since": "2026-10-22T06:12:17",
+ "runs": {
+  "B_s0": {
+   "log_exists": true,
+   "max_iteration": 3,
+   "proposed": 2,
+   "accepted": 2,
+   "rejected_on_minibatch": 0,
+   "tracebacks": 1,
+   "error_lines": 1,
+   "stderr_bytes": 12335,
+   "reflection_calls": 2,
+   "reflection_seconds": [
+    238,
+    178
+   ],
+   "reflection_usd": 0.2838,
+   "saved_candidate_files": 3,
+   "STOPPED": null,
+   "DONE": false,
+   "api_failures": 4
+  },
+  "B_s1": {
+   "log_exists": true,
+   "max_iteration": 3,
+   "proposed": 2,
+   "accepted": 2,
+   "rejected_on_minibatch": 0,
+   "tracebacks": 1,
+   "error_lines": 1,
+   "stderr_bytes": 16016,
+   "reflection_calls": 2,
+   "reflection_seconds": [
+    114,
+    218
+   ],
+   "reflection_usd": 0.2571,
+   "saved_candidate_files": 3,
+   "STOPPED": null,
+   "DONE": false,
+   "api_failures": 2
+  },
+  "B_s2": {
+   "log_exists": true,
+   "max_iteration": 3,
+   "proposed": 3,
+   "accepted": 2,
+   "rejected_on_minibatch": 0,
+   "tracebacks": 4,
+   "error_lines": 2,
+   "stderr_bytes": 33738,
+   "reflection_calls": 3,
+   "reflection_seconds": [
+    73,
+    282,
+    283
+   ],
+   "reflection_usd": 0.5093,
+   "saved_candidate_files": 3,
+   "STOPPED": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 2 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'",
+   "DONE": false,
+   "api_failures": 2
+  },
+  "D_s0": {
+   "log_exists": true,
+   "max_iteration": 4,
+   "proposed": 3,
+   "accepted": 3,
+   "rejected_on_minibatch": 0,
+   "tracebacks": 0,
+   "error_lines": 0,
+   "stderr_bytes": 23621,
+   "reflection_calls": 3,
+   "reflection_seconds": [
+    67,
+    243,
+    164
+   ],
+   "reflection_usd": 0.3573,
+   "saved_candidate_files": 4,
+   "STOPPED": null,
+   "DONE": false,
+   "api_failures": 0
+  },
+  "D_s1": {
+   "log_exists": true,
+   "max_iteration": 4,
+   "proposed": 3,
+   "accepted": 2,
+   "rejected_on_minibatch": 1,
+   "tracebacks": 0,
+   "error_lines": 0,
+   "stderr_bytes": 14181,
+   "reflection_calls": 3,
+   "reflection_seconds": [
+    72,
+    544,
+    58
+   ],
+   "reflection_usd": 0.2675,
+   "saved_candidate_files": 3,
+   "STOPPED": null,
+   "DONE": false,
+   "api_failures": 1
+  },
+  "D_s2": {
+   "log_exists": true,
+   "max_iteration": 4,
+   "proposed": 3,
+   "accepted": 2,
+   "rejected_on_minibatch": 1,
+   "tracebacks": 0,
+   "error_lines": 0,
+   "stderr_bytes": 29173,
+   "reflection_calls": 3,
+   "reflection_seconds": [
+    74,
+    247,
+    220
+   ],
+   "reflection_usd": 0.4387,
+   "saved_candidate_files": 3,
+   "STOPPED": null,
+   "DONE": false,
+   "api_failures": 0
+  }
+ },
+ "chunk5_usd_since": 3.7998,
+ "chunk5_usd_all": 3.7998,
+ "cost_rows_by_run_purpose": {
+  "B_s0|generate": {
+   "calls": 225,
+   "usd": 0.0
+  },
+  "B_s0|opt_judge": {
+   "calls": 41,
+   "usd": 0.0116
+  },
+  "B_s0|reflection": {
+   "calls": 2,
+   "usd": 0.2838
+  },
+  "B_s1|generate": {
+   "calls": 225,
+   "usd": 0.0
+  },
+  "B_s1|opt_judge": {
+   "calls": 46,
+   "usd": 0.0122
+  },
+  "B_s1|reflection": {
+   "calls": 2,
+   "usd": 0.2572
+  },
+  "B_s2|generate": {
+   "calls": 228,
+   "usd": 0.0
+  },
+  "B_s2|opt_judge": {
+   "calls": 40,
+   "usd": 0.0104
+  },
+  "B_s2|reflection": {
+   "calls": 3,
+   "usd": 0.5093
+  },
+  "D_s0|generate": {
+   "calls": 301,
+   "usd": 0.0
+  },
+  "D_s0|opt_judge": {
+   "calls": 169,
+   "usd": 0.0491
+  },
+  "D_s0|reflection": {
+   "calls": 3,
+   "usd": 0.3574
+  },
+  "D_s1|generate": {
+   "calls": 229,
+   "usd": 0.0
+  },
+  "D_s1|opt_judge": {
+   "calls": 120,
+   "usd": 0.0358
+  },
+  "D_s1|reflection": {
+   "calls": 3,
+   "usd": 0.2676
+  },
+  "D_s2|generate": {
+   "calls": 230,
+   "usd": 0.0
+  },
+  "D_s2|opt_judge": {
+   "calls": 126,
+   "usd": 0.037
+  },
+  "D_s2|reflection": {
+   "calls": 3,
+   "usd": 0.4387
+  },
+  "chunk5_job|gpu": {
+   "calls": 23,
+   "usd": 1.5295
+  }
+ },
+ "api_failures_since": [
+  {
+   "time": "2026-10-22T06:13:32+00:00",
+   "run_id": "B_s0",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 42.3,
+   "error": "HTTP 429: b'{\"error\":{\"type\":\"Too Many Requests\",\"code\":\"worker_stream_failed\",\"message\":\"Single stream failed: h2 proto"
+  },
+  {
+   "time": "2026-10-22T06:24:45+00:00",
+   "run_id": "B_s1",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 340.1,
+   "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'"
+  },
+  {
+   "time": "2026-10-22T06:25:05+00:00",
+   "run_id": "B_s2",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 340.0,
+   "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'"
+  },
+  {
+   "time": "2026-10-22T06:26:20+00:00",
+   "run_id": "B_s0",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 138.5,
+   "error": "HTTP 429: b'{\"error\":{\"type\":\"Too Many Requests\",\"code\":\"worker_stream_failed\",\"message\":\"Single stream failed: h2 proto"
+  },
+  {
+   "time": "2026-10-22T06:27:06+00:00",
+   "run_id": "B_s0",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 41.4,
+   "error": "HTTP 429: b'{\"error\":{\"type\":\"Too Many Requests\",\"code\":\"worker_stream_failed\",\"message\":\"Single stream failed: h2 proto"
+  },
+  {
+   "time": "2026-10-22T06:27:44+00:00",
+   "run_id": "D_s1",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 340.0,
+   "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'"
+  },
+  {
+   "time": "2026-10-22T06:30:30+00:00",
+   "run_id": "B_s1",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 340.1,
+   "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'"
+  },
+  {
+   "time": "2026-10-22T06:30:50+00:00",
+   "run_id": "B_s2",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 340.0,
+   "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'"
+  },
+  {
+   "time": "2026-10-22T06:32:46+00:00",
+   "run_id": "B_s0",
+   "purpose": "reflection",
+   "kind": "RetryableError",
+   "seconds": 340.1,
+   "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'"
+  }
+ ],
+ "gpu": "0 %, 70983 MiB",
+ "tmux": "chunk5: 1 windows (created Thu Oct 22 06:12:17 2026)"
+}

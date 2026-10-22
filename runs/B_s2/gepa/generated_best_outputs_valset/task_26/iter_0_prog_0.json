@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_134",
+        "sample": 0,
+        "output": "```lean4\ntheorem Stone_Cech_connected_iff_original_connected (X : TopologicalSpace) :\n  Connected X \u2194 Connected (StoneCechCompactification X) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Stone_Cech_connected_iff_original_connected (X : TopologicalSpace) :\n  Connected X \u2194 Connected (StoneCechCompactification X) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:23-7:39: error: type expected, got\n  (TopologicalSpace : Type ?u.2 \u2192 Type ?u.2)\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

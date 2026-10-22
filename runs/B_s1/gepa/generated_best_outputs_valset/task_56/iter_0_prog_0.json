@@ -1,0 +1,24 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_294",
+        "sample": 0,
+        "output": "```lean4\ntheorem subspace_topology_inheritance (X : TopologicalSpace \u03b1) (Y : Set \u03b1) (A : Set \u03b1) (hY : IsSubspace Y) (hA : A \u2286 Y) :\n  Topology.inducedOn A (Topology.inducedOn Y X) = Topology.inducedOn A X := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem subspace_topology_inheritance (X : TopologicalSpace \u03b1) (Y : Set \u03b1) (A : Set \u03b1) (hY : IsSubspace Y) (hA : A \u2286 Y) :\n  Topology.inducedOn A (Topology.inducedOn Y X) = Topology.inducedOn A X := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:40-7:41: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:52-7:53: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:64-7:65: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:73-7:83: error(lean.unknownIdentifier): Unknown identifier `IsSubspace`\n\nNote: It is not possible to treat `IsSubspace` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:2-8:20: error(lean.unknownIdentifier): Unknown identifier `Topology.inducedOn`\n",
+            "-:8:50-8:68: error(lean.unknownIdentifier): Unknown identifier `Topology.inducedOn`\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

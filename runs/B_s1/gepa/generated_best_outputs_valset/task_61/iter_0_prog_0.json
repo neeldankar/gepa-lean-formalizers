@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_323",
+        "sample": 0,
+        "output": "```lean4\ntheorem constant_function_condition (f : \u211d \u2192 \u211d) :\n  \u2200 t x : \u211d, |f t - f x| \u2264 (t - x) ^ 2 \u2192 \u2200 x : \u211d, f x = f 0 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem constant_function_condition (f : \u211d \u2192 \u211d) :\n  \u2200 t x : \u211d, |f t - f x| \u2264 (t - x) ^ 2 \u2192 \u2200 x : \u211d, f x = f 0 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The hypothesis is placed inside the universal quantifiers (\u2200 t x, \u2026 \u2192 \u2026) instead of being a single assumption (\u2200 t x, \u2026) \u2192 \u2026, so the Lean statement requires the inequality only for a particular pair to conclude constancy, which does not match the English statement."
+        },
+        "score": 0
+    }
+]

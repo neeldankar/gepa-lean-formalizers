@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_092",
+        "sample": 0,
+        "output": "```lean4\ntheorem cos_one_degree_algebraic : IsAlgebraic (cos (1 : Real) : \u211d) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem cos_one_degree_algebraic : IsAlgebraic (cos (1 : Real) : \u211d) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:32-7:52: error: Application type mismatch: The argument\n  cos 1\nhas type\n  \u211d\nof sort `Type` but is expected to have type\n  Type ?u.3\nof sort `Type (?u.3 + 1)` in the application\n  @IsAlgebraic (cos 1)\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

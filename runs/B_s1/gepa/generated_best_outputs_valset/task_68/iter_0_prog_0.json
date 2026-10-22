@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_363",
+        "sample": 0,
+        "output": "```lean4\ntheorem integral_sinx_over_x : \u222b\u00b9\u221e (sin x / x) \u2202MeasureTheory.volume = \u03c0 / 2 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem integral_sinx_over_x : \u222b\u00b9\u221e (sin x / x) \u2202MeasureTheory.volume = \u03c0 / 2 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:21-7:22: error: unexpected token '\u00b9'; expected ',' or 'in'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

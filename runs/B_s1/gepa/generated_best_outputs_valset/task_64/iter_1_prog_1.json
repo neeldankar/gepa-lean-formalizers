@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_342",
+        "sample": 0,
+        "output": "```lean4\ntheorem limit_sqrt_n_squared_plus_n_minus_n (f : \u2115 \u2192 \u211d) (hf : \u2200 n, f n = sqrt (n^2 + n) - n) :\n    Tendsto f atTop (nhds (1 / 2)) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem limit_sqrt_n_squared_plus_n_minus_n (f : \u2115 \u2192 \u211d) (hf : \u2200 n, f n = sqrt (n^2 + n) - n) :\n    Tendsto f atTop (nhds (1 / 2)) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem states that any \u2115\u2192\u211d function equal to sqrt(n^2+n)-n tends to 1/2 at infinity, exactly matching the English claim about the limit of that expression."
+        },
+        "score": 1
+    }
+]

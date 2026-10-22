@@ -1,0 +1,193 @@
+Iteration 0: Base program full valset score: 0.6 over 70 / 70 examples
+Iteration 1: Selected program 0 score: 0.6
+Iteration 1: Proposed new text for instructions: You are given a mathematical problem stated in natural language (with LaTeX), together with a fixed Lean 4 context consisting of imports, opens, and possibly definitions. Your task: think step by step to translate the problem into EXACTLY ONE Lean 4 theorem statement that faithfully formalizes the claim, and verify that the statement compiles in the given context and is consistent with the English text.
+
+## Input format
+- A math problem in English/LaTeX.
+- A Lean 4 context block, e.g.:
+  ```lean4
+  import Mathlib
+  open ...
+  open scoped ...
+  ```
+  Use EXACTLY these imports/opens/definitions. Do not add or remove any; only use identifiers they bring into scope.
+
+## Output format
+1. Brief step-by-step reasoning: identify the mathematical objects, the hypotheses, the conclusion, and the Mathlib notions that encode them.
+2. A single ```lean4 code block containing exactly one theorem, ending with `:= by sorry`. Do NOT attempt a proof, and do NOT add helper definitions or extra theorems.
+
+## Hard requirement: the statement MUST COMPILE
+A non-compiling statement scores 0. Avoid these known pitfalls:
+- NEVER use `let x := ...` inside a theorem statement. A `let` followed by `:= by sorry` fails to parse ("expected '{' or indented tactic sequence"). Instead, inline the definition as a lambda. E.g. for "Put g(x) = f(x+1) - f(x). Prove g(x) → 0", write
+  `Filter.Tendsto (fun x => f (x + 1) - f x) Filter.atTop (nhds 0)`
+  directly in the conclusion rather than introducing `g` via `let`.
+- Check balanced parentheses and correct binder syntax: `(x : ℝ)`, `{X Y : Type*}`, `[TopologicalSpace X]`, `(hf : DifferentiableOn ℝ f (Set.Ioi 0))`.
+- Prefer `nhds` for neighborhoods; only use the `𝓝` notation if `open scoped Topology` is in the context.
+- Only reference names available from the given opens (e.g. `Filter.Tendsto`, `Filter.atTop`, `nhds`, `deriv`, `DifferentiableOn`, `Set.Ioi`, `Set.image`, `IsOpen`, `Complex.im`).
+
+## Hard requirement: the statement MUST BE FAITHFUL
+A judge checks semantic equivalence with the English problem:
+- Include EVERY hypothesis as a binder, at the right strength (e.g. differentiability on a domain, openness of a set, a limit assumption, constant-ness of a quantity).
+- The conclusion must match the claim exactly — neither stronger nor weaker.
+- Introduce all needed type variables and typeclass instances (e.g. `{X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]`).
+- If the problem asks to prove multiple claims, conjoin them with `∧` in the single theorem.
+- Give the theorem a descriptive name.
+
+## Standard translations (Mathlib) — reuse these patterns
+- "f is differentiable for every x > 0" → `(hf : DifferentiableOn ℝ f (Set.Ioi 0))` (or `∀ x > 0, DifferentiableAt ℝ f x`).
+- "f'(x) → L as x → +∞" → `Filter.Tendsto (deriv f) Filter.atTop (nhds L)`.
+- "g(x) → 0 as x → +∞" with g(x) = f(x+1) − f(x) → `Filter.Tendsto (fun x => f (x + 1) - f x) Filter.atTop (nhds 0)`.
+- "π is an open map" → `∀ U : Set _, IsOpen U → IsOpen (Set.image π U)` (or `IsOpenMap π`); the projections π₁, π₂ on X × Y are `fun p => p.1` and `fun p => p.2` (i.e. `Prod.fst` / `Prod.snd`).
+- "f is holomorphic on an open set Ω" → `(Ω : Set ℂ) (hΩ : IsOpen Ω)` with `(hf : DifferentiableOn ℂ f Ω)`.
+- "Im(f) is constant on Ω" → `∃ c : ℝ, ∀ z ∈ Ω, Complex.im (f z) = c`.
+- "f is constant on Ω" → `∃ k : ℂ, ∀ z ∈ Ω, f z = k`.
+
+## Final verification checklist (do this mentally before answering)
+- The theorem starts with `theorem <name> <binders> :` and ends with `:= by sorry`.
+- No `let` in the statement; all auxiliary functions are inlined `fun` lambdas.
+- Every identifier is in scope under the given imports/opens; parentheses are balanced; typeclass binders are present for general types.
+- Every English hypothesis appears as a binder, and the conclusion is exactly the English claim.
+Iteration 1: Accepted candidate (subsample score 2.0 -> 3.0); running full eval.
+Iteration 1: Valset score for new program: 0.5428571428571428 (coverage 70 / 70)
+Iteration 1: Val aggregate for new program: 0.5428571428571428
+Iteration 1: Individual valset scores for new program: {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 1.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 1.0, 22: 1.0, 23: 1.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 1.0, 36: 1.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 1.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 0.0, 52: 0.0, 53: 1.0, 54: 1.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 1.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 1.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 1: New valset pareto front scores: {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 1.0, 12: 1.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 1.0, 22: 1.0, 23: 1.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 1.0, 36: 1.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 1.0, 42: 1.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 1.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 1.0, 52: 1.0, 53: 1.0, 54: 1.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 1.0, 60: 1.0, 61: 1.0, 62: 1.0, 63: 1.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 1: Valset pareto front aggregate score: 0.6571428571428571
+Iteration 1: Updated valset pareto front programs: {0: {0, 1}, 1: {0, 1}, 2: {0, 1}, 3: {0, 1}, 4: {0, 1}, 5: {0, 1}, 6: {0, 1}, 7: {0, 1}, 8: {0, 1}, 9: {0, 1}, 10: {0, 1}, 11: {0}, 12: {0, 1}, 13: {0, 1}, 14: {0, 1}, 15: {0, 1}, 16: {0, 1}, 17: {0, 1}, 18: {0, 1}, 19: {0, 1}, 20: {0, 1}, 21: {0, 1}, 22: {0, 1}, 23: {0, 1}, 24: {0, 1}, 25: {0}, 26: {0, 1}, 27: {0, 1}, 28: {0, 1}, 29: {0, 1}, 30: {0, 1}, 31: {0, 1}, 32: {0, 1}, 33: {0, 1}, 34: {0, 1}, 35: {0, 1}, 36: {0, 1}, 37: {0, 1}, 38: {0, 1}, 39: {0, 1}, 40: {0, 1}, 41: {0}, 42: {0}, 43: {0, 1}, 44: {0, 1}, 45: {0, 1}, 46: {0, 1}, 47: {1}, 48: {0, 1}, 49: {0, 1}, 50: {1}, 51: {0}, 52: {0}, 53: {1}, 54: {0, 1}, 55: {0, 1}, 56: {0, 1}, 57: {0, 1}, 58: {0, 1}, 59: {0, 1}, 60: {0}, 61: {0, 1}, 62: {0}, 63: {0, 1}, 64: {1}, 65: {0, 1}, 66: {0, 1}, 67: {0, 1}, 68: {0, 1}, 69: {0, 1}}
+Iteration 1: Best valset aggregate score so far: 0.6
+Iteration 1: Best program as per aggregate score on valset: 0
+Iteration 1: Best score on valset: 0.6
+Iteration 1: Linear pareto front program index: 0
+Iteration 1: New program candidate index: 1
+Iteration 2: Selected program 1 score: 0.5428571428571428
+Iteration 2: Proposed new text for instructions: You are given a mathematical problem stated in natural language (with LaTeX), together with a fixed Lean 4 context consisting of imports, opens, and possibly definitions. Your task: think step by step to translate the problem into EXACTLY ONE Lean 4 theorem statement that faithfully formalizes the claim, and verify that the statement compiles in the given context and is consistent with the English text.
+
+## Input format
+- A math problem in English/LaTeX.
+- A Lean 4 context block, e.g.:
+  ```lean4
+  import Mathlib
+  open ...
+  open scoped ...
+  ```
+  Use EXACTLY these imports/opens/definitions. Do not add or remove any; only use identifiers they bring into scope.
+
+## Output format
+1. Brief step-by-step reasoning: identify the mathematical objects, the hypotheses, the conclusion, and the Mathlib notions that encode them.
+2. A single ```lean4 code block containing exactly one theorem, ending with `:= by sorry`. Do NOT attempt a proof, and do NOT add helper definitions or extra theorems.
+
+## General strategy
+- Read the English problem phrase by phrase and map EACH phrase to exactly one binder or to the conclusion. Then re-read the problem and check the correspondence is one-to-one: nothing missing, nothing added.
+- Prefer high-level Mathlib predicates/typeclasses over hand-rolled definitions (e.g. `MetrizableSpace X`, `IsSimpleGroup G`, `Nat.Prime p`). Hand-rolled blobs (e.g. `∃ d : X → X → ℝ, <metric axioms>`) are error-prone: `d x y = 0 ↔ x = y ∧ ∀ ...` parses as `d x y = 0 ↔ (x = y ∧ ∀ ...)` because `∧` binds tighter than `↔`. If you must write one, parenthesize every conjunct.
+
+## Hard requirement: the statement MUST COMPILE
+A non-compiling statement scores 0 — the judge is not even run. Known pitfalls:
+- BIG OPERATORS: use the unicode `∈`, NEVER the ASCII keyword `in`. `∑ k in Finset.Icc 1 (p - 1), f k` FAILS with "unexpected token 'in'; expected ','". Write `∑ k ∈ Finset.Icc 1 (p - 1), f k`. Same for `∏`, `⋃`, `⋂`. (`∑`/`∏` require `open scoped BigOperators` in the given context.)
+- COERCIONS: never equate terms of different types without casts. If `a b : ℤ` and the other side is a rational number, write `(a : ℚ) / (b : ℚ)` — plain `a / b` is integer division in `ℤ` and will not unify with a `ℚ` term. Similarly, "p divides a" with `p : ℕ` and `a : ℤ` is `(p : ℤ) ∣ a`.
+- NEVER use `let x := ...` inside a theorem statement. A `let` followed by `:= by sorry` fails to parse ("expected '{' or indented tactic sequence"). Inline the definition as a lambda. E.g. for "Put g(x) = f(x+1) − f(x). Prove g(x) → 0", write
+  `Filter.Tendsto (fun x => f (x + 1) - f x) Filter.atTop (nhds 0)`
+  directly in the conclusion rather than introducing `g` via `let`.
+- Check balanced parentheses and correct binder syntax: `(x : ℝ)`, `{X Y : Type*}`, `[TopologicalSpace X]`, `(hf : DifferentiableOn ℝ f (Set.Ioi 0))`.
+- Prefer `nhds` for neighborhoods; only use the `𝓝` notation if `open scoped Topology` is in the context.
+- Only reference names available from the given imports/opens (e.g. `Filter.Tendsto`, `Filter.atTop`, `nhds`, `deriv`, `DifferentiableOn`, `Set.Ioi`, `Set.image`, `IsOpen`, `IsClosed`, `Complex.im`, `Nat.Prime`, `Odd`, `Fintype.card`, `Finset.Icc`, `IsSimpleGroup`, `MetrizableSpace`, `CompactSpace`, `T2Space`).
+
+## Hard requirement: the statement MUST BE FAITHFUL
+A judge checks semantic equivalence with the English problem:
+- Include EVERY hypothesis as a binder, at the right strength (e.g. differentiability on a domain, openness of a set, a limit assumption, constant-ness of a quantity).
+- Do NOT add hypotheses the problem does not state. Example: for "1 + 1/2 + ⋯ + 1/(p−1) = a/b, where a, b are integers", introduce ONLY `(a b : ℤ)` and the equation hypothesis. Do NOT add `Int.gcd a b = 1` or any coprimality / lowest-terms assumption — it is not given, and adding it makes the statement unfaithful.
+- The conclusion must match the claim exactly — neither stronger nor weaker.
+- Introduce all needed type variables and typeclass instances (e.g. `{X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]`, `(G : Type*) [Group G] [Fintype G]`).
+- If the problem asks to prove multiple claims, conjoin them with `∧` in the single theorem.
+- Give the theorem a descriptive name.
+
+## Standard translations (Mathlib) — reuse these patterns
+- "f is differentiable for every x > 0" → `(hf : DifferentiableOn ℝ f (Set.Ioi 0))` (or `∀ x > 0, DifferentiableAt ℝ f x`).
+- "f'(x) → L as x → +∞" → `Filter.Tendsto (deriv f) Filter.atTop (nhds L)`.
+- "g(x) → 0 as x → +∞" with g(x) = f(x+1) − f(x) → `Filter.Tendsto (fun x => f (x + 1) - f x) Filter.atTop (nhds 0)`.
+- "π is an open map" → `IsOpenMap π` (or `∀ U : Set _, IsOpen U → IsOpen (Set.image π U)`); the projections π₁, π₂ on X × Y are `Prod.fst` / `Prod.snd`.
+- "f is holomorphic on an open set Ω" → `(Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω)`.
+- "Im(f) is constant on Ω" → `∃ c : ℝ, ∀ z ∈ Ω, Complex.im (f z) = c`.
+- "f is constant on Ω" → `∃ k : ℂ, ∀ z ∈ Ω, f z = k`.
+- "Let p be an odd prime" → `(p : ℕ) (hp_prime : Nat.Prime p) (hp_odd : Odd p)`.
+- "1 + 1/2 + ⋯ + 1/(p−1) = a/b" (harmonic sum, `a b : ℤ`) → `(h_sum : (∑ k ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / k) = (a : ℚ) / (b : ℚ))`.
+- "p ∣ a" with `p : ℕ`, `a : ℤ` → `(p : ℤ) ∣ a`.
+- "G is a finite group of order n" → `(G : Type*) [Group G] [Fintype G] (h : Fintype.card G = n)`.
+- "G is not simple" → `¬ IsSimpleGroup G`.
+- "X is a compact Hausdorff space" → `(X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]`.
+- "X is the union of the closed subspaces X₁ and X₂" → `(X₁ X₂ : Set X) (hX₁ : IsClosed X₁) (hX₂ : IsClosed X₂) (hU : X₁ ∪ X₂ = Set.univ)`.
+- "X is metrizable" → `MetrizableSpace X`; for a subspace `S : Set X`, `MetrizableSpace S` (the subtype coercion and its subtype topology are inferred automatically).
+
+## Worked examples (these compiled and were judged faithful — imitate their shape)
+```lean4
+theorem group_order_1365_not_simple (G : Type*) [Group G] [Fintype G]
+    (h : Fintype.card G = 1365) : ¬ IsSimpleGroup G := by sorry
+```
+```lean4
+theorem metrizable_union_of_closed_subspaces (X : Type*) [TopologicalSpace X]
+    [CompactSpace X] [T2Space X] (X₁ X₂ : Set X) (hX₁ : IsClosed X₁) (hX₂ : IsClosed X₂)
+    (hX₁m : MetrizableSpace X₁) (hX₂m : MetrizableSpace X₂) (hU : X₁ ∪ X₂ = Set.univ) :
+    MetrizableSpace X := by sorry
+```
+Corrected Wolstenholme-style statement (note: `∈` not `in`, explicit `ℚ` casts, and NO coprimality hypothesis):
+```lean4
+theorem wolstenholme_theorem (p : ℕ) (hp_prime : Nat.Prime p) (hp_odd : Odd p)
+    (a b : ℤ) (h_sum : (∑ k ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / k) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+
+## Final verification checklist (do this mentally before answering)
+- The theorem starts with `theorem <name> <binders> :` and ends with `:= by sorry`.
+- No `let` in the statement; all auxiliary functions are inlined `fun` lambdas.
+- Big operators use `∈`, never `in`; `∑`/`∏` only if `open scoped BigOperators` is in the context.
+- All cross-type equations/divisibility use explicit casts (`(a : ℚ)`, `(b : ℚ)`, `(p : ℤ)`, …).
+- Every identifier is in scope under the given imports/opens; parentheses are balanced; typeclass binders are present for general types.
+- Every English hypothesis appears as a binder, NO extra hypotheses are added, and the conclusion is exactly the English claim.
+Iteration 2: New subsample score 2.0 is not better than old score 2.0, skipping
+Iteration 3: Selected program 0 score: 0.6
+Iteration 3: Proposed new text for instructions: Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency.
+
+## Task description
+You will receive:
+1. A mathematical problem stated in natural language (with LaTeX).
+2. A Lean 4 context consisting of imports, opens, and possibly definitions.
+
+You must output exactly ONE Lean 4 theorem that (a) compiles under the given context, and (b) faithfully formalizes the given problem. End the theorem with `:= by sorry` — no proof is required. Output only the theorem, no extra commentary.
+
+## Compilation requirements (learned from past failures)
+- **Never use reserved tokens as identifiers.** `λ` is the lambda token in Lean 4 and cannot be a bound variable — `∀ λ : F, ...` fails to parse. Rename such variables, e.g. `∀ l : F, ...` or `μ`. Avoid all other keywords/reserved symbols as names.
+- **Do not redefine or shadow the context's definitions.** If the context defines `Rl`, `K_topology`, `K`, etc., reference them directly in the theorem. Do not restate them with `let`-bindings inside the theorem statement — chained `let`s in a theorem signature are fragile, often fail to parse ("expected '{' or indented tactic sequence"), and can leave unsolved goals.
+- **Check that every identifier is in scope** given the exact imports/opens of the context, and respect opened namespaces (e.g. with `open LinearMap`, `ker` resolves; otherwise write `LinearMap.ker`).
+- **Check that types line up.** Example: `Rl` and `K_topology` are terms of `TopologicalSpace ℝ`, so "not comparable" is `¬ (Rl ≤ K_topology) ∧ ¬ (K_topology ≤ Rl)` using the order on topological spaces.
+- **Mentally compile before answering:** balanced delimiters, well-formed binders (`∀ x : T, ...`, `∃ x, ...`), correct hypothesis arguments, and the target is a `Prop`.
+
+## Faithfulness requirements (learned from past failures)
+- **Formalize the FULL strength of the statement; never weaken the conclusion.** Example: "there exists a point p at which E condenses" means every neighborhood of p contains uncountably many points of E, i.e. `∃ p : ℝ, ∀ U ∈ 𝓝 p, ¬ Countable (U ∩ E)` (equivalently `Set.Uncountable (U ∩ E)`). A statement like `∃ p, p ∈ closure E ∧ p ∉ E` is strictly weaker and is judged unfaithful.
+- **Keep all quantifiers and hypotheses.** "for every λ ∈ F" becomes `∀ l : F, ...`; "ST = TS" becomes `S ∘ₗ T = T ∘ₗ S` (or `Function.Commute S T`).
+- **Neither stronger nor weaker:** the Lean statement should be logically equivalent to the natural-language one.
+
+## Useful Mathlib idioms for this task
+- Null space / eigenspace: `LinearMap.ker (T - l • LinearMap.id)` for `null (T - λI)`.
+- Invariance of a subspace under `S`: `∀ v : V, v ∈ LinearMap.ker (...) → S v ∈ LinearMap.ker (...)`.
+- Composition of linear maps: `S ∘ₗ T`; scalar multiple of the identity: `l • LinearMap.id`.
+- Neighborhood filter: `𝓝 p`; uncountability: `Set.Uncountable s` or `¬ Countable s`.
+- Topology generated by a basis: `generateFrom ...`; comparison of topologies: `≤` on `TopologicalSpace X`.
+
+## Strategy
+1. Parse the problem: identify objects, hypotheses, quantifiers, and the conclusion.
+2. Map each mathematical concept to the corresponding Mathlib definition available in the given context (use the context's own definitions where provided).
+3. State the theorem with all hypotheses as arguments and the full conclusion as the target.
+4. Verify consistency: mentally type-check the statement (syntax, binder names, scope, types) and then mentally judge faithfulness (equivalent strength to the original problem) before finalizing.
+Iteration 3: Accepted candidate (subsample score 0.0 -> 1.0); running full eval.
+Iteration 3: Found a better program on the valset with score 0.6142857142857143.
+Iteration 3: Valset score for new program: 0.6142857142857143 (coverage 70 / 70)
+Iteration 3: Val aggregate for new program: 0.6142857142857143
+Iteration 3: Individual valset scores for new program: {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0, 4: 1.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 1.0, 12: 1.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 0.0, 22: 1.0, 23: 1.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 1.0, 36: 1.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 1.0, 42: 1.0, 43: 0.0, 44: 1.0, 45: 1.0, 46: 0.0, 47: 1.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 1.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 1.0, 60: 1.0, 61: 1.0, 62: 1.0, 63: 0.0, 64: 0.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 3: New valset pareto front scores: {0: 1.0, 1: 1.0, 2: 1.0, 3: 0.0, 4: 1.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 1.0, 12: 1.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 0.0, 18: 1.0, 19: 1.0, 20: 1.0, 21: 1.0, 22: 1.0, 23: 1.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 1.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 1.0, 36: 1.0, 37: 1.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 1.0, 42: 1.0, 43: 0.0, 44: 1.0, 45: 1.0, 46: 0.0, 47: 1.0, 48: 1.0, 49: 0.0, 50: 1.0, 51: 1.0, 52: 1.0, 53: 1.0, 54: 1.0, 55: 0.0, 56: 0.0, 57: 1.0, 58: 0.0, 59: 1.0, 60: 1.0, 61: 1.0, 62: 1.0, 63: 1.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 1.0, 68: 1.0, 69: 0.0}
+Iteration 3: Valset pareto front aggregate score: 0.7
+Iteration 3: Updated valset pareto front programs: {0: {0, 1, 2}, 1: {0, 1, 2}, 2: {0, 1, 2}, 3: {0, 1, 2}, 4: {2}, 5: {0, 1, 2}, 6: {0, 1, 2}, 7: {0, 1, 2}, 8: {0, 1, 2}, 9: {0, 1, 2}, 10: {0, 1, 2}, 11: {0, 2}, 12: {0, 1, 2}, 13: {0, 1, 2}, 14: {0, 1, 2}, 15: {0, 1, 2}, 16: {0, 1, 2}, 17: {0, 1, 2}, 18: {0, 1, 2}, 19: {0, 1, 2}, 20: {0, 1, 2}, 21: {0, 1}, 22: {0, 1, 2}, 23: {0, 1, 2}, 24: {0, 1, 2}, 25: {0, 2}, 26: {0, 1, 2}, 27: {0, 1, 2}, 28: {0, 1, 2}, 29: {0, 1, 2}, 30: {2}, 31: {0, 1, 2}, 32: {0, 1, 2}, 33: {0, 1, 2}, 34: {0, 1, 2}, 35: {0, 1, 2}, 36: {0, 1, 2}, 37: {0, 1, 2}, 38: {0, 1, 2}, 39: {0, 1, 2}, 40: {0, 1, 2}, 41: {0, 2}, 42: {0, 2}, 43: {0, 1, 2}, 44: {2}, 45: {0, 1, 2}, 46: {0, 1, 2}, 47: {1, 2}, 48: {0, 1, 2}, 49: {0, 1, 2}, 50: {1, 2}, 51: {0}, 52: {0}, 53: {1}, 54: {0, 1, 2}, 55: {0, 1, 2}, 56: {0, 1, 2}, 57: {0, 1, 2}, 58: {0, 1, 2}, 59: {0, 1, 2}, 60: {0, 2}, 61: {0, 1, 2}, 62: {0, 2}, 63: {0, 1}, 64: {1}, 65: {0, 1, 2}, 66: {0, 1, 2}, 67: {0, 1, 2}, 68: {0, 1, 2}, 69: {0, 1, 2}}
+Iteration 3: Best valset aggregate score so far: 0.6142857142857143
+Iteration 3: Best program as per aggregate score on valset: 2
+Iteration 3: Best score on valset: 0.6142857142857143
+Iteration 3: Linear pareto front program index: 2
+Iteration 3: New program candidate index: 2
+Iteration 4: Selected program 0 score: 0.6

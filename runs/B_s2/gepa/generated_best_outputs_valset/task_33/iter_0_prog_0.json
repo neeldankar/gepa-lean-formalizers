@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_160",
+        "sample": 0,
+        "output": "```lean4\ntheorem limit_sum_g_tends_to_infty : Filter.Tendsto (fun n : \u2115 => \u2211 i in Finset.range n, g i) atTop (nhds (\u22a4 : Filter \u211d)) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem limit_sum_g_tends_to_infty : Filter.Tendsto (fun n : \u2115 => \u2211 i in Finset.range n, g i) atTop (nhds (\u22a4 : Filter \u211d)) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:9:52-9:55: error: unexpected token 'in'; expected ','\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

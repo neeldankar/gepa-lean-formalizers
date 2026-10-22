@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_169",
+        "sample": 0,
+        "output": "```lean4\ntheorem uniformly_continuous_composition {f g : \u211d \u2192 \u211d} (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (g \u2218 f) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem uniformly_continuous_composition {f g : \u211d \u2192 \u211d} (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (g \u2218 f) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean theorem restricts the functions to \u211d \u2192 \u211d, while the English statement is a general claim about any uniformly continuous functions; the added type restriction makes the formalization not exactly the same."
+        },
+        "score": 0
+    }
+]

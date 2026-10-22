@@ -1,0 +1,168 @@
+Iteration 0: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
+Iteration 1: Selected program 0 score: 0.05714285714285714
+Iteration 1: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The statement MUST compile under the given context. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.
+
+## Input format
+You will receive:
+1. A math problem stated in LaTeX.
+2. A "Lean 4 context" code block containing the `import`, `open`, and `open scoped` lines to assume. Do NOT repeat these lines; write exactly one theorem.
+
+## Output format
+- Exactly one theorem inside a single ```lean4 code block, ending with `:= by sorry`.
+
+## Correctness requirements
+1. **Faithfulness.** Include EVERY hypothesis from the problem (e.g., if the problem says "f is holomorphic in Ω", you must include a hypothesis like `hf : DifferentiableOn ℂ f Ω`). Formalize the conclusion precisely. Note: "P is constant" means `∃ c, ∀ z ∈ s, P z = c` — it does NOT mean `P z = 0`.
+2. **It must compile.** Use only identifiers that actually exist in Mathlib under the given opens. Never invent names or notation. If you are unsure whether a named predicate exists, express the concept with basic logic (`∀`, `∃`, `=`) and well-established Mathlib functions instead.
+
+## Lean 4 / Mathlib facts (respect these)
+- **Lambdas:** write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` — a comma after the binder is a syntax error ("unexpected token ','; expected '↦', '=>'").
+- **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]`. Writing `(X Y : TopologicalSpace)` fails with "type expected, got (TopologicalSpace : Type _ → Type _)".
+- **Derivative:** the derivative of `f : ℝ → ℝ` as a function is `deriv f`. There is no `f'` notation in Mathlib. "f'(x) → L as x → +∞" is `Tendsto (deriv f) atTop (nhds L)`.
+- **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. "f is holomorphic on an open set Ω" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).
+- **Limits:** "g(x) → L as x → +∞" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).
+- **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.
+- **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `∃ c, ∀ z ∈ s, f z = c` (or `Set.EqOn f (fun _ => c) s`).
+- **Open maps:** "f is an open map" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`.
+- **Quantifiers:** `∀ x ∈ s, P x` and `∀ x > 0, P x` are valid.
+
+## Worked examples (corrected)
+Problem: "Suppose f is differentiable for every x>0 and f'(x) → 0 as x → +∞. Put g(x)=f(x+1)-f(x). Prove g(x) → 0 as x → +∞." (opens include Topology Filter Real)
+```lean4
+theorem g_converges_to_zero (f : ℝ → ℝ) (hf : ∀ x > 0, DifferentiableAt ℝ f x)
+    (hlim : Tendsto (deriv f) atTop (nhds 0)) :
+    Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry
+```
+
+Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps." (opens include Filter Set TopologicalSpace)
+```lean4
+theorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
+    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+```
+
+Problem: "Suppose f is holomorphic in an open set Ω. Prove that if Im(f) is constant, then f is constant." (opens include Complex Filter)
+```lean4
+theorem constant_of_constant_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω)
+    (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :
+    ∃ c : ℂ, ∀ z ∈ Ω, f z = c := by sorry
+```
+
+## Final checklist before answering
+(a) Every identifier is either a bound variable or a real Mathlib name available under the given opens.
+(b) Syntax is valid Lean 4: `fun ... => ...` binders, typeclasses in `[...]`, no invented notation.
+(c) All hypotheses of the problem appear and the conclusion matches the problem.
+(d) The statement ends with `:= by sorry` inside one ```lean4 code block.
+`
+Iteration 1: Accepted candidate (subsample score 0.0 -> 3.0); running full eval.
+Iteration 1: Found a better program on the valset with score 0.11428571428571428.
+Iteration 1: Valset score for new program: 0.11428571428571428 (coverage 70 / 70)
+Iteration 1: Val aggregate for new program: 0.11428571428571428
+Iteration 1: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 1: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 1: Valset pareto front aggregate score: 0.12857142857142856
+Iteration 1: Updated valset pareto front programs: {0: {0, 1}, 1: {0, 1}, 2: {0, 1}, 3: {0, 1}, 4: {0, 1}, 5: {0, 1}, 6: {0, 1}, 7: {0, 1}, 8: {0, 1}, 9: {0, 1}, 10: {0, 1}, 11: {0, 1}, 12: {0, 1}, 13: {0, 1}, 14: {1}, 15: {0, 1}, 16: {0, 1}, 17: {0, 1}, 18: {0, 1}, 19: {0, 1}, 20: {0, 1}, 21: {0, 1}, 22: {1}, 23: {0, 1}, 24: {0, 1}, 25: {0, 1}, 26: {0, 1}, 27: {0, 1}, 28: {0, 1}, 29: {0, 1}, 30: {0}, 31: {0, 1}, 32: {0, 1}, 33: {0, 1}, 34: {0, 1}, 35: {0, 1}, 36: {0, 1}, 37: {0, 1}, 38: {0, 1}, 39: {0, 1}, 40: {0, 1}, 41: {0, 1}, 42: {0, 1}, 43: {0, 1}, 44: {0, 1}, 45: {0, 1}, 46: {0, 1}, 47: {0, 1}, 48: {0, 1}, 49: {0, 1}, 50: {0, 1}, 51: {0, 1}, 52: {0, 1}, 53: {0, 1}, 54: {0, 1}, 55: {0, 1}, 56: {0, 1}, 57: {0, 1}, 58: {0, 1}, 59: {0, 1}, 60: {0, 1}, 61: {1}, 62: {0, 1}, 63: {0, 1}, 64: {1}, 65: {1}, 66: {0, 1}, 67: {0, 1}, 68: {0, 1}, 69: {0, 1}}
+Iteration 1: Best valset aggregate score so far: 0.11428571428571428
+Iteration 1: Best program as per aggregate score on valset: 1
+Iteration 1: Best score on valset: 0.11428571428571428
+Iteration 1: Linear pareto front program index: 1
+Iteration 1: New program candidate index: 1
+Iteration 2: Selected program 1 score: 0.11428571428571428
+Iteration 2: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The statement MUST compile under the given context. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.
+
+## Input format
+You will receive:
+1. A math problem stated in LaTeX.
+2. A "Lean 4 context" code block containing the `import`, `open`, and `open scoped` lines to assume. Do NOT repeat these lines; write exactly one theorem.
+
+## Output format
+- Exactly one theorem inside a single ```lean4 code block, ending with `:= by sorry`.
+
+## Correctness requirements
+1. **Faithfulness.** Include EVERY hypothesis from the problem (e.g., if the problem says "f is holomorphic in Ω", you must include a hypothesis like `hf : DifferentiableOn ℂ f Ω`). Formalize the conclusion precisely. Note: "P is constant" means `∃ c, ∀ z ∈ s, P z = c` — it does NOT mean `P z = 0`.
+2. **It must compile.** Use only identifiers that actually exist in Mathlib under the given opens. Never invent names or notation. The context is compiled with `autoImplicit` set to `false`: an unknown identifier (e.g. `IsSimple`, `HausdorffSpace`, `set.univ`) is a hard error, NOT an implicitly bound variable. If you are unsure whether a named predicate exists, express the concept with basic logic (`∀`, `∃`, `=`) and well-established Mathlib functions instead.
+3. **No fabrication.** Do NOT add hypotheses that are not in the problem (e.g. do not invent things like `∀ i, i < p → i ≠ 0 → i ∣ a`). Do not drop, weaken, or strengthen any hypothesis or the conclusion.
+4. **Given parameters are arguments.** If the problem says "let ... = a/b where a, b are integers", bind `a b : ℤ` as theorem arguments and the equation as a hypothesis; do NOT wrap them in an existential in the conclusion.
+
+## Lean 4 / Mathlib facts (respect these)
+- **Lambdas:** write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` — a comma after the binder is a syntax error.
+- **Typeclasses vs Propositions:** `TopologicalSpace`, `CompactSpace`, `T2Space`, `MetrizableSpace`, `MetricSpace`, `Group`, `Fintype`, `NormedField` are typeclasses: declare them in `[...]`, e.g. `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]`. Writing `(X Y : TopologicalSpace)` fails. By contrast, `IsOpen s`, `IsClosed s`, `Nat.Prime p`, `Odd n` are Propositions, NOT typeclasses: they must be hypotheses `(h : IsClosed s)`. Writing `[IsClosed s]` fails because `IsClosed` is not a class.
+- **Derivative:** the derivative of `f : ℝ → ℝ` as a function is `deriv f`. There is no `f'` notation. "f'(x) → L as x → +∞" is `Tendsto (deriv f) atTop (nhds L)`.
+- **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. "f is holomorphic on an open set Ω" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).
+- **Limits:** "g(x) → L as x → +∞" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology`).
+- **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.
+- **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `∃ c, ∀ z ∈ s, f z = c` (or `Set.EqOn f (fun _ => c) s`).
+- **Open maps:** "f is an open map" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`.
+- **Quantifiers:** `∀ x ∈ s, P x` and `∀ x > 0, P x` are valid.
+
+### Big operators (`∑`, `∏`)
+- The syntax is `∑ i in s, f i` (or `∑ i ∈ s, f i`): a COMMA separates the binder from the body. NEVER write `∑ i in s do f i` — `do` is a syntax error here ("unexpected token ... expected ','").
+- `Finset.range n` is `{0, ..., n-1}`. For a sum from 1 to n-1 (e.g. a harmonic sum) use `Finset.Icc 1 (n - 1)` — do NOT write `1 + ∑ ...` over a filtered range.
+- To filter a finset, parenthesize: `∑ i in (Finset.range n).filter (fun i => i ≠ 0), f i`.
+
+### Numbers, fractions, divisibility
+- Sums of fractions like `1 + 1/2 + ... + 1/(p-1)` live in `ℚ`, e.g. `∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / i`. With `i : ℕ`, `1 / i` would be natural-number division (so `1/2 = 0`) — always force `ℚ`.
+- `a / b` with `a b : ℤ` is INTEGER division. A fraction `a/b` equal to a rational number must be stated in `ℚ` with casts: `(a : ℚ) / b`, plus a hypothesis `(hb : b ≠ 0)`.
+- Divisibility `∣` needs both sides in the SAME type: with `p : ℕ` and `a : ℤ` write `(p : ℤ) ∣ a`.
+- Primality: `Nat.Prime p`. "p is an odd prime": add `(hodd : p ≠ 2)` or `(hodd : Odd p)`.
+
+### Group theory
+- "G is a simple group" is `IsSimpleGroup G` — there is NO `IsSimple`. "G is not simple" is `¬ IsSimpleGroup G`.
+- The order of a finite group is `Fintype.card G`; the theorem needs `[Group G] [Fintype G]`. Use specific numbers literally, e.g. `(hG : Fintype.card G = 1365)`.
+
+### Topology
+- "Hausdorff" is `T2Space` — there is NO `HausdorffSpace`.
+- "X is compact" is the typeclass `[CompactSpace X]`.
+- "X is metrizable" is `MetrizableSpace X` (a Prop). Do NOT conclude `MetricSpace X` — a `MetricSpace` is a chosen metric (data), not the proposition "metrizable".
+- The whole space is `Set.univ`, or `univ` after `open Set` — NEVER `set.univ` (lowercase `set` does not exist).
+- A subset `s : Set X` coerces to a type automatically, so `MetrizableSpace s` typechecks and the subtype's `TopologicalSpace` instance is found automatically — do NOT declare `[TopologicalSpace s]` yourself.
+
+## Worked examples (corrected)
+Problem: "Suppose f is differentiable for every x>0 and f'(x) → 0 as x → +∞. Put g(x)=f(x+1)-f(x). Prove g(x) → 0 as x → +∞." (opens include Topology Filter Real)
+```lean4
+theorem g_converges_to_zero (f : ℝ → ℝ) (hf : ∀ x > 0, DifferentiableAt ℝ f x)
+    (hlim : Tendsto (deriv f) atTop (nhds 0)) :
+    Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry
+```
+
+Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps." (opens include Filter Set TopologicalSpace)
+```lean4
+theorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
+    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+```
+
+Problem: "Suppose f is holomorphic in an open set Ω. Prove that if Im(f) is constant, then f is constant." (opens include Complex Filter)
+```lean4
+theorem constant_of_constant_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω)
+    (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :
+    ∃ c : ℂ, ∀ z ∈ Ω, f z = c := by sorry
+```
+
+Problem: "Let p be an odd prime and let 1 + 1/2 + ... + 1/(p-1) = a/b, where a, b are integers. Show that p ∣ a." (opens include Fintype Set Real Ideal Polynomial, open scoped BigOperators)
+```lean4
+theorem prime_dvd_harmonic_numerator (p : ℕ) (hp : Nat.Prime p) (hodd : p ≠ 2)
+    (a b : ℤ) (hb : b ≠ 0)
+    (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / i) = (a : ℚ) / b) :
+    (p : ℤ) ∣ a := by sorry
+```
+
+Problem: "Prove that if |G| = 1365 then G is not simple." (opens include Fintype Subgroup Set Polynomial Ideal, open scoped BigOperators)
+```lean4
+theorem not_simple_of_card_eq_1365 (G : Type*) [Group G] [Fintype G]
+    (hG : Fintype.card G = 1365) :
+    ¬ IsSimpleGroup G := by sorry
+```
+
+Problem: "Let X be a compact Hausdorff space that is the union of the closed subspaces X₁ and X₂. If X₁ and X₂ are metrizable, show that X is metrizable." (opens include Filter Set TopologicalSpace, open scoped Topology)
+```lean4
+theorem metrizable_of_union_closed_metrizable (X : Type*) [TopologicalSpace X] [CompactSpace X]
+    [T2Space X] (X1 X2 : Set X) (hX1 : IsClosed X1) (hX2 : IsClosed X2)
+    (hUnion : X1 ∪ X2 = univ) (hM1 : MetrizableSpace X1) (hM2 : MetrizableSpace X2) :
+    MetrizableSpace X := by sorry
+```
+
+## Final checklist before answering
+(a) Every identifier is either a bound variable or a real Mathlib name available under the given opens. In particular: `T2Space` (not `HausdorffSpace`), `IsSimpleGroup` (not `IsSimple`), `MetrizableSpace` (not `MetricSpace` as a goal), `univ`/`Set.univ` (not `set.univ`), `deriv f` (not `f'`).
+(b) Syntax is valid Lean 4: `fun ... => ...` binders; typeclasses in `[...]`; Prop-valued conditions (`IsClosed`, `IsOpen`, `Nat.Prime`, ...) as `(h : ...)` hypotheses; big operators use a comma (`∑ i in s, ...`), never `do`.
+(c) Casts are correct: rational sums and fractions in `ℚ`; divisibility stated in one type, e.g. `(p : ℤ) ∣ a`.
+(d) All hypotheses of the problem appear (no more, no fewer — never fabricate extra ones) and the conclusion matches the problem exactly.
+(e) The statement ends with `:= by sorry` inside one ```lean4 code block.
+`

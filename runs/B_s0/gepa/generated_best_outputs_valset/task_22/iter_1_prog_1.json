@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_112",
+        "sample": 0,
+        "output": "```lean4\ntheorem open_minus_closed_is_open_and_closed_minus_open_is_closed (X : Type) [TopologicalSpace X] (U : Set X) (A : Set X) (hU : IsOpen U) (hA : IsClosed A) :\n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem open_minus_closed_is_open_and_closed_minus_open_is_closed (X : Type) [TopologicalSpace X] (U : Set X) (A : Set X) (hU : IsOpen U) (hA : IsClosed A) :\n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem has the same types, hypotheses (U open, A closed) and concludes exactly that U\\A is open and A\\U is closed, matching the English statement."
+        },
+        "score": 1
+    }
+]

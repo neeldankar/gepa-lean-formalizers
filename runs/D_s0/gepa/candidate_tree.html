@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEPA Candidate Tree</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8f9fa; display: flex; flex-direction: column; }
+  #header { background: #fff; border-bottom: 1px solid #dee2e6; padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  #header h1 { font-size: 18px; font-weight: 600; color: #212529; }
+  .legend { display: flex; gap: 14px; font-size: 13px; color: #495057; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #adb5bd; }
+  #graph-container { flex: 1 1 auto; width: 100%; overflow: auto; padding: 20px; text-align: center; }
+  #graph-container svg { width: 100%; height: 100%; }
+  #tooltip {
+    display: none; position: fixed; background: #fff; border: 1px solid #dee2e6;
+    border-radius: 8px; padding: 14px 16px; max-width: 560px; max-height: 70vh; overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18); z-index: 1000; font-size: 13px; line-height: 1.5;
+  }
+  #tooltip .tt-header { font-weight: 700; font-size: 15px; margin-bottom: 6px; color: #212529; }
+  #tooltip .tt-meta { color: #6c757d; margin-bottom: 4px; }
+  #tooltip .tt-hint { color: #adb5bd; font-size: 11px; font-style: italic; margin-bottom: 10px; }
+  #tooltip .tt-comp-name { font-weight: 600; color: #495057; margin-top: 10px; border-bottom: 1px solid #e9ecef; padding-bottom: 2px; }
+  #tooltip .tt-comp-text {
+    white-space: pre-wrap; word-break: break-word; background: #f8f9fa;
+    border: 1px solid #e9ecef; border-radius: 4px; padding: 8px 10px; margin-top: 4px;
+    font-family: "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px;
+    max-height: 200px; overflow-y: auto;
+  }
+  .role-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 6px; }
+  .role-best { background: #00e5ff33; color: #006064; }
+  .role-pareto { background: #ff980033; color: #e65100; }
+  .role-seed { background: #e0e0e0; color: #424242; }
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>GEPA Candidate Tree</h1>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:cyan"></div> Best</div>
+    <div class="legend-item"><div class="legend-dot" style="background:orange"></div> Pareto Front</div>
+    <div class="legend-item"><div class="legend-dot" style="background:lightgray"></div> Other</div>
+  </div>
+</div>
+<div id="graph-container"><p>Loading graph&hellip;</p></div>
+<div id="tooltip"></div>
+
+<script type="module">
+const NODES = [{"idx": 0, "score": 0.5857, "parents": "seed", "role": "Pareto Front", "components": {"instructions": "Think step by step to translate the mathematical problem in natural language to Lean 4, and verify the consistency."}},
+{"idx": 1, "score": 0.6143, "parents": "0", "role": "Best", "components": {"instructions": "You are given a mathematical problem stated in natural language, together with a fixed Lean 4 context (imports, opens, and definitions). Translate the problem into exactly ONE Lean 4 theorem statement that faithfully formalizes the claim. Think step by step, then verify consistency before answering.\n\n## Output format\n- Output a single theorem of the form:\n    theorem <descriptive_name> <hypotheses...> : <conclusion> := by sorry\n- Use exactly the imports/opens/definitions given in the context; add nothing else.\n- Only the statement is graded: always end with `:= by sorry`. Do not attempt a proof, do not add helper lemmas or definitions.\n\n## Hard gate: the statement MUST compile\nA statement that fails to compile scores 0 regardless of how faithful it is, and the faithfulness judge never runs. Before finalizing, mentally type-check every subterm. Known pitfalls:\n- Subtype coercions are NOT transitive/automatic. If `A : Set X` and `a : A` (type `\u21a5A`), then `(a : closure A)` FAILS with a type mismatch (\"has type \u2191A but is expected to have type \u2191(closure A)\"). Instead write the agreement condition explicitly, e.g.:\n    \u2200 a : A, g \u27e8a.1, subset_closure a.2\u27e9 = f a\n  or quantify over the ambient type:\n    \u2200 x : X, \u2200 hx : x \u2208 A, g \u27e8x, subset_closure hx\u27e9 = f \u27e8x, hx\u27e9\n  or use `Set.inclusion subset_closure : \u21a5A \u2192 \u21a5(closure A)`.\n  (Here `subset_closure : A \u2286 closure A` turns a proof of `x \u2208 A` into a proof of `x \u2208 closure A`.)\n- Add explicit type ascriptions where elaboration is ambiguous, e.g. `(Polynomial.X^3 + 6 * Polynomial.X + 12 : Polynomial \u211a)`.\n- Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : \u2124 \u2192 \u2124 \u2192 \u2115`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.\n\n## Faithfulness requirements\n- Introduce EVERY hypothesis of the problem as an explicit named argument:\n  - \"a is a nonzero integer\" \u2192 `(a : \u2124) (ha : a \u2260 0)`\n  - \"for n > m\" \u2192 `(n m : \u2115) (h : m < n)`\n  - \"Y is complete\" \u2192 `[CompleteSpace Y]`; \"metric spaces\" \u2192 `[MetricSpace X] [MetricSpace Y]`\n- Formalize the conclusion exactly:\n  - \"there exists a unique ...\" \u2192 `\u2203! x, ...`\n  - \"equals 1 or 2 depending on whether a is odd or even\" \u2192 `= if Odd a then 1 else 2`\n  - multiple conclusion properties (\"g extends f, is continuous, and is uniformly continuous\") \u2192 conjoin them: `(agreement condition) \u2227 Continuous g \u2227 UniformContinuous g`\n  - \"g extends f\" means g agrees with f on the original domain \u2014 state this agreement explicitly (see coercion pitfall above).\n- Do not strengthen, weaken, reorder, or omit any condition. The formal statement must be content-equivalent to the natural language one.\n\n## Strategy\n1. Parse the problem: list the objects, their types, every hypothesis, and the exact conclusion.\n2. Map each concept to the corresponding Mathlib definition available under the given context.\n3. Write the theorem, introducing each hypothesis as a named argument and the conclusion as the target type.\n4. Verify consistency in both directions:\n   a. Compilation: check all types, coercions (especially between subtypes such as `\u21a5A` and `\u21a5(closure A)`), implicit/instance arguments, and name resolution.\n   b. Faithfulness: re-read the original problem and confirm every hypothesis and the conclusion are represented exactly \u2014 nothing missing, nothing added.\n5. Output only the final theorem."}},
+{"idx": 2, "score": 0.5714, "parents": "1", "role": "Pareto Front", "components": {"instructions": "You are given a mathematical problem stated in natural language, together with a fixed Lean 4 context (imports, opens, and definitions). Translate the problem into exactly ONE Lean 4 theorem statement that faithfully formalizes the claim. Think step by step, then verify consistency before answering.\n\n## Output format\n- Output a single theorem of the form:\n    theorem <descriptive_name> <hypotheses...> : <conclusion> := by sorry\n- Use exactly the imports/opens/definitions given in the context; add nothing else.\n- Only the statement is graded: always end with `:= by sorry`. Do not attempt a proof, do not add helper lemmas or definitions.\n\n## Grading pipeline (read this first)\n1. Hard gate: the statement MUST compile under the given context. A statement that fails to compile scores 0 regardless of how faithful it is \u2014 the faithfulness judge never runs.\n2. Only if it compiles does a judge check content-equivalence with the natural-language problem.\nTherefore: compile-safety first, faithfulness second. When two formalizations are possible, choose the one built from the fewest, most standard Mathlib constants \u2014 it is the most likely to compile.\n\n## Hard gate: known compilation pitfalls (each of these has produced a score of 0)\n1. Big operators over set subtypes need a `Fintype` instance that Lean CANNOT synthesize.\n   `\u2211 x : s, f x` with `s : Set V` fails with `failed to synthesize instance Fintype \u2191s`, because an arbitrary set is not a `Fintype`. NEVER unfold \"linearly independent\" (or any similar notion) as a big sum/quantifier formula over the set. Use the predicate instead:\n     LinearIndependent K (fun x : s => (x : V))\n   The same danger applies to `\u220f` over a subtype and to `\u2211 x in s, ...` when `s` is a `Set` rather than a `Finset`.\n2. Unknown identifiers. Use only constants you are certain exist in Mathlib under the given opens; an `Unknown constant` error scores 0. In particular, `Complex.abs` does NOT resolve. For the complex modulus use the norm notation:\n     \"|w| = 1\"  \u2192  `\u2016w\u2016 = 1`\n   Prefer `\u2016x\u2016` for norms/absolute values on any normed type.\n3. Subtype coercions are NOT transitive/automatic. If `A : Set X` and `a : A` (type `\u21a5A`), then `(a : closure A)` FAILS with a type mismatch (\"has type \u2191A but is expected to have type \u2191(closure A)\"). Instead write the agreement condition explicitly, e.g.:\n     \u2200 a : A, g \u27e8a.1, subset_closure a.2\u27e9 = f a\n   or quantify over the ambient type:\n     \u2200 x : X, \u2200 hx : x \u2208 A, g \u27e8x, subset_closure hx\u27e9 = f \u27e8x, hx\u27e9\n   or use `Set.inclusion subset_closure : \u21a5A \u2192 \u21a5(closure A)`.\n   (Here `subset_closure : A \u2286 closure A` turns a proof of `x \u2208 A` into a proof of `x \u2208 closure A`.)\n4. Mixed number-type arithmetic (\u211d with \u2102, \u211d with \u211d\u22650, etc.): insert explicit coercions, e.g. `z = (r : \u2102) * w`. Write non-negativity as `0 \u2264 r`.\n5. Add explicit type ascriptions where elaboration is ambiguous, e.g. `(Polynomial.X^3 + 6 * Polynomial.X + 12 : Polynomial \u211a)`.\n6. Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : \u2124 \u2192 \u2124 \u2192 \u2115`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`, `LinearIndependent`, `Set.Finite`, `Set.Countable`, `Set.Infinite`, `Submodule.span`.\n\n## General principle: prefer high-level Mathlib predicates over unfolded definitions\nUnfoldings introduce hidden typeclass/instance requirements and elaboration traps. Mathlib already has predicates for most standard notions \u2014 use them:\n- \"s is a linearly independent subset of V\" \u2192 `LinearIndependent K (fun x : s => (x : V))`  (NOT a sum-equals-zero formula)\n- \"s is finite\" \u2192 `s.Finite`; \"s is countable\" \u2192 `s.Countable`  (these are `Set.Finite` / `Set.Countable`; do not introduce `Fintype`/`Finite`-class goals)\n- \"g is continuous / uniformly continuous\" \u2192 `Continuous g` / `UniformContinuous g`\n- \"p is irreducible\" \u2192 `Irreducible p`; \"n is odd\" \u2192 `Odd n`\n\n## Faithfulness requirements\n- Introduce EVERY hypothesis of the problem as an explicit named argument:\n  - \"a is a nonzero integer\" \u2192 `(a : \u2124) (ha : a \u2260 0)`\n  - \"for n > m\" \u2192 `(n m : \u2115) (h : m < n)`\n  - \"Y is complete\" \u2192 `[CompleteSpace Y]`; \"metric spaces\" \u2192 `[MetricSpace X] [MetricSpace Y]`\n  - \"V is a vector space over a field K\" \u2192 `(K : Type*) [Field K] (V : Type*) [AddCommGroup V] [Module K V]`\n  - \"F is an infinite field\" \u2192 `(F : Type*) [Field F] [Infinite F]`\n- Formalize the conclusion exactly:\n  - \"there exists a unique ...\" \u2192 `\u2203! x, ...`\n  - \"equals 1 or 2 depending on whether a is odd or even\" \u2192 `= if Odd a then 1 else 2`\n  - multiple conclusion properties (\"g extends f, is continuous, and is uniformly continuous\") \u2192 conjoin them: `(agreement condition) \u2227 Continuous g \u2227 UniformContinuous g`\n  - \"g extends f\" means g agrees with f on the original domain \u2014 state this agreement explicitly (see pitfall 3).\n- Do not strengthen, weaken, reorder, or omit any condition. The formal statement must be content-equivalent to the natural language one.\n\n## Verified dictionary (these exact shapes compile \u2014 reuse them)\n- \"V is spanned by a countable set\":\n    \u2203 S : Set V, S.Countable \u2227 Submodule.span K S = \u22a4\n  Note: `Set.Countable` means \"at most countable\" (finite or countably infinite). If the problem explicitly says \"countably infinite\" and the distinction matters, add `\u2227 S.Infinite`.\n- \"every linearly independent subset of V is finite or countably infinite\":\n    \u2200 s : Set V, LinearIndependent K (fun x : s => (x : V)) \u2192 s.Finite \u2228 s.Countable\n- \"V is not the union of finitely many proper subspaces\":\n    \u2200 S : Finset (Submodule F V), (\u2200 s \u2208 S, s \u2260 \u22a4) \u2192 (\u22c3 s \u2208 S, (s : Set V)) \u2260 Set.univ\n  (proper subspace = `\u2260 \u22a4`; the whole space as a set = `Set.univ`; \"finitely many\" = quantify over a `Finset`; coerce each submodule with `(s : Set V)` before taking the union.)\n- \"there exist r \u2265 0 and w : \u2102 with |w| = 1 such that z = r w\":\n    \u2203 r : \u211d, \u2203 w : \u2102, 0 \u2264 r \u2227 \u2016w\u2016 = 1 \u2227 z = (r : \u2102) * w\n\n## Strategy\n1. Parse the problem: list the objects, their types, every hypothesis, and the exact conclusion.\n2. Map each concept to the corresponding Mathlib definition available under the given context, preferring the high-level predicates and verified dictionary shapes above.\n3. Write the theorem, introducing each hypothesis as a named argument and the conclusion as the target type.\n4. Verify consistency in both directions:\n   a. Compilation: mentally type-check every subterm. Specifically scan for:\n      (i) any constant you are not 100% sure exists (e.g. `Complex.abs` \u2014 use `\u2016\u00b7\u2016` instead);\n      (ii) any big operator (`\u2211`, `\u220f`, `\u22c3`) over a subtype/set without a `Fintype`/`Finset`;\n      (iii) any coercion \u2014 between subtypes (e.g. `\u21a5A` vs `\u21a5(closure A)`) or between number types (e.g. `\u211d` vs `\u2102`) \u2014 and make it explicit;\n      (iv) any typeclass argument that is neither a hypothesis nor synthesizable.\n   b. Faithfulness: re-read the original problem and confirm every hypothesis and the conclusion are represented exactly \u2014 nothing missing, nothing added.\n5. If any subterm looks risky, reformulate it with a higher-level predicate or an explicit type ascription rather than an unfolded definition.\n6. Output only the final theorem.\n\n## Worked examples (compile-checked; imitate their shape)\n\nContext: `import Mathlib`, `open Topology Filter Real Complex TopologicalSpace Finset`, `open scoped BigOperators`.\nProblem: \"If z is a complex number, prove that there exists an r \u2265 0 and a complex number w with |w| = 1 such that z = rw.\"\n    theorem complex_number_decomposition (z : \u2102) :\n        \u2203 r : \u211d, \u2203 w : \u2102, 0 \u2264 r \u2227 \u2016w\u2016 = 1 \u2227 z = (r : \u2102) * w := by sorry\n\nContext: `import Mathlib`, `open Function Fintype Subgroup Ideal Polynomial Submodule Zsqrtd`, `open scoped BigOperators`.\nProblem: \"Let V be a vector space over an infinite field F. Prove that V is not the union of finitely many proper subspaces.\"\n    theorem vector_space_not_finite_union (F : Type*) [Field F] [Infinite F] (V : Type*) [AddCommGroup V] [Module F V] :\n        \u2200 S : Finset (Submodule F V), (\u2200 s \u2208 S, s \u2260 \u22a4) \u2192 (\u22c3 s \u2208 S, (s : Set V)) \u2260 Set.univ := by sorry\n\nSame context.\nProblem: \"Let V be a vector space which is spanned by a countably infinite set. Prove that every linearly independent subset of V is finite or countably infinite.\"\n    theorem vector_space_independent_finiteness (K : Type*) [Field K] (V : Type*) [AddCommGroup V] [Module K V]\n        (h : \u2203 S : Set V, S.Countable \u2227 Submodule.span K S = \u22a4) :\n        \u2200 s : Set V, LinearIndependent K (fun x : s => (x : V)) \u2192 s.Finite \u2228 s.Countable := by sorry"}},
+{"idx": 3, "score": 0.5429, "parents": "0", "role": "Pareto Front", "components": {"instructions": "You are given a mathematical problem in natural language plus a fixed Lean 4 context (imports, `open`/`open scoped` commands, and sometimes `def`initions). Translate the problem into EXACTLY ONE Lean 4 theorem statement that (a) faithfully captures the problem \u2014 same objects, all hypotheses, exact conclusion, correct types \u2014 and (b) compiles in the given context with the proof replaced by `sorry`. The statement is only judged if it compiles, so compilability is the top priority.\n\n## Output format\n- Output one theorem of the form:\n    theorem <descriptive_name> <binders/hypotheses> : <conclusion> := by sorry\n- Do NOT add imports, opens, or new definitions. Use only what the context provides.\n- NEVER use `let` bindings inside the theorem statement \u2014 they break parsing here (parse error / unsolved-goal errors). If the context already defines an object (e.g., `Rl`, `K_topology`, `K`), reference it by its given name; never restate or inline the definition.\n- The proof is exactly `by sorry`; the statement itself must typecheck.\n\n## Environment facts you must respect (Mathlib / Lean 4)\n- `autoImplicit` is false: every identifier must be bound in the theorem or come from the given imports/opens. Unknown identifiers (e.g. a bare `I`) are hard errors, not implicit variables. Use fully qualified names when needed (`Nat.totient`, `Complex.I`, ...).\n- Notation depends on the opens: `Ico/Ioo/Icc`, `\\`, `\u222a`, `\u2208` need `open Set`; topology notation needs `open TopologicalSpace` / `open scoped Topology`; `\u2211`/`\u220f` need `open scoped BigOperators`. Only use notation the given context enables.\n- Powers: `a ^ b` needs an `HPow` instance. There is NO `\u2124 ^ \u2124` instance (\u2124 is not a DivInvMonoid), so `M^d` with `d : \u2124` fails to synthesize `HPow \u2124 \u2124`. For integer/ring bases, use natural exponents (`d : \u2115`, via `Monoid.Pow`). Integer exponents (`zpow`) only work for group/division-ring bases like `\u211d` or `\u2102`. If the problem uses integer exponents of integers, declare the exponents as `\u2115` and coerce where needed.\n- Congruence: `a \u2261 b [ZMOD n]` is `Int.ModEq` and needs `a b n : \u2124`; `a \u2261 b [MOD n]` is `Nat.ModEq` and needs naturals. `Nat.totient N : \u2115` (Euler's \u03c6), so cast it as `(Nat.totient N : \u2124)` for `ZMOD`; likewise cast a natural modulus `(N : \u2124)`.\n- `Int.gcd a b` returns a `\u2115`, so `Int.gcd a b = 1` typechecks with `1 : \u2115`.\n- Gaussian integers: `GaussianInt` is `Zsqrtd (-1)`; elements are pairs `\u27e8re, im\u27e9`. There is NO `I` for `GaussianInt` \u2014 `I` is `Complex.I`, the imaginary unit of `\u2102` only. Write `1 + i` as `(\u27e81, 1\u27e9 : GaussianInt)` (or `1 + Zsqrtd.sqrtd`). Numerals like `(2 : GaussianInt)` work, and `\u2223` (Dvd) is available since `GaussianInt` is a ring.\n- Topologies: `generateFrom : Set (Set X) \u2192 TopologicalSpace X`. `TopologicalSpace X` has a partial order, so `t\u2081 \u2264 t\u2082` compares topologies directly; \"not comparable\" formalizes as `\u00ac(t\u2081 \u2264 t\u2082) \u2227 \u00ac(t\u2082 \u2264 t\u2081)`.\n- Divisibility `a \u2223 b` requires a `Dvd` instance (fine for `\u2124`, `GaussianInt`, polynomials, etc.).\n\n## Method (follow these steps)\n1. Parse the problem: list objects, their types, hypotheses, and the conclusion.\n2. Map each object to the exact name given in the context; use those names directly.\n3. Choose binder types so every operation is well-typed: check each `^`, `\u2223`, `\u2261`, `\u2264`, coercion, and set notation against the facts above. If an instance is missing, restructure (change a type, add a coercion) \u2014 never hope it compiles.\n4. Assemble the theorem: hypotheses as named binders `(hN : 0 < N)`, conclusion after the final colon, then `:= by sorry`.\n5. Mentally compile: every identifier in scope, every notation available, every typeclass instance existing, no `let`, balanced brackets, valid binder syntax.\n6. Verify consistency with the original problem: same mathematical content, no missing or extra hypotheses, conclusion matches. Fix and re-check until both compilability and fidelity hold.\n\n## Corrected examples (learn from these patterns)\n- Topologies (use the context's defs, no `let`):\n    theorem topology_comparability : \u00ac(Rl \u2264 K_topology) \u2227 \u00ac(K_topology \u2264 Rl) := by sorry\n- Gaussian integers (no `I`; use pair notation):\n    theorem gaussian_integer_divisibility : (\u27e81, 1\u27e9 : GaussianInt)^2 \u2223 2 := by sorry\n- Modular exponent inversion (\u2115 exponents, casts for ZMOD):\n    theorem modular_inverse_exponent_property (N : \u2115) (M M\u2081 : \u2124) (d d' : \u2115) (hN : 0 < N)\n        (hM_coprime : Int.gcd M (N : \u2124) = 1)\n        (hd_coprime : Int.gcd (d : \u2124) (Nat.totient N : \u2124) = 1)\n        (hM1 : M\u2081 \u2261 M ^ d [ZMOD (N : \u2124)])\n        (hd_inv : (d : \u2124) * (d' : \u2124) \u2261 1 [ZMOD (Nat.totient N : \u2124)]) :\n        M \u2261 M\u2081 ^ d' [ZMOD (N : \u2124)] := by sorry"}}];
+const DOT = `digraph G {
+    rankdir=TB;
+    node [style=filled, shape=circle, fontsize=14, width=0.6, height=0.6];
+    0 [label="0\\n(0.59)", fillcolor=orange, tooltip=" "];
+    1 [label="1\\n(0.61)", fillcolor=cyan, tooltip=" "];
+    2 [label="2\\n(0.57)", fillcolor=orange, tooltip=" "];
+    3 [label="3\\n(0.54)", fillcolor=orange, tooltip=" "];
+    0 -> 1;
+    1 -> 2;
+    0 -> 3;
+}`;
+
+const nodeMap = {};
+NODES.forEach(n => { nodeMap[n.idx] = n; });
+
+let pinnedIdx = null;   // non-null when tooltip is click-pinned (scrollable)
+let hoverIdx = null;    // non-null when hovering over a node
+
+function renderTooltip(idx) {
+  const n = nodeMap[idx];
+  if (!n) return "";
+  let roleBadge = "";
+  if (n.role === "Best") roleBadge = '<span class="role-badge role-best">BEST</span>';
+  else if (n.role === "Pareto Front") roleBadge = '<span class="role-badge role-pareto">PARETO</span>';
+  else if (n.role === "Seed") roleBadge = '<span class="role-badge role-seed">SEED</span>';
+
+  let comps = "";
+  for (const [name, text] of Object.entries(n.components)) {
+    const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    comps += '<div class="tt-comp-name">' + name + '</div><div class="tt-comp-text">' + escaped + '</div>';
+  }
+
+  return '<div class="tt-header">Candidate ' + n.idx + roleBadge + '</div>' +
+    '<div class="tt-meta">Score: <strong>' + n.score + '</strong>&nbsp;&nbsp;|&nbsp;&nbsp;Parent(s): ' + n.parents +
+    '</div><div class="tt-hint">' + (pinnedIdx === idx ? 'Click node again to dismiss' : 'Click to pin &amp; scroll') + '</div>' +
+    comps;
+}
+
+function positionTooltip(x, y) {
+  const tt = document.getElementById("tooltip");
+  let tx = x + 16, ty = y + 16;
+  const r = tt.getBoundingClientRect();
+  if (tx + r.width > window.innerWidth - 8) tx = x - r.width - 16;
+  if (ty + r.height > window.innerHeight - 8) ty = y - r.height - 16;
+  if (tx < 8) tx = 8;
+  if (ty < 8) ty = 8;
+  tt.style.left = tx + "px";
+  tt.style.top = ty + "px";
+}
+
+function showTooltip(idx, x, y) {
+  const tt = document.getElementById("tooltip");
+  tt.innerHTML = renderTooltip(idx);
+  tt.style.display = "block";
+  positionTooltip(x, y);
+}
+
+function hideTooltip() {
+  pinnedIdx = null;
+  hoverIdx = null;
+  document.getElementById("tooltip").style.display = "none";
+}
+
+// Click outside tooltip and outside nodes dismisses pinned tooltip
+document.addEventListener("mousedown", function(e) {
+  const tt = document.getElementById("tooltip");
+  if (pinnedIdx !== null && tt.style.display === "block"
+      && !tt.contains(e.target) && !e.target.closest(".node")) {
+    hideTooltip();
+  }
+});
+
+async function render() {
+  const { instance } = await import("https://cdn.jsdelivr.net/npm/@viz-js/viz@3.11.0/lib/viz-standalone.mjs");
+  const viz = await instance();
+  const svg = viz.renderSVGElement(DOT);
+  const container = document.getElementById("graph-container");
+  container.innerHTML = "";
+  container.appendChild(svg);
+
+  // Attach hover listeners and strip native <title> tooltips to avoid double tooltips
+  svg.querySelectorAll(".node").forEach(node => {
+    const title = node.querySelector("title");
+    if (!title) return;
+    const idx = parseInt(title.textContent, 10);
+    if (isNaN(idx)) return;
+    title.remove();  // remove native SVG tooltip
+    node.style.cursor = "pointer";
+    // Hover: show tooltip following the mouse (non-interactive)
+    node.addEventListener("mouseenter", e => {
+      if (pinnedIdx !== null) return;  // don't override a pinned tooltip
+      hoverIdx = idx;
+      showTooltip(idx, e.clientX, e.clientY);
+    });
+    node.addEventListener("mousemove", e => {
+      if (pinnedIdx !== null || hoverIdx !== idx) return;
+      positionTooltip(e.clientX, e.clientY);
+    });
+    node.addEventListener("mouseleave", () => {
+      if (pinnedIdx !== null) return;
+      hoverIdx = null;
+      document.getElementById("tooltip").style.display = "none";
+    });
+    // Click: pin the tooltip so user can scroll it
+    node.addEventListener("click", e => {
+      e.stopPropagation();
+      if (pinnedIdx === idx) { hideTooltip(); return; }
+      pinnedIdx = idx;
+      showTooltip(idx, e.clientX, e.clientY);
+    });
+  });
+  // Also strip <title> from edges and the graph itself
+  svg.querySelectorAll(".edge title").forEach(t => t.remove());
+  const graphTitle = svg.querySelector(":scope > title");
+  if (graphTitle) graphTitle.remove();
+}
+
+render().catch(err => {
+  document.getElementById("graph-container").innerHTML =
+    "<p style='color:red'>Failed to render graph: " + err.message + "</p>" +
+    "<pre>" + DOT.replace(/</g,"&lt;") + "</pre>";
+});
+</script>
+</body>
+</html>

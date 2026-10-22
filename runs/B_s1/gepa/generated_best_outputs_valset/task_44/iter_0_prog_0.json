@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_234",
+        "sample": 0,
+        "output": "```lean4\ntheorem normality_from_char_in_normal (G : Group) (H K : Subgroup G) (hH : H \u2264 K) (h_char : Char H K) (h_normal : Normal K G) : Normal H G := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem normality_from_char_in_normal (G : Group) (H K : Subgroup G) (hH : H \u2264 K) (h_char : Char H K) (h_normal : Normal K G) : Normal H G := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:23-7:28: error: type expected, got\n  (Group : Type ?u.2 \u2192 Type ?u.2)\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

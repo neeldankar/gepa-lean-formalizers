@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_239",
+        "sample": 0,
+        "output": "```lean4\ntheorem not_simple_of_card_eq_2907 (G : Type*) [Group G] [Fintype G]\n    (hG : Fintype.card G = 2907) :\n    \u00ac IsSimpleGroup G := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem not_simple_of_card_eq_2907 (G : Type*) [Group G] [Fintype G]\n    (hG : Fintype.card G = 2907) :\n    \u00ac IsSimpleGroup G := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem assumes a group G with finite cardinality 2907 and concludes \u00acIsSimpleGroup G, exactly matching the English statement \"if |G|=2907 then G is not simple\"."
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_006",
+        "sample": 0,
+        "output": "```lean4\ntheorem no_simple_group_of_order_p_squared_q (p q : \u2115) (hp : Nat.Prime p) (hq : Nat.Prime q) :\n  \u00acSimple (FinGroup.ofOrder (p^2 * q)) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem no_simple_group_of_order_p_squared_q (p q : \u2115) (hp : Nat.Prime p) (hq : Nat.Prime q) :\n  \u00acSimple (FinGroup.ofOrder (p^2 * q)) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:3-8:9: error(lean.unknownIdentifier): Unknown identifier `Simple`\n\nNote: It is not possible to treat `Simple` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

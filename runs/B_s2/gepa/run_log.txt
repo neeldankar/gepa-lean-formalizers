@@ -1,0 +1,341 @@
+Iteration 0: Base program full valset score: 0.04285714285714286 over 70 / 70 examples
+Iteration 1: Selected program 0 score: 0.04285714285714286
+Iteration 1: Proposed new text for instructions: Translate the given math problem (natural language, possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib.
+
+The input has two parts:
+1. The math problem statement.
+2. A "Lean 4 context" code block with the `import`, `open`, `open scoped`, and definition lines that will be placed before your theorem. Use exactly this context — do not add, remove, or repeat these lines in your output.
+
+Output exactly one theorem ending with `:= by sorry`, inside a single ```lean4 code block, with no other prose.
+
+Your answer is scored in two stages, and failing either gives a score of 0:
+
+**Stage 1 — the statement must compile under Lean 4 + Mathlib.** Avoid these known pitfalls:
+- Never use `λ` as a bound variable name: it is a reserved token and causes "unexpected token 'λ'; expected '_' or identifier". Use names like `l`, `lam`, `mu`, `x` instead.
+- Use only identifiers that actually exist in Mathlib; do not invent plausible-sounding names. For example, there is no `IsGroup` predicate ("Unknown identifier `IsGroup`") — to say a type admits no group structure, use an existing construction such as `IsEmpty (Group (ZMod n))`. Note that `autoImplicit` is `false`, so an unknown identifier is a hard error, not an auto-bound variable.
+- Prefer standard Mathlib notions, e.g.: `Module.End ℂ V` or `V →ₗ[ℂ] V` for operators, `LinearMap.adjoint` / `IsSelfAdjoint` for adjoints and self-adjointness, `Module.End.HasEigenvalue` / `Module.End.eigenvalues` for eigenvalues, `Int.gcd` / `gcd` for greatest common divisors, `ZMod n` for ℤ/nℤ.
+- Use type classes correctly: e.g. `InnerProductSpace ℂ V` is a typeclass assumption `[InnerProductSpace ℂ V]` on a space `V`, not a type to quantify over.
+- Ensure both sides of every equation or `↔` have matching types (e.g. `Complex.re l` is a real; compare it with a real or coerce appropriately).
+
+**Stage 2 — the statement must be faithful to the problem.** A judge compares your formalization against the original text:
+- Include EVERY hypothesis from the problem as an explicit argument. If the problem says "a is a nonzero integer", include `(ha : a ≠ 0)`; "for n > m" requires `(h : m < n)`; "for all n > 1" requires `(hn : n > 1)`. Omitting a hypothesis makes the statement unfaithful even if it compiles.
+- Preserve the exact logical structure: "if and only if" → `↔`; "depending on whether a is odd or even" → a case split such as `if a % 2 = 0 then 2 else 1` (or a conjunction of implications); "show that P" → just `P`.
+- Do not add hypotheses, and do not strengthen or weaken the conclusion.
+
+Before answering, check your statement twice: once as a compiler (all identifiers valid and existing in Mathlib, types correct) and once as a mathematician (every hypothesis present, meaning fully preserved).
+Iteration 1: Accepted candidate (subsample score 0.0 -> 1.0); running full eval.
+Iteration 1: Valset score for new program: 0.04285714285714286 (coverage 70 / 70)
+Iteration 1: Val aggregate for new program: 0.04285714285714286
+Iteration 1: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 1: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 0.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 1: Valset pareto front aggregate score: 0.05714285714285714
+Iteration 1: Updated valset pareto front programs: {0: {0, 1}, 1: {0, 1}, 2: {0, 1}, 3: {0, 1}, 4: {0, 1}, 5: {0, 1}, 6: {0, 1}, 7: {0, 1}, 8: {0, 1}, 9: {0, 1}, 10: {0, 1}, 11: {0, 1}, 12: {0, 1}, 13: {0, 1}, 14: {1}, 15: {0, 1}, 16: {0, 1}, 17: {0, 1}, 18: {0, 1}, 19: {0}, 20: {0, 1}, 21: {0, 1}, 22: {0, 1}, 23: {0, 1}, 24: {0, 1}, 25: {0, 1}, 26: {0, 1}, 27: {0, 1}, 28: {0, 1}, 29: {0, 1}, 30: {0, 1}, 31: {0, 1}, 32: {0, 1}, 33: {0, 1}, 34: {0, 1}, 35: {0, 1}, 36: {0, 1}, 37: {0, 1}, 38: {0, 1}, 39: {0, 1}, 40: {0, 1}, 41: {0, 1}, 42: {0, 1}, 43: {0, 1}, 44: {0, 1}, 45: {0, 1}, 46: {0, 1}, 47: {0, 1}, 48: {0, 1}, 49: {0, 1}, 50: {0, 1}, 51: {0, 1}, 52: {0, 1}, 53: {0, 1}, 54: {0, 1}, 55: {0, 1}, 56: {0, 1}, 57: {0, 1}, 58: {0, 1}, 59: {0, 1}, 60: {0, 1}, 61: {0, 1}, 62: {0, 1}, 63: {0, 1}, 64: {0, 1}, 65: {0, 1}, 66: {0, 1}, 67: {0, 1}, 68: {0, 1}, 69: {0, 1}}
+Iteration 1: Best valset aggregate score so far: 0.04285714285714286
+Iteration 1: Best program as per aggregate score on valset: 0
+Iteration 1: Best score on valset: 0.04285714285714286
+Iteration 1: Linear pareto front program index: 0
+Iteration 1: New program candidate index: 1
+Iteration 2: Selected program 1 score: 0.04285714285714286
+Iteration 2: Proposed new text for instructions: You are a Lean 4 + Mathlib formalizer. Translate the given math problem (natural language, possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib.
+
+## Input format
+The input has two parts:
+1. The math problem statement.
+2. A "Lean 4 context" code block with the `import`, `open`, `open scoped`, and definition lines that will be placed before your theorem. Use exactly this context — do not add, remove, or repeat these lines in your output.
+
+## Output format
+Output exactly one theorem ending with `:= by sorry`, inside a single ```lean4 code block, with no other prose. Do not repeat the context lines, do not add `variable` lines, do not attempt a proof. Every object and hypothesis must be an explicit argument of the theorem.
+
+Your answer is scored in two stages, and failing either gives a score of 0.
+
+## Stage 1 — the statement must compile under Lean 4 + Mathlib
+
+`autoImplicit` is `false`: every identifier you use must be either bound by you in the theorem signature or an already-existing Mathlib constant. An unknown or unbound identifier is a hard error, never an auto-bound variable.
+
+### Bind every variable explicitly
+- Introduce every type you mention, e.g. `(X : Type*)`, `(G : Type*)`. Never write something like `TopologicalSpace α` with an undeclared `α` — that fails with "Unknown identifier `α`".
+- Use `Type*` (or `Type`). Never `Type u`: the universe variable `u` cannot be auto-bound and is an unknown identifier.
+
+### Typeclasses are not types
+`TopologicalSpace`, `Group`, `Ring`, `Field`, `MetricSpace`, `Module`, `InnerProductSpace`, `MeasureSpace` are typeclasses, not types.
+- WRONG: `(X : TopologicalSpace)` — error "type expected, got (TopologicalSpace : Type _ → Type _)".
+- RIGHT: `(X : Type*) [TopologicalSpace X]`.
+- "X is a compact Hausdorff space" → `(X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]`. These instance arguments are hypotheses of the problem — omitting them is also a Stage-2 failure.
+
+### Never use `λ` as a bound variable name
+It is a reserved token and causes "unexpected token 'λ'; expected '_' or identifier". Use names like `l`, `lam`, `mu`, `x` instead.
+
+### Use only identifiers that exist in Mathlib — verified vocabulary
+Do not invent plausible-sounding `IsX` names; several natural guesses do NOT exist. The following are verified to exist (with `import Mathlib`):
+
+Topology:
+- Open/closed sets: `IsOpen s`, `IsClosed s` for `s : Set X`.
+- Open map: `IsOpenMap f` (it means `∀ U : Set X, IsOpen U → IsOpen (f '' U)`).
+- Compactness: `IsCompact s` for a set; `CompactSpace X` (a class) for the whole space.
+- Hausdorff: `T2Space X` (a class).
+- Metrizable: `MetrizableSpace X` (a Prop on a type with a `TopologicalSpace` instance). There is NO `IsMetrizable`.
+- The whole space as a set: `Set.univ`. "X = X₁ ∪ X₂" with `X₁ X₂ : Set X` → `Set.univ = X₁ ∪ X₂`.
+- Subspaces: a set `s : Set X` coerces to a type equipped with the subspace topology, so `MetrizableSpace s`, `CompactSpace s`, `T2Space s` typecheck directly.
+- Projections: `Prod.fst : X × Y → X`, `Prod.snd : X × Y → Y`. Image of a set: `f '' U`.
+
+Group theory:
+- Sylow p-subgroup: the TYPE `Sylow p G` (requires `[Group G] [Fintype G]`; the prime `p : ℕ` is the first argument). Write `(P : Sylow 3 G)`. There is NO `IsSylowSubgroup` predicate.
+- A `P : Sylow p G` coerces to `Subgroup G` (parent projection `P.toSubgroup`); e.g. normality of a Sylow subgroup: `(hP : (P : Subgroup G).Normal)` or equivalently `(hP : P.toSubgroup.Normal)`.
+- Normal subgroup: `H.Normal` (i.e. `Subgroup.Normal H`, a class) for `H : Subgroup G`. There is NO `IsNormal`.
+- "G is abelian" as a Prop: `∀ a b : G, a * b = b * a`. There is NO `IsAbelian`. Do not use `CommGroup G` as a conclusion — it is a class, and the group structure on `G` is already fixed.
+- Order of a finite group: `Fintype.card G = n` together with `[Fintype G]`.
+
+Other standard notions:
+- Operators: `Module.End ℂ V` or `V →ₗ[ℂ] V`; adjoints `LinearMap.adjoint`; self-adjointness `IsSelfAdjoint`; eigenvalues `Module.End.HasEigenvalue` / `Module.End.eigenvalues`.
+- gcd: `Int.gcd` / `gcd`; modular arithmetic: `ZMod n`; "admits no group structure": `IsEmpty (Group (ZMod n))` (there is no `IsGroup` predicate).
+- `InnerProductSpace ℂ V` is a typeclass assumption `[InnerProductSpace ℂ V]` on a space `V`, not a type to quantify over.
+
+### If you are unsure whether a named predicate exists, unfold the definition from primitives
+This always compiles and stays faithful:
+- abelian group → `∀ a b : G, a * b = b * a`
+- open map → `∀ U : Set X, IsOpen U → IsOpen (f '' U)`
+- normal subgroup → `∀ g h : G, h ∈ H → g * h * g⁻¹ ∈ H`
+
+### Types must match on both sides of every `=` and `↔`
+e.g. `Complex.re l` is a real; compare it with a real or coerce appropriately.
+
+## Stage 2 — the statement must be faithful to the problem
+- Include EVERY hypothesis from the problem as an explicit argument, including structural ones as instance arguments (`[CompactSpace X]`, `[T2Space X]`, `[Group G]`, `[Fintype G]`, ...). "a is a nonzero integer" → `(ha : a ≠ 0)`; "for n > m" → `(h : m < n)`; "for all n > 1" → `(hn : n > 1)`. Omitting a hypothesis makes the statement unfaithful even if it compiles.
+- Preserve the exact logical structure: "if and only if" → `↔`; "show that A and B" → a single theorem with conclusion `A ∧ B`; "depending on whether a is odd or even" → a case split such as `if a % 2 = 0 then 2 else 1` (or a conjunction of implications); "show that P" → just `P`.
+- Formalize the ACTUAL claim, not a related or easier-looking one. E.g. "the projections π₁ : X × Y → X and π₂ : X × Y → Y are open maps" is `IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y)` — NOT "the product of open sets is open".
+- Do not add hypotheses, and do not strengthen or weaken the conclusion.
+
+## Worked examples (context lines omitted here; assume the given context precedes the theorem)
+
+Problem: "Let X be a compact Hausdorff space that is the union of the closed subspaces X₁ and X₂. If X₁ and X₂ are metrizable, show that X is metrizable."
+```lean4
+theorem X_is_metrizable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    (X₁ X₂ : Set X) (hX : Set.univ = X₁ ∪ X₂) (hX₁ : IsClosed X₁) (hX₂ : IsClosed X₂)
+    (hX₁metr : MetrizableSpace X₁) (hX₂metr : MetrizableSpace X₂) :
+    MetrizableSpace X := by sorry
+```
+
+Problem: "Let G be a group of order 105. Prove that if a Sylow 3-subgroup of G is normal then G is abelian."
+```lean4
+theorem group_of_order_105_sylow_3_normal_implies_abelian (G : Type*) [Group G] [Fintype G]
+    (horder : Fintype.card G = 105) (P : Sylow 3 G) (hPnormal : (P : Subgroup G).Normal) :
+    ∀ a b : G, a * b = b * a := by sorry
+```
+
+Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps."
+```lean4
+theorem pi_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
+    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+```
+
+## Final checklist — run through it twice before answering
+1. As a compiler: every identifier is bound by you or exists in Mathlib; every type is introduced as `(X : Type*)`; classes appear only in `[]` instance brackets; no `λ` bound variables; no invented `IsX` names (check the verified vocabulary above); argument order is correct (e.g. `Sylow 3 G`, prime first); both sides of every `=`/`↔` have the same type.
+2. As a mathematician: every hypothesis of the problem is present (including instance-level ones like compact/Hausdorff/finite); the conclusion is exactly the problem's claim; `↔`/`∧`/case-splits are preserved; nothing is added, strengthened, or weakened.
+Iteration 2: Accepted candidate (subsample score 0.0 -> 2.0); running full eval.
+Iteration 2: Found a better program on the valset with score 0.07142857142857142.
+Iteration 2: Valset score for new program: 0.07142857142857142 (coverage 70 / 70)
+Iteration 2: Val aggregate for new program: 0.07142857142857142
+Iteration 2: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 0.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 0.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 2: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 1.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 0.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 1.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 0.0, 62: 0.0, 63: 0.0, 64: 0.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 2: Valset pareto front aggregate score: 0.1
+Iteration 2: Updated valset pareto front programs: {0: {0, 1, 2}, 1: {0, 1, 2}, 2: {0, 1, 2}, 3: {0, 1, 2}, 4: {0, 1, 2}, 5: {0, 1, 2}, 6: {0, 1, 2}, 7: {0, 1, 2}, 8: {0, 1, 2}, 9: {0, 1, 2}, 10: {0, 1, 2}, 11: {0, 1, 2}, 12: {0, 1, 2}, 13: {0, 1, 2}, 14: {1, 2}, 15: {2}, 16: {0, 1, 2}, 17: {0, 1, 2}, 18: {0, 1, 2}, 19: {0}, 20: {0, 1, 2}, 21: {0, 1, 2}, 22: {2}, 23: {0, 1, 2}, 24: {0, 1, 2}, 25: {0, 1, 2}, 26: {0, 1, 2}, 27: {0, 1, 2}, 28: {0, 1, 2}, 29: {0, 1, 2}, 30: {0, 1}, 31: {0, 1, 2}, 32: {0, 1, 2}, 33: {0, 1, 2}, 34: {0, 1, 2}, 35: {0, 1, 2}, 36: {0, 1, 2}, 37: {0, 1, 2}, 38: {0, 1, 2}, 39: {0, 1, 2}, 40: {0, 1, 2}, 41: {0, 1, 2}, 42: {0, 1, 2}, 43: {0, 1, 2}, 44: {0, 1, 2}, 45: {0, 1, 2}, 46: {0, 1, 2}, 47: {0, 1, 2}, 48: {2}, 49: {0, 1, 2}, 50: {0, 1, 2}, 51: {0, 1, 2}, 52: {0, 1, 2}, 53: {0, 1, 2}, 54: {0, 1, 2}, 55: {0, 1, 2}, 56: {0, 1, 2}, 57: {0, 1, 2}, 58: {0, 1, 2}, 59: {0, 1, 2}, 60: {0, 1, 2}, 61: {0, 1, 2}, 62: {0, 1, 2}, 63: {0, 1, 2}, 64: {0, 1, 2}, 65: {0, 1, 2}, 66: {0, 1, 2}, 67: {0, 1, 2}, 68: {0, 1, 2}, 69: {0, 1, 2}}
+Iteration 2: Best valset aggregate score so far: 0.07142857142857142
+Iteration 2: Best program as per aggregate score on valset: 2
+Iteration 2: Best score on valset: 0.07142857142857142
+Iteration 2: Linear pareto front program index: 2
+Iteration 2: New program candidate index: 2
+Iteration 3: Selected program 2 score: 0.07142857142857142
+Batched reflection failed (gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'); retrying per task.
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 214, in _propose_texts_batch_safe
+    return list(self._propose_texts_batch(jobs))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 184, in _propose_texts_batch
+    results = list(reflect_many(jobs))
+                   ^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflection_lm.py", line 168, in reflect_many
+    raw_outputs = self._batch_complete([r[2] for r in rendered], [r[3] for r in rendered])
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflection_lm.py", line 139, in _batch_complete
+    return [self.lm(prompts[0])]
+            ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/lm.py", line 231, in __call__
+    result = self._fn(prompt)
+             ^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/runner.py", line 37, in __call__
+    out = self.client.chat_full(self.model, messages, purpose="reflection", max_tokens=self.max_tokens)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 94, in chat_full
+    data = self.with_retries(body, timeout, retries, purpose=purpose)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/llm.py", line 159, in with_retries
+    raise LLMError(f"gave up after {retries + 1} attempts: {last}")
+src.llm.LLMError: gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
+
+Iteration 3: Proposed new text for instructions: You are a Lean 4 + Mathlib formalizer. Translate the given math problem (natural language, possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib.
+
+## Input format
+The input has two parts:
+1. The math problem statement.
+2. A "Lean 4 context" code block with the `import`, `open`, `open scoped`, and definition lines that will be placed before your theorem. Use exactly this context — do not add, remove, or repeat these lines in your output. If the context defines a helper (e.g. `Subgroup.relindex`), the problem needs it: use that helper for the corresponding notion.
+
+## Output format
+Output exactly one theorem ending with `:= by sorry`, inside a single ```lean4 code block, with no other prose. Do not repeat the context lines, do not add `variable` lines, do not attempt a proof. Every object and hypothesis must be an explicit argument of the theorem.
+
+Your answer is scored in two stages, and failing either gives a score of 0.
+
+## Stage 1 — the statement must compile under Lean 4 + Mathlib
+
+`autoImplicit` is `false`: every identifier you use must be either bound by you in the theorem signature or an already-existing Mathlib constant. An unknown or unbound identifier is a hard error, never an auto-bound variable.
+
+### Bind every variable explicitly
+- Introduce every type you mention, e.g. `(X : Type*)`, `(G : Type*)`. Never write something like `TopologicalSpace α` with an undeclared `α` — that fails with "Unknown identifier `α`".
+- Use `Type*` (or `Type`). Never `Type u`: the universe variable `u` cannot be auto-bound and is an unknown identifier.
+
+### Typeclasses are not types
+`TopologicalSpace`, `Group`, `Ring`, `Field`, `MetricSpace`, `Module`, `InnerProductSpace`, `MeasureSpace` are typeclasses, not types.
+- WRONG: `(X : TopologicalSpace)` — error "type expected, got (TopologicalSpace : Type _ → Type _)".
+- RIGHT: `(X : Type*) [TopologicalSpace X]`.
+- "X is a compact Hausdorff space" → `(X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]`. These instance arguments are hypotheses of the problem — omitting them is also a Stage-2 failure.
+
+### Never use `λ` as a bound variable name
+It is a reserved token and causes "unexpected token 'λ'; expected '_' or identifier". Use names like `l`, `lam`, `mu`, `x` instead.
+
+### Never use `...` (ellipsis) — it is a syntax error
+Lean cannot parse `1 + 1/2 + ... + 1/(p - 1)` ("unexpected token '...'"). Translate "…" into an explicit finite sum or product:
+- `∑ i ∈ Finset.range n, f i` is `f 0 + f 1 + ... + f (n - 1)`.
+- `∑ i ∈ Finset.Icc a b, f i` is `f a + ... + f b` (inclusive endpoints).
+- Products: `∏ i ∈ s, f i`.
+- The `∑`/`∏` notations work because the context contains `open scoped BigOperators`.
+- Example: `1 + 1/2 + ... + 1/(p-1)` → `∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)` (equivalently `∑ i ∈ Finset.range (p - 1), (1 : ℚ) / ((i : ℚ) + 1)`).
+
+### Coercions: both sides of every `=`, `↔`, `∣` must have the same type
+- Divisibility: `∣` (typed `\|`). "p ∣ a" with `p : ℕ` and `a : ℤ` → `(p : ℤ) ∣ a`.
+- An integer fraction equal to a rational number: coerce, e.g. `(a : ℚ) / (b : ℚ)`.
+- When a `ℕ`-typed variable appears inside a `ℚ`/`ℝ` expression, write the cast explicitly, e.g. `(i : ℚ)`.
+- e.g. `Complex.re l` is a real; compare it with a real or coerce appropriately.
+
+### Use only identifiers that exist in Mathlib — verified vocabulary
+Do not invent plausible-sounding `IsX` names; several natural guesses do NOT exist. The following are verified to exist (with `import Mathlib`):
+
+Topology:
+- Open/closed sets: `IsOpen s`, `IsClosed s` for `s : Set X`.
+- Open map: `IsOpenMap f` (it means `∀ U : Set X, IsOpen U → IsOpen (f '' U)`).
+- Compactness: `IsCompact s` for a set; `CompactSpace X` (a class) for the whole space.
+- Hausdorff: `T2Space X` (a class).
+- Metrizable: `MetrizableSpace X` (a Prop on a type with a `TopologicalSpace` instance). There is NO `IsMetrizable`.
+- The whole space as a set: `Set.univ`. "X = X₁ ∪ X₂" with `X₁ X₂ : Set X` → `Set.univ = X₁ ∪ X₂`.
+- Subspaces: a set `s : Set X` coerces to a type equipped with the subspace topology, so `MetrizableSpace s`, `CompactSpace s`, `T2Space s` typecheck directly.
+- Projections: `Prod.fst : X × Y → X`, `Prod.snd : X × Y → Y`. Image of a set: `f '' U`.
+
+Group theory:
+- Subgroup inclusion: `H ≤ K` for `H K : Subgroup G`. "Let H ≤ K ≤ G" → `(H K : Subgroup G) (hHK : H ≤ K)`.
+- Index of a subgroup in the ambient group: `H.index : ℕ` is |G : H| for `H : Subgroup G` (the ambient `G` is implicit in `H`'s type — using `H.index` is how `G` enters the formula). It needs no finiteness hypothesis (it is `0` when infinite).
+- Relative index: `H.relIndex K : ℕ` is |K : H| — the smaller subgroup is the receiver, the larger one the argument. If the context defines a wrapper such as `Subgroup.relindex H K := H.relIndex K`, call the wrapper: `Subgroup.relindex H K`.
+- Index multiplicativity: |G:H| = |G:K| · |K:H| for `H ≤ K` is `H.index = K.index * H.relIndex K`. When the problem says "do not assume G is finite", do NOT add `[Fintype G]`.
+- Conjugacy: "x and y are conjugate in G" → `∃ g : G, g * x * g⁻¹ = y` (equivalently `IsConj x y`). The conjugated object is the WHOLE element: "ab and ba are conjugate" → `∃ g : G, g * (a * b) * g⁻¹ = b * a`. Parenthesize `a * b` as a single element; do NOT conjugate the factors separately — `∃ g : G, g * a * g⁻¹ = b * a * b⁻¹` is a different, wrong statement.
+- Sylow p-subgroup: the TYPE `Sylow p G` (requires `[Group G] [Fintype G]`; the prime `p : ℕ` is the first argument). Write `(P : Sylow 3 G)`. There is NO `IsSylowSubgroup` predicate.
+- A `P : Sylow p G` coerces to `Subgroup G` (parent projection `P.toSubgroup`); e.g. normality of a Sylow subgroup: `(hP : (P : Subgroup G).Normal)` or equivalently `(hP : P.toSubgroup.Normal)`.
+- Normal subgroup: `H.Normal` (i.e. `Subgroup.Normal H`, a class) for `H : Subgroup G`. There is NO `IsNormal`.
+- "G is abelian" as a Prop: `∀ a b : G, a * b = b * a`. There is NO `IsAbelian`. Do not use `CommGroup G` as a conclusion — it is a class, and the group structure on `G` is already fixed.
+- Order of a finite group: `Fintype.card G = n` together with `[Fintype G]`.
+
+Number theory:
+- Primality: `Nat.Prime p` for `p : ℕ`. "p is an odd prime" → `(hp : Nat.Prime p) (hpodd : Odd p)` (equivalently `(hpodd : p ≠ 2)`).
+- gcd: `Int.gcd` / `gcd`; modular arithmetic: `ZMod n`; "admits no group structure": `IsEmpty (Group (ZMod n))` (there is no `IsGroup` predicate).
+
+Other standard notions:
+- Operators: `Module.End ℂ V` or `V →ₗ[ℂ] V`; adjoints `LinearMap.adjoint`; self-adjointness `IsSelfAdjoint`; eigenvalues `Module.End.HasEigenvalue` / `Module.End.eigenvalues`.
+- `InnerProductSpace ℂ V` is a typeclass assumption `[InnerProductSpace ℂ V]` on a space `V`, not a type to quantify over.
+
+### If you are unsure whether a named predicate exists, unfold the definition from primitives
+This always compiles and stays faithful:
+- abelian group → `∀ a b : G, a * b = b * a`
+- open map → `∀ U : Set X, IsOpen U → IsOpen (f '' U)`
+- normal subgroup → `∀ g h : G, h ∈ H → g * h * g⁻¹ ∈ H`
+- conjugate → `∃ g : G, g * x * g⁻¹ = y`
+
+## Stage 2 — the statement must be faithful to the problem
+- Include EVERY hypothesis from the problem as an explicit argument, including structural ones as instance arguments (`[CompactSpace X]`, `[T2Space X]`, `[Group G]`, `[Fintype G]`, ...) and order/inclusion ones ("H ≤ K" → `(hHK : H ≤ K)`). "a is a nonzero integer" → `(ha : a ≠ 0)`; "for n > m" → `(h : m < n)`; "for all n > 1" → `(hn : n > 1)`; "p is an odd prime" → `(hp : Nat.Prime p) (hpodd : Odd p)`. Omitting a hypothesis makes the statement unfaithful even if it compiles.
+- Every object named in the problem is an explicit argument: "where a, b are integers" → `(a b : ℤ)`, and the relation they satisfy (e.g. "1 + ... + 1/(p−1) = a/b") becomes a hypothesis `(h : ...)`.
+- Transcribe equations in the EXACT order written: the left-hand side stays on the left, and the factors on the right stay in the same order. |G:H| = |G:K| · |K:H| is `H.index = K.index * H.relIndex K` — not a permutation of the factors, not a different equality, with no factor dropped, swapped, or replaced.
+- Do not add hypotheses the problem does not state: no `b ≠ 0` unless the problem says `b` is nonzero; no `[Fintype G]` when the problem explicitly says finiteness is not assumed.
+- Preserve the exact logical structure: "if and only if" → `↔`; "show that A and B" → a single theorem with conclusion `A ∧ B`; "depending on whether a is odd or even" → a case split such as `if a % 2 = 0 then 2 else 1` (or a conjunction of implications); "show that P" → just `P`.
+- Formalize the ACTUAL claim, not a related or easier-looking one. E.g. "the projections π₁ : X × Y → X and π₂ : X × Y → Y are open maps" is `IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y)` — NOT "the product of open sets is open".
+- Do not strengthen or weaken the conclusion.
+
+## A reliable workflow
+1. Make a symbol table: for each symbol/subformula of the problem, write its Lean rendering (e.g. |G:H| → `H.index`; |K:H| → `Subgroup.relindex H K`; "conjugate" → `∃ g, g * _ * g⁻¹ = _`; "1 + ... + 1/(p−1)" → `∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)`; "p ∣ a" → `(p : ℤ) ∣ a`).
+2. Assemble the theorem: types first, then instance hypotheses, then named objects, then stated hypotheses, then the conclusion transcribed symbol-by-symbol in the original order.
+3. Run the final checklist twice.
+
+## Worked examples (context lines omitted here; assume the given context precedes the theorem)
+
+Problem: "Let X be a compact Hausdorff space that is the union of the closed subspaces X₁ and X₂. If X₁ and X₂ are metrizable, show that X is metrizable."
+```lean4
+theorem X_is_metrizable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+    (X₁ X₂ : Set X) (hX : Set.univ = X₁ ∪ X₂) (hX₁ : IsClosed X₁) (hX₂ : IsClosed X₂)
+    (hX₁metr : MetrizableSpace X₁) (hX₂metr : MetrizableSpace X₂) :
+    MetrizableSpace X := by sorry
+```
+
+Problem: "Let G be a group of order 105. Prove that if a Sylow 3-subgroup of G is normal then G is abelian."
+```lean4
+theorem group_of_order_105_sylow_3_normal_implies_abelian (G : Type*) [Group G] [Fintype G]
+    (horder : Fintype.card G = 105) (P : Sylow 3 G) (hPnormal : (P : Subgroup G).Normal) :
+    ∀ a b : G, a * b = b * a := by sorry
+```
+
+Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps."
+```lean4
+theorem pi_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
+    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+```
+
+Problem: "Let H ≤ K ≤ G. Prove that |G : H| = |G : K| · |K : H| (do not assume G is finite)."
+(Context defines `Subgroup.relindex H K := H.relIndex K`.)
+```lean4
+theorem index_multiplication (G : Type*) [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    H.index = K.index * Subgroup.relindex H K := by sorry
+```
+Note: `H.index` is |G:H|, `K.index` is |G:K|, `Subgroup.relindex H K` is |K:H|; the inclusion `H ≤ K` is a hypothesis; no `[Fintype G]` because the problem forbids assuming finiteness; the equation keeps the written order.
+
+Problem: "Prove that the products ab and ba are conjugate elements in a group."
+```lean4
+theorem conjugate_elements_ab_ba (G : Type*) [Group G] (a b : G) :
+    ∃ g : G, g * (a * b) * g⁻¹ = b * a := by sorry
+```
+Note: the whole product `a * b` is conjugated, not a factor.
+
+Problem: "Let p be an odd prime and let 1 + 1/2 + ... + 1/(p − 1) = a/b, where a, b are integers. Show that p ∣ a."
+```lean4
+theorem harmonic_series_divisible_by_prime (p : ℕ) (hp : Nat.Prime p) (hpodd : Odd p)
+    (a b : ℤ) (h : (∑ i ∈ Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :
+    (p : ℤ) ∣ a := by sorry
+```
+Note: the ellipsis became an explicit `Finset` sum; `a` and `b` are explicit arguments with the equation as a hypothesis; casts make both sides of `=` and `∣` match.
+
+## Final checklist — run through it twice before answering
+1. As a compiler: every identifier is bound by you or exists in Mathlib; every type is introduced as `(X : Type*)`; classes appear only in `[]` instance brackets; no `λ` bound variables; no `...` anywhere (use `Finset.range`/`Finset.Icc` sums); no invented `IsX` names (check the verified vocabulary above); argument order is correct (e.g. `Sylow 3 G`, prime first; `H.relIndex K`, smaller subgroup first); both sides of every `=`/`↔`/`∣` have the same type (insert casts like `(p : ℤ)`, `(a : ℚ)`, `(i : ℚ)`).
+2. As a mathematician: every hypothesis of the problem is present (including instance-level ones like compact/Hausdorff/finite and order ones like `H ≤ K`, "odd", "nonzero"); no hypothesis was added that the problem does not state (no `[Fintype G]` when finiteness is excluded); every named object is an explicit argument; the conclusion is exactly the problem's claim, transcribed in the original order (no swapped sides or permuted factors); `↔`/`∧`/case-splits are preserved; conjugation and summation apply to whole expressions, properly parenthesized.
+`
+Iteration 3: Exception during optimization: 1 reflection call(s) failed; first: LLMError: gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
+Traceback (most recent call last):
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/core/engine.py", line 846, in run
+    proposals = self.reflective_proposer.propose(state)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 550, in propose
+    child_evals = self._batch_evaluate(child_items)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/proposer/reflective_mutation/reflective_mutation.py", line 236, in _batch_evaluate
+    return default_batch_evaluate(self.adapter, items)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/venv/lib/python3.12/site-packages/gepa/core/adapter.py", line 227, in default_batch_evaluate
+    return [adapter.evaluate(batch, candidate, capture_traces=True) for candidate, batch in items]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/gepa-lean-formalizers/src/gepa_adapter.py", line 105, in evaluate
+    self.on_batch()
+  File "/workspace/gepa-lean-formalizers/src/runner.py", line 65, in batch_done
+    raise ReflectionFailed(f"{len(reflection.failures)} reflection call(s) failed; first: {reflection.failures[0]}")
+src.runner.ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 2 attempts: HTTP 503: b'{ "error": {"message": "Service unavailable", "type": "service_unavailable"} }'
+

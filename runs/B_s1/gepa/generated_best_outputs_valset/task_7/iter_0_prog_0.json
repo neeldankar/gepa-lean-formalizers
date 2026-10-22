@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_028",
+        "sample": 0,
+        "output": "```lean4\ntheorem addition_of_residue_classes_is_associative (n : \u2115) :\n  \u2200 a b c : \u2124, (a + b) % n + c = a + (b + c) % n := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem addition_of_residue_classes_is_associative (n : \u2115) :\n  \u2200 a b c : \u2124, (a + b) % n + c = a + (b + c) % n := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement quantifies over \u2124 instead of the residue class type (e.g., ZMod n) and does not correctly express the associative law for addition modulo n."
+        },
+        "score": 0
+    }
+]

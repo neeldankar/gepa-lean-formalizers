@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_152",
+        "sample": 0,
+        "output": "```lean4\ntheorem triangle_inequality_for_moduli (x y : \u2102) : |\u2016x\u2016 - \u2016y\u2016| \u2264 \u2016x - y\u2016 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem triangle_inequality_for_moduli (x y : \u2102) : |\u2016x\u2016 - \u2016y\u2016| \u2264 \u2016x - y\u2016 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies over two complex numbers x and y and asserts exactly the inequality ||x|-|y|| \u2264 |x-y| using the norm notation, matching the English statement."
+        },
+        "score": 1
+    }
+]

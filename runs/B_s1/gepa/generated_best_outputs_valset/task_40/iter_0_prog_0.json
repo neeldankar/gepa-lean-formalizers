@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_216",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_property (G : Type) [Group G] (a b : G) : (a * b).norm = (b * a).norm := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_property (G : Type) [Group G] (a b : G) : (a * b).norm = (b * a).norm := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:51-7:63: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression\n  a * b\nhas type `G` which does not have the necessary form.\n",
+            "-:7:66-7:78: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression\n  b * a\nhas type `G` which does not have the necessary form.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

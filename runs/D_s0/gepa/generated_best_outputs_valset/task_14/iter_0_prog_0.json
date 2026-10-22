@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_060",
+        "sample": 0,
+        "output": "<think>\n\nLet me break down this problem:\n\n1. We need to define what a Boolean ring is: a ring $R$ where $a^2 = a$ for all $a \\in R$.\n2. We need to prove that every Boolean ring is commutative, i.e., $ab = ba$ for all $a, b \\in R$.\n\nIn Lean 4, I need to:\n- Define the property of being a Boolean ring\n- State the theorem that every Boolean ring is commutative\n\nLet me think about the Lean 4 syntax:\n\n```lean4\ntheorem boolean_ring_commutativity (R : Type*) [Ring R] \n  (h : \u2200 a : R, a^2 = a) : \n  \u2200 a b : R, a * b = b * a := by sorry\n```\n\nWait, I need to be careful about the exponentiation. In Lean 4, `a^2` might not be the right way to express `a * a`. Let me check...\n\nActually, in Lean 4 with rings, `a^2` should work fine for `a * a`. But let me be explicit:\n\n```lean4\ntheorem boolean_ring_commutativity (R : Type*) [Ring R] \n  (h : \u2200 a : R, a * a = a) : \n  \u2200 a b : R, a * b = b * a := by sorry\n```\n\nThis looks better. The hypothesis `h` states that for all `a : R`, we have `a * a = a`, which is the definition of a Boolean ring. The conclusion states that for all `a, b : R`, we have `a * b = b * a`, which means the ring is commutative.\n\nLet me double-check the syntax:\n- `R : Type*` declares R as a type\nLooking at this problem, I need to formalize the statement that every Boolean ring is commutative.\n\nA Boolean ring is defined as a ring where every element is idempotent (i.e., $a^2 = a$ for all $a$). The theorem states that such rings are commutative.\n\n```lean4\nimport Mathlib\nimport Aesop\n\nset_option maxHeartbeats 0\n\nopen BigOperators Real Nat Topology Rat\n\ntheorem boolean_ring_commutativity (R : Type*) [Ring R] \n  (h : \u2200 a : R, a^2 = a) : \n  \u2200 a b : R, a * b = b * a := by sorry\n```\n\nLet's evaluate whether the formalization properly represents the given mathematical problem.\n1. Math Assertion Analysis: The problem defines a Boolean ring as a ring where every element a satisfies a^2 = a. The goal is to prove commutativity (a*b = b*a for all a, b). The key components are the ring structure, the idempotent hypothesis, and the commutativity conclusion.\n2. Lean Statement Analysis: The theorem introduces a ring R with [Ring R], asserts the hypothesis h : \u2200 a, a^2 = a, and concludes \u2200 a b, a*b = b*a. All variables are properly quantified, and the ring structure is correctly assumed.\n3. Comparative Verification: The Lean statement matches the mathematical problem in all structural aspects. The ring assumption, idempotent hypothesis, and commutativity conclusion are all preserved. The use of \u2200 a b : R aligns with the problem's universal quantification over elements of the ring.\n4. Conclusion: The Lean theorem statement correctly formalizes the problem's requirements without adding or omitting any components.\n5. Accuracy Confirmation: The Lean statement correctly captures the problem's definition of a Boolean ring and the desired commutativity proof.\n\nTherefore, the consistency check concludes with:\nCorrect\n\n</think>\nThe consistency check passes. Below is the final Lean 4 Formal Statement:\n```lean4\nimport Mathlib\nimport Aesop\n\nset_option maxHeartbeats 0\n\nopen BigOperators Real Nat Topology Rat\n\ntheorem boolean_ring_commutativity (R : Type*) [Ring R] \n  (h : \u2200 a : R, a^2 = a) : \n  \u2200 a b : R, a * b = b * a := by sorry\n```\n",
+        "finish_reason": "stop",
+        "extracted": "theorem boolean_ring_commutativity (R : Type*) [Ring R] \n  (h : \u2200 a : R, a^2 = a) : \n  \u2200 a b : R, a * b = b * a := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies over a ring R, assumes the Boolean property \u2200 a, a^2 = a, and concludes \u2200 a b, a * b = b * a, exactly matching the English statement."
+        },
+        "score": 1
+    }
+]

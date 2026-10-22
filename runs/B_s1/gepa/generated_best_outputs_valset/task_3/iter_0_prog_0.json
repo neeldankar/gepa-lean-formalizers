@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_017",
+        "sample": 0,
+        "output": "```lean4\ntheorem Axler_exercise_3_12 (V : Type) [FiniteDimensional \u211a V] [Module \u211a V] (T : LinearMap \u211a V V) :\n  \u2203 a : \u211a, \u2200 v : V, T v = a \u2022 v := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Axler_exercise_3_12 (V : Type) [FiniteDimensional \u211a V] [Module \u211a V] (T : LinearMap \u211a V V) :\n  \u2203 a : \u211a, \u2200 v : V, T v = a \u2022 v := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:30-7:51: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  AddCommGroup V\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

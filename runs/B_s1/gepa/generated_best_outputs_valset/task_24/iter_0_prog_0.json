@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_121",
+        "sample": 0,
+        "output": "```lean4\ntheorem continuous_map_fixed_point_on_circle (f : \u211d \u2192 \u211d) (hf : Continuous f) :\n  \u2203 x : \u211d, f x = f (-x) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem continuous_map_fixed_point_on_circle (f : \u211d \u2192 \u211d) (hf : Continuous f) :\n  \u2203 x : \u211d, f x = f (-x) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean theorem quantifies over \u211d and takes f : \u211d \u2192 \u211d, whereas the English problem concerns a continuous map f : S\u00b9 \u2192 \u211d and seeks x \u2208 S\u00b9."
+        },
+        "score": 0
+    }
+]

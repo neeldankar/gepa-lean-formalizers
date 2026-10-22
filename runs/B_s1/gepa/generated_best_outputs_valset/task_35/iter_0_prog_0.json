@@ -1,0 +1,24 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_179",
+        "sample": 0,
+        "output": "```lean4\ntheorem primitives_differ_by_constant {\u03a9 : Set \u2102} (h\u03a9 : IsOpen \u03a9) (f : \u03a9 \u2192 \u2102)\n  (F G : \u03a9 \u2192 \u2102) (hF : DifferentiableOn \u03a9 f F) (hG : DifferentiableOn \u03a9 f G) :\n  \u2203 c : \u2102, \u2200 x \u2208 \u03a9, G x = F x + c := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem primitives_differ_by_constant {\u03a9 : Set \u2102} (h\u03a9 : IsOpen \u03a9) (f : \u03a9 \u2192 \u2102)\n  (F G : \u03a9 \u2192 \u2102) (hF : DifferentiableOn \u03a9 f F) (hG : DifferentiableOn \u03a9 f G) :\n  \u2203 c : \u2102, \u2200 x \u2208 \u03a9, G x = F x + c := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:43-8:44: error: Application type mismatch: The argument\n  F\nhas type\n  \u2191\u03a9 \u2192 \u2102\nbut is expected to have type\n  Set \u2191\u03a9\nin the application\n  DifferentiableOn (\u2191\u03a9) f F\n",
+            "-:8:22-8:44: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  NontriviallyNormedField \u2191\u03a9\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:8:73-8:74: error: Application type mismatch: The argument\n  G\nhas type\n  \u2191\u03a9 \u2192 \u2102\nbut is expected to have type\n  Set \u2191\u03a9\nin the application\n  DifferentiableOn (\u2191\u03a9) f G\n",
+            "-:8:52-8:74: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  NontriviallyNormedField \u2191\u03a9\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:9:22-9:23: error: Application type mismatch: The argument\n  x\nhas type\n  \u2102\nbut is expected to have type\n  \u2191\u03a9\nin the application\n  G x\n",
+            "-:9:28-9:29: error: Application type mismatch: The argument\n  x\nhas type\n  \u2102\nbut is expected to have type\n  \u2191\u03a9\nin the application\n  F x\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

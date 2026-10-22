@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEPA Candidate Tree</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8f9fa; display: flex; flex-direction: column; }
+  #header { background: #fff; border-bottom: 1px solid #dee2e6; padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  #header h1 { font-size: 18px; font-weight: 600; color: #212529; }
+  .legend { display: flex; gap: 14px; font-size: 13px; color: #495057; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #adb5bd; }
+  #graph-container { flex: 1 1 auto; width: 100%; overflow: auto; padding: 20px; text-align: center; }
+  #graph-container svg { width: 100%; height: 100%; }
+  #tooltip {
+    display: none; position: fixed; background: #fff; border: 1px solid #dee2e6;
+    border-radius: 8px; padding: 14px 16px; max-width: 560px; max-height: 70vh; overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18); z-index: 1000; font-size: 13px; line-height: 1.5;
+  }
+  #tooltip .tt-header { font-weight: 700; font-size: 15px; margin-bottom: 6px; color: #212529; }
+  #tooltip .tt-meta { color: #6c757d; margin-bottom: 4px; }
+  #tooltip .tt-hint { color: #adb5bd; font-size: 11px; font-style: italic; margin-bottom: 10px; }
+  #tooltip .tt-comp-name { font-weight: 600; color: #495057; margin-top: 10px; border-bottom: 1px solid #e9ecef; padding-bottom: 2px; }
+  #tooltip .tt-comp-text {
+    white-space: pre-wrap; word-break: break-word; background: #f8f9fa;
+    border: 1px solid #e9ecef; border-radius: 4px; padding: 8px 10px; margin-top: 4px;
+    font-family: "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px;
+    max-height: 200px; overflow-y: auto;
+  }
+  .role-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 6px; }
+  .role-best { background: #00e5ff33; color: #006064; }
+  .role-pareto { background: #ff980033; color: #e65100; }
+  .role-seed { background: #e0e0e0; color: #424242; }
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>GEPA Candidate Tree</h1>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:cyan"></div> Best</div>
+    <div class="legend-item"><div class="legend-dot" style="background:orange"></div> Pareto Front</div>
+    <div class="legend-item"><div class="legend-dot" style="background:lightgray"></div> Other</div>
+  </div>
+</div>
+<div id="graph-container"><p>Loading graph&hellip;</p></div>
+<div id="tooltip"></div>
+
+<script type="module">
+const NODES = [{"idx": 0, "score": 0.0571, "parents": "seed", "role": "Pareto Front", "components": {"instructions": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block."}},
+{"idx": 1, "score": 0.1143, "parents": "0", "role": "Best", "components": {"instructions": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The statement MUST compile under the given context. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.\n\n## Input format\nYou will receive:\n1. A math problem stated in LaTeX.\n2. A \"Lean 4 context\" code block containing the `import`, `open`, and `open scoped` lines to assume. Do NOT repeat these lines; write exactly one theorem.\n\n## Output format\n- Exactly one theorem inside a single ```lean4 code block, ending with `:= by sorry`.\n\n## Correctness requirements\n1. **Faithfulness.** Include EVERY hypothesis from the problem (e.g., if the problem says \"f is holomorphic in \u03a9\", you must include a hypothesis like `hf : DifferentiableOn \u2102 f \u03a9`). Formalize the conclusion precisely. Note: \"P is constant\" means `\u2203 c, \u2200 z \u2208 s, P z = c` \u2014 it does NOT mean `P z = 0`.\n2. **It must compile.** Use only identifiers that actually exist in Mathlib under the given opens. Never invent names or notation. If you are unsure whether a named predicate exists, express the concept with basic logic (`\u2200`, `\u2203`, `=`) and well-established Mathlib functions instead.\n\n## Lean 4 / Mathlib facts (respect these)\n- **Lambdas:** write `fun x => ...` or `fun x \u21a6 ...`. NEVER write `\u03bb x, ...` \u2014 a comma after the binder is a syntax error (\"unexpected token ','; expected '\u21a6', '=>'\").\n- **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]`. Writing `(X Y : TopologicalSpace)` fails with \"type expected, got (TopologicalSpace : Type _ \u2192 Type _)\".\n- **Derivative:** the derivative of `f : \u211d \u2192 \u211d` as a function is `deriv f`. There is no `f'` notation in Mathlib. \"f'(x) \u2192 L as x \u2192 +\u221e\" is `Tendsto (deriv f) atTop (nhds L)`.\n- **Differentiability:** `DifferentiableAt \u211d f x`, `DifferentiableOn \u211d f s`, `Differentiable \u211d f`. \"f is holomorphic on an open set \u03a9\" is `DifferentiableOn \u2102 f \u03a9` (plus `h\u03a9 : IsOpen \u03a9` when given).\n- **Limits:** \"g(x) \u2192 L as x \u2192 +\u221e\" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).\n- **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.\n- **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `\u2203 c, \u2200 z \u2208 s, f z = c` (or `Set.EqOn f (fun _ => c) s`).\n- **Open maps:** \"f is an open map\" is `IsOpenMap f`. The product projections are `Prod.fst : X \u00d7 Y \u2192 X` and `Prod.snd : X \u00d7 Y \u2192 Y`. To state two claims in one theorem, conjoin them with `\u2227`.\n- **Quantifiers:** `\u2200 x \u2208 s, P x` and `\u2200 x > 0, P x` are valid.\n\n## Worked examples (corrected)\nProblem: \"Suppose f is differentiable for every x>0 and f'(x) \u2192 0 as x \u2192 +\u221e. Put g(x)=f(x+1)-f(x). Prove g(x) \u2192 0 as x \u2192 +\u221e.\" (opens include Topology Filter Real)\n```lean4\ntheorem g_converges_to_zero (f : \u211d \u2192 \u211d) (hf : \u2200 x > 0, DifferentiableAt \u211d f x)\n    (hlim : Tendsto (deriv f) atTop (nhds 0)) :\n    Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry\n```\n\nProblem: \"Show that \u03c0\u2081 : X \u00d7 Y \u2192 X and \u03c0\u2082 : X \u00d7 Y \u2192 Y are open maps.\" (opens include Filter Set TopologicalSpace)\n```lean4\ntheorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :\n    IsOpenMap (Prod.fst : X \u00d7 Y \u2192 X) \u2227 IsOpenMap (Prod.snd : X \u00d7 Y \u2192 Y) := by sorry\n```\n\nProblem: \"Suppose f is holomorphic in an open set \u03a9. Prove that if Im(f) is constant, then f is constant.\" (opens include Complex Filter)\n```lean4\ntheorem constant_of_constant_imaginary_part (f : \u2102 \u2192 \u2102) (\u03a9 : Set \u2102) (h\u03a9 : IsOpen \u03a9)\n    (hf : DifferentiableOn \u2102 f \u03a9) (hIm : \u2203 c : \u211d, \u2200 z \u2208 \u03a9, (f z).im = c) :\n    \u2203 c : \u2102, \u2200 z \u2208 \u03a9, f z = c := by sorry\n```\n\n## Final checklist before answering\n(a) Every identifier is either a bound variable or a real Mathlib name available under the given opens.\n(b) Syntax is valid Lean 4: `fun ... => ...` binders, typeclasses in `[...]`, no invented notation.\n(c) All hypotheses of the problem appear and the conclusion matches the problem.\n(d) The statement ends with `:= by sorry` inside one ```lean4 code block.\n`"}},
+{"idx": 2, "score": 0.1143, "parents": "1", "role": "Pareto Front", "components": {"instructions": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The statement MUST compile under the given context. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.\n\n## Input format\nYou will receive:\n1. A math problem stated in LaTeX.\n2. A \"Lean 4 context\" code block containing the `import`, `open`, and `open scoped` lines to assume. Do NOT repeat these lines; write exactly one theorem.\n\n## Output format\n- Exactly one theorem inside a single ```lean4 code block, ending with `:= by sorry`.\n\n## Correctness requirements\n1. **Faithfulness.** Include EVERY hypothesis from the problem (e.g., if the problem says \"f is holomorphic in \u03a9\", you must include a hypothesis like `hf : DifferentiableOn \u2102 f \u03a9`). Formalize the conclusion precisely. Note: \"P is constant\" means `\u2203 c, \u2200 z \u2208 s, P z = c` \u2014 it does NOT mean `P z = 0`.\n2. **It must compile.** Use only identifiers that actually exist in Mathlib under the given opens. Never invent names or notation. The context is compiled with `autoImplicit` set to `false`: an unknown identifier (e.g. `IsSimple`, `HausdorffSpace`, `set.univ`) is a hard error, NOT an implicitly bound variable. If you are unsure whether a named predicate exists, express the concept with basic logic (`\u2200`, `\u2203`, `=`) and well-established Mathlib functions instead.\n3. **No fabrication.** Do NOT add hypotheses that are not in the problem (e.g. do not invent things like `\u2200 i, i < p \u2192 i \u2260 0 \u2192 i \u2223 a`). Do not drop, weaken, or strengthen any hypothesis or the conclusion.\n4. **Given parameters are arguments.** If the problem says \"let ... = a/b where a, b are integers\", bind `a b : \u2124` as theorem arguments and the equation as a hypothesis; do NOT wrap them in an existential in the conclusion.\n\n## Lean 4 / Mathlib facts (respect these)\n- **Lambdas:** write `fun x => ...` or `fun x \u21a6 ...`. NEVER write `\u03bb x, ...` \u2014 a comma after the binder is a syntax error.\n- **Typeclasses vs Propositions:** `TopologicalSpace`, `CompactSpace`, `T2Space`, `MetrizableSpace`, `MetricSpace`, `Group`, `Fintype`, `NormedField` are typeclasses: declare them in `[...]`, e.g. `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]`. Writing `(X Y : TopologicalSpace)` fails. By contrast, `IsOpen s`, `IsClosed s`, `Nat.Prime p`, `Odd n` are Propositions, NOT typeclasses: they must be hypotheses `(h : IsClosed s)`. Writing `[IsClosed s]` fails because `IsClosed` is not a class.\n- **Derivative:** the derivative of `f : \u211d \u2192 \u211d` as a function is `deriv f`. There is no `f'` notation. \"f'(x) \u2192 L as x \u2192 +\u221e\" is `Tendsto (deriv f) atTop (nhds L)`.\n- **Differentiability:** `DifferentiableAt \u211d f x`, `DifferentiableOn \u211d f s`, `Differentiable \u211d f`. \"f is holomorphic on an open set \u03a9\" is `DifferentiableOn \u2102 f \u03a9` (plus `h\u03a9 : IsOpen \u03a9` when given).\n- **Limits:** \"g(x) \u2192 L as x \u2192 +\u221e\" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology`).\n- **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.\n- **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `\u2203 c, \u2200 z \u2208 s, f z = c` (or `Set.EqOn f (fun _ => c) s`).\n- **Open maps:** \"f is an open map\" is `IsOpenMap f`. The product projections are `Prod.fst : X \u00d7 Y \u2192 X` and `Prod.snd : X \u00d7 Y \u2192 Y`. To state two claims in one theorem, conjoin them with `\u2227`.\n- **Quantifiers:** `\u2200 x \u2208 s, P x` and `\u2200 x > 0, P x` are valid.\n\n### Big operators (`\u2211`, `\u220f`)\n- The syntax is `\u2211 i in s, f i` (or `\u2211 i \u2208 s, f i`): a COMMA separates the binder from the body. NEVER write `\u2211 i in s do f i` \u2014 `do` is a syntax error here (\"unexpected token ... expected ','\").\n- `Finset.range n` is `{0, ..., n-1}`. For a sum from 1 to n-1 (e.g. a harmonic sum) use `Finset.Icc 1 (n - 1)` \u2014 do NOT write `1 + \u2211 ...` over a filtered range.\n- To filter a finset, parenthesize: `\u2211 i in (Finset.range n).filter (fun i => i \u2260 0), f i`.\n\n### Numbers, fractions, divisibility\n- Sums of fractions like `1 + 1/2 + ... + 1/(p-1)` live in `\u211a`, e.g. `\u2211 i in Finset.Icc 1 (p - 1), (1 : \u211a) / i`. With `i : \u2115`, `1 / i` would be natural-number division (so `1/2 = 0`) \u2014 always force `\u211a`.\n- `a / b` with `a b : \u2124` is INTEGER division. A fraction `a/b` equal to a rational number must be stated in `\u211a` with casts: `(a : \u211a) / b`, plus a hypothesis `(hb : b \u2260 0)`.\n- Divisibility `\u2223` needs both sides in the SAME type: with `p : \u2115` and `a : \u2124` write `(p : \u2124) \u2223 a`.\n- Primality: `Nat.Prime p`. \"p is an odd prime\": add `(hodd : p \u2260 2)` or `(hodd : Odd p)`.\n\n### Group theory\n- \"G is a simple group\" is `IsSimpleGroup G` \u2014 there is NO `IsSimple`. \"G is not simple\" is `\u00ac IsSimpleGroup G`.\n- The order of a finite group is `Fintype.card G`; the theorem needs `[Group G] [Fintype G]`. Use specific numbers literally, e.g. `(hG : Fintype.card G = 1365)`.\n\n### Topology\n- \"Hausdorff\" is `T2Space` \u2014 there is NO `HausdorffSpace`.\n- \"X is compact\" is the typeclass `[CompactSpace X]`.\n- \"X is metrizable\" is `MetrizableSpace X` (a Prop). Do NOT conclude `MetricSpace X` \u2014 a `MetricSpace` is a chosen metric (data), not the proposition \"metrizable\".\n- The whole space is `Set.univ`, or `univ` after `open Set` \u2014 NEVER `set.univ` (lowercase `set` does not exist).\n- A subset `s : Set X` coerces to a type automatically, so `MetrizableSpace s` typechecks and the subtype's `TopologicalSpace` instance is found automatically \u2014 do NOT declare `[TopologicalSpace s]` yourself.\n\n## Worked examples (corrected)\nProblem: \"Suppose f is differentiable for every x>0 and f'(x) \u2192 0 as x \u2192 +\u221e. Put g(x)=f(x+1)-f(x). Prove g(x) \u2192 0 as x \u2192 +\u221e.\" (opens include Topology Filter Real)\n```lean4\ntheorem g_converges_to_zero (f : \u211d \u2192 \u211d) (hf : \u2200 x > 0, DifferentiableAt \u211d f x)\n    (hlim : Tendsto (deriv f) atTop (nhds 0)) :\n    Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry\n```\n\nProblem: \"Show that \u03c0\u2081 : X \u00d7 Y \u2192 X and \u03c0\u2082 : X \u00d7 Y \u2192 Y are open maps.\" (opens include Filter Set TopologicalSpace)\n```lean4\ntheorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :\n    IsOpenMap (Prod.fst : X \u00d7 Y \u2192 X) \u2227 IsOpenMap (Prod.snd : X \u00d7 Y \u2192 Y) := by sorry\n```\n\nProblem: \"Suppose f is holomorphic in an open set \u03a9. Prove that if Im(f) is constant, then f is constant.\" (opens include Complex Filter)\n```lean4\ntheorem constant_of_constant_imaginary_part (f : \u2102 \u2192 \u2102) (\u03a9 : Set \u2102) (h\u03a9 : IsOpen \u03a9)\n    (hf : DifferentiableOn \u2102 f \u03a9) (hIm : \u2203 c : \u211d, \u2200 z \u2208 \u03a9, (f z).im = c) :\n    \u2203 c : \u2102, \u2200 z \u2208 \u03a9, f z = c := by sorry\n```\n\nProblem: \"Let p be an odd prime and let 1 + 1/2 + ... + 1/(p-1) = a/b, where a, b are integers. Show that p \u2223 a.\" (opens include Fintype Set Real Ideal Polynomial, open scoped BigOperators)\n```lean4\ntheorem prime_dvd_harmonic_numerator (p : \u2115) (hp : Nat.Prime p) (hodd : p \u2260 2)\n    (a b : \u2124) (hb : b \u2260 0)\n    (h : (\u2211 i in Finset.Icc 1 (p - 1), (1 : \u211a) / i) = (a : \u211a) / b) :\n    (p : \u2124) \u2223 a := by sorry\n```\n\nProblem: \"Prove that if |G| = 1365 then G is not simple.\" (opens include Fintype Subgroup Set Polynomial Ideal, open scoped BigOperators)\n```lean4\ntheorem not_simple_of_card_eq_1365 (G : Type*) [Group G] [Fintype G]\n    (hG : Fintype.card G = 1365) :\n    \u00ac IsSimpleGroup G := by sorry\n```\n\nProblem: \"Let X be a compact Hausdorff space that is the union of the closed subspaces X\u2081 and X\u2082. If X\u2081 and X\u2082 are metrizable, show that X is metrizable.\" (opens include Filter Set TopologicalSpace, open scoped Topology)\n```lean4\ntheorem metrizable_of_union_closed_metrizable (X : Type*) [TopologicalSpace X] [CompactSpace X]\n    [T2Space X] (X1 X2 : Set X) (hX1 : IsClosed X1) (hX2 : IsClosed X2)\n    (hUnion : X1 \u222a X2 = univ) (hM1 : MetrizableSpace X1) (hM2 : MetrizableSpace X2) :\n    MetrizableSpace X := by sorry\n```\n\n## Final checklist before answering\n(a) Every identifier is either a bound variable or a real Mathlib name available under the given opens. In particular: `T2Space` (not `HausdorffSpace`), `IsSimpleGroup` (not `IsSimple`), `MetrizableSpace` (not `MetricSpace` as a goal), `univ`/`Set.univ` (not `set.univ`), `deriv f` (not `f'`).\n(b) Syntax is valid Lean 4: `fun ... => ...` binders; typeclasses in `[...]`; Prop-valued conditions (`IsClosed`, `IsOpen`, `Nat.Prime`, ...) as `(h : ...)` hypotheses; big operators use a comma (`\u2211 i in s, ...`), never `do`.\n(c) Casts are correct: rational sums and fractions in `\u211a`; divisibility stated in one type, e.g. `(p : \u2124) \u2223 a`.\n(d) All hypotheses of the problem appear (no more, no fewer \u2014 never fabricate extra ones) and the conclusion matches the problem exactly.\n(e) The statement ends with `:= by sorry` inside one ```lean4 code block.\n`"}}];
+const DOT = `digraph G {
+    rankdir=TB;
+    node [style=filled, shape=circle, fontsize=14, width=0.6, height=0.6];
+    0 [label="0\\n(0.06)", fillcolor=orange, tooltip=" "];
+    1 [label="1\\n(0.11)", fillcolor=cyan, tooltip=" "];
+    2 [label="2\\n(0.11)", fillcolor=orange, tooltip=" "];
+    0 -> 1;
+    1 -> 2;
+}`;
+
+const nodeMap = {};
+NODES.forEach(n => { nodeMap[n.idx] = n; });
+
+let pinnedIdx = null;   // non-null when tooltip is click-pinned (scrollable)
+let hoverIdx = null;    // non-null when hovering over a node
+
+function renderTooltip(idx) {
+  const n = nodeMap[idx];
+  if (!n) return "";
+  let roleBadge = "";
+  if (n.role === "Best") roleBadge = '<span class="role-badge role-best">BEST</span>';
+  else if (n.role === "Pareto Front") roleBadge = '<span class="role-badge role-pareto">PARETO</span>';
+  else if (n.role === "Seed") roleBadge = '<span class="role-badge role-seed">SEED</span>';
+
+  let comps = "";
+  for (const [name, text] of Object.entries(n.components)) {
+    const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    comps += '<div class="tt-comp-name">' + name + '</div><div class="tt-comp-text">' + escaped + '</div>';
+  }
+
+  return '<div class="tt-header">Candidate ' + n.idx + roleBadge + '</div>' +
+    '<div class="tt-meta">Score: <strong>' + n.score + '</strong>&nbsp;&nbsp;|&nbsp;&nbsp;Parent(s): ' + n.parents +
+    '</div><div class="tt-hint">' + (pinnedIdx === idx ? 'Click node again to dismiss' : 'Click to pin &amp; scroll') + '</div>' +
+    comps;
+}
+
+function positionTooltip(x, y) {
+  const tt = document.getElementById("tooltip");
+  let tx = x + 16, ty = y + 16;
+  const r = tt.getBoundingClientRect();
+  if (tx + r.width > window.innerWidth - 8) tx = x - r.width - 16;
+  if (ty + r.height > window.innerHeight - 8) ty = y - r.height - 16;
+  if (tx < 8) tx = 8;
+  if (ty < 8) ty = 8;
+  tt.style.left = tx + "px";
+  tt.style.top = ty + "px";
+}
+
+function showTooltip(idx, x, y) {
+  const tt = document.getElementById("tooltip");
+  tt.innerHTML = renderTooltip(idx);
+  tt.style.display = "block";
+  positionTooltip(x, y);
+}
+
+function hideTooltip() {
+  pinnedIdx = null;
+  hoverIdx = null;
+  document.getElementById("tooltip").style.display = "none";
+}
+
+// Click outside tooltip and outside nodes dismisses pinned tooltip
+document.addEventListener("mousedown", function(e) {
+  const tt = document.getElementById("tooltip");
+  if (pinnedIdx !== null && tt.style.display === "block"
+      && !tt.contains(e.target) && !e.target.closest(".node")) {
+    hideTooltip();
+  }
+});
+
+async function render() {
+  const { instance } = await import("https://cdn.jsdelivr.net/npm/@viz-js/viz@3.11.0/lib/viz-standalone.mjs");
+  const viz = await instance();
+  const svg = viz.renderSVGElement(DOT);
+  const container = document.getElementById("graph-container");
+  container.innerHTML = "";
+  container.appendChild(svg);
+
+  // Attach hover listeners and strip native <title> tooltips to avoid double tooltips
+  svg.querySelectorAll(".node").forEach(node => {
+    const title = node.querySelector("title");
+    if (!title) return;
+    const idx = parseInt(title.textContent, 10);
+    if (isNaN(idx)) return;
+    title.remove();  // remove native SVG tooltip
+    node.style.cursor = "pointer";
+    // Hover: show tooltip following the mouse (non-interactive)
+    node.addEventListener("mouseenter", e => {
+      if (pinnedIdx !== null) return;  // don't override a pinned tooltip
+      hoverIdx = idx;
+      showTooltip(idx, e.clientX, e.clientY);
+    });
+    node.addEventListener("mousemove", e => {
+      if (pinnedIdx !== null || hoverIdx !== idx) return;
+      positionTooltip(e.clientX, e.clientY);
+    });
+    node.addEventListener("mouseleave", () => {
+      if (pinnedIdx !== null) return;
+      hoverIdx = null;
+      document.getElementById("tooltip").style.display = "none";
+    });
+    // Click: pin the tooltip so user can scroll it
+    node.addEventListener("click", e => {
+      e.stopPropagation();
+      if (pinnedIdx === idx) { hideTooltip(); return; }
+      pinnedIdx = idx;
+      showTooltip(idx, e.clientX, e.clientY);
+    });
+  });
+  // Also strip <title> from edges and the graph itself
+  svg.querySelectorAll(".edge title").forEach(t => t.remove());
+  const graphTitle = svg.querySelector(":scope > title");
+  if (graphTitle) graphTitle.remove();
+}
+
+render().catch(err => {
+  document.getElementById("graph-container").innerHTML =
+    "<p style='color:red'>Failed to render graph: " + err.message + "</p>" +
+    "<pre>" + DOT.replace(/</g,"&lt;") + "</pre>";
+});
+</script>
+</body>
+</html>

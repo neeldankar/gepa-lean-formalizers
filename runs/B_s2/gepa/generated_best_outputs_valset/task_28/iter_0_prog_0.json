@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_144",
+        "sample": 0,
+        "output": "```lean4\ntheorem composite_number_10_power_tower (n : \u2115) (hn : 0 < n) :\n  \u00acIsPrime (10^(10^(10^n)) + 10^(10^n) + 10^n - 1) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem composite_number_10_power_tower (n : \u2115) (hn : 0 < n) :\n  \u00acIsPrime (10^(10^(10^n)) + 10^(10^n) + 10^n - 1) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:3-7:10: error(lean.unknownIdentifier): Unknown identifier `IsPrime`\n\nNote: It is not possible to treat `IsPrime` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

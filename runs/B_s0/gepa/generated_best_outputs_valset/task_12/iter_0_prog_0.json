@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_049",
+        "sample": 0,
+        "output": "```lean4\ntheorem characteristic_subgroups_are_normal (G : Type _) [Group G] (H : Subgroup G) (h : \u2200 (g : G), g \u2208 H \u2192 g \u2208 H) :\n  Normal H := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem characteristic_subgroups_are_normal (G : Type _) [Group G] (H : Subgroup G) (h : \u2200 (g : G), g \u2208 H \u2192 g \u2208 H) :\n  Normal H := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement uses a trivial hypothesis (every element of H is in H) instead of the characteristic condition (invariance under all automorphisms), so it does not capture the English claim that characteristic subgroups are normal."
+        },
+        "score": 0
+    }
+]

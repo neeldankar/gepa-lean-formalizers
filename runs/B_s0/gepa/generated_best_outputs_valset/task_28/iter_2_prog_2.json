@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_144",
+        "sample": 0,
+        "output": "```lean4\ntheorem composite_number_theorem (n : \u2115) (hn : n > 0) :\n  \u00acPrime (10 ^ (10 ^ (10 ^ n)) + 10 ^ (10 ^ n) + 10 ^ n - 1) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem composite_number_theorem (n : \u2115) (hn : n > 0) :\n  \u00acPrime (10 ^ (10 ^ (10 ^ n)) + 10 ^ (10 ^ n) + 10 ^ n - 1) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies over a natural number n with a positivity hypothesis and asserts the negation of `Prime` for exactly the same expression given in the English statement."
+        },
+        "score": 1
+    }
+]

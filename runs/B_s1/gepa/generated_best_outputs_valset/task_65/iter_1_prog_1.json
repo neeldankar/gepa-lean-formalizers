@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_347",
+        "sample": 0,
+        "output": "```lean4\ntheorem f_not_necessarily_continuous (f : \u211d \u2192 \u211d) (h : \u2200 x, Tendsto (fun h => f (x + h) - f (x - h)) (nhds 0) (nhds 0)) :\n    \u00ac\u2200 x, Tendsto f (nhds x) (nhds (f x)) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem f_not_necessarily_continuous (f : \u211d \u2192 \u211d) (h : \u2200 x, Tendsto (fun h => f (x + h) - f (x - h)) (nhds 0) (nhds 0)) :\n    \u00ac\u2200 x, Tendsto f (nhds x) (nhds (f x)) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The hypothesis exactly encodes the limit condition for every x, and the conclusion states that f is not continuous everywhere, matching the English claim that the condition does not imply continuity."
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,21 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_112",
+        "sample": 0,
+        "output": "```lean4\ntheorem open_minus_closed_is_open_closed_minus_open (X : TopologicalSpace \u03b1) (U : Set \u03b1) (A : Set \u03b1)\n  (hU : IsOpen U) (hA : IsClosed A) : \n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem open_minus_closed_is_open_closed_minus_open (X : TopologicalSpace \u03b1) (U : Set \u03b1) (A : Set \u03b1)\n  (hU : IsOpen U) (hA : IsClosed A) : \n  IsOpen (U \\ A) \u2227 IsClosed (A \\ U) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:40-7:41: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:52-7:53: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:64-7:65: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

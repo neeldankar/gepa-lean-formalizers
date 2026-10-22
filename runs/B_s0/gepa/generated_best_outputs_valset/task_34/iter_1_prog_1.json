@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_169",
+        "sample": 0,
+        "output": "```lean4\ntheorem composition_of_uniformly_continuous_functions_is_uniformly_continuous\n  {X Y Z : Type} [MetricSpace X] [MetricSpace Y] [MetricSpace Z]\n  (f : Y \u2192 Z) (g : X \u2192 Y) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (f \u2218 g) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem composition_of_uniformly_continuous_functions_is_uniformly_continuous\n  {X Y Z : Type} [MetricSpace X] [MetricSpace Y] [MetricSpace Z]\n  (f : Y \u2192 Z) (g : X \u2192 Y) (hf : UniformContinuous f) (hg : UniformContinuous g) :\n  UniformContinuous (f \u2218 g) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem states that the composition of two uniformly continuous functions between metric spaces is uniformly continuous, exactly matching the English claim."
+        },
+        "score": 1
+    }
+]

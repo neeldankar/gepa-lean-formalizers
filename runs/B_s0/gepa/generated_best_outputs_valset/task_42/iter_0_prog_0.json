@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_222",
+        "sample": 0,
+        "output": "```lean4\ntheorem Dummit_Foote_exercise_1_3_12 (G : Type _) [Group G] [Fintype G] (H : Subgroup G) (hH : H \u2260 \u22a4) :\n  \u2203 (M : Subgroup G), M \u2260 \u22a4 \u2227 M \u2287 H \u2227 \u2200 (K : Subgroup G), K \u2287 H \u2192 K = M \u2228 K = \u22a4 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_1_3_12 (G : Type _) [Group G] [Fintype G] (H : Subgroup G) (hH : H \u2260 \u22a4) :\n  \u2203 (M : Subgroup G), M \u2260 \u22a4 \u2227 M \u2287 H \u2227 \u2200 (K : Subgroup G), K \u2287 H \u2192 K = M \u2228 K = \u22a4 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:30-8:35: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  HasSubset (Subgroup G)\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n",
+            "-:8:58-8:63: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  HasSubset (Subgroup G)\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

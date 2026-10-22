@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_286",
+        "sample": 0,
+        "output": "```lean4\ntheorem wilson_theorem_variant (p : \u2115) (hp : Nat.Prime p) (k : \u2115) :\n  (Finset.sum (Finset.range p) fun n => n^k) \u2261 0 [ZMOD p] \u2194 p - 1 \u2223 k :=\n  by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem wilson_theorem_variant (p : \u2115) (hp : Nat.Prime p) (k : \u2115) :\n  (Finset.sum (Finset.range p) fun n => n^k) \u2261 0 [ZMOD p] \u2194 p - 1 \u2223 k :=\n  by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement sums over 0..p\u20111 (including 0) and asserts an equivalence with 0 mod p exactly when p\u20111 divides k, whereas the English problem sums 1..p\u20111 and distinguishes two cases: 0 mod p when p\u20111 \u2224 k and -1 mod p when p\u20111 \u2223 k."
+        },
+        "score": 0
+    }
+]

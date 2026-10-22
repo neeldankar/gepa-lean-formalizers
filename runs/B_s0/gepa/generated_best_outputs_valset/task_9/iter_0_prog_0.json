@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_034",
+        "sample": 0,
+        "output": "```lean4\ntheorem infinite_order_elements_are_distinct (G : Type) [Group G] (x : G) (h : InfiniteOrder x) :\n  \u2200 (n m : \u2124), n \u2260 m \u2192 x^n \u2260 x^m := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem infinite_order_elements_are_distinct (G : Type) [Group G] (x : G) (h : InfiniteOrder x) :\n  \u2200 (n m : \u2124), n \u2260 m \u2192 x^n \u2260 x^m := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:52-7:65: error(lean.unknownIdentifier): Unknown identifier `InfiniteOrder`\n\nNote: It is not possible to treat `InfiniteOrder` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

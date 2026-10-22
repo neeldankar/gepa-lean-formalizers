@@ -1,0 +1,20 @@
+{
+ "dry_run": false,
+ "plan": {
+  "chunk": 5,
+  "runs_dir": "runs",
+  "final_dir": "runs/final",
+  "run_ids": [
+   "B_s0",
+   "B_s1",
+   "B_s2",
+   "D_s0",
+   "D_s1",
+   "D_s2"
+  ],
+  "override": {},
+  "standin_ids": null,
+  "poll_seconds": 60
+ },
+ "started": "2026-10-22T06:12:17+00:00"
+}

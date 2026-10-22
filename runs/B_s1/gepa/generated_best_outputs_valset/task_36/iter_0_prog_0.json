@@ -1,0 +1,19 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_189",
+        "sample": 0,
+        "output": "```lean4\ntheorem no_simple_group_of_order_224 : \u00ac\u2203 (G : Type) [Fintype G] [Group G], IsSimple G \u2227 Fintype.card G = 224 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem no_simple_group_of_order_224 : \u00ac\u2203 (G : Type) [Fintype G] [Group G], IsSimple G \u2227 Fintype.card G = 224 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:33-7:35: error: unexpected token '['; expected ','\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]
