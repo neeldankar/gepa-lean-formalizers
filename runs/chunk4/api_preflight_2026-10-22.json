@@ -1,0 +1,144 @@
+{
+ "date": "2026-10-22",
+ "time": "2026-10-22T00:21:53+00:00",
+ "cache_dir": "/Users/neeldankar/Desktop/formalization project/gepa-lean-formalizers/cache/preflight/20261022T000320385792Z",
+ "checks": [
+  {
+   "name": "reflection_minibatch_3",
+   "kind": "reflection",
+   "model": "moonshotai/Kimi-K3",
+   "records": 3,
+   "prompt_chars": 3289,
+   "seconds": 101.31507966599997,
+   "new_cost_rows": 1,
+   "usd": 0.0784830000000003,
+   "finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 971,
+    "completion_tokens": 5038,
+    "total_tokens": 6009,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 4146
+    }
+   },
+   "failures": [],
+   "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
+   "new_instruction": "Translate the given math problem into a single Lean 4 theorem statement using Mathlib.\n\nInput format: The input consists of (1) a math problem written in LaTeX, and (2) a \"Lean 4 context\" code block containing imports, opens, and possibly definitions. Use exactly that context — do not add or change imports/opens — and write one theorem. The context is assumed to precede your theorem when it is compiled, so do not repeat the import/open lines.\n\nOutput format:\n- Output exactly one theorem with a descriptive name, placed inside a ```lean4 code block.\n- End the statement with `:= by sorry`.\n\nFaithfulness (a judge checks that your statement means the same thing as the problem; a compiling but unfaithful statement scores 0):\n- EVERY assumption in the problem must appear as an explicit hypothesis of the theorem. For example, given \"Let G be a group in which (a*b)^n = a^n * b^n for some fixed integer n > 1 for all a, b ∈ G. Prove (a*b*a⁻¹*b⁻¹)^(n(n-1)) = e\", the statement must include the power hypothesis, e.g.:\n  theorem group_property_exercise (G : Type) [Group G] (n : ℕ) (hn : n > 1)\n      (h : ∀ a b : G, (a * b) ^ n = a ^ n * b ^ n) :\n      ∀ a b : G, (a * b * a⁻¹ * b⁻¹) ^ (n * (n - 1)) = 1 := by sorry\n  Omitting `h` is unfaithful even though the statement compiles.\n- The conclusion must be exactly the claim to be proved, preserving all quantifiers and the precise expressions.\n- Do not drop side conditions (primality, n > 1, \"for all a b\", etc.) and do not add assumptions the problem does not make.\n\nCompilation requirements (the statement is compiled with `autoImplicit` set to `false`):\n- Introduce every variable you use explicitly in the binder list. Referring to an identifier that was never introduced (e.g., using `α` or `n` without declaring it) fails with \"unknown identifier\".\n- Use only identifiers that actually exist in Mathlib (or names you declare). Never invent functions — e.g., `ℕ.ofNat` does not exist. Write exponent towers directly: a Fermat number is `2 ^ (2 ^ n) + 1` with `(n : ℕ)` declared in the binders.\n- Typeclasses are not types. Elements must range over a carrier type: write `{F : Type*} [RCLike F] {V : Type*} [NormedAddCommGroup V] [InnerProductSpace F V] (u v : V)`, never `(u v : InnerProductSpace α)`.\n\nUseful Mathlib patterns:\n- Groups: `(G : Type*) [Group G]`; identity element is `1`, inverse is `a⁻¹`, commutator is `a * b * a⁻¹ * b⁻¹`.\n- Natural numbers: `(n p : ℕ)`; primality is `Nat.Prime p`; a Fermat prime hypothesis is `(hp : p = 2 ^ (2 ^ n) + 1)`.\n- \"a is a primitive root modulo p\": `IsPrimitiveRoot (a : ZMod p) (p - 1)`.\n- Inner product spaces: inner product `⟪u, v⟫_F` (or `inner u v` when the scalar field is unambiguous), norm `‖u‖`, scalar multiplication `a • v`. Example: \"⟨u,v⟩ = 0 iff ‖u‖ ≤ ‖u + a v‖ for all a\" becomes `⟪u, v⟫_F = 0 ↔ ∀ a : F, ‖u‖ ≤ ‖u + a • v‖`.\n\nBefore answering, verify: (1) every hypothesis of the problem appears in the statement; (2) every identifier used is either declared in the binders or a valid Mathlib name; (3) the theorem ends with `:= by sorry` inside a ```lean4 code block.\n`",
+   "error": null,
+   "pass": true,
+   "reasons": [],
+   "max_tokens": 32000
+  },
+  {
+   "name": "reflection_long_15",
+   "kind": "reflection",
+   "model": "moonshotai/Kimi-K3",
+   "records": 15,
+   "prompt_chars": 12899,
+   "seconds": 685.2248258329998,
+   "new_cost_rows": 0,
+   "usd": 0.0,
+   "finish_reason": null,
+   "usage": null,
+   "failures": [
+    "LLMError: gave up after 2 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'"
+   ],
+   "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
+   "new_instruction": "",
+   "error": "LLMError: gave up after 2 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'",
+   "pass": false,
+   "reasons": [
+    "error: LLMError: gave up after 2 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'",
+    "no new cost row (cache hit or not called)",
+    "no new instruction",
+    "reflection failures: ['LLMError: gave up after 2 attempts: HTTP 503: b\\'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }\\'']"
+   ],
+   "max_tokens": 32000
+  },
+  {
+   "name": "arm_f_generate",
+   "kind": "arm_f",
+   "model": "moonshotai/Kimi-K3",
+   "item_id": "pnv_004",
+   "seconds": 314.8506822919999,
+   "new_cost_rows": 1,
+   "usd": 0.24769500000000022,
+   "finish_reason": "length",
+   "usage": {
+    "prompt_tokens": 645,
+    "completion_tokens": 16384,
+    "total_tokens": 17029,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+     "reasoning_tokens": 16384
+    }
+   },
+   "format_failure": true,
+   "compiled": false,
+   "extracted": null,
+   "pass": false,
+   "reasons": [
+    "finish_reason length",
+    "no Lean statement extracted"
+   ],
+   "max_tokens": null
+  },
+  {
+   "name": "opt_judge_pnv_258",
+   "kind": "judge",
+   "model": "openai/gpt-oss-120b",
+   "seconds": 7.100979792000089,
+   "new_cost_rows": 1,
+   "usd": 0.000277649999999241,
+   "verdict": "unfaithful",
+   "reason": "The Lean statement omits the crucial hypothesis that (a * b) ^ n = a ^ n * b ^ n holds for all a, b in G.",
+   "pass": true,
+   "reasons": [],
+   "max_tokens": null
+  },
+  {
+   "name": "ref_judge_pnv_258",
+   "kind": "judge",
+   "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "seconds": 0.42445620799981043,
+   "new_cost_rows": 1,
+   "usd": 0.0002975999999996759,
+   "verdict": "unfaithful",
+   "reason": "The candidate omits the hypothesis that (a * b)^n = a^n * b^n for all a, b in G, which is essential to the statement.",
+   "pass": true,
+   "reasons": [],
+   "max_tokens": null
+  },
+  {
+   "name": "opt_judge_pnv_260",
+   "kind": "judge",
+   "model": "openai/gpt-oss-120b",
+   "seconds": 3.017974833000153,
+   "new_cost_rows": 1,
+   "usd": 0.0002326500000009446,
+   "verdict": "unfaithful",
+   "reason": "The Lean statement omits the crucial hypothesis that every subgroup of G is normal, and it restricts j to ℕ whereas the English statement does not specify the type of j.",
+   "pass": true,
+   "reasons": [],
+   "max_tokens": null
+  },
+  {
+   "name": "ref_judge_pnv_260",
+   "kind": "judge",
+   "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "seconds": 1.3192872499998884,
+   "new_cost_rows": 1,
+   "usd": 0.0005915999999999144,
+   "verdict": "unfaithful",
+   "reason": "The candidate omits the hypothesis that all subgroups of G are normal, and it uses a natural-number exponent instead of an integer exponent, making the statement stronger and not equivalent to the intended theorem.",
+   "pass": true,
+   "reasons": [],
+   "max_tokens": null
+  }
+ ]
+}

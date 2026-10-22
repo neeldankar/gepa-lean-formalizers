@@ -611,17 +611,17 @@
     "pass": true,
     "reasons": [],
     "model": "moonshotai/Kimi-K3",
-    "seconds": 101.3,
-    "usd": 0.0784830000000003,
+    "seconds": 280.8,
+    "usd": 0.20284799999999947,
     "usage": {
      "prompt_tokens": 971,
-     "completion_tokens": 5038,
-     "total_tokens": 6009,
+     "completion_tokens": 13329,
+     "total_tokens": 14300,
      "prompt_tokens_details": {
       "cached_tokens": 0
      },
      "completion_tokens_details": {
-      "reasoning_tokens": 4146
+      "reasoning_tokens": 11849
      }
     }
    },
@@ -634,28 +634,25 @@
      "reflection failures: ['LLMError: gave up after 2 attempts: HTTP 503: b\\'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }\\'']"
     ],
     "model": "moonshotai/Kimi-K3",
-    "seconds": 685.2,
+    "seconds": 685.6,
     "usd": 0.0,
     "usage": null
    },
    "arm_f_generate": {
-    "pass": false,
-    "reasons": [
-     "finish_reason length",
-     "no Lean statement extracted"
-    ],
+    "pass": true,
+    "reasons": [],
     "model": "moonshotai/Kimi-K3",
-    "seconds": 314.9,
-    "usd": 0.24769500000000022,
+    "seconds": 222.0,
+    "usd": 0.17611500000000113,
     "usage": {
      "prompt_tokens": 645,
-     "completion_tokens": 16384,
-     "total_tokens": 17029,
+     "completion_tokens": 11612,
+     "total_tokens": 12257,
      "prompt_tokens_details": {
       "cached_tokens": 0
      },
      "completion_tokens_details": {
-      "reasoning_tokens": 16384
+      "reasoning_tokens": 11312
      }
     }
    },
@@ -663,32 +660,32 @@
     "pass": true,
     "reasons": [],
     "model": "openai/gpt-oss-120b",
-    "seconds": 7.1,
-    "usd": 0.000277649999999241,
+    "seconds": 2.5,
+    "usd": 0.0002794499999989597,
     "usage": null
    },
    "ref_judge_pnv_258": {
     "pass": true,
     "reasons": [],
     "model": "deepseek-ai/DeepSeek-V4.1-Flash",
-    "seconds": 0.4,
-    "usd": 0.0002975999999996759,
+    "seconds": 0.8,
+    "usd": 0.00029879999999948836,
     "usage": null
    },
    "opt_judge_pnv_260": {
     "pass": true,
     "reasons": [],
     "model": "openai/gpt-oss-120b",
-    "seconds": 3.0,
-    "usd": 0.0002326500000009446,
+    "seconds": 1.6,
+    "usd": 0.00020145000000049151,
     "usage": null
    },
    "ref_judge_pnv_260": {
     "pass": true,
     "reasons": [],
     "model": "deepseek-ai/DeepSeek-V4.1-Flash",
-    "seconds": 1.3,
-    "usd": 0.0005915999999999144,
+    "seconds": 1.8,
+    "usd": 0.0007200000000011642,
     "usage": null
    }
   }
