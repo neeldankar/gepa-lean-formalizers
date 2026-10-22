@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7, freeze prepared: Neel's picks in `config.yaml` and `prereg.md`, four drafts applied, subagent check matches. Tag `prereg-frozen` not pushed yet
-- **Status:** no pod running. Waiting for Neel's OK on the diff (commit df982fc and the log commit after it).
-- **Next:** on Neel's OK: `git tag prereg-frozen`, push; then chunk 5 (pod; `scripts/chunk5_job.py`).
+- **Chunk:** 4 of 7 done. `prereg-frozen` tagged and pushed (2026-10-22, commit e631bdb); `prereg.md` never changes from here (Deviations only)
+- **Status:** no pod running (pod 4 confirmed stopped by Neel).
+- **Next:** chunk 5 on a new pod: `scripts/chunk5_job.py` (six GEPA runs in parallel, sanity check, final eval). About 4.3 h and $50 to $73 projected.
 - **Spent so far:** $10.95 of $300 (chunk 4: $10.92 of its $30 cap)
-- **Waiting on Neel:** OK on the prereg and config diff; check that pod 4 (64.247.201.45) is stopped.
+- **Waiting on Neel:** "Start chunk 5" and a pod.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,12 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 4 · freeze tagged; chunk 4 done
+
+- **Did:** Neel's OK on the diff; `git tag -a prereg-frozen` on e631bdb, pushed after a history secret scan. Pod 4 confirmed stopped (Neel). 199 tests pass.
+- **Five random raw examples** (pilot rows, `random.Random(4)`): qwen_nothink pnv_020 (Lean 3 class names, `λ` as a variable: no compile, truth unfaithful); qwen_nothink pnv_239 (binders inside `¬∃`: no compile); qwen_a2 pnv_333 (`α` used as type and variable: no compile); qwen_think pnv_158 (`Complex.abs` form: no compile, 2,258 tokens); reform pnv_024 (compiles; opt judge unparseable, now missing; ref judge unfaithful; truth unfaithful, matching Neel's label P01).
+- **Cost:** $0 this entry.
 
 ### 2026-10-22 · chunk 4 · freeze prepared (not tagged)
 
