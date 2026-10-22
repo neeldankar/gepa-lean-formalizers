@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 in progress (pilot). GEPA pilot run, chunk 5 dry run and labels done; Block 2 (Neel's picks) and the freeze not done
-- **Status:** no pod running. Go table: 3 of 4 met (Qwen3-8B truth-faithful 6.7% is below about 10%); reference judge agrees with Neel on 19 of 20.
-- **Next:** Neel's Block 2 picks (see the 2026-10-22 Block 2 entry); then the freeze: write the picks into `config.yaml` and `prereg.md`, Neel checks the diff, tag `prereg-frozen`; the subagent recomputation of chunk 4's key numbers.
+- **Chunk:** 4 of 7, freeze prepared: Neel's picks in `config.yaml` and `prereg.md`, four drafts applied, subagent check matches. Tag `prereg-frozen` not pushed yet
+- **Status:** no pod running. Waiting for Neel's OK on the diff (commit df982fc and the log commit after it).
+- **Next:** on Neel's OK: `git tag prereg-frozen`, push; then chunk 5 (pod; `scripts/chunk5_job.py`).
 - **Spent so far:** $10.95 of $300 (chunk 4: $10.92 of its $30 cap)
-- **Waiting on Neel:** Block 2 picks, including arm F's model (GLM-5.3 failed its 5-item test; `config.yaml` currently says GLM-5.3); the four prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions, go criterion 1). Check that pod 4 (64.247.201.45) is stopped.
+- **Waiting on Neel:** OK on the prereg and config diff; check that pod 4 (64.247.201.45) is stopped.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,30 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 4 · freeze prepared (not tagged)
+
+- **Neel's picks** (2026-10-22, all as recommended in Block 2): arm F on `moonshotai/Kimi-K3` at the shared 16,384-token cap, arm F budget line about $25; temperature 0.6, 1 sample; optimization judge `openai/gpt-oss-120b`; reference judge `deepseek-ai/DeepSeek-V4.1-Flash`; reflection `moonshotai/Kimi-K3`; GEPA budget 800; threshold 5 points. All four drafts applied (Changes 14 Q3, 15 few-shot, 16 analysis additions, the go-criterion-1 note with Neel's reason 4).
+- **New rule (Neel), Changes item 17:** a judge reply still unparseable after one re-ask is a missing verdict, never faithful or unfaithful. Code: `judge.py` returns `verdict: "missing"`; `judge_score` None with `judge_missing`; truth label None (`ref_judge_missing`) unless a certificate settles it; final eval keeps such rows (not outages); analysis leaves them out of that arm's rates (NaN per item; the false-positive rate and compile/meaning split use only items with the needed values) and reports `missing_opt_judge`, `missing_ref_judge`, `missing_truth_label` per arm; `chunk4 agree` counts missing apart. Choice the rule left open: inside GEPA a missing opt-judge verdict scores 0 (GEPA needs a number) and the feedback says the reply could not be read. Tests: 199 pass.
+- **Pilot agreement under the rule** (`chunk4 agree`): reference judge 19 of 19 with a verdict (1 missing, P20), truth label 19 of 19 (1 missing, P20), optimization judge 16 of 19 (1 missing, P01). Pilot rows themselves are not rescored: P20's stored truth label is still "unfaithful" (recorded before the rule); no go number changes (qwen_a3 has no missing verdict).
+- **Subagent check** (fresh agent, raw files and prereg only, no `src/` or `scripts/`; `runs/chunk4/subagent_check_freeze.json`): match on every count and rate per configuration (compile, format failures, truth faithful, judge score, certified, exact match, length stops, token mean / median / max), agreement 19/19, 19/19, 16/19 with 1 missing each, go criteria, GEPA pilot (158 calls = 70 + 6 x 3 + 70 x 1; 3 reflections; val 0.0571 seed best, 0.0286 candidate), reflections per run 24.89 / 9.61 / 121.67, reflection $0.0969 mean and 121.2 s (element n//2; the two-middle median would be 116.1 s), arm F GLM-5.3 1 compiled / 4 at the cap / max 16,384, dry run Kimi-K3 4 / 0 / 5,470, spend chunk 4 $10.92 and total $10.95. Its one flag is the P20 pilot row above.
+- **At the freeze (Neel's item 7), added since the Oct 17 design doc:**
+  1. One H100 with vLLM for both formalizers: same sampling code; Featherless too limited.
+  2. Reference judge on every compiled item: so certificate vs judge disagreements can show.
+  3. Judge error rate from the random hand-check part only, disagreement part capped at 25: unbiased error estimate.
+  4. Labeling page glosses each statement alone: labels can't anchor on the judge.
+  5. Error tags from the reference judge, same call as its verdict: one call, consistent tags.
+  6. gepa 0.1.4 pinned, library defaults, small custom adapter: no existing GEPA pipeline.
+  7. One scripted miniF2F binder rewrite; non-compiling items dropped and counted: no hand fixes.
+  8. autoImplicit off for candidates: unknown names would compile silently.
+  9. Arm C uses ReForm-8B's released prompt: a weaker seed would inflate D minus C.
+  10. Faithful means logically equivalent; certificate vs judge conflicts to the hand-check: clear truth definition.
+  11. Hand-check paired across the four core arms: paired bootstrap at about 100 labels.
+  12. Few-shot block of 3 train examples for arms A, B, E, F: Qwen3-8B rarely compiled with the one-line seed.
+  13. Q3 as the judge false-positive rate, plus three analysis additions: the old gap moved with compile rate alone.
+  14. Missing judge verdicts never scored, counted per arm: an unreadable reply is not evidence either way.
+  15. Run safety: per-call timeouts and retry caps, live API preflight gate, saved GEPA candidate outputs, chunk 5 combined job with a dry run: Kimi-K2.6 outage and Kimi-K3 hangs.
+- **Cost:** $0 this entry.
 
 ### 2026-10-22 · chunk 4 · Block 2: arm F on GLM-5.3, labels, projection
 

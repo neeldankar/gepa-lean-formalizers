@@ -1,0 +1,490 @@
+{
+ "violations": [
+  "qwen_nothink/pnv_285: compiled, uncertified, ref_verdict='unparseable' but truth_label='unfaithful' (source ref_judge); per item 17 truth label should be missing"
+ ],
+ "notes": [],
+ "outage_rows_dropped": 0,
+ "per_config": {
+  "qwen_nothink": {
+   "n": 30,
+   "compiled": 5,
+   "compile_rate_pct": 16.666666666666668,
+   "format_failures": 0,
+   "truth_faithful": 2,
+   "truth_faithful_rate_pct": 6.666666666666667,
+   "judge_score_sum": 2,
+   "judge_score_rate_pct": 6.666666666666667,
+   "certified": 1,
+   "exact_match": 0,
+   "exact_match_rate_pct": 0.0,
+   "finish_length": 0,
+   "completion_tokens_mean": 93.43333333333334,
+   "completion_tokens_median_idx_n//2": 86,
+   "completion_tokens_max": 175,
+   "opt_judge_missing_among_compiled": 0,
+   "ref_judge_missing_among_compiled": 1,
+   "truth_missing_by_item17_rule": 1,
+   "truth_label_null_in_file": 0,
+   "truth_sources": {
+    "compile": 25,
+    "ref_judge": 4,
+    "certificate": 1
+   }
+  },
+  "qwen_think": {
+   "n": 30,
+   "compiled": 1,
+   "compile_rate_pct": 3.3333333333333335,
+   "format_failures": 0,
+   "truth_faithful": 0,
+   "truth_faithful_rate_pct": 0.0,
+   "judge_score_sum": 0,
+   "judge_score_rate_pct": 0.0,
+   "certified": 0,
+   "exact_match": 0,
+   "exact_match_rate_pct": 0.0,
+   "finish_length": 0,
+   "completion_tokens_mean": 2980.4333333333334,
+   "completion_tokens_median_idx_n//2": 2672,
+   "completion_tokens_max": 6861,
+   "opt_judge_missing_among_compiled": 0,
+   "ref_judge_missing_among_compiled": 0,
+   "truth_missing_by_item17_rule": 0,
+   "truth_label_null_in_file": 0,
+   "truth_sources": {
+    "ref_judge": 1,
+    "compile": 29
+   }
+  },
+  "reform": {
+   "n": 30,
+   "compiled": 19,
+   "compile_rate_pct": 63.333333333333336,
+   "format_failures": 1,
+   "truth_faithful": 14,
+   "truth_faithful_rate_pct": 46.666666666666664,
+   "judge_score_sum": 16,
+   "judge_score_rate_pct": 53.333333333333336,
+   "certified": 8,
+   "exact_match": 0,
+   "exact_match_rate_pct": 0.0,
+   "finish_length": 1,
+   "completion_tokens_mean": 1785.8333333333333,
+   "completion_tokens_median_idx_n//2": 1037,
+   "completion_tokens_max": 16384,
+   "opt_judge_missing_among_compiled": 1,
+   "ref_judge_missing_among_compiled": 0,
+   "truth_missing_by_item17_rule": 0,
+   "truth_label_null_in_file": 0,
+   "truth_sources": {
+    "certificate": 8,
+    "ref_judge": 11,
+    "compile": 10,
+    "format": 1
+   }
+  },
+  "qwen_a2": {
+   "n": 30,
+   "compiled": 3,
+   "compile_rate_pct": 10.0,
+   "format_failures": 0,
+   "truth_faithful": 1,
+   "truth_faithful_rate_pct": 3.3333333333333335,
+   "judge_score_sum": 0,
+   "judge_score_rate_pct": 0.0,
+   "certified": 1,
+   "exact_match": 0,
+   "exact_match_rate_pct": 0.0,
+   "finish_length": 0,
+   "completion_tokens_mean": 93.7,
+   "completion_tokens_median_idx_n//2": 88,
+   "completion_tokens_max": 230,
+   "opt_judge_missing_among_compiled": 0,
+   "ref_judge_missing_among_compiled": 0,
+   "truth_missing_by_item17_rule": 0,
+   "truth_label_null_in_file": 0,
+   "truth_sources": {
+    "compile": 27,
+    "certificate": 1,
+    "ref_judge": 2
+   }
+  },
+  "qwen_a3": {
+   "n": 30,
+   "compiled": 6,
+   "compile_rate_pct": 20.0,
+   "format_failures": 0,
+   "truth_faithful": 2,
+   "truth_faithful_rate_pct": 6.666666666666667,
+   "judge_score_sum": 2,
+   "judge_score_rate_pct": 6.666666666666667,
+   "certified": 0,
+   "exact_match": 0,
+   "exact_match_rate_pct": 0.0,
+   "finish_length": 0,
+   "completion_tokens_mean": 66.36666666666666,
+   "completion_tokens_median_idx_n//2": 64,
+   "completion_tokens_max": 133,
+   "opt_judge_missing_among_compiled": 0,
+   "ref_judge_missing_among_compiled": 0,
+   "truth_missing_by_item17_rule": 0,
+   "truth_label_null_in_file": 0,
+   "truth_sources": {
+    "ref_judge": 6,
+    "compile": 24
+   }
+  }
+ },
+ "pilot_item_count_union": 30,
+ "hand_label_agreement": {
+  "ref_judge": {
+   "agree": 19,
+   "with_verdict": 19,
+   "missing": 1,
+   "disagree_ids": [],
+   "missing_ids": [
+    "P20"
+   ]
+  },
+  "truth_label": {
+   "agree": 19,
+   "with_verdict": 19,
+   "missing": 1,
+   "disagree_ids": [],
+   "missing_ids": [
+    "P20"
+   ]
+  },
+  "opt_judge": {
+   "agree": 16,
+   "with_verdict": 19,
+   "missing": 1,
+   "disagree_ids": [
+    "P05",
+    "P09",
+    "P12"
+   ],
+   "missing_ids": [
+    "P01"
+   ]
+  }
+ },
+ "hand_label_rows": [
+  {
+   "label_id": "P01",
+   "config": "reform",
+   "item_id": "pnv_024",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "unparseable"
+  },
+  {
+   "label_id": "P02",
+   "config": "reform",
+   "item_id": "pnv_092",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": true,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P03",
+   "config": "reform",
+   "item_id": "pnv_215",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": true,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P04",
+   "config": "qwen_a3",
+   "item_id": "pnv_158",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "unfaithful"
+  },
+  {
+   "label_id": "P05",
+   "config": "reform",
+   "item_id": "pnv_363",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P06",
+   "config": "qwen_a3",
+   "item_id": "pnv_169",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "unfaithful"
+  },
+  {
+   "label_id": "P07",
+   "config": "reform",
+   "item_id": "pnv_347",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": true,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P08",
+   "config": "qwen_a2",
+   "item_id": "pnv_034",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "unfaithful"
+  },
+  {
+   "label_id": "P09",
+   "config": "reform",
+   "item_id": "pnv_191",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P10",
+   "config": "reform",
+   "item_id": "pnv_239",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P11",
+   "config": "reform",
+   "item_id": "pnv_081",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": true,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P12",
+   "config": "qwen_a2",
+   "item_id": "pnv_160",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": true,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "unfaithful"
+  },
+  {
+   "label_id": "P13",
+   "config": "qwen_a3",
+   "item_id": "pnv_148",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P14",
+   "config": "qwen_a3",
+   "item_id": "pnv_097",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P15",
+   "config": "qwen_a2",
+   "item_id": "pnv_112",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "unfaithful"
+  },
+  {
+   "label_id": "P16",
+   "config": "reform",
+   "item_id": "pnv_333",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": true,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P17",
+   "config": "reform",
+   "item_id": "pnv_305",
+   "hand": "faithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "faithful",
+   "truth_label": "faithful",
+   "opt_judge": "faithful"
+  },
+  {
+   "label_id": "P18",
+   "config": "qwen_a3",
+   "item_id": "pnv_260",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "unfaithful"
+  },
+  {
+   "label_id": "P19",
+   "config": "qwen_a3",
+   "item_id": "pnv_258",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unfaithful",
+   "truth_label": "unfaithful",
+   "opt_judge": "unfaithful"
+  },
+  {
+   "label_id": "P20",
+   "config": "qwen_nothink",
+   "item_id": "pnv_285",
+   "hand": "unfaithful",
+   "compiled": true,
+   "certified": false,
+   "ref_judge": "unparseable",
+   "truth_label": null,
+   "opt_judge": "unfaithful"
+  }
+ ],
+ "hand_label_configs": {
+  "reform": 10,
+  "qwen_a3": 6,
+  "qwen_a2": 3,
+  "qwen_nothink": 1
+ },
+ "hand_label_compiled": 20,
+ "go": {
+  "qwen_a3_truth_faithful_rate_pct": 6.666666666666667,
+  "qwen_a3_truth_faithful": 2,
+  "qwen_a3_in_10_70": false,
+  "ref_judge_agree_ge_16": true,
+  "ref_judge_agree": 19,
+  "max_exact_match_rate_pct": 0.0,
+  "exact_match_under_20": true
+ },
+ "gepa": {
+  "total_metric_calls": 158,
+  "adapter_metric_calls": 158,
+  "reflection_calls": 3,
+  "n_candidates": 2,
+  "n_val_scores": 2,
+  "seed_val": 0.05714285714285714,
+  "best_val": 0.05714285714285714,
+  "best_idx_file": 0,
+  "best_idx_argmax": 0,
+  "identity_lhs": 158,
+  "identity_holds": true,
+  "a_observed": 0.3333333333333333,
+  "reflections_at_800_a_observed": 24.886363636363637,
+  "reflections_at_800_a0": 121.66666666666667,
+  "reflections_at_800_a1": 9.605263157894736
+ },
+ "reflection_3rec": {
+  "n": 10,
+  "by_run": {
+   "preflight_load": 7,
+   "pilot_qwen": 3
+  },
+  "mean_usd": 0.09687989999999999,
+  "median_seconds_statistics": 116.1,
+  "median_seconds_idx_n//2": 121.2,
+  "seconds_sorted": [
+   52.6,
+   73.1,
+   78.3,
+   95.0,
+   111.0,
+   121.2,
+   148.9,
+   163.7,
+   213.8,
+   233.9
+  ],
+  "usd_list": [
+   0.052398,
+   0.040368,
+   0.087696,
+   0.096618,
+   0.114066,
+   0.159354,
+   0.165642,
+   0.075243,
+   0.118281,
+   0.059133
+  ]
+ },
+ "spend": {
+  "chunk4_usd": 10.91926029367916,
+  "chunk4_rows": 735,
+  "all_usd": 10.952894523679161,
+  "all_rows": 791,
+  "by_chunk": {
+   "2": 0.0322273,
+   "3": 0.0014069299999999998,
+   "4": 10.91926029367916
+  },
+  "rows_missing_usd": 0
+ },
+ "arm_f_glm53": {
+  "n": 5,
+  "compiled": 1,
+  "finish_length": 4,
+  "format_failures": 4,
+  "max_completion_tokens": 16384,
+  "items_unique": 5
+ },
+ "arm_f_dryrun": {
+  "n": 5,
+  "compiled": 4,
+  "finish_length": 0,
+  "format_failures": 0,
+  "max_completion_tokens": 5470,
+  "items_unique": 5,
+  "outage": 0
+ }
+}
