@@ -1,0 +1,2 @@
+== armf
+{"model": "moonshotai/kimi-k3", "items": ["pnv_011"], "compiled": 1, "format_failures": 0, "max_completion_tokens": 808, "completion_tokens": [808], "hit_length_cap": 0, "seconds": [322.7], "usd": 0.014013}

@@ -29,6 +29,17 @@ Template:
 - Next:
 ```
 
+### 2026-10-22 · chunk 5 · arm F rechecked on the new route; Deviation 2 reworded; tripwire
+
+- **Arm F on pnv_011** (`chunk4 armf --ids pnv_011`, 19:14 to 19:20 UTC; from `runs/chunk5/kimi_route_check.json`): pass. 808 tokens, finish stop, compiled, provider Together, 322 s, $0.014. The first attempt failed after 300.5 s with "A Timeout Occurred" (code 504 inside an HTTP 200 reply); the no-choices check retried it. So the route still rides on Together's capacity. pnv_011 used 778 tokens in the dry run on Together's API. Log `runs/chunk4/preflight_2026-10-22/openrouter_together_armf_pnv011.log`.
+- **Deviation 2 reworded** (Neel): it now says "routing only": same model, same serving (Together), same temperatures (reflection 0.0, arm F 0.6) and max_tokens. `seed` is no longer sent. The resume fixes (skip DONE runs, never overwrite saved candidate outputs) are bug fixes and are logged in the entry below, not in prereg.
+- **Tripwire** (Neel): `scripts/tripwire.py` runs on the pod in its own tmux session.
+  - Trips at 3 or more failed reflection attempts within 15 minutes, counting only since the resume.
+  - Pause: it kills the job's tmux session first, so `run_job.sh` neither pushes nor stops the pod, then TERMs the job and GEPA processes (KILL after 30 s). GEPA saves its state every iteration (`core/engine.py`), and no STOPPED or DONE marker is written.
+  - It then writes `/workspace/TRIPWIRE` and `runs/chunk5/tripwire.json`, pushes a `TRIPWIRE:` commit, and waits 30 min for `/workspace/KEEP_POD`. With no answer, it pushes and stops the pod (Neel's 30 min idle rule). It meters the GPU for the wait.
+  - Tests: 7 (218 pass).
+- **Cost:** $0.014 this entry.
+
 ### 2026-10-22 · chunk 5 · Deviation 2: Kimi-K3 through OpenRouter pinned to Together; route checked live
 
 - **Neel's choices:** skip the Together preflight (yesterday's pass did not predict the night). Route Kimi-K3, for reflection and arm F, through OpenRouter pinned to Together (`provider.only: [together]`, fallbacks off, `require_parameters: true`). Rejected: Moonshot's own serving, which fixes kimi-k3 at temperature 1.0; we use 0.0 for reflection and 0.6 for arm F. Prereg Deviation 2.

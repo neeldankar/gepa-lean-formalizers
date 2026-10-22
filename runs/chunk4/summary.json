@@ -710,33 +710,21 @@
   ]
  },
  "armf": {
-  "model": "zai-org/GLM-5.3",
+  "model": "moonshotai/kimi-k3",
   "items": [
-   "pnv_004",
-   "pnv_011",
-   "pnv_019",
-   "pnv_029",
-   "pnv_042"
+   "pnv_011"
   ],
   "compiled": 1,
-  "format_failures": 4,
-  "max_completion_tokens": 16384,
+  "format_failures": 0,
+  "max_completion_tokens": 808,
   "completion_tokens": [
-   16384,
-   933,
-   16384,
-   16384,
-   16384
+   808
   ],
-  "hit_length_cap": 4,
+  "hit_length_cap": 0,
   "seconds": [
-   133.6,
-   9.0,
-   113.2,
-   129.6,
-   127.5
+   322.7
   ],
-  "usd": 0.2969198
+  "usd": 0.014013
  },
  "gepa_pilot": {
   "run_id": "pilot_qwen",
