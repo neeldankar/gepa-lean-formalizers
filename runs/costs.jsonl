@@ -210,6 +210,7 @@
 {"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 270, "completion_tokens": 54, "usd": 0.0}
 {"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 259, "completion_tokens": 63, "usd": 0.0}
 {"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 281, "completion_tokens": 71, "usd": 0.0}
+{"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 281, "completion_tokens": 71, "usd": 0.0}
 {"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 306, "completion_tokens": 73, "usd": 0.0}
 {"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 277, "completion_tokens": 78, "usd": 0.0}
 {"time": "2026-10-18T20:29:37+00:00", "chunk": 4, "run_id": "pilot_qwen_a2", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 258, "completion_tokens": 30, "usd": 0.0}
@@ -440,6 +441,7 @@
 {"time": "2026-10-18T21:30:59+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 625, "completion_tokens": 116, "usd": 0.0}
 {"time": "2026-10-18T21:30:59+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 686, "completion_tokens": 152, "usd": 0.0}
 {"time": "2026-10-18T21:31:00+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.0015227311731937031, "hours": 0.0003816368855122063}
+{"time": "2026-10-18T21:31:00+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 628, "completion_tokens": 57, "usd": 0.0}
 {"time": "2026-10-18T21:31:00+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 628, "completion_tokens": 57, "usd": 0.0}
 {"time": "2026-10-18T21:31:00+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 652, "completion_tokens": 86, "usd": 0.0}
 {"time": "2026-10-18T21:31:02+00:00", "chunk": 4, "run_id": "pilot_qwen", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 283, "completion_tokens": 373, "usd": 0.00026625}
@@ -727,6 +729,7 @@
 {"time": "2026-10-22T02:51:54+00:00", "chunk": 4, "run_id": "chunk5_dryrun", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 0.016630026033435327, "hours": 0.0041679263241692546}
 {"time": "2026-10-22T02:51:54+00:00", "chunk": 4, "run_id": "chunk5_dryrun", "purpose": "gpu", "model": "pod", "prompt_tokens": 0, "completion_tokens": 0, "usd": 5.574488813484398e-06, "hours": 1.3971149908482202e-06}
 {"time": "2026-10-22T02:51:54+00:00", "chunk": 4, "run_id": "chunk5_dryrun_A", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 621, "completion_tokens": 42, "usd": 0.0, "seconds": 0.5}
+{"time": "2026-10-22T02:51:54+00:00", "chunk": 4, "run_id": "chunk5_dryrun_A", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 621, "completion_tokens": 42, "usd": 0.0, "seconds": 0.5}
 {"time": "2026-10-22T02:51:54+00:00", "chunk": 4, "run_id": "chunk5_dryrun_A", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 665, "completion_tokens": 48, "usd": 0.0, "seconds": 0.6}
 {"time": "2026-10-22T02:51:54+00:00", "chunk": 4, "run_id": "chunk5_dryrun_A", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 665, "completion_tokens": 71, "usd": 0.0, "seconds": 0.7}
 {"time": "2026-10-22T02:51:55+00:00", "chunk": 4, "run_id": "chunk5_dryrun_A", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 652, "completion_tokens": 88, "usd": 0.0, "seconds": 0.7}
@@ -735,6 +738,7 @@
 {"time": "2026-10-22T02:51:58+00:00", "chunk": 4, "run_id": "chunk5_dryrun_final", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 360, "completion_tokens": 123, "usd": 0.0002556, "seconds": 0.6}
 {"time": "2026-10-22T02:52:04+00:00", "chunk": 4, "run_id": "chunk5_dryrun_final", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 363, "completion_tokens": 213, "usd": 0.0003645, "seconds": 0.9}
 {"time": "2026-10-22T02:52:04+00:00", "chunk": 4, "run_id": "chunk5_dryrun_final", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 363, "completion_tokens": 335, "usd": 0.0005109, "seconds": 1.0}
+{"time": "2026-10-22T02:52:06+00:00", "chunk": 4, "run_id": "chunk5_dryrun_C", "purpose": "generate", "model": "reform-8b", "prompt_tokens": 150, "completion_tokens": 997, "usd": 0.0, "seconds": 6.8}
 {"time": "2026-10-22T02:52:06+00:00", "chunk": 4, "run_id": "chunk5_dryrun_C", "purpose": "generate", "model": "reform-8b", "prompt_tokens": 150, "completion_tokens": 997, "usd": 0.0, "seconds": 6.8}
 {"time": "2026-10-22T02:52:06+00:00", "chunk": 4, "run_id": "chunk5_dryrun_C", "purpose": "generate", "model": "reform-8b", "prompt_tokens": 106, "completion_tokens": 1028, "usd": 0.0, "seconds": 7.0}
 {"time": "2026-10-22T02:52:07+00:00", "chunk": 4, "run_id": "chunk5_dryrun_C", "purpose": "generate", "model": "reform-8b", "prompt_tokens": 106, "completion_tokens": 1057, "usd": 0.0, "seconds": 7.2}
@@ -753,9 +757,14 @@
 {"time": "2026-10-22T02:52:27+00:00", "chunk": 4, "run_id": "chunk5_dryrun_final", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 507, "completion_tokens": 4000, "usd": 0.0049521, "seconds": 12.3}
 {"time": "2026-10-22T02:52:37+00:00", "chunk": 4, "run_id": "chunk5_dryrun_final", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 507, "completion_tokens": 4000, "usd": 0.0049521, "seconds": 10.4}
 {"time": "2026-10-22T02:52:38+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1103, "completion_tokens": 45, "usd": 0.0, "seconds": 0.4}
+{"time": "2026-10-22T02:52:38+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1103, "completion_tokens": 45, "usd": 0.0, "seconds": 0.4}
+{"time": "2026-10-22T02:52:38+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1104, "completion_tokens": 45, "usd": 0.0, "seconds": 0.4}
 {"time": "2026-10-22T02:52:38+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1104, "completion_tokens": 45, "usd": 0.0, "seconds": 0.4}
 {"time": "2026-10-22T02:52:39+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1148, "completion_tokens": 53, "usd": 0.0, "seconds": 0.4}
+{"time": "2026-10-22T02:52:39+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1148, "completion_tokens": 53, "usd": 0.0, "seconds": 0.4}
 {"time": "2026-10-22T02:52:39+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1114, "completion_tokens": 62, "usd": 0.0, "seconds": 0.5}
+{"time": "2026-10-22T02:52:39+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1114, "completion_tokens": 62, "usd": 0.0, "seconds": 0.5}
+{"time": "2026-10-22T02:52:39+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1135, "completion_tokens": 103, "usd": 0.0, "seconds": 0.8}
 {"time": "2026-10-22T02:52:39+00:00", "chunk": 4, "run_id": "chunk5_dryrun_E", "purpose": "generate", "model": "qwen3-8b", "prompt_tokens": 1135, "completion_tokens": 103, "usd": 0.0, "seconds": 0.8}
 {"time": "2026-10-22T02:52:56+00:00", "chunk": 4, "run_id": "chunk5_dryrun_F", "purpose": "generate", "model": "moonshotai/Kimi-K3", "prompt_tokens": 631, "completion_tokens": 778, "usd": 0.013563, "seconds": 15.1}
 {"time": "2026-10-22T02:52:58+00:00", "chunk": 4, "run_id": "chunk5_dryrun_final", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 249, "completion_tokens": 252, "usd": 0.00018854999999999998, "seconds": 1.4}
