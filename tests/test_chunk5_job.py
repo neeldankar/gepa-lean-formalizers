@@ -102,3 +102,46 @@ def test_final_eval_failure_is_reported_not_skipped(tmp_path, monkeypatch):
     saved = {}
     rows, outages, error = chunk5_job.run_final(chunk5_job.job_cfg(CFG, plan), plan, tmp_path, tmp_path / "final", saved.update)
     assert error.startswith("arm C: LLMError: gave up") and list(rows) == ["A", "B"] and calls == ["A", "B", "C"]
+
+
+def test_done_runs_are_skipped_and_still_sanity_checked(tmp_path, monkeypatch):
+    # GEPA 0.1.4 re-evaluates the seed on the full val set before loading its state, so a DONE run must not restart.
+    started = []
+
+    class FakeChild:
+        returncode = 0
+        def poll(self):
+            return 0
+
+    def popen(cmd, **kw):
+        started.append(cmd[cmd.index("scripts.gepa_run") + 1])
+        return FakeChild()
+
+    class NoMeter:
+        def __init__(self, *a, **k):
+            pass
+        def tick(self):
+            pass
+
+    monkeypatch.setattr(chunk5_job.subprocess, "Popen", popen)
+    monkeypatch.setattr(chunk5_job, "GpuMeter", NoMeter)
+    ids = list(CFG["gepa"]["runs"])
+    fake_run(tmp_path / ids[0])  # finished: has DONE
+    plan = {"chunk": 5, "runs_dir": str(tmp_path), "run_ids": ids, "override": {}, "standin_ids": None, "poll_seconds": 0}
+    codes = chunk5_job.run_gepa_children(CFG, plan, tmp_path / "logs")
+    assert started == ids[1:] and codes[ids[0]] == "skipped (done)" and all(codes[r] == 0 for r in ids[1:])
+    assert chunk5_job.sanity_check(CFG, tmp_path, ids[:1]) == []  # the skipped run is still checked
+    (tmp_path / ids[0] / "best_prompt.txt").write_text(" ")
+    assert chunk5_job.sanity_check(CFG, tmp_path, ids[:1]) != []
+
+
+def test_saved_candidate_outputs_are_never_overwritten(tmp_path):
+    from src.gepa_adapter import FormalizerAdapter
+    adapter = object.__new__(FormalizerAdapter)
+    adapter.candidates_dir = tmp_path
+    row = {"item_id": "pnv_1", "sample": 0, "output": "first", "extracted": None, "compile_status": "ok", "compiled": True,
+           "lean_errors": [], "judge": {"verdict": "faithful", "reason": ""}, "score": 1}
+    adapter.save_candidate("same prompt", [row])
+    adapter.save_candidate("same prompt", [{**row, "output": "re-evaluated on resume"}])
+    (path,) = tmp_path.glob("*.jsonl")
+    assert json.loads(path.read_text().splitlines()[1])["output"] == "first"

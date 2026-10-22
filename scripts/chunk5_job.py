@@ -89,10 +89,15 @@ def sanity_check(cfg, runs_dir, run_ids):
 
 
 def run_gepa_children(cfg, plan, log_dir):
-    """All GEPA runs in parallel, one subprocess each; one GPU meter here for the whole pod."""
+    """All GEPA runs in parallel, one subprocess each; one GPU meter here for the whole pod.
+    A run that already has DONE is skipped ("skipped (done)"): on resume GEPA 0.1.4 re-evaluates the seed
+    prompt on the full val set before it loads its saved state, so even a finished run would redo 70 items.
+    The sanity check still checks skipped runs."""
     log_dir.mkdir(parents=True, exist_ok=True)
+    runs_dir = ROOT / plan["runs_dir"]
+    skipped = [r for r in plan["run_ids"] if (runs_dir / r / "DONE").exists()]
     children = {}
-    for run_id in plan["run_ids"]:
+    for run_id in [r for r in plan["run_ids"] if r not in skipped]:
         cmd = [sys.executable, "-m", "scripts.gepa_run", run_id, "--chunk", str(plan["chunk"]), "--no-gpu-meter",
                "--runs-dir", plan["runs_dir"], "--override", json.dumps(plan["override"])]
         log = open(log_dir / f"{run_id}.log", "w")
@@ -110,7 +115,7 @@ def run_gepa_children(cfg, plan, log_dir):
     finally:
         for _, log in children.values():
             log.close()
-    return {run_id: p.returncode for run_id, (p, _) in children.items()}
+    return {**{run_id: "skipped (done)" for run_id in skipped}, **{run_id: p.returncode for run_id, (p, _) in children.items()}}
 
 
 def run_final(cfg, plan, runs_dir, final_dir, save):

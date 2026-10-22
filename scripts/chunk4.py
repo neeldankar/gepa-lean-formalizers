@@ -31,7 +31,7 @@ from src.costs import summarize
 from src.data.firewall import gepa_items
 from src.data.proofnet import read_jsonl, write_jsonl
 from src.final_eval import read_rows, score_row, write_rows
-from src.generate import formalizer_client, generate
+from src.generate import formalizer_client, generate, reflection_client
 from src.llm import COSTS_PATH, LLMClient
 from src.prompting import context_block, load_fewshot, load_instructions, user_message
 from src.scoring import memorization
@@ -407,7 +407,7 @@ def reflect_load(cfg, summary, argv=()):
     prompts = [InstructionProposalSignature.prompt_renderer(
         {"current_instruction_doc": seed, "dataset_with_feedback": feedback_records(checker, val, rows[3 * i:3 * i + 3])})
         for i in range(n)]
-    client = LLMClient(cfg, CHUNK, run_id="preflight_load", cache_dir=fresh_cache_dir())
+    client = reflection_client(cfg, CHUNK, run_id="preflight_load", cache_dir=fresh_cache_dir())
     t = datetime.now(timezone.utc).isoformat(timespec="seconds")
     out = reflection_load(client, cfg["gepa"]["reflection_model"], cfg["gepa"]["reflection_max_tokens"], prompts, [seed] * n)
     out = {"time": t, "limits": dict(zip(("timeout_seconds", "retries"), client.limits("reflection"))), **out}
@@ -454,6 +454,7 @@ def preflight(cfg, summary, argv=()):
     checker = AxleChecker(cfg["axle"])
     cache = fresh_cache_dir() if "--fresh" in argv else None  # a new cache dir: every call is live
     client = LLMClient(cfg, CHUNK, run_id="preflight", cache_dir=cache)
+    refl_client = reflection_client(cfg, CHUNK, run_id="preflight", cache_dir=cache)
     val = {it["id"]: it for it in gepa_items("val")}
     rows = read_rows(RERUN_OUT["qwen_a3"])
     seed = load_instructions("prompts/arm_A.txt")
@@ -465,13 +466,13 @@ def preflight(cfg, summary, argv=()):
         if not want(label):
             continue
         prompt = InstructionProposalSignature.prompt_renderer({"current_instruction_doc": seed, "dataset_with_feedback": records(rs)})
-        lm = ReflectionLM(client, cfg["gepa"]["reflection_model"], cfg["gepa"]["reflection_max_tokens"])
+        lm = ReflectionLM(refl_client, cfg["gepa"]["reflection_model"], cfg["gepa"]["reflection_max_tokens"])
         before, t0 = snap(), time.monotonic()
         try:
             text = lm(prompt)
         except Exception:
             text = ""
-        reply = client.chat_full(cfg["gepa"]["reflection_model"], [{"role": "user", "content": prompt}], purpose="reflection",
+        reply = refl_client.chat_full(cfg["gepa"]["reflection_model"], [{"role": "user", "content": prompt}], purpose="reflection",
                                  max_tokens=cfg["gepa"]["reflection_max_tokens"]) if lm.calls and not any(
             "HTTP" in f or "Error" in f for f in lm.failures) else {}
         seconds = time.monotonic() - t0

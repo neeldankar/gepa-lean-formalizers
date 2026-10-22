@@ -70,8 +70,11 @@ def spent(chunk, path=COSTS_PATH):
 
 class LLMClient:
     def __init__(self, cfg, chunk, cache_dir=None, costs_path=COSTS_PATH, post=None,
-                 base_url=None, api_key_env="TOGETHER_API_KEY", run_id=None):
+                 base_url=None, api_key_env="TOGETHER_API_KEY", run_id=None, extra_body=None, drop_params=()):
         llm = cfg["llm"]
+        # A host's fixed request fields (OpenRouter's provider pin) and the fields it must not get (seed);
+        # both apply before the cache key, so the key is exactly what is sent.
+        self.extra_body, self.drop_params = dict(extra_body or {}), tuple(drop_params)
         self.base_url = (base_url or llm["base_url"]).rstrip("/")
         self.api_key_env = api_key_env
         self.run_id = run_id
@@ -103,7 +106,9 @@ class LLMClient:
     def chat_full(self, model, messages, purpose, temperature=0.0, max_tokens=2000, seed=0, sample=0, extra=None):
         """{"text", "usage", "finish_reason"}; cached like chat()."""
         body = {"model": model, "messages": messages, "temperature": temperature,
-                "max_tokens": max_tokens, "seed": seed, **(extra or {})}
+                "max_tokens": max_tokens, "seed": seed, **(extra or {}), **self.extra_body}
+        for k in self.drop_params:
+            body.pop(k, None)
         key = hashlib.sha256(json.dumps({**body, "sample": sample}, sort_keys=True).encode()).hexdigest()
         path = self.cache_dir / f"{key}.json"
         if path.exists():
@@ -117,7 +122,7 @@ class LLMClient:
         t0 = time.monotonic()
         data = self.with_retries(body, timeout, retries, purpose=purpose)
         seconds = time.monotonic() - t0
-        choice = data["choices"][0]
+        choice = data["choices"][0]  # with_retries returns only replies that have choices
         out = {"text": choice["message"].get("content") or "", "usage": data.get("usage") or {},
                "finish_reason": choice.get("finish_reason")}
         usd = self.cost(model, out["usage"])
@@ -131,6 +136,7 @@ class LLMClient:
                     "prompt_tokens": out["usage"].get("prompt_tokens", 0),
                     "completion_tokens": out["usage"].get("completion_tokens", 0), "usd": usd,
                     "seconds": round(seconds, 1),
+                    **({"provider": data["provider"]} if data.get("provider") else {}),  # OpenRouter: who served it
                 }) + "\n")
         tmp = path.with_suffix(f".tmp{uuid.uuid4().hex}")  # unique: threads may write the same key
         tmp.write_text(json.dumps(out))
@@ -182,7 +188,10 @@ class LLMClient:
         for attempt in range(retries + 1):
             t0 = time.monotonic()
             try:
-                return self.call_with_deadline(body, timeout)
+                data = self.call_with_deadline(body, timeout)
+                if not data.get("choices"):  # OpenRouter can send an error inside an HTTP 200 reply
+                    raise RetryableError(f"reply without choices: {str(data.get('error'))[:300]}")
+                return data
             except RetryableError as e:
                 self.log_failure(body, purpose, e, time.monotonic() - t0)
                 last = e
@@ -223,7 +232,7 @@ class LLMClient:
             with urllib.request.urlopen(req, timeout=timeout or self.timeout) as resp:
                 return json.load(resp)
         except urllib.error.HTTPError as e:
-            if e.code in (429, 500, 502, 503, 504):
+            if e.code in (408, 429, 500, 502, 503, 504):
                 after = retry_after_seconds(e.headers.get("Retry-After")) if e.code == 429 and e.headers else None
                 raise RetryableError(f"HTTP {e.code}: {e.read()[:300]!r}", retry_after=after) from None
             raise LLMError(f"HTTP {e.code}: {e.read()[:300]!r}") from None

@@ -10,7 +10,7 @@ import sys
 from src.axle_check import AxleChecker
 from src.config import ROOT, load_config
 from src.costs import GpuMeter
-from src.generate import formalizer_client
+from src.generate import formalizer_client, reflection_client
 from src.llm import LLMClient
 from src.runner import run_gepa
 
@@ -30,7 +30,8 @@ def run(cfg, run_id, chunk, runs_dir=ROOT / "runs", meter=True):
     gen = formalizer_client(cfg, spec["model"], chunk, run_id=run_id)
     judge = LLMClient(cfg, chunk, run_id=run_id)
     meter = GpuMeter(cfg, chunk, run_id) if meter else None
-    result = run_gepa(cfg, run_id, gen, judge, judge, AxleChecker(cfg["axle"]), runs_dir=runs_dir,
+    reflection = reflection_client(cfg, chunk, run_id=run_id)
+    result = run_gepa(cfg, run_id, gen, judge, reflection, AxleChecker(cfg["axle"]), runs_dir=runs_dir,
                       on_batch=meter.tick if meter else None)
     if meter:
         meter.tick()

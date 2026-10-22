@@ -225,3 +225,54 @@ def test_retry_after_http_date():
     assert retry_after_seconds("Thu, 22 Oct 2026 07:28:00 GMT", now=now) == 60
     assert retry_after_seconds("Thu, 22 Oct 2026 07:00:00 GMT", now=now) == 0
     assert retry_after_seconds("", now=now) is None
+
+
+def test_extra_body_and_drop_params_shape_the_request_and_the_cache_key(tmp_path):
+    # Deviation 2: OpenRouter's provider pin goes into every request; seed is never sent.
+    sent = []
+    def post(body):
+        sent.append(body)
+        return REPLY
+    cfg = copy.deepcopy(CFG)
+    cfg["llm"]["prices"]["m"] = {"input": 0, "output": 0}
+    pin = {"provider": {"only": ["together"], "allow_fallbacks": False, "require_parameters": True}}
+    c = LLMClient(cfg, 4, cache_dir=tmp_path / "c", costs_path=tmp_path / "costs.jsonl", post=post,
+                  extra_body=pin, drop_params=["seed"])
+    c.chat("m", [{"role": "user", "content": "x"}], purpose="reflection", temperature=0.6, seed=7)
+    assert sent[0]["provider"] == pin["provider"] and "seed" not in sent[0] and sent[0]["temperature"] == 0.6
+    c.chat("m", [{"role": "user", "content": "x"}], purpose="reflection", temperature=0.6, seed=8)
+    assert len(sent) == 1  # seed is not sent, so it can't split the cache either
+    plain = LLMClient(cfg, 4, cache_dir=tmp_path / "c", costs_path=tmp_path / "costs.jsonl", post=post)
+    plain.chat("m", [{"role": "user", "content": "x"}], purpose="reflection", temperature=0.6, seed=7)
+    assert len(sent) == 2 and "provider" not in sent[1]  # a different request is a different cache entry
+
+
+def test_serving_provider_is_logged(tmp_path):
+    c = retry_client(tmp_path, lambda body: {**REPLY, "provider": "Together"})
+    c.chat("m", [{"role": "user", "content": "x"}], purpose="reflection")
+    row = json.loads((tmp_path / "costs.jsonl").read_text().splitlines()[0])
+    assert row["provider"] == "Together"
+
+
+def test_reply_without_choices_is_retried(tmp_path):
+    calls = []
+    def post(body):
+        calls.append(1)
+        return {"error": {"code": 502, "message": "provider error"}} if len(calls) == 1 else REPLY
+    c = retry_client(tmp_path, post)
+    assert c.chat("m", [{"role": "user", "content": "x"}], purpose="reflection") == "ok"
+    assert len(calls) == 2
+    row = json.loads((tmp_path / "api_failures.jsonl").read_text().splitlines()[0])
+    assert "without choices" in row["error"]
+
+
+def test_reflection_and_arm_f_share_openrouter_pinned_to_together():
+    from src.generate import formalizer_client, reflection_client
+    for client in (reflection_client(CFG, 5), formalizer_client(CFG, "arm_f", 5)):
+        assert client.base_url == "https://openrouter.ai/api/v1" and client.api_key_env == "OPENROUTER_API_KEY"
+        assert client.extra_body == {"provider": {"only": ["together"], "allow_fallbacks": False, "require_parameters": True}}
+        assert client.drop_params == ("seed",)
+    assert CFG["gepa"]["reflection_model"] == CFG["models"]["arm_f"]["served_name"] == "moonshotai/kimi-k3"
+    assert "moonshotai/kimi-k3" in CFG["llm"]["prices"]
+    # the judges stay on Together's own API
+    assert LLMClient(CFG, 5).base_url == "https://api.together.xyz/v1" and LLMClient(CFG, 5).extra_body == {}

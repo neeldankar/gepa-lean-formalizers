@@ -1,0 +1,44 @@
+{
+ "window": [
+  "2026-10-22T06:12:17Z",
+  "2026-10-22T08:44:08Z"
+ ],
+ "kimi_k3_failed_attempts": 53,
+ "http_503": 46,
+ "http_503_at_339_to_341_s": 46,
+ "http_429": 7,
+ "other": 0,
+ "new_route_check": {
+  "time": "2026-10-22T18:42:52+00:00",
+  "load_passed": 6,
+  "load_concurrent": 6,
+  "load_wall_s": 535,
+  "load_call_s": [
+   106,
+   122,
+   535,
+   53,
+   254,
+   137
+  ],
+  "load_usd": 0.898,
+  "reflection_minibatch_3": {
+   "pass": true,
+   "seconds": 56.59366320899426,
+   "finish_reason": "stop"
+  },
+  "arm_f_generate": {
+   "pass": false,
+   "seconds": 303,
+   "finish_reason": "length",
+   "completion_tokens": 16384,
+   "item_id": "pnv_004"
+  },
+  "kimi_k3_rows": 8,
+  "providers": [
+   "Together"
+  ],
+  "usd": 1.195,
+  "failed_attempts": 0
+ }
+}

@@ -47,7 +47,8 @@ llm:
     deepseek-ai/DeepSeek-V4.1-Flash: {input: 0.3, output: 1.2}
     zai-org/GLM-5.3-Flash: {input: 0.15, output: 0.5}
     moonshotai/Kimi-K2.6: {input: 1.2, output: 4.5}   # no longer served serverless (chunk 4)
-    moonshotai/Kimi-K3: {input: 3, output: 15}
+    moonshotai/Kimi-K3: {input: 3, output: 15}   # Together's API id (until Deviation 2)
+    moonshotai/kimi-k3: {input: 3, output: 15}   # OpenRouter id, Together endpoint (OpenRouter list, 2026-10-22)
     zai-org/GLM-5.3: {input: 1.4, output: 4.4}   # Together model list, chunk 4 probe (2026-10-18)
     Qwen/Qwen3.5-9B: {input: 0.17, output: 0.25}
     qwen3-8b: {input: 0, output: 0}   # served by vLLM on the pod; GPU time is logged separately
@@ -80,10 +81,15 @@ models:
     base_url: https://api.together.xyz/v1
     api_key_env: TOGETHER_API_KEY
     enable_thinking: false
-  arm_f:                       # arm F's frontier model, through Together; Neel's pick, chunk 4
-    served_name: moonshotai/Kimi-K3   # Neel, freeze (2026-10-22): GLM-5.3 compiled 1 of 5 train items (4 hit the 16k cap)
-    base_url: https://api.together.xyz/v1
-    api_key_env: TOGETHER_API_KEY
+  arm_f:                       # arm F's frontier model; Neel's pick, chunk 4. Also GEPA's reflection host (gepa.reflection_host)
+    # Neel, freeze (2026-10-22): Kimi-K3; GLM-5.3 compiled 1 of 5 train items (4 hit the 16k cap).
+    # Deviation 2 (Neel, 2026-10-22): through OpenRouter, pinned to Together only (same serving and sampling
+    # as on Together's API); seed is not sent: OpenRouter lists no seed support for Together's Kimi-K3.
+    served_name: moonshotai/kimi-k3
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    extra_body: {provider: {only: [together], allow_fallbacks: false, require_parameters: true}}
+    drop_params: [seed]
 
 # Identical across arms; fixed at the freeze (Neel, 2026-10-22): temperature 0.6, 1 sample, 16,384-token cap.
 generation:
@@ -103,7 +109,8 @@ arms:
 
 gepa:
   max_metric_calls: 800            # Neel, freeze (2026-10-22)
-  reflection_model: moonshotai/Kimi-K3     # Neel, freeze (2026-10-22); not Qwen, not the reference judge's family
+  reflection_model: moonshotai/kimi-k3     # Neel, freeze (2026-10-22); not Qwen, not the reference judge's family
+  reflection_host: arm_f           # Deviation 2: reflection calls use arm F's route (OpenRouter, pinned to Together)
   reflection_max_tokens: 32000     # Kimi-K3 reasons first; 8000 cut off a 15-record reflection (chunk 4 preflight)
   runs:
     B_s0: {model: qwen3-8b, seed: 0, seed_prompt: prompts/arm_A.txt, fewshot: prompts/fewshot.txt}

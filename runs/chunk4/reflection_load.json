@@ -1,170 +1,242 @@
 {
- "time": "2026-10-22T02:32:52+00:00",
+ "time": "2026-10-22T18:42:52+00:00",
  "limits": {
   "timeout_seconds": 600,
-  "retries": 1
+  "retries": 4
  },
  "calls": [
   {
    "name": "reflection_load_0",
    "kind": "reflection",
-   "model": "moonshotai/Kimi-K3",
+   "model": "moonshotai/kimi-k3",
    "records": 3,
-   "seconds": 121.25196558300013,
+   "seconds": 106.33045929100626,
    "new_cost_rows": 1,
    "error": null,
    "finish_reason": "stop",
    "usage": {
     "prompt_tokens": 971,
-    "completion_tokens": 6247,
-    "total_tokens": 7218,
+    "completion_tokens": 5777,
+    "total_tokens": 6748,
+    "cost": 0.0874944,
+    "is_byok": false,
     "prompt_tokens_details": {
-     "cached_tokens": 0
+     "cached_tokens": 768,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.0874944,
+     "upstream_inference_prompt_cost": 0.0008394,
+     "upstream_inference_completions_cost": 0.086655
     },
     "completion_tokens_details": {
-     "reasoning_tokens": 5296
+     "reasoning_tokens": 4664,
+     "image_tokens": 0,
+     "audio_tokens": 0
     }
    },
-   "usd": 0.096618,
+   "usd": 0.089568,
    "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
-   "new_instruction": "Translate the given math problem into a single Lean 4 theorem statement using Mathlib.\n\n## Input\nYou are given:\n1. A math problem written in LaTeX.\n2. A \"Lean 4 context\" code block containing the `import`, `open`, `open scoped` (and possibly definition) lines that will be placed before your theorem. Assume these are already in scope; do NOT repeat them in your answer.\n\n## Output format\n- Output exactly one ```lean4 code block containing exactly one theorem, and nothing else (no explanations, no imports).\n- The theorem must end with `:= by sorry`.\n- Give the theorem a descriptive snake_case name.\n\n## Hard requirement 1: the statement MUST compile\nThe checker compiles your statement first; a compile error scores 0 and the faithfulness judge is never run. Known pitfalls:\n- `autoImplicit` is disabled. Every identifier you use must be explicitly bound in the theorem's binder list — this includes type variables (`α`, `F`, `V`, `G`, ...) and term variables (`n`, `p`, `u`, `v`, ...). Using an undeclared `n` or `α` produces an \"unknown identifier\" error.\n- Use only identifiers that actually exist in Mathlib. Never invent names such as `ℕ.ofNat`; write ordinary arithmetic expressions like `2 ^ n + 1`.\n- Typeclasses are not types. To speak of elements of a structure, introduce a carrier type plus instance arguments, e.g.\n  - `(G : Type) [Group G] (a b : G)`\n  - `{F : Type*} [RCLike F] {V : Type*} [NormedAddCommGroup V] [InnerProductSpace F V] (u v : V)`\n  Writing something like `(u v : InnerProductSpace α)` is invalid.\n- Standard Mathlib idioms:\n  - group identity element: `1` (not `e`); inverse: `a⁻¹`; power: `x ^ n`\n  - norm: `‖x‖`; inner product: `inner u v`; scalar multiplication: `a • v`\n  - primality: `Nat.Prime p`\n  - \"g is a primitive root modulo p\": `orderOf (g : ZMod p) = p - 1` (equivalently `IsPrimitiveRoot (g : ZMod p) (p - 1)`)\n\n## Hard requirement 2: the statement MUST be faithful\nA judge compares your statement against the original problem; dropped or altered assumptions score 0 even if the statement compiles.\n- EVERY hypothesis in the problem must appear as an explicit named hypothesis. For example, \"a group in which (ab)^n = a^n b^n for all a, b\" requires `(h : ∀ a b : G, (a * b) ^ n = a ^ n * b ^ n)`; \"for some fixed integer n > 1\" requires `(n : ℕ) (hn : n > 1)`; \"p is prime\" requires `(hp : Nat.Prime p)`.\n- The conclusion must be exactly the claim to be proved, preserving the quantifier structure (\"For all a, b ∈ G, prove ...\" → the conclusion starts with `∀ a b : G, ...`).\n- Do not add assumptions the problem does not make, and do not omit any it does make.\n\n## Workflow\n1. Parse the problem into: objects (with their types), hypotheses, and conclusion.\n2. Choose a carrier type and the minimal Mathlib typeclass instances for each object.\n3. Introduce one named hypothesis per assumption in the problem.\n4. State the conclusion.\n5. Mentally type-check before answering: every identifier is bound, every application has correctly typed arguments, and the result is a complete `theorem name ... : ... := by sorry`.\n\n## Example of a correct response\nFor the problem \"Suppose u, v ∈ V. Prove that ⟨u,v⟩ = 0 if and only if ‖u‖ ≤ ‖u + a v‖ for all a ∈ F.\" with context `import Mathlib` / `open InnerProductSpace RCLike ...`:\n\n```lean4\ntheorem inner_eq_zero_iff_norm_le {F : Type*} [RCLike F] {V : Type*} [NormedAddCommGroup V] [InnerProductSpace F V] (u v : V) :\n    inner u v = 0 ↔ ∀ a : F, ‖u‖ ≤ ‖u + a • v‖ := by sorry\n```\n`",
+   "new_instruction": "Translate the given math problem into a single Lean 4 theorem statement using Mathlib.\n\n# Input format\nYou will receive:\n1. A math problem written in LaTeX.\n2. A \"Lean 4 context\" code block containing the imports, `open`s, and definitions that will be prepended before your theorem.\n\n# Output format\n- Output exactly one theorem — no auxiliary lemmas, definitions, or proofs.\n- Do NOT repeat the imports/opens; the context is added automatically. You may only use names available through `import Mathlib` and the given opens.\n- End the theorem with `:= by sorry`.\n- Put the theorem in a single ```lean4 code block.\n\n# Faithfulness requirements (a common failure is dropping hypotheses)\n- Encode EVERY assumption of the problem as an explicit hypothesis binder, including:\n  - Quantified setup conditions. E.g., \"a group G in which (ab)^n = a^n b^n for all a, b\" MUST produce a hypothesis like `(h : ∀ a b : G, (a * b) ^ n = a ^ n * b ^ n)`. Do not omit such defining conditions.\n  - Parameter constraints. E.g., \"some fixed integer n > 1\" requires `(n : ℕ) (hn : n > 1)`.\n  - Side conditions such as primality: `(hpp : Nat.Prime p)`.\n- Preserve the logical structure exactly: \"for all …, P\" → `∀ …, P`; \"P if and only if Q\" → `P ↔ Q`; \"there exists …\" → `∃ …`.\n- Do not strengthen, weaken, or add to the conclusion.\n\n# Compilation requirements (the statement MUST compile; `autoImplicit` is set to false)\n- Declare every identifier you use in the theorem's binder list. Referring to an undeclared variable (e.g., using `α` or `n` without binding it) is an error. Bind type variables explicitly, e.g. `{α : Type*}`.\n- Never invent identifiers. Only use names that actually exist in Lean 4 core or Mathlib. For example, `ℕ.ofNat` does not exist — with `(n : ℕ)` and `(p : ℕ)`, simply write `p = 2 ^ n + 1`.\n- Typeclasses are not types. Never write `(u : InnerProductSpace α)` or `(G : Group)`. Instead introduce a carrier type together with instance arguments, e.g.:\n  - Groups: `(G : Type*) [Group G]`\n  - Real inner product space: `{E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]` with vectors `(u v : E)`\n  - General inner product space: `{𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]`\n- Apply each constant to the correct number and order of arguments, and write coercions explicitly, e.g. `(3 : ZMod p)`.\n\n# Mathlib encoding reference\n- Group identity element `e` is written `1`; inverse is `a⁻¹`; the commutator `aba⁻¹b⁻¹` is `a * b * a⁻¹ * b⁻¹`.\n- Powers: `x ^ n` with `n : ℕ`. ℕ subtraction is truncated, so `n * (n - 1)` is fine under `n > 1`.\n- \"p is prime\" → `Nat.Prime p` for `p : ℕ`.\n- \"a is a primitive root modulo p\" means a has multiplicative order p − 1 in `ZMod p`: `orderOf (3 : ZMod p) = p - 1` (equivalently `IsPrimitiveRoot (3 : ZMod p) (p - 1)`; note `IsPrimitiveRoot ζ k` means ζ is a primitive k-th root of unity, so the element must be cast into `ZMod p`).\n- Inner product spaces: `inner u v` (or `⟪u, v⟫`), norm `‖u‖` (or `norm u`), scalar multiplication `a • v`. The scalar field must satisfy `RCLike` (i.e., ℝ or ℂ), so \"F\" in the problem maps to `ℝ`, `ℂ`, or a general `{𝕜 : Type*} [RCLike 𝕜]`.\n- Fermat prime setup: `(n p : ℕ) (hp : p = 2 ^ n + 1) (hpp : Nat.Prime p)`.\n\n# Method\n1. Read the problem and list: (a) every mathematical object and its type, (b) every assumption (including \"for all\"-quantified setup conditions), (c) the exact claim.\n2. Map each object to a Mathlib type (with the needed typeclass instances), each assumption to a named hypothesis, and the claim to the conclusion.\n3. Assemble: `theorem <descriptive_name> <binders> <hypotheses> : <conclusion> := by sorry`.\n4. Mentally type-check before answering: Is every identifier declared? Does every name exist in Mathlib with the right arity? Are typeclasses supplied as instances rather than used as types? Are coercions explicit?",
    "pass": true,
    "reasons": []
   },
   {
    "name": "reflection_load_1",
    "kind": "reflection",
-   "model": "moonshotai/Kimi-K3",
+   "model": "moonshotai/kimi-k3",
    "records": 3,
-   "seconds": 213.78214083300008,
+   "seconds": 122.09399854100047,
    "new_cost_rows": 1,
    "error": null,
    "finish_reason": "stop",
    "usage": {
     "prompt_tokens": 983,
-    "completion_tokens": 10427,
-    "total_tokens": 11410,
+    "completion_tokens": 6561,
+    "total_tokens": 7544,
+    "cost": 0.101364,
+    "is_byok": false,
     "prompt_tokens_details": {
-     "cached_tokens": 0
+     "cached_tokens": 0,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.101364,
+     "upstream_inference_prompt_cost": 0.002949,
+     "upstream_inference_completions_cost": 0.098415
     },
     "completion_tokens_details": {
-     "reasoning_tokens": 9105
+     "reasoning_tokens": 5728,
+     "image_tokens": 0,
+     "audio_tokens": 0
     }
    },
-   "usd": 0.159354,
+   "usd": 0.101364,
    "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
-   "new_instruction": "Translate the given math problem into a single Lean 4 theorem statement using Mathlib.\n\n# Input format\nYou are given:\n1. A math problem stated in LaTeX.\n2. A \"Lean 4 context\": imports, opens, and sometimes definitions (e.g. `noncomputable def g ...`). Your answer will be checked by appending it to this exact context, so use what the context provides (in particular, use any provided definition instead of re-defining it). Do NOT repeat the imports/opens/definitions in your answer — output only the theorem.\n\n# Output format\n- Exactly one `theorem ... := by sorry`, inside a single ```lean4 code block, with no other text.\n- Give the theorem a short descriptive name.\n\n# Hard requirement: the statement must compile\nThe statement is first compiled (appended to the given context); if it fails to parse or elaborate, the score is 0. `autoImplicit` is off, so every identifier you use must be an actual Lean/Mathlib name — an unknown identifier is an error. The statement must also faithfully match the problem: separate the hypotheses from the conclusion, and do not introduce spurious or shadowing binders (e.g. \"show that some function f ... is not continuous\" means the conclusion is `∃ f : ℝ → ℝ, ...`; do not also take `f` as a theorem argument).\n\n# Lean 4 / Mathlib syntax rules (violating these caused failures)\n- Lambda: `fun h : ℝ => ...` or `λ h : ℝ ↦ ...`. NEVER `λ h : ℝ, ...` — a comma after a λ binder is a parse error (\"unexpected token ','; expected '↦', '=>'\"). (By contrast, `∀` and `∃` binders DO take a comma: `∀ x : ℝ, ...`, `∃ f : ℝ → ℝ, ...`.)\n- Function application needs a space: `f (x + h)`, not `f(x + h)`.\n- Big operators: `∑ i ∈ s, a i` — e.g. a sum over `i < n` is `∑ i ∈ Finset.range n, g i`. Do NOT use the old `∑ i in s, a i` syntax; it no longer parses (\"unexpected token 'in'; expected ','\"). (Fallback that avoids the notation entirely: `Finset.sum (Finset.range n) g`.)\n- Limits: `lim_{h → 0} F h = L` is `Filter.Tendsto (fun h => F h) (nhds 0) (nhds L)`.\n- \"Tends to infinity\" for an ℝ-valued sequence/function: `Filter.Tendsto f atTop atTop`. Do NOT write `nhds (⊤ : Filter ℝ)`: `nhds` takes a point of the space, and `⊤ : Filter ℝ` is a filter, not a point — a type error.\n- Correct Mathlib names:\n  - total order = `LinearOrder` (NOT `TotalOrder`).\n  - lower/upper bounds of `E : Set α`: `lowerBounds E` and `upperBounds E` are the SETS of bounds; write hypotheses as `ha : a ∈ lowerBounds E`, `hb : b ∈ upperBounds E`. There are no types `LowerBound E` / `UpperBound E`. (Safe fallback: `ha : ∀ x ∈ E, a ≤ x`, `hb : ∀ x ∈ E, x ≤ b`.)\n  - nonemptiness: `hE : E.Nonempty`.\n  - continuity: `Continuous f`.\n- The context opens `Topology Filter Real Complex TopologicalSpace Finset` and `BigOperators`, so `Tendsto`, `nhds`, `atTop`, `range`, `Continuous`, `∑` etc. are directly available; fully qualified forms (`Filter.Tendsto`, `Finset.range`) also work.\n- Watch out for name clashes, e.g. if the type variable is named `α`, name the bound variables `a`/`b` (or similar), not `α`/`β`.\n\n# Strategy\n1. Parse the problem: what are the givens, what is the claim? Translate \"prove P\" into `... : P`, and \"show that an object with property P exists\" into `... : ∃ ..., P ...`.\n2. Reuse the definitions from the context verbatim (same names, same types).\n3. Prefer simple, standard Mathlib formulations; if unsure whether a name exists, expand the definition manually (e.g. `∀ x ∈ E, a ≤ x` instead of `a ∈ lowerBounds E`).\n4. Before answering, mentally re-check: balanced parentheses, `fun ... =>` (not `λ ... ,`), spaces in applications, `∈` (not `in`) in big operators, and that every identifier exists in Mathlib.\n\n# Corrected examples (given the corresponding contexts)\n- \"Prove that lim_{n→∞} ∑_{i<n} a_i = ∞ where a_i = √(i+1) − √i\", with `g` defined in the context:\n```lean4\ntheorem limit_sum_g_tends_to_infty :\n    Filter.Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, g i) atTop atTop := by sorry\n```\n- \"Suppose f satisfies lim_{h→0} f(x+h) − f(x−h) = 0 for every x. Show that f need not be continuous\":\n```lean4\ntheorem exists_not_continuous_of_limit_eq_zero :\n    ∃ f : ℝ → ℝ, (∀ x : ℝ, Filter.Tendsto (fun h : ℝ => f (x + h) - f (x - h)) (nhds 0) (nhds 0)) ∧ ¬ Continuous f := by sorry\n```\n- \"Let E be a nonempty subset of a totally ordered set; if α is a lower bound and β an upper bound of E, then α ≤ β\":\n```lean4\ntheorem lower_bound_le_upper_bound {α : Type*} [LinearOrder α] {E : Set α} (hE : E.Nonempty)\n    {a b : α} (ha : a ∈ lowerBounds E) (hb : b ∈ upperBounds E) : a ≤ b := by sorry\n```",
+   "new_instruction": "Translate the given math problem into a single Lean 4 theorem statement using Mathlib.\n\nINPUT FORMAT: You are given (1) an informal math problem in LaTeX and (2) a \"Lean 4 context\" containing imports, `open` / `open scoped` commands, and possibly definitions. Your theorem will be appended directly after that context and compiled with Lean 4 + Mathlib (with the `autoImplicit` option set to `false`), so it must compile exactly as written. Use only the given imports/opens, and if the context defines a function or constant (e.g. `g`), state the theorem about that definition instead of redefining it.\n\nOUTPUT FORMAT: Output ONLY the theorem (do not repeat the context), give it a descriptive name, end it with `:= by sorry`, and put it in a ```lean4 code block. Compilation is a hard requirement: if the statement does not compile, the answer scores 0 and is not even judged.\n\nLEAN 4 SYNTAX RULES (Lean 3 syntax will NOT compile):\n- Lambdas: write `fun x => ...` or `λ x ↦ ...`. NEVER `λ x, ...` — a comma after the binder is a parse error (\"unexpected token ','; expected '↦', '=>'\").\n- Big operators: write `∑ i ∈ s, f i` / `∏ i ∈ s, f i` using the `∈` symbol. The form `∑ i in s, ...` is a parse error (\"unexpected token 'in'\").\n- Function application needs a space: `f (x + h)`, not `f(x + h)`.\n\nMATHLIB FACTS YOU MUST GET RIGHT (unknown identifiers are errors):\n- The total-order typeclass is `LinearOrder` (e.g. `{α : Type*} [LinearOrder α]`). `TotalOrder` does NOT exist.\n- Bounds of a set: write `a ∈ lowerBounds E` and `b ∈ upperBounds E` (`lowerBounds E` and `upperBounds E` are terms of type `Set α`); there are no types `LowerBound E` / `UpperBound E`. Nonemptiness: `hE : E.Nonempty`.\n- Limits: `Filter.Tendsto f (nhds a) (nhds b)` means `f x → b` as `x → a`. \"Tends to infinity\" for an ℝ-valued sequence/function is `Filter.Tendsto f atTop atTop` (use `atBot` for `-∞`). `nhds` takes a point of the space, never a filter, so `nhds (⊤ : Filter ℝ)` is a type error; ℝ has no top element.\n- With `open Filter`, the names `atTop`, `atBot`, `nhds`, `Tendsto` are available unqualified; qualified forms like `Filter.Tendsto` also work.\n\nLOGICAL STRUCTURE:\n- Mirror the problem's quantifier structure exactly. If the problem asks to show a claim \"does not need to hold\" (i.e. a counterexample exists), state an existence theorem, e.g. `∃ f : ℝ → ℝ, (∀ x : ℝ, Filter.Tendsto (fun h : ℝ => f (x + h) - f (x - h)) (nhds 0) (nhds 0)) ∧ ¬ Continuous f`. Do NOT also take `f` as a theorem parameter, and do not shadow a parameter with an `∃` binder of the same name.\n- Precedence: `∀ x, P ∧ Q` parses as `∀ x, (P ∧ Q)`. When a conjunct lies outside a quantifier, parenthesize explicitly: `(∀ x, P) ∧ Q`.\n\nBefore answering, mentally re-parse the whole statement: every binder uses valid Lean 4 syntax, every identifier is either bound in the theorem, opened by the context, or an existing Mathlib name, and all types match.",
    "pass": true,
    "reasons": []
   },
   {
    "name": "reflection_load_2",
    "kind": "reflection",
-   "model": "moonshotai/Kimi-K3",
+   "model": "moonshotai/kimi-k3",
    "records": 3,
-   "seconds": 233.93204608299993,
+   "seconds": 535.286164666999,
    "new_cost_rows": 1,
    "error": null,
    "finish_reason": "stop",
    "usage": {
     "prompt_tokens": 959,
-    "completion_tokens": 10851,
-    "total_tokens": 11810,
+    "completion_tokens": 24325,
+    "total_tokens": 25284,
+    "cost": 0.367752,
+    "is_byok": false,
     "prompt_tokens_details": {
-     "cached_tokens": 0
+     "cached_tokens": 0,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.367752,
+     "upstream_inference_prompt_cost": 0.002877,
+     "upstream_inference_completions_cost": 0.364875
     },
     "completion_tokens_details": {
-     "reasoning_tokens": 9155
+     "reasoning_tokens": 22680,
+     "image_tokens": 0,
+     "audio_tokens": 0
     }
    },
-   "usd": 0.165642,
+   "usd": 0.367752,
    "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
-   "new_instruction": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.\n\n## Input format\n\nYou will receive:\n1. A math problem stated in English with LaTeX notation.\n2. A \"Lean 4 context\": a code block containing `import` statements, `open` / `open scoped` statements, and possibly definitions, with the note \"use these imports, opens and definitions; write one theorem\".\n\n## Output format\n\n- Output exactly one ```lean4 code block and nothing else (no explanations, no commentary).\n- The block must contain only the theorem statement. Do NOT repeat the context (imports/opens/definitions); assume they are already in scope. Write exactly one theorem.\n- The theorem must end with `:= by sorry`. Do not attempt a proof.\n- Use a descriptive snake_case theorem name.\n\nYour answer is scored in two stages: (1) the statement is appended to the given context and must compile; (2) a judge checks that the statement is logically faithful to the English problem. Failing either stage scores 0.\n\n## Requirement 1 — the statement must compile\n\nUse only real Mathlib identifiers, with exact names, correct argument structure, and valid Unicode tokens. Known pitfalls:\n\n**Types vs. typeclasses.**\n- `TopologicalSpace`, `Group`, `CommGroup`, `Fintype`, `Finite` are typeclasses, not types. Write `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]` — never `(X Y : TopologicalSpace)`. Write `(G : Type*) [Group G]` — never `(G : Group)`.\n- Only typeclasses go in square brackets `[]`. Every `Prop`-valued assumption must be a named parenthesized hypothesis, e.g. `(hp : Nat.Prime p)`, `(hp : IsQuotientMap p)`, `(hG : Fintype.card G = p ^ n * m)`.\n\n**Standard Mathlib names (use these exact forms; do not invent identifiers):**\n- \"Order of a finite group\": `Fintype.card G` (requires `[Fintype G]`) or `Nat.card G`. For `H : Subgroup G`, use `Nat.card H` or `Fintype.card H` (subgroups coerce to types; `Nat.card` needs no extra instance). There is no `Order.of` and no `FiniteOrder` typeclass — using them fails. (`orderOf x` exists but means the order of an *element*, not the cardinality of a group.)\n- \"G is abelian\": `[CommGroup G]`.\n- \"H is a subgroup of G\": `(H : Subgroup G)`. \"H is normal\": `H.Normal`. \"All subgroups of G are normal\": `(h : ∀ H : Subgroup G, H.Normal)`. \"H is a characteristic subgroup\": use Mathlib's predicate `Subgroup.Characteristic H`; if unsure it exists, state the defining property directly (invariance under all automorphisms `ϕ : G ≃* G`).\n- \"p is prime\": `(hp : Nat.Prime p)`. \"p does not divide m\": `(hpm : p ∤ m)` — the symbol is `∤` (U+2224, `\\nmid`); the look-alike `∦` (U+2226) is NOT valid Lean syntax and causes an \"expected token\" parse error. Safe alternative: `(hpm : ¬ p ∣ m)`.\n- \"p is a quotient map\": `(hp : IsQuotientMap p)` — this is a `Prop`, not a typeclass, so it must be a named hypothesis, not `[...]`.\n- \"Y is connected\" (the whole space): the typeclass `ConnectedSpace Y`, e.g. `[ConnectedSpace Y]`. \"Each fiber p⁻¹({y}) is connected\": `(hf : ∀ y : Y, IsConnected (p ⁻¹' {y}))`. `IsConnected` applies to a `Set X`; `ConnectedSpace` applies to the whole type. There is no bare `Connected` predicate.\n- Preimage of a set under a map: `p ⁻¹' s`.\n\n**Well-formedness.**\n- Check balanced parentheses and well-formed binders; use only valid Mathlib Unicode tokens (`∣`, `∤`, `⁻¹'`, `ℕ`, `∀`, `∃`, `→`).\n- Every identifier must exist in Mathlib and be reachable through the provided `open`s; otherwise use its fully qualified name (e.g. `Subgroup.Characteristic`).\n- Do not add unnecessary instances (e.g. `[DecidableEq G]`) unless needed.\n\n## Requirement 2 — the statement must be faithful\n\nThe judge rejects statements that compile but do not match the problem.\n\n- Include EVERY assumption from the English statement as a hypothesis, including \"background\" assumptions. Example: for \"Let G be a group such that all subgroups of G are normal. If a, b ∈ G, prove ba = a^j b for some j\", the theorem MUST include `(h : ∀ H : Subgroup G, H.Normal)`; omitting it is unfaithful even though the statement compiles.\n- Mirror the quantifier structure: introduce a binder for every object mentioned (`(a b : G)`, `(H : Subgroup G)`, `(p n m : ℕ)`, `(p : X → Y)`, ...). \"There exists j such that ...\" becomes `∃ j : ℕ, ...` (or `∃ j : ℤ, ...`).\n- The conclusion must be exactly the claim after \"prove\"/\"show\" — do not strengthen, weaken, or alter it.\n- Do not drop stated conditions and do not add unstated ones.\n\n## Procedure\n\n1. Parse the problem into: (a) objects and their types, (b) every hypothesis, (c) the conclusion.\n2. Map each item to the Mathlib notions above, choosing the most standard, simple formulation.\n3. Assemble: `theorem <name> <binders> <hypotheses> : <conclusion> := by sorry`.\n4. Self-check: typeclasses in `[]` and Props named in `()`; all identifiers real and in scope; all Unicode tokens exact; every English hypothesis present; conclusion matches; ends with `:= by sorry`.\n5. Output the single ```lean4 code block.\n\n## Worked examples (corrected)\n\nProblem: \"Suppose G is an abelian group of order p^n m where p ∤ m is a prime. If H is a subgroup of G of order p^n, prove that H is a characteristic subgroup of G.\"\n```lean4\ntheorem characteristic_subgroup_of_abelian_group (p n m : ℕ) (hp : Nat.Prime p) (hpm : p ∤ m)\n    (G : Type*) [CommGroup G] [Fintype G] (hG : Fintype.card G = p ^ n * m)\n    (H : Subgroup G) (hH : Nat.card H = p ^ n) :\n    Subgroup.Characteristic H := by sorry\n```\n\nProblem: \"Let p : X → Y be a quotient map. Show that if each set p⁻¹({y}) is connected, and if Y is connected, then X is connected.\"\n```lean4\ntheorem quotient_map_connectedness (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]\n    (p : X → Y) (hp : IsQuotientMap p) [ConnectedSpace Y]\n    (hf : ∀ y : Y, IsConnected (p ⁻¹' {y})) :\n    ConnectedSpace X := by sorry\n```\n\nProblem: \"Let G be a group such that all subgroups of G are normal in G. If a, b ∈ G, prove that ba = a^j b for some j.\"\n```lean4\ntheorem all_subgroups_normal_imp_conjugate (G : Type*) [Group G]\n    (h : ∀ H : Subgroup G, H.Normal) (a b : G) :\n    ∃ j : ℕ, b * a = a ^ j * b := by sorry\n```",
+   "new_instruction": "# Task\n\nTranslate a natural-language mathematics problem into a **single Lean 4 theorem statement** using Mathlib.\n\n## Input format\n\nYou are given:\n1. A math problem stated in English with LaTeX-style math.\n2. A **Lean 4 context**: a code block containing imports, `open` / `open scoped` commands, and possibly definitions. Your theorem will be compiled **appended directly after this context**, so do **not** repeat the imports, opens, or definitions — output only the theorem itself. If the context provides custom definitions, use them exactly as given.\n\n## Output format (strict)\n\n- Output exactly one ```lean4 code block and nothing else.\n- Inside it, exactly one theorem of the form:\n  `theorem <descriptive_snake_case_name> <binders> : <proposition> := by sorry`\n- The statement must literally end with `:= by sorry`.\n- No proof, no comments, no `variable` commands, no imports, no extra theorems/definitions. Use `theorem <name>`, not `example`.\n\n## Requirement 1: the statement MUST compile\n\nThe statement is compiled against the given context; any parse or elaboration error scores 0. Therefore:\n\n**(a) Only use identifiers and notation that actually exist in Mathlib (or in the provided context). Never invent plausible-sounding names.** Verified facts from past failures:\n\n- `TopologicalSpace`, `Group`, `CommGroup`, `Fintype`, `Finite` are **typeclasses**, not types. Introduce carriers with `(X Y : Type*)` and put classes in square brackets: `[TopologicalSpace X]`. Writing `(X Y : TopologicalSpace)` fails with \"type expected, got TopologicalSpace\".\n- \"Order of a group/subgroup\" means cardinality: `Fintype.card G` (requires `[Fintype G]`) or `Nat.card G` (no instance needed). For `H : Subgroup G`, prefer `Nat.card H` (a `Fintype H` instance may require extra decidability hypotheses). **There is no `Order.of`.**\n- Finiteness of a group: `[Fintype G]` or `[Finite G]`. **There is no `FiniteOrder` typeclass.**\n- \"p is prime\": `Nat.Prime p`. \"p does not divide m\": `¬ p ∣ m` (the notation `p ∦ m` also exists).\n- \"G is abelian\": `[CommGroup G]` (multiplicative) or `[AddCommGroup G]` (additive). Do not forget this when the problem says \"abelian\" — `[Group G]` alone drops the assumption.\n- \"H is a subgroup of G\": `(H : Subgroup G)`.\n- \"H is normal in G\": `H.Normal`.\n- \"H is a characteristic subgroup of G\": `Subgroup.Characteristic H`. **There is no `IsCharacteristic`.**\n- \"p is a quotient map\": `IsQuotientMap p` (older Mathlib name: `QuotientMap p`). It is a `Prop`-valued predicate, so use a hypothesis binder `(hp : IsQuotientMap p)`, **not** instance brackets `[...]`.\n- \"the space X is connected\": `ConnectedSpace X` (a `Prop`-valued class; may be used as a hypothesis or as the conclusion). \"the set s is connected\": `IsConnected s`. **There is no bare `Connected` predicate.**\n- Fiber/preimage of a singleton: `p ⁻¹' {y}` (a `Set X`).\n- \"for some j, ba = a^j b\": `∃ j : ℕ, b * a = a ^ j * b` (use `j : ℤ` only if the problem clearly intends integers).\n- Other reliable names: `Continuous f`, `IsOpen s`, `IsClosed s`, `Function.Surjective f`, `Function.Injective f`.\n\n**(b) Use valid Lean 4 syntax.** Binders `(x : α)`, `{x : α}`, `(h : P)`, `[C α]`; implications with `→`; standard notation with spaces (`p ^ n * m`, `a ^ j * b`). Parse errors such as \"expected token\" usually come from made-up notation or malformed binders — stick to the patterns above.\n\n**(c) Only rely on notation brought in by the given opens** (e.g. `open Set` for set operations, `open scoped BigOperators` for `∑`/`∏`). Fully-qualified names (e.g. `Fintype.card`, `Subgroup.Characteristic`) are safest.\n\n## Requirement 2: the statement MUST be faithful\n\nA judge checks logical equivalence with the English problem; a compiling but unfaithful statement scores 0.\n\n- **Every assumption in the English text must become an explicit hypothesis binder.** \"Suppose …\", \"Let … such that …\", \"If …\", \"Assume …\" all introduce hypotheses. Example: \"Let G be a group such that all subgroups of G are normal in G\" **must** produce a hypothesis like `(h : ∀ H : Subgroup G, H.Normal)` — omitting it is unfaithful even though the rest compiles.\n- The conclusion (after \"prove that\" / \"show that\") must match exactly: same quantifiers, same equation shape, same objects. Do not strengthen, weaken, or drop anything.\n- Do not add assumptions the problem does not make (e.g. don't add `DecidableEq G` or extra finiteness unless the formulation needs it).\n\n## Strategy\n\n1. Read the problem and list: (i) the objects and their types, (ii) every hypothesis, (iii) the conclusion.\n2. Map each mathematical notion to its exact Mathlib name using the table above; if unsure, pick the most standard formulation that certainly exists.\n3. Assemble: `theorem <name> <objects with classes> <named hypotheses> : <conclusion> := by sorry`.\n4. Self-check before answering: every identifier exists with that exact spelling; classes are in `[]`, carriers in `()`; every English hypothesis is present; the conclusion matches; the block ends with `:= by sorry`.\n\n## Worked examples of correct outputs\n\nProblem: \"Suppose G is an abelian group of order p^n m where p ∤ m is prime. If H is a subgroup of G of order p^n, prove H is a characteristic subgroup.\"\n```lean4\ntheorem characteristic_subgroup_of_abelian_group (p n m : ℕ) (hp : Nat.Prime p)\n    (hpm : ¬ p ∣ m) (G : Type*) [CommGroup G] [Fintype G]\n    (hG : Fintype.card G = p ^ n * m) (H : Subgroup G) (hH : Nat.card H = p ^ n) :\n    Subgroup.Characteristic H := by sorry\n```\n\nProblem: \"Let p : X → Y be a quotient map. Show that if each set p⁻¹({y}) is connected, and if Y is connected, then X is connected.\"\n```lean4\ntheorem quotient_map_connectedness {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]\n    (p : X → Y) (hp : IsQuotientMap p) (hY : ConnectedSpace Y)\n    (hfib : ∀ y : Y, IsConnected (p ⁻¹' {y})) :\n    ConnectedSpace X := by sorry\n```\n\nProblem: \"Let G be a group such that all subgroups of G are normal in G. If a, b ∈ G, prove that ba = a^j b for some j.\"\n```lean4\ntheorem all_subgroups_normal_imp_conjugate (G : Type*) [Group G]\n    (h : ∀ H : Subgroup G, H.Normal) (a b : G) :\n    ∃ j : ℕ, b * a = a ^ j * b := by sorry\n```",
    "pass": true,
    "reasons": []
   },
   {
    "name": "reflection_load_3",
    "kind": "reflection",
-   "model": "moonshotai/Kimi-K3",
+   "model": "moonshotai/kimi-k3",
    "records": 3,
-   "seconds": 52.638200750000124,
+   "seconds": 52.996423832999426,
    "new_cost_rows": 1,
    "error": null,
    "finish_reason": "stop",
    "usage": {
     "prompt_tokens": 826,
-    "completion_tokens": 2526,
-    "total_tokens": 3352,
+    "completion_tokens": 2560,
+    "total_tokens": 3386,
+    "cost": 0.040878,
+    "is_byok": false,
     "prompt_tokens_details": {
-     "cached_tokens": 0
+     "cached_tokens": 0,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.040878,
+     "upstream_inference_prompt_cost": 0.002478,
+     "upstream_inference_completions_cost": 0.0384
     },
     "completion_tokens_details": {
-     "reasoning_tokens": 1803
+     "reasoning_tokens": 1932,
+     "image_tokens": 0,
+     "audio_tokens": 0
     }
    },
-   "usd": 0.040368,
+   "usd": 0.040878,
    "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
-   "new_instruction": "You will be given:\n1. A math problem stated in natural language (usually containing LaTeX).\n2. A \"Lean 4 context\" code block containing the imports, `open` / `open scoped` commands, and possibly definitions that your statement may rely on.\n\nYour task: translate the math problem into a SINGLE Lean 4 theorem statement using Mathlib.\n\nOutput format rules:\n- Output exactly one theorem statement (choose a descriptive snake_case name). Do not output the imports/opens/definitions from the context, and do not output any proof.\n- End the statement with `:= by sorry`.\n- Put the final statement in a single ```lean4 code block, with no extra prose.\n\nCorrectness rules (in priority order):\n1. THE STATEMENT MUST COMPILE under the given context. A non-compiling statement is a total failure, no matter how mathematically accurate it is. So:\n   - Use ONLY valid Lean 4 / Mathlib syntax and only identifiers/notation made available by the given imports and opens. Never invent notation.\n   - Beware of unicode: e.g. `∫¹∞` is NOT valid Lean — the superscript `¹` is an unexpected token and causes a parse error. There is no superscript-integral syntax in Mathlib.\n   - For (improper) integrals over a set such as (0, ∞), use the set-integral notation, e.g. `∫ x in Set.Ioi 0, sin x / x` (this uses the volume measure by default when `MeasureTheory` is open; you may also write the measure explicitly as `... ∂MeasureTheory.volume`). Match the form to what the opened namespaces support.\n   - Before finalizing, mentally re-check every token: binders, types, coercions, and notation must all type-check.\n2. The statement must FAITHFULLY match the English claim — neither stronger nor weaker. Introduce all variables and side conditions as explicit hypotheses, and state the conclusion precisely.\n\nUseful Mathlib translations (verified to compile and be judged faithful):\n- \"There are infinitely many X satisfying P\" → `Infinite { x | P x }`. Example: infinitely many primes ≡ -1 (mod 6) → `Infinite { p : ℕ | Nat.Prime p ∧ p % 6 = 5 }`.\n- \"p is prime\" for `p : ℕ` → `Nat.Prime p`.\n- Congruence to -1 modulo n over ℕ: use remainder n - 1, e.g. `-1 mod 6` becomes `p % 6 = 5`.\n- \"r is rational\" → `(r : ℚ)`; rationals coerce into ℝ automatically, so `r + x` with `r : ℚ` and `x : ℝ` type-checks.\n- \"x is irrational\" for `x : ℝ` → `¬(∃ q : ℚ, x = q)` (the predicate `Irrational x` also exists).\n- Side conditions like `r ≠ 0` become named hypotheses, e.g. `(hr : r ≠ 0)`.\n\nGeneral strategy: (a) parse the English claim into hypotheses + conclusion; (b) map each concept to its Mathlib counterpart using the table above; (c) write the theorem with explicit typed binders; (d) verify the statement would compile with exactly the given context — when unsure about fancy notation, prefer a simpler, definitely-valid formulation.",
+   "new_instruction": "Translate the given math problem into a single Lean 4 theorem statement using Mathlib.\n\n## Input format\n- A math problem stated in natural language (possibly containing LaTeX).\n- A \"Lean 4 context\" code block giving the imports, `open` / `open scoped` commands, and any definitions you must build on.\n\n## Output requirements\n1. Output exactly ONE theorem. Do not add imports, opens, or helper definitions — rely only on the provided context.\n2. End the theorem with `:= by sorry`.\n3. Put the final statement in a single ```lean4 code block, with no extra prose.\n4. The statement MUST compile under the given context. Use only real Lean 4 / Mathlib syntax and identifiers — never invent notation. For example, `∫¹∞` is not valid syntax and fails with a parse error (\"unexpected token '¹'\").\n\n## How to translate common notions (Mathlib-specific facts)\n- Integrals: use set/interval integral notation with the implicit volume measure, e.g. `∫ x in Set.Ioi 0, Real.sin x / x` for ∫₀^∞, `∫ x in Set.Icc a b, f x` for ∫ₐ^b. Do not use ad-hoc unicode decorations on the integral sign.\n- Real functions and constants: write `Real.sin`, `Real.cos`, `Real.exp`, `Real.log`, etc. Qualify with the `Real.` namespace, because opens such as `open Complex` make bare names like `sin` ambiguous. `π` is valid global notation for `Real.pi`.\n- \"There are infinitely many X with property P\": `Infinite { x : T | P x }` (a set of naturals coerces to a type; `Set.Infinite { x : T | P x }` also works).\n- Primality: `Nat.Prime p` with `p : ℕ`.\n- Congruence mod m: `n % m = r` (note that \"congruent to -1 mod 6\" means `n % 6 = 5`) or `Nat.ModEq`.\n- \"x is irrational\": `Irrational x`, or equivalently `¬(∃ q : ℚ, x = q)`; rationals coerce into ℝ automatically.\n- Include every hypothesis from the problem as an explicit named argument (e.g. `(hr : r ≠ 0)`), even if it seems mathematically redundant — the translation must be faithful to the statement.\n\n## General strategy\n- Give the theorem a descriptive snake_case name summarizing the claim.\n- Introduce all variables with their types as arguments, then the hypotheses, then the conclusion after `:`.\n- Mirror the English statement exactly: same quantifiers, conditions, and conclusion. Do not attempt a proof.\n- Before finalizing, mentally re-check that every token and name is valid Lean 4/Mathlib under the given opens; prefer fully qualified names whenever an open could introduce ambiguity.",
    "pass": true,
    "reasons": []
   },
   {
    "name": "reflection_load_4",
    "kind": "reflection",
-   "model": "moonshotai/Kimi-K3",
+   "model": "moonshotai/kimi-k3",
    "records": 3,
-   "seconds": 148.91913387499972,
+   "seconds": 253.91034291699907,
    "new_cost_rows": 1,
    "error": null,
    "finish_reason": "stop",
    "usage": {
     "prompt_tokens": 1077,
-    "completion_tokens": 7389,
-    "total_tokens": 8466,
+    "completion_tokens": 12194,
+    "total_tokens": 13271,
+    "cost": 0.186141,
+    "is_byok": false,
     "prompt_tokens_details": {
-     "cached_tokens": 0
+     "cached_tokens": 0,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.186141,
+     "upstream_inference_prompt_cost": 0.003231,
+     "upstream_inference_completions_cost": 0.18291
     },
     "completion_tokens_details": {
-     "reasoning_tokens": 6464
+     "reasoning_tokens": 10625,
+     "image_tokens": 0,
+     "audio_tokens": 0
     }
    },
-   "usd": 0.114066,
+   "usd": 0.186141,
    "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
-   "new_instruction": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The problem comes with a \"Lean 4 context\" (imports, opens, definitions) that is already in scope — do NOT repeat it; output only the theorem itself. End the statement with `:= by sorry` and put the final statement in a ```lean4 code block, with no extra commentary.\n\nYour statement will first be compiled in an environment where the `autoImplicit` option is set to `false`. If it does not compile, the score is 0 and correctness is not even judged. After compiling, it is judged for faithfulness to the original problem. Follow these rules:\n\n1. **Bind every identifier explicitly.** Because `autoImplicit` is `false`, any unbound identifier (e.g. `α`, `R`, `G`) raises \"Unknown identifier\". Introduce every type you mention with a binder such as `{α : Type*}` or `(R : Type _)`.\n\n2. **Typeclasses go in instance brackets `[]`.** `TopologicalSpace`, `Group`, `Ring`, `Fintype`, etc. are typeclasses. When the problem says \"X is a topological space\" / \"G is a group\" / \"R is a ring\", model it as a carrier type plus an instance, e.g. `{X : Type*} [TopologicalSpace X]`. Never write `(X : TopologicalSpace α)`: a plain term of a typeclass is not an instance, so later predicates like `IsOpen U` will fail to synthesize.\n\n3. **Use the right operations for substructures** (`Subgroup G`, `Ideal R`, `Submodule R M`, ...):\n   - Intersection is the lattice meet `⊓` (e.g. `I ⊓ J`). There is NO `Inter (Ideal R)` (or similar) instance, so `I ∩ J` fails to compile. `∩`, `∪`, `\\` only work on `Set α`.\n   - The whole structure viewed as a substructure is `⊤` (top), not the carrier itself. E.g. \"$I + J = R$\" translates to `I + J = ⊤` — not `I + J = R` and not `I + J = I ⊔ J`.\n   - Inclusion/containment is `≤` (e.g. `P ≤ H`).\n\n4. **Predicates are not types.** `Nat.Prime` has type `ℕ → Prop`, so `(p : Nat.Prime)` gives a \"type expected\" error. Instead write `(p : ℕ)` and add a hypothesis `(hp : Nat.Prime p)` (or an instance `[Fact p.Prime]` when the API expects one, e.g. Sylow theory). Apply the same pattern to any other predicate you might be tempted to use as a type.\n\n5. **Use real Mathlib names with the correct argument order; do not invent identifiers.** Standard examples:\n   - Open/closed sets: `IsOpen U`, `IsClosed A`; set difference `U \\ A`.\n   - Sylow subgroups: the type of Sylow p-subgroups is `Sylow p G` with `(p : ℕ)`; a term `P : Sylow p G` coerces to `Subgroup G`, so \"P ∈ Syl_p(G)\" is naturally modeled as `(P : Sylow p G)`. There is no `Sylow.pSubgroup`.\n   - Ideals: `Ideal R` with `I + J`, `I * J`, `I ⊓ J`, `⊤`.\n   When unsure, prefer the most standard, widely-used Mathlib declaration over a guessed name.\n\n6. **Translate faithfully.** Preserve the problem's exact logical structure: the same hypotheses, conclusion, quantifiers, implications and conjunctions. Do not substitute a different-looking hypothesis for the given one (e.g. do not turn \"$I+J=R$\" into `I + J = I ⊔ J`).\n\n7. **Mentally type-check before answering.** Verify: every identifier is bound; every typeclass is in `[]`; every operator (`∩`, `⊓`, `≤`, `+`, `*`, `\\`) has a valid instance for its operands' types; every constant you use exists in Mathlib with the argument order you wrote.\n\nOutput exactly one theorem inside a single ```lean4 code block, ending with `:= by sorry`. No imports, no opens, no proof.",
+   "new_instruction": "# Task\nTranslate a math problem (given in English with LaTeX) into a single Lean 4 theorem\nstatement using Mathlib.\n\n# Input format\nYou will receive:\n1. A math problem in natural language/LaTeX.\n2. A fixed \"Lean 4 context\" code block (e.g. `import Mathlib`, `open ...`,\n   `open scoped ...`, and possibly definitions). This context is prepended to your\n   answer when it is checked. Use exactly these imports/opens/definitions; do not\n   add your own.\n\n# Output format\n- Output exactly ONE theorem statement, ending with `:= by sorry`, inside a single\n  ```lean4 code block.\n- Do NOT repeat the context, do NOT add imports or opens, do NOT include proofs or\n  explanations — just the theorem statement.\n\n# How your answer is evaluated\n1. Your code block is appended to the given context and compiled with Lean 4 +\n   Mathlib, with the option `autoImplicit` set to `false`. If it does not compile,\n   the score is 0 and nothing else is checked.\n2. Only if it compiles does a judge check that the statement faithfully formalizes\n   the original problem. A compilable but weakened, trivialized, or misstated\n   theorem also scores 0.\n\nSo your priorities, in order: (1) the statement must compile, (2) it must mean\nexactly what the problem says.\n\n# Compilation rules — known failure modes and their fixes\n\n1. **Bind every variable explicitly.** Because `autoImplicit = false`, using an\n   undeclared identifier (e.g. writing `Set α` without declaring `α`) fails with\n   \"Unknown identifier\". Declare all carriers yourself: `{α : Type*}`,\n   `(G : Type _)`, `(R : Type*)`, `(p : ℕ)`, etc.\n\n2. **Mathematical structures are typeclass instances, not terms.** \"Let X be a\n   topological space / G a group / R a ring\" becomes a carrier type plus an\n   instance argument in square brackets: `{α : Type*} [TopologicalSpace α]`,\n   `(G : Type*) [Group G]`, `(R : Type*) [CommRing R]`. Never write\n   `(X : TopologicalSpace α)`. Example of a correct statement:\n   ```lean4\n   theorem open_minus_closed_is_open_closed_minus_open {α : Type*} [TopologicalSpace α]\n       (U A : Set α) (hU : IsOpen U) (hA : IsClosed A) :\n       IsOpen (U \\ A) ∧ IsClosed (A \\ U) := by sorry\n   ```\n\n3. **Subobjects use lattice notation, not set notation.** `Ideal R`, `Subgroup G`,\n   `Submodule R M`, etc. have NO `Inter`/`Union` instances: writing `I ∩ J` for\n   ideals fails with \"failed to synthesize instance `Inter (Ideal R)`\". Use `⊓`\n   (intersection/infimum), `⊔` (supremum), `≤` (inclusion), `⊤` (the whole\n   structure), `⊥` (the trivial structure). The notations `∩`, `∪`, `\\` are for\n   `Set α`. Translate \"the whole ring/group/space\" as `⊤`: e.g. the hypothesis\n   \"ideals I, J with I + J = R\" is `(h : I + J = ⊤)` — NOT `I + J = I ⊔ J` and NOT\n   `I + J = R`. Example of a correct statement:\n   ```lean4\n   theorem ideal_intersection_equals_product {R : Type*} [CommRing R] (I J : Ideal R)\n       (h : I + J = ⊤) : I * J = I ⊓ J := by sorry\n   ```\n\n4. **Predicates are not types.** `Nat.Prime` has type `ℕ → Prop`, so a binder like\n   `(p : Nat.Prime)` fails with \"type expected, got (Nat.Prime : ℕ → Prop)\".\n   Instead take the value as a variable and add the predicate as a hypothesis or\n   instance: `(p : ℕ) (hp : Nat.Prime p)` or `[Fact p.Prime]`. Before using any\n   name as the type of a binder, check whether it is a `Type`/`Sort` or a\n   `Prop`-valued predicate.\n\n5. **Only use names that really exist in Mathlib, with their real signatures.** Do\n   not invent plausible-looking names (e.g. `Sylow.pSubgroup` does not exist).\n   Standard facts to use:\n   - Topology: `IsOpen U`, `IsClosed A` for `U A : Set α` with\n     `[TopologicalSpace α]`; set difference is `U \\ A`.\n   - Sylow theory: `Sylow p G` is the TYPE of Sylow p-subgroups of `G` (with\n     `{p : ℕ}` and `[Group G]`). \"P ∈ Syl_p(G)\" becomes `(P : Sylow p G)`; the\n     underlying subgroup is `P.1` (coercion to `Subgroup G`), containment is\n     `P.1 ≤ H`, and `P.1.subgroupOf H : Subgroup H` views P inside H. Example of a\n     correct statement:\n   ```lean4\n   theorem Sylow_subgroup_inheritance {G : Type*} [Group G] {p : ℕ} [Fact p.Prime]\n       (P : Sylow p G) (H : Subgroup G) (h : P.1 ≤ H) :\n       IsPGroup p (P.1.subgroupOf H) ∧\n         ∀ Q : Subgroup H, IsPGroup p Q → P.1.subgroupOf H ≤ Q → Q = P.1.subgroupOf H := by sorry\n   ```\n   - Ideals: `Ideal R` supports `+`, `*`, `⊓`, `⊔`, `⊤`, `≤`.\n\n6. **Mentally type-check before answering.** For every expression ask: Is each\n   identifier either bound in this theorem or a known constant from Mathlib / the\n   opened namespaces? Is each notation (`∩`, `⊓`, `≤`, `+`, `*`, `\\`) available\n   for the operand types at hand? Does each function receive the right number and\n   types of arguments? If unsure between two names, prefer the most standard\n   Mathlib idiom.\n\n# Faithfulness rules\n- Every hypothesis in the problem becomes a hypothesis of the theorem; the\n  conclusion is exactly the claim (combine multiple conclusions with `∧`).\n- Choose the right generality and typeclass assumptions (e.g. `CommRing R` when\n  the claim needs commutativity; add `[Fintype G]` or `[Finite G]` when finiteness\n  is assumed).\n- Map objects to their standard Mathlib counterparts: ideals → `Ideal R`,\n  subgroups → `Subgroup G`, open/closed sets → `IsOpen`/`IsClosed`, the whole\n  structure → `⊤`, \"P is a Sylow p-subgroup\" → `P : Sylow p G`, etc.\n- Do not weaken, strengthen, or alter the statement just to make it compile — the\n  judge compares it against the original problem.\n`",
    "pass": true,
    "reasons": []
   },
   {
    "name": "reflection_load_5",
    "kind": "reflection",
-   "model": "moonshotai/Kimi-K3",
+   "model": "moonshotai/kimi-k3",
    "records": 3,
-   "seconds": 110.9752734169997,
+   "seconds": 137.07090945899836,
    "new_cost_rows": 1,
    "error": null,
    "finish_reason": "stop",
    "usage": {
     "prompt_tokens": 927,
-    "completion_tokens": 5661,
-    "total_tokens": 6588,
+    "completion_tokens": 7303,
+    "total_tokens": 8230,
+    "cost": 0.112326,
+    "is_byok": false,
     "prompt_tokens_details": {
-     "cached_tokens": 0
+     "cached_tokens": 0,
+     "cache_write_tokens": 0,
+     "audio_tokens": 0,
+     "video_tokens": 0
+    },
+    "cost_details": {
+     "upstream_inference_cost": 0.112326,
+     "upstream_inference_prompt_cost": 0.002781,
+     "upstream_inference_completions_cost": 0.109545
     },
     "completion_tokens_details": {
-     "reasoning_tokens": 4870
+     "reasoning_tokens": 6218,
+     "image_tokens": 0,
+     "audio_tokens": 0
     }
    },
-   "usd": 0.087696,
+   "usd": 0.112326,
    "seed": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.",
-   "new_instruction": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The input will include the problem text plus a \"Lean 4 context\" specifying imports, opens, and definitions — use exactly those (assume they are already in scope; do not repeat them in your answer). Write one theorem, end the statement with `:= by sorry`, and put the final statement in a ```lean4 code block. Do not attempt a proof.\n\nYour output is scored on two necessary conditions: (1) the statement must compile under the given context, and (2) it must be judged faithful to the English problem. A statement that compiles but changes the mathematics scores 0, and a statement that does not compile scores 0 without even being judged.\n\n## Faithfulness rules\nThe Lean statement must express exactly the same mathematics as the English text — no simplifications, specializations, or type changes.\n- Use the exact number system named in the problem. If the problem is about ℂ, quantify over `ℂ` (e.g., `s : ℕ → ℂ`) and use the complex modulus `Complex.abs` (or `‖·‖`); do NOT silently switch to `ℝ` and real `abs`.\n- Keep full generality. \"Convergence of {sₙ}\" with no specified limit means convergence to an arbitrary limit: introduce `(l : ℂ)` and hypothesis `h : Filter.Tendsto s atTop (nhds l)`, concluding e.g. `Filter.Tendsto (fun n => Complex.abs (s n)) atTop (nhds (Complex.abs l))`. Do NOT assume the limit is `0`.\n- Bind every object the problem introduces. \"Let x and y be elements of G\" becomes `(G : Type*) [Group G] (x y : G)`.\n- Convert units and conventions correctly. Mathlib trigonometric functions take radians, so `cos 1°` is `Real.cos (Real.pi / 180)`, not `Real.cos 1`.\n\n## Compilation rules (known pitfalls)\nMentally type-check the statement before answering:\n- NEVER chain `↔`. Writing `A ↔ B ↔ C` fails with \"unexpected token '↔'; expected ':=', 'where' or '|'\". For \"A iff B iff C\", write `(A ↔ B) ∧ (B ↔ C)` (or fully parenthesize).\n- Check argument signatures of Mathlib predicates. `IsAlgebraic` takes the base ring explicitly as its first argument: write `IsAlgebraic ℚ x`, NOT `IsAlgebraic x` — the first argument must be a `Type` (a commutative ring), not an element. (Signature: `IsAlgebraic (R : Type*) [CommRing R] {A : Type*} [Ring A] [Algebra R A] (x : A)`.)\n- Use fully qualified names when a namespace is not open: `Real.cos`, `Real.pi`, `Complex.abs`, `Filter.Tendsto`, `atTop`, `nhds`.\n- Include needed type-class instances in square brackets (e.g., `[Group G]`) and prefer `Type*` over `Type` for generality.\n\n## Suggested process\n1. List the mathematical objects and their precise types (sequence into ℂ? group elements? a real number?).\n2. Determine the logical skeleton (implication, conjunction of iffs, existence, etc.) and encode it faithfully.\n3. Map each notion to the correct Mathlib definition (`Filter.Tendsto ... atTop (nhds ...)`, `Complex.abs`, `IsAlgebraic ℚ`, group `*` / `⁻¹` / `1`, ...).\n4. Mentally type-check, then output only the theorem statement ending in `:= by sorry` inside a single ```lean4 code block.",
+   "new_instruction": "# Task\nTranslate a natural-language math problem into a single Lean 4 theorem statement using Mathlib.\n\n## Input format\nYou receive:\n1. A math problem stated in English/LaTeX.\n2. A \"Lean 4 context\" code block containing the imports, `open` / `open scoped` commands (and possibly definitions) already in scope. Write ONE theorem that compiles in exactly this context — do not add, repeat, or modify the imports/opens.\n\n## Output format\n- Exactly one theorem statement, ending with `:= by sorry`, inside a single ```lean4 code block.\n- No proof, no imports, no commentary.\n\n## Hard requirement 1: the statement must compile (with `sorry`)\nKnown pitfalls to avoid:\n- `↔` is non-associative in Lean 4: `A ↔ B ↔ C` is a syntax error. To state \"P iff Q iff R\", write `(P ↔ Q) ∧ (Q ↔ R)`.\n- `IsAlgebraic` takes the base ring as its first explicit argument: \"x is algebraic over ℚ\" is `IsAlgebraic ℚ x`. Writing `IsAlgebraic x` fails, because `x : ℝ` is a term, not a ring.\n- Convergence of a sequence `s : ℕ → X` to a limit `L` is `Filter.Tendsto s Filter.atTop (nhds L)` (with `open Topology Filter` you may write `Tendsto s atTop (nhds L)`).\n- Groups: declare `(G : Type*) [Group G]`; inverse is `x⁻¹`, identity is `1`.\n- Check every identifier you use: correct namespace (prefer fully qualified names such as `Real.cos`, `Real.pi`, `Filter.Tendsto`, `Filter.atTop` when unsure), correct number and order of explicit arguments, correct coercions, and that every needed type-class instance follows from the given context.\n\n## Hard requirement 2: the statement must be faithful to the English\nA judge compares your formalization against the English statement; the following mistakes score 0 even if the code compiles:\n- Do not change number systems: ℂ stays ℂ, ℝ stays ℝ, ℚ stays ℚ. (A problem about convergence in ℂ must use `s : ℕ → ℂ`, not `ℕ → ℝ`.)\n- Do not drop generality: \"convergence of {sₙ}\" means convergence to an arbitrary limit. Introduce the limit as a variable with a hypothesis, e.g.\n  `(s : ℕ → ℂ) (z : ℂ) (h : Filter.Tendsto s Filter.atTop (nhds z)) ⊢ Filter.Tendsto (fun n => ‖s n‖) Filter.atTop (nhds ‖z‖)`.\n  Do not specialize the limit to `0` unless the problem says so.\n- Use the mathematically correct notion for each concept:\n  - Complex modulus/absolute value is the norm `‖z‖` (or `Complex.abs z`), not the real function `abs`.\n  - Angles given in degrees must be converted to radians: `cos 1°` is `Real.cos (Real.pi / 180)`; `Real.cos 1` is the cosine of 1 radian and is wrong.\n- Keep the exact logical structure: every quantifier, every hypothesis, and every conjunct/equivalence of the conclusion. Do not add assumptions the problem does not make, and do not omit any it does make.\n\n## Recommended procedure\n1. Parse the English statement: list every variable with its type, every hypothesis, and the conclusion(s).\n2. Map each mathematical concept to the exact Mathlib definition and check its signature (argument order, explicit vs. implicit arguments, required type classes).\n3. Assemble the theorem with all binders and hypotheses.\n4. Mentally type-check it: no chained `↔`, every application has correctly typed arguments, every needed instance is available from the given context.\n5. Output only the theorem, ending in `:= by sorry`, in one ```lean4 code block.\n\n## Correctly handled examples (for reference)\n- \"In ℂ, convergence of {sₙ} implies convergence of {|sₙ|}\":\n  `theorem convergence_implies_norm_convergence (s : ℕ → ℂ) (z : ℂ) (h : Filter.Tendsto s Filter.atTop (nhds z)) : Filter.Tendsto (fun n => ‖s n‖) Filter.atTop (nhds ‖z‖) := by sorry`\n- \"xy = yx iff y⁻¹xy = x iff x⁻¹y⁻¹xy = 1\":\n  `theorem comm_iff_conj_iff_commutator (G : Type*) [Group G] (x y : G) : (x * y = y * x ↔ y⁻¹ * x * y = x) ∧ (y⁻¹ * x * y = x ↔ x⁻¹ * y⁻¹ * x * y = 1) := by sorry`\n- \"cos 1° is algebraic over ℚ\":\n  `theorem cos_one_degree_algebraic : IsAlgebraic ℚ (Real.cos (Real.pi / 180)) := by sorry`\n`",
    "pass": true,
    "reasons": []
   }
  ],
  "concurrent": 6,
- "wall_seconds": 233.9331077920001,
+ "wall_seconds": 535.287167333001,
  "passed": 6,
- "new_cost_rows": 6,
- "usd": 0.663744
+ "new_cost_rows": 8,
+ "usd": 0.898029
 }

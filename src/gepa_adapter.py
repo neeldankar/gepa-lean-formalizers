@@ -2,7 +2,7 @@
 the run has one, is a fixed suffix sent after the instructions on every call; GEPA never sees or
 edits it, so every candidate (and best_prompt.txt) is instruction text only.
 
-Every evaluation on the full valset is saved to <candidates_dir>/<sha256(instructions)[:12]>.jsonl (first
+The first evaluation of each candidate on the full valset is saved to <candidates_dir>/<sha256(instructions)[:12]>.jsonl (first
 line: the instructions; then one row per item and sample with the raw output, extracted Lean, compile
 result and judge verdict). Nothing here computes or reads a truth score.
 
@@ -75,6 +75,8 @@ class FormalizerAdapter:
     def save_candidate(self, instructions, results):
         self.candidates_dir.mkdir(parents=True, exist_ok=True)
         path = self.candidates_dir / f"{hashlib.sha256(instructions.encode()).hexdigest()[:12]}.jsonl"
+        if path.exists():  # first write wins: on resume GEPA re-evaluates the seed and discards it
+            return
         lines = [json.dumps({"instructions": instructions}, ensure_ascii=False)]
         for r in results:
             j = r["judge"] or {}

@@ -4,9 +4,9 @@
 
 - **Chunk:** 5 of 7, session 1 done: the combined job is running on pod 6 (relaunched 2026-10-22 06:37 UTC after Deviation 1). `prereg.md` frozen at e631bdb; Deviations only (1 so far)
 - **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
-- **Next:** when the preflight gate shows Together healthy again: new pod, resume the stopped runs from their saved GEPA state, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
+- **Next:** resume on a new pod with Kimi-K3 through OpenRouter pinned to Together (Deviation 2): the 5 stopped runs, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
 - **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
-- **Waiting on Neel:** a pod for the resume once the job has pushed (a `Results: chunk5` commit) and Kimi-K3 passes the preflight.
+- **Waiting on Neel:** the pod's SSH line for the resume.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -29,11 +29,26 @@ Template:
 - Next:
 ```
 
+### 2026-10-22 · chunk 5 · Deviation 2: Kimi-K3 through OpenRouter pinned to Together; route checked live
+
+- **Neel's choices:** skip the Together preflight (yesterday's pass did not predict the night). Route Kimi-K3, for reflection and arm F, through OpenRouter pinned to Together (`provider.only: [together]`, fallbacks off, `require_parameters: true`). Rejected: Moonshot's own serving, which fixes kimi-k3 at temperature 1.0; we use 0.0 for reflection and 0.6 for arm F. Prereg Deviation 2.
+- **Found while preparing:** GEPA 0.1.4 evaluates the seed prompt on the full val set before it loads `gepa_state.bin` (`core/engine.py` run()), then discards the result. So D_s0 would not end at once on resume: it would redo 70 items and overwrite its saved seed outputs. Last night's relaunch did this too, but with the pod's cache in place the outputs were identical. Fixes: `chunk5_job` skips runs with DONE (`skipped (done)`; the sanity check still checks them), and `save_candidate` never overwrites an existing file. The 5 resumed runs still do one discarded seed pass each. `candidates.json` `adapter_metric_calls` counts only the last process; GEPA's `total_metric_calls` is unaffected.
+- **Code:** `LLMClient` gets `extra_body` and `drop_params` (applied before the cache key), logs `provider` from the reply, retries replies without `choices` and HTTP 408. New `reflection_client` (`gepa.reflection_host: arm_f`) in `gepa_run`, `preflight` and `reflect_load`. Config: arm F on `https://openrouter.ai/api/v1`, `moonshotai/kimi-k3`, `OPENROUTER_API_KEY`, `drop_params: [seed]`, price $3 / $15 per 1M (OpenRouter's Together endpoint). Tests: 211 pass (6 new).
+- **Failure counts in the job window** (06:12 to 08:44 UTC, from `runs/chunk5/kimi_route_check.json`): 53 failed Kimi-K3 attempts, 46 HTTP 503 (all 339 to 341 s), 7 HTTP 429. My earlier "58" counted preflight failures from Oct 21 too.
+- **Live route check** (laptop, 18:42 to 18:52 UTC, same file; logs `runs/chunk4/preflight_2026-10-22/openrouter_together_*.log`):
+  - 6 of 6 concurrent 3-record reflections pass (53 to 535 s, all finish stop, $0.90).
+  - The preflight reflection passes (57 s, stop).
+  - Arm F on pnv_004 hits the 16,384-token cap (finish length, no Lean statement, 303 s). The same item went 6,849 / 16,384 / 11,612 tokens on Together's own API (Oct 18, Oct 21, Oct 22); the cap is Neel's, kept at the freeze.
+  - All 8 Kimi-K3 rows report provider Together; 0 failed attempts; $1.20 (chunk 4 rows, the script's `CHUNK`).
+  - The slowest reflection, 535 s, is near the 600 s per-attempt limit.
+- The chunk 4 load-check record is kept as `runs/chunk4/reflection_load_2026-10-22T0232_together.json`.
+- **Cost:** $1.20 this entry.
+
 ### 2026-10-22 · chunk 5 · job ended: 1 of 6 GEPA runs done, no final eval
 
 - **Run chunk5 (relaunch) outcome** (from `runs/chunk5_job_end.json`): ended 08:44 UTC, exit 1, pushed (commit 5a2dcc4). The sanity check failed as expected. D_s0 DONE (869 metric calls, sanity limit 873; 12 reflections). B_s0, B_s1, B_s2, D_s2 STOPPED after 5 attempts with HTTP 503; D_s1 after 5 attempts with HTTP 429 ("all replicas at capacity"). 44 failed reflection attempts since the relaunch (40 HTTP 503, 4 HTTP 429), the last at 08:38 UTC. No scores read.
 - **Cost:** chunk 5 $20.48 metered, plus $1.42 unmetered pod time; $31.81 logged in total.
-- **Next:** live preflight to see whether Kimi-K3 on Together is healthy; if the gate opens, new pod, rename the 5 STOPPED markers, rerun the combined job (resume, then final eval). Check first that D_s0's DONE run returns without new work.
+- **Next:** superseded by Deviation 2 (entry above).
 
 ### 2026-10-22 · chunk 5 · Kimi-K3 mostly down; two runs stopped; letting the job run out (Neel)
 
