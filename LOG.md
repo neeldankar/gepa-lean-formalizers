@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 done. `prereg-frozen` tagged and pushed (2026-10-22, commit e631bdb); `prereg.md` never changes from here (Deviations only)
-- **Status:** no pod running (pod 4 confirmed stopped by Neel).
-- **Next:** chunk 5 on a new pod: `scripts/chunk5_job.py` (six GEPA runs in parallel, sanity check, final eval). About 4.3 h and $50 to $73 projected.
-- **Spent so far:** $10.95 of $300 (chunk 4: $10.92 of its $30 cap)
-- **Waiting on Neel:** "Start chunk 5" and a pod.
+- **Chunk:** 5 of 7, session 1 done: the combined job is running on pod 6 (relaunched 2026-10-22 06:37 UTC after Deviation 1). `prereg.md` frozen at e631bdb; Deviations only (1 so far)
+- **Status:** pod 6 (`qybccgbwec39wd`, H100 80GB, no network volume) runs `scripts/chunk5_job.py` in tmux `chunk5`; it pushes results and stops the pod itself.
+- **Next:** chunk 5 session 2 ("Continue chunk 5"): invariants and health checks only, no per-arm scores.
+- **Spent so far:** $15.13 of $300 in `runs/costs.jsonl` as pushed (to 06:36 UTC); chunk 5 $6.91 metered by 06:54 UTC on the pod plus $1.42 unmetered pod time (chunk 5 cap $180)
+- **Waiting on Neel:** "Continue chunk 5" once the job has pushed (check the repo for a `Results: chunk5` commit).
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,17 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 5 · session 1: launch, Deviation 1, relaunch
+
+- **Pod 6:** H100 80GB HBM3, id `qybccgbwec39wd`, 50 GB container disk, no network volume. Repo copied by rsync (no `cache/`, so every call is live). Setup 05:51 to 05:59 UTC, both servers healthy.
+- **API preflight** (laptop, `chunk4 preflight --fresh --cap 600`, 05:51 to 06:11 UTC; log `runs/chunk4/preflight_2026-10-22/chunk5_launch_full_cap600.log`; numbers from `runs/chunk5_launch_health.json`): gate open. 3-record reflection pass, 281 s, 13,329 out tokens, $0.20. Arm F pass, 222 s, 11,612 out tokens, finish stop, $0.18. All 4 judge checks pass. 15-record reflection fail (HTTP 503 on both attempts; information only, as on Oct 22). Its cost rows are logged as chunk 4 (the script's `CHUNK`).
+- **Run chunk5, launch 1** (06:12:17 UTC, `run_job.sh chunk5 python -m scripts.chunk5_job`, frozen config): all six runs iterated, but Together's Kimi-K3 failed 9 reflection attempts in 24 min (HTTP 429 `worker_stream_failed`, and HTTP 503 after about 340 s). B_s2 stopped (ReflectionFailed after 2 attempts), and B_s0 had used up its retries on one call. Either would have made the sanity check fail after the other runs, with no final eval. Stopped by me at 06:36 UTC (tmux session first, so the job body neither pushed nor stopped the pod); state committed on the pod (87d150e). Chunk 5 spend at the stop: $3.80.
+- **Deviation 1** (Neel, that night; prereg Deviations item 1; commit e281db5): reflection retries 1 to 4, waits about 30, 60, 120, 240 s with +-20% jitter; on a 429, Retry-After wins when longer (at most 600 s). Jitter and Retry-After apply to every API retry (timing only). Before: 5 s x 2^attempt, no jitter, Retry-After ignored. 6 new tests (205 pass on the laptop; `tests/test_llm.py` 14 pass on the pod). B_s2's old marker is kept as `runs/B_s2/STOPPED_before_relaunch_2026-10-22`.
+- **Bug found:** my second rsync copied the laptop's `.git/config` over the pod's and dropped the git identity, so `run_job.sh`'s final results commit would have failed and the pod would have stopped without pushing. Fixed with `git config --global` on the pod. Future pods: set the identity globally before any rsync.
+- **Run chunk5, relaunch** (06:37:03 UTC, same command): every run resumed from its saved GEPA state (1 seed val pass each, iteration numbers continued). By 06:54 UTC: iterations B_s0 3 to 5, B_s1 3 to 6, B_s2 3 to 4, D_s0 4 to 7, D_s1 4 to 8, D_s2 4 to 6; reflections since the relaunch 2 / 3 / 1 / 3 / 4 / 2; 0 STOPPED, 0 new tracebacks. 4 failed attempts (all HTTP 503 after about 340 s), each retried after the backoff; B_s0, B_s2 and D_s2 went on after them. No scores read or shown.
+- **Not metered by the job:** pod time from 05:51 (setup) to 06:12 and the 1 min between the stop and the relaunch: 0.356 h, $1.42 at $3.99/hr (from `runs/chunk5_launch_health.json`); session 2 logs it as a balancing row, as in chunk 4.
+- **Cost:** preflight $0.38 (chunk 4 rows); chunk 5 $6.91 metered by 06:54 UTC (API and GPU), plus the $1.42 above. `runs/costs.jsonl` as pushed (rows to 06:36 UTC) totals $15.13; the pod's later rows arrive with the job's push.
 
 ### 2026-10-22 · chunk 4 · freeze tagged; chunk 4 done
 

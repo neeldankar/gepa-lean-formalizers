@@ -1,0 +1,264 @@
+{
+ "preflight": {
+  "time": "2026-10-22T06:11:49+00:00",
+  "checks": [
+   {
+    "name": "reflection_minibatch_3",
+    "pass": true,
+    "seconds": 280.8040777080005,
+    "usd": 0.20284799999999947,
+    "finish_reason": "stop",
+    "completion_tokens": 13329
+   },
+   {
+    "name": "reflection_long_15",
+    "pass": false,
+    "seconds": 685.6425026670004,
+    "usd": 0.0,
+    "finish_reason": null,
+    "completion_tokens": null
+   },
+   {
+    "name": "arm_f_generate",
+    "pass": true,
+    "seconds": 221.99429812499875,
+    "usd": 0.17611500000000113,
+    "finish_reason": "stop",
+    "completion_tokens": 11612
+   },
+   {
+    "name": "opt_judge_pnv_258",
+    "pass": true,
+    "seconds": 2.530136792000121,
+    "usd": 0.0002794499999989597,
+    "finish_reason": null,
+    "completion_tokens": null
+   },
+   {
+    "name": "ref_judge_pnv_258",
+    "pass": true,
+    "seconds": 0.7864280000030703,
+    "usd": 0.00029879999999948836,
+    "finish_reason": null,
+    "completion_tokens": null
+   },
+   {
+    "name": "opt_judge_pnv_260",
+    "pass": true,
+    "seconds": 1.6009930830005032,
+    "usd": 0.00020145000000049151,
+    "finish_reason": null,
+    "completion_tokens": null
+   },
+   {
+    "name": "ref_judge_pnv_260",
+    "pass": true,
+    "seconds": 1.7517624169995543,
+    "usd": 0.0007200000000011642,
+    "finish_reason": null,
+    "completion_tokens": null
+   }
+  ]
+ },
+ "launch_1": {
+  "time": "2026-10-22T06:36:05+00:00",
+  "since": "2026-10-22T06:12:17",
+  "chunk5_usd": 3.7998,
+  "failed_attempts": 9,
+  "failure_kinds": [
+   "HTTP 429",
+   "HTTP 503"
+  ],
+  "runs": {
+   "B_s0": {
+    "max_iteration": 3,
+    "seed_val_passes": null,
+    "proposed": 2,
+    "accepted": 2,
+    "reflection_calls": 2,
+    "reflection_seconds": [
+     238,
+     178
+    ],
+    "saved_candidate_files": 3,
+    "STOPPED": null,
+    "api_failures": 4
+   },
+   "B_s1": {
+    "max_iteration": 3,
+    "seed_val_passes": null,
+    "proposed": 2,
+    "accepted": 2,
+    "reflection_calls": 2,
+    "reflection_seconds": [
+     114,
+     218
+    ],
+    "saved_candidate_files": 3,
+    "STOPPED": null,
+    "api_failures": 2
+   },
+   "B_s2": {
+    "max_iteration": 3,
+    "seed_val_passes": null,
+    "proposed": 3,
+    "accepted": 2,
+    "reflection_calls": 3,
+    "reflection_seconds": [
+     73,
+     282,
+     283
+    ],
+    "saved_candidate_files": 3,
+    "STOPPED": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 2 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'",
+    "api_failures": 2
+   },
+   "D_s0": {
+    "max_iteration": 4,
+    "seed_val_passes": null,
+    "proposed": 3,
+    "accepted": 3,
+    "reflection_calls": 3,
+    "reflection_seconds": [
+     67,
+     243,
+     164
+    ],
+    "saved_candidate_files": 4,
+    "STOPPED": null,
+    "api_failures": 0
+   },
+   "D_s1": {
+    "max_iteration": 4,
+    "seed_val_passes": null,
+    "proposed": 3,
+    "accepted": 2,
+    "reflection_calls": 3,
+    "reflection_seconds": [
+     72,
+     544,
+     58
+    ],
+    "saved_candidate_files": 3,
+    "STOPPED": null,
+    "api_failures": 1
+   },
+   "D_s2": {
+    "max_iteration": 4,
+    "seed_val_passes": null,
+    "proposed": 3,
+    "accepted": 2,
+    "reflection_calls": 3,
+    "reflection_seconds": [
+     74,
+     247,
+     220
+    ],
+    "saved_candidate_files": 3,
+    "STOPPED": null,
+    "api_failures": 0
+   }
+  }
+ },
+ "relaunch": {
+  "time": "2026-10-22T06:53:56+00:00",
+  "since": "2026-10-22T06:37:03",
+  "chunk5_usd": 6.9076,
+  "failed_attempts": 4,
+  "runs": {
+   "B_s0": {
+    "max_iteration": 5,
+    "seed_val_passes": 1,
+    "proposed": 4,
+    "accepted": 4,
+    "reflection_calls": 2,
+    "reflection_seconds": [
+     642,
+     169
+    ],
+    "saved_candidate_files": 5,
+    "STOPPED": null,
+    "api_failures": 1
+   },
+   "B_s1": {
+    "max_iteration": 6,
+    "seed_val_passes": 1,
+    "proposed": 5,
+    "accepted": 4,
+    "reflection_calls": 3,
+    "reflection_seconds": [
+     116,
+     322,
+     205
+    ],
+    "saved_candidate_files": 5,
+    "STOPPED": null,
+    "api_failures": 0
+   },
+   "B_s2": {
+    "max_iteration": 4,
+    "seed_val_passes": 1,
+    "proposed": 4,
+    "accepted": 3,
+    "reflection_calls": 1,
+    "reflection_seconds": [
+     616
+    ],
+    "saved_candidate_files": 4,
+    "STOPPED": null,
+    "api_failures": 2
+   },
+   "D_s0": {
+    "max_iteration": 7,
+    "seed_val_passes": 1,
+    "proposed": 6,
+    "accepted": 4,
+    "reflection_calls": 3,
+    "reflection_seconds": [
+     173,
+     257,
+     195
+    ],
+    "saved_candidate_files": 5,
+    "STOPPED": null,
+    "api_failures": 0
+   },
+   "D_s1": {
+    "max_iteration": 8,
+    "seed_val_passes": 1,
+    "proposed": 7,
+    "accepted": 3,
+    "reflection_calls": 4,
+    "reflection_seconds": [
+     95,
+     143,
+     117,
+     70
+    ],
+    "saved_candidate_files": 4,
+    "STOPPED": null,
+    "api_failures": 0
+   },
+   "D_s2": {
+    "max_iteration": 6,
+    "seed_val_passes": 1,
+    "proposed": 5,
+    "accepted": 3,
+    "reflection_calls": 2,
+    "reflection_seconds": [
+     76,
+     83
+    ],
+    "saved_candidate_files": 4,
+    "STOPPED": null,
+    "api_failures": 1
+   }
+  }
+ },
+ "unmetered_pod_time": {
+  "preflight_usd": 0.3805,
+  "unmetered_hours": 0.356,
+  "unmetered_usd": 1.42
+ },
+ "preflight_usd": 0.3805
+}
