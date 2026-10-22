@@ -39,7 +39,9 @@ llm:
   long_timeout_seconds: 1800    # Kimi-K3 reflections passed 300 s (chunk 4); so may long ReForm outputs on a shared GPU
   long_retries: 1               # a hung long call fails after at most 2 x 1800 s, and the run reports it
   purpose_limits:               # wins over the above for that purpose
-    reflection: {timeout_seconds: 600, retries: 1}   # Neel, chunk 4: cap each reflection attempt at 10 min
+    # Neel, chunk 4: cap each reflection attempt at 10 min. Chunk 5 deviation (Neel, 2026-10-22): 1 to 4 retries,
+    # waits about 30, 60, 120, 240 s (+-20% jitter; a 429's Retry-After wins if longer), after Together 429/503s.
+    reflection: {timeout_seconds: 600, retries: 4, backoff_seconds: 30}
   prices:  # USD per 1M tokens (Together model list, 2026-10-17)
     openai/gpt-oss-120b: {input: 0.15, output: 0.6}
     deepseek-ai/DeepSeek-V4.1-Flash: {input: 0.3, output: 1.2}

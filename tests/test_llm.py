@@ -127,3 +127,101 @@ def test_cost_rows_carry_latency(tmp_path):
     client.chat("m", [{"role": "user", "content": "x"}], purpose="opt_judge")
     row = json.loads((tmp_path / "costs.jsonl").read_text())
     assert "seconds" in row and row["seconds"] >= 0
+
+
+REPLY = {"choices": [{"message": {"content": "ok"}, "finish_reason": "stop"}], "usage": {"prompt_tokens": 1, "completion_tokens": 1}}
+
+
+def retry_client(tmp_path, post):
+    """The real config's limits (reflection: 4 retries, 30 s base backoff), with sleeps recorded, not slept."""
+    cfg = copy.deepcopy(CFG)
+    cfg["llm"]["prices"]["m"] = {"input": 0, "output": 0}
+    c = LLMClient(cfg, 4, cache_dir=tmp_path / "c", costs_path=tmp_path / "costs.jsonl", post=post)
+    c.slept = []
+    c.sleep = c.slept.append
+    return c
+
+
+def test_reflection_retries_four_times_with_exponential_backoff_and_jitter(tmp_path):
+    # Chunk 5 deviation (Neel, 2026-10-22): reflection retries 1 to 4, about 30, 60, 120, 240 s apart.
+    from src.llm import RetryableError
+    calls = []
+    def flaky(body):
+        calls.append(1)
+        if len(calls) < 5:
+            raise RetryableError("HTTP 503: Service unavailable")
+        return REPLY
+    c = retry_client(tmp_path, flaky)
+    assert c.limits("reflection") == (600, 4)
+    assert c.chat("m", [{"role": "user", "content": "r"}], purpose="reflection") == "ok"
+    assert len(calls) == 5 and len(c.slept) == 4
+    for wait, base in zip(c.slept, (30, 60, 120, 240)):
+        assert 0.8 * base <= wait <= 1.2 * base
+    rows = [json.loads(l) for l in (tmp_path / "api_failures.jsonl").read_text().splitlines()]
+    assert len(rows) == 4 and all(r["purpose"] == "reflection" for r in rows)
+
+
+def test_reflection_gives_up_after_five_attempts(tmp_path):
+    from src.llm import LLMError, RetryableError
+    calls = []
+    def down(body):
+        calls.append(1)
+        raise RetryableError("HTTP 429: too many requests")
+    c = retry_client(tmp_path, down)
+    with pytest.raises(LLMError, match="gave up after 5 attempts"):
+        c.chat("m", [{"role": "user", "content": "r"}], purpose="reflection")
+    assert len(calls) == 5 and len(c.slept) == 4
+
+
+def test_jitter_varies_the_waits(tmp_path):
+    c = retry_client(tmp_path, None)
+    assert len({round(c.retry_delay(0, "reflection", None), 6) for _ in range(20)}) > 1
+
+
+def test_retry_after_is_honored_when_longer_and_capped(tmp_path):
+    from src.llm import MAX_RETRY_AFTER, RetryableError
+    c = retry_client(tmp_path, None)
+    assert c.retry_delay(0, "reflection", RetryableError("429", retry_after=200)) == 200
+    assert 24 <= c.retry_delay(0, "reflection", RetryableError("429", retry_after=5)) <= 36  # backoff still applies
+    assert c.retry_delay(0, "reflection", RetryableError("429", retry_after=5000)) == MAX_RETRY_AFTER
+    calls = []
+    def limited(body):
+        calls.append(1)
+        if len(calls) == 1:
+            raise RetryableError("HTTP 429: too many requests", retry_after=90)
+        return REPLY
+    c = retry_client(tmp_path, limited)
+    c.chat("m", [{"role": "user", "content": "r"}], purpose="reflection")
+    assert c.slept == [90]
+
+
+def test_post_reads_retry_after_from_a_429(tmp_path, monkeypatch):
+    import email.message
+    import io
+    import urllib.error
+    import src.llm as llm
+    from src.llm import RetryableError
+    def fail_with(code, after):
+        headers = email.message.Message()
+        if after is not None:
+            headers["Retry-After"] = after
+        err = urllib.error.HTTPError("u", code, "x", headers, io.BytesIO(b"{}"))
+        def urlopen(*a, **k):
+            raise err
+        monkeypatch.setattr(llm.urllib.request, "urlopen", urlopen)
+    monkeypatch.setenv("TOGETHER_API_KEY", "test")
+    c = retry_client(tmp_path, None)
+    for code, after, want in ((429, "45", 45.0), (429, None, None), (429, "soon", None), (503, "45", None)):
+        fail_with(code, after)
+        with pytest.raises(RetryableError) as e:
+            c._post({"model": "m"})
+        assert e.value.retry_after == want
+
+
+def test_retry_after_http_date():
+    from datetime import datetime, timezone
+    from src.llm import retry_after_seconds
+    now = datetime(2026, 10, 22, 7, 27, 0, tzinfo=timezone.utc)
+    assert retry_after_seconds("Thu, 22 Oct 2026 07:28:00 GMT", now=now) == 60
+    assert retry_after_seconds("Thu, 22 Oct 2026 07:00:00 GMT", now=now) == 0
+    assert retry_after_seconds("", now=now) is None

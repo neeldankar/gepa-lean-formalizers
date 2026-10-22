@@ -5,9 +5,11 @@ Every uncached call appends a line to runs/costs.jsonl (vLLM models cost $0 here
 logged separately by src/costs.py). Before each uncached call, the chunk's total so far is
 checked against its cap in config.yaml; reaching it raises BudgetExceeded.
 """
+import email.utils
 import hashlib
 import json
 import os
+import random
 import uuid
 import threading
 import time
@@ -20,6 +22,7 @@ from src.config import ROOT, load_env
 
 COSTS_PATH = ROOT / "runs/costs.jsonl"
 FAILURES_PATH = ROOT / "runs/api_failures.jsonl"  # every failed attempt: timeouts, retryable and other errors
+MAX_RETRY_AFTER = 600  # seconds: the longest a 429's Retry-After may make us wait before one retry
 
 
 class BudgetExceeded(RuntimeError):
@@ -31,11 +34,31 @@ class LLMError(RuntimeError):
 
 
 class RetryableError(LLMError):
-    """Rate limit, server error, network error or a call past its hard timeout: worth another attempt."""
+    """Rate limit, server error, network error or a call past its hard timeout: worth another attempt.
+    retry_after: seconds from a 429's Retry-After header, if it sent one."""
+
+    def __init__(self, message, retry_after=None):
+        super().__init__(message)
+        self.retry_after = retry_after
 
 
 class CallTimeout(RetryableError):
     pass
+
+
+def retry_after_seconds(value, now=None):
+    """A Retry-After header (seconds or an HTTP date) as seconds; None if absent or unreadable."""
+    if not value:
+        return None
+    try:
+        return max(0.0, float(value))
+    except ValueError:
+        pass
+    try:
+        when = email.utils.parsedate_to_datetime(value)
+        return max(0.0, (when - (now or datetime.now(timezone.utc))).total_seconds())
+    except (TypeError, ValueError):
+        return None
 
 
 def spent(chunk, path=COSTS_PATH):
@@ -71,6 +94,7 @@ class LLMClient:
         self.failures_path = self.costs_path.parent / FAILURES_PATH.name
         self.post = post or self._post
         self.paid_calls = 0
+        self.sleep = time.sleep  # tests replace it
 
     def chat(self, model, messages, purpose, temperature=0.0, max_tokens=2000, seed=0, sample=0, extra=None):
         """Return the reply text. Cached on every input that can change the reply."""
@@ -128,6 +152,17 @@ class LLMClient:
             return self.long_timeout, self.long_retries
         return self.timeout, self.retries
 
+    def backoff_for(self, purpose):
+        """Base wait in seconds before the first retry (it doubles each retry); per purpose if set."""
+        return self.purpose_limits.get(purpose, {}).get("backoff_seconds", self.backoff)
+
+    def retry_delay(self, attempt, purpose, error):
+        """Exponential backoff with +-20% jitter, so parallel runs don't retry in step. A 429's
+        Retry-After wins when it asks for longer, up to MAX_RETRY_AFTER."""
+        delay = self.backoff_for(purpose) * 2**attempt * random.uniform(0.8, 1.2)
+        after = getattr(error, "retry_after", None)
+        return max(delay, min(after, MAX_RETRY_AFTER)) if after is not None else delay
+
     def log_failure(self, body, purpose, error, seconds):
         with self.lock:
             self.failures_path.parent.mkdir(parents=True, exist_ok=True)
@@ -152,7 +187,7 @@ class LLMClient:
                 self.log_failure(body, purpose, e, time.monotonic() - t0)
                 last = e
                 if attempt < retries:
-                    time.sleep(self.backoff * 2**attempt)
+                    self.sleep(self.retry_delay(attempt, purpose, e))
             except LLMError as e:
                 self.log_failure(body, purpose, e, time.monotonic() - t0)
                 raise
@@ -189,7 +224,8 @@ class LLMClient:
                 return json.load(resp)
         except urllib.error.HTTPError as e:
             if e.code in (429, 500, 502, 503, 504):
-                raise RetryableError(f"HTTP {e.code}: {e.read()[:300]!r}") from None
+                after = retry_after_seconds(e.headers.get("Retry-After")) if e.code == 429 and e.headers else None
+                raise RetryableError(f"HTTP {e.code}: {e.read()[:300]!r}", retry_after=after) from None
             raise LLMError(f"HTTP {e.code}: {e.read()[:300]!r}") from None
         except (urllib.error.URLError, TimeoutError, OSError) as e:
             raise RetryableError(f"network error: {e}") from None

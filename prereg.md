@@ -297,4 +297,6 @@ Nothing goes public without Neel's sign-off.
 
 ## Deviations
 
-None yet. After the freeze, every change to the plan goes here with a date, a reason, and Neel's approval.
+After the freeze, every change to the plan goes here with a date, a reason, and Neel's approval.
+
+1. **2026-10-22 (UTC), chunk 5, approved by Neel that night:** reflection retries 1→4 with backoff, after Together 429/503s during chunk 5; no model, prompt or scoring change. Waits before each retry are about 30, 60, 120 and 240 s with ±20% jitter; on a 429, Together's Retry-After wins when it asks for longer (at most 600 s). Jitter and Retry-After apply to every API retry, which changes only timing (judges keep their 5 s base wait). The six GEPA runs were stopped about 25 minutes in and resumed from their saved GEPA state.
