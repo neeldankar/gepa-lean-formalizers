@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_048",
+        "sample": 0,
+        "output": "```lean4\ntheorem Dummit_Foote_exercise_1_3_12 (G : Type _) [Group G] [FiniteSet A] [Equiv.Perm A] (h_trans : Transitive G A) (h_size : Finset.card A > 1) : \u2203 \u03c3 \u2208 G, \u2200 a \u2208 A, \u03c3 a \u2260 a := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_1_3_12 (G : Type _) [Group G] [FiniteSet A] [Equiv.Perm A] (h_trans : Transitive G A) (h_size : Finset.card A > 1) : \u2203 \u03c3 \u2208 G, \u2200 a \u2208 A, \u03c3 a \u2260 a := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:42-7:51: error(lean.unknownIdentifier): Unknown identifier `FiniteSet`\n\nNote: It is not possible to treat `FiniteSet` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

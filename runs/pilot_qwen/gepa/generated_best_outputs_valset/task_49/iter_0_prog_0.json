@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_258",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_abelian_power_condition (G : Type) [Group G] (n : \u2115) (h : n > 1) :\n  \u2200 a b : G, (a * b * a\u207b\u00b9 * b\u207b\u00b9) ^ (n * (n - 1)) = 1 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_abelian_power_condition (G : Type) [Group G] (n : \u2115) (h : n > 1) :\n  \u2200 a b : G, (a * b * a\u207b\u00b9 * b\u207b\u00b9) ^ (n * (n - 1)) = 1 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The Lean statement omits the crucial hypothesis that (a * b) ^ n = a ^ n * b ^ n holds for all a, b in G."
+        },
+        "score": 0
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_215",
+        "sample": 0,
+        "output": "```lean4\ntheorem group_order_same_for_x_and_x_inv (G : Type) [Group G] (x : G) :\n  Order.on x = Order.on (x\u207b\u00b9) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem group_order_same_for_x_and_x_inv (G : Type) [Group G] (x : G) :\n  Order.on x = Order.on (x\u207b\u00b9) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:2-8:10: error(lean.unknownIdentifier): Unknown identifier `Order.on`\n",
+            "-:8:15-8:23: error(lean.unknownIdentifier): Unknown identifier `Order.on`\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

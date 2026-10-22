@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_208",
+        "sample": 0,
+        "output": "```lean4\ntheorem Axler_exercise_8_11 (V : InnerProductSpace \u2102) (hdim : 2 \u2264 (dim V : \u2115)) :\n    \u00ac(Subspace (fun T => NormalOperator T) (L (V) (V))) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Axler_exercise_8_11 (V : InnerProductSpace \u2102) (hdim : 2 \u2264 (dim V : \u2115)) :\n    \u00ac(Subspace (fun T => NormalOperator T) (L (V) (V))) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:23-7:42: error: type expected, got\n  (InnerProductSpace \u2102 : (E : Type ?u.2) \u2192 [RCLike \u2102] \u2192 [SeminormedAddCommGroup E] \u2192 Type (max 0 ?u.2))\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

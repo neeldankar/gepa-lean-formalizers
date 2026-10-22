@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_285",
+        "sample": 0,
+        "output": "```lean4\ntheorem fermat_prime_3_primitive_root (p : \u2115) (hp : p = 2 ^ \u2115.ofNat \u2115.ofNat (2 ^ \u2115.ofNat \u2115.ofNat 1) + 1) (hprime : Nat.Prime p) :\n  (3 : \u2124) \u2208 PrimitiveRoots p := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem fermat_prime_3_primitive_root (p : \u2115) (hp : p = 2 ^ \u2115.ofNat \u2115.ofNat (2 ^ \u2115.ofNat \u2115.ofNat 1) + 1) (hprime : Nat.Prime p) :\n  (3 : \u2124) \u2208 PrimitiveRoots p := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:40-7:47: error(lean.unknownIdentifier): Unknown identifier `\u00ab\u2115\u00bb.ofNat`\n",
+            "-:8:12-8:26: error(lean.unknownIdentifier): Unknown identifier `PrimitiveRoots`\n\nNote: It is not possible to treat `PrimitiveRoots` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

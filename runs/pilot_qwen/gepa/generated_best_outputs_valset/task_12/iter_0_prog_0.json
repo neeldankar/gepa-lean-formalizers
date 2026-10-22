@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_049",
+        "sample": 0,
+        "output": "```lean4\ntheorem characteristic_subgroups_are_normal (G : Type _) [Group G] (H : Subgroup G) (h : \u2200 (g : G), g \u2208 H \u2192 g \u2208 H) :\n  Normal H := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem characteristic_subgroups_are_normal (G : Type _) [Group G] (H : Subgroup G) (h : \u2200 (g : G), g \u2208 H \u2192 g \u2208 H) :\n  Normal H := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "unfaithful",
+            "reason": "The hypothesis `h : \u2200 (g : G), g \u2208 H \u2192 g \u2208 H` is trivial and does not capture the definition of a characteristic subgroup (invariance under all automorphisms), so the statement does not match the English claim."
+        },
+        "score": 0
+    }
+]

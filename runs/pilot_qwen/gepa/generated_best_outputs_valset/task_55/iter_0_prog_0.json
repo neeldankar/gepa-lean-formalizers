@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_292",
+        "sample": 0,
+        "output": "```lean4\ntheorem topology_generated_by_subbasis_equals_intersection (X : Type*) (A : Set (Set X)) :\n  TGenerate A = \u22c2 {T | is_topology X T \u2227 A \u2286 T} := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem topology_generated_by_subbasis_equals_intersection (X : Type*) (A : Set (Set X)) :\n  TGenerate A = \u22c2 {T | is_topology X T \u2227 A \u2286 T} := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:13:17-13:19: error: unexpected token '{'; expected ','\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

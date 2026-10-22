@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_191",
+        "sample": 0,
+        "output": "```lean4\ntheorem ideal_intersection_equal_product (R : Type _) [Ring R] (I J : Ideal R) (h : I + J = I \u2294 J) : I * J = I \u2229 J := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem ideal_intersection_equal_product (R : Type _) [Ring R] (I J : Ideal R) (h : I + J = I \u2294 J) : I * J = I \u2229 J := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:86-7:91: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Inter (Ideal R)\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

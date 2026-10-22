@@ -1,0 +1,22 @@
+[
+    {
+        "item_id": "pnv_128",
+        "sample": 0,
+        "output": "```lean4\ntheorem countable_disjoint_open_sets (X : TopologicalSpace \u03b1) (D : Set \u03b1) (hD : Countable D) (hDense : Dense D) :\n    \u2200 (\ud835\udcb0 : Set (Set \u03b1)), (\u2200 (U V : Set \u03b1), U \u2208 \ud835\udcb0 \u2192 V \u2208 \ud835\udcb0 \u2192 U \u2260 V \u2192 Disjoint U V) \u2192 Countable \ud835\udcb0 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem countable_disjoint_open_sets (X : TopologicalSpace \u03b1) (D : Set \u03b1) (hD : Countable D) (hDense : Dense D) :\n    \u2200 (\ud835\udcb0 : Set (Set \u03b1)), (\u2200 (U V : Set \u03b1), U \u2208 \ud835\udcb0 \u2192 V \u2208 \ud835\udcb0 \u2192 U \u2260 V \u2192 Disjoint U V) \u2192 Countable \ud835\udcb0 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:40-7:41: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:7:52-7:53: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:20-8:21: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:39-8:40: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:39-8:40: error(lean.unknownIdentifier): Unknown identifier `\u03b1`\n\nNote: It is not possible to treat `\u03b1` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

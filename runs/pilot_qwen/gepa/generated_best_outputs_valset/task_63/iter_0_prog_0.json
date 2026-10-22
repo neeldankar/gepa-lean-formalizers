@@ -1,0 +1,20 @@
+[
+    {
+        "item_id": "pnv_338",
+        "sample": 0,
+        "output": "```lean4\ntheorem disjoint_closed_sets_are_separated {X : Type} [TopologicalSpace X] {A B : Set X}\n  (hA : Closed A) (hB : Closed B) (hAB : Disjoint A B) : Separated A B := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem disjoint_closed_sets_are_separated {X : Type} [TopologicalSpace X] {A B : Set X}\n  (hA : Closed A) (hB : Closed B) (hAB : Disjoint A B) : Separated A B := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:8-8:14: error(lean.unknownIdentifier): Unknown identifier `Closed`\n\nNote: It is not possible to treat `Closed` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:24-8:30: error(lean.unknownIdentifier): Unknown identifier `Closed`\n\nNote: It is not possible to treat `Closed` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n",
+            "-:8:57-8:66: error(lean.unknownIdentifier): Unknown identifier `Separated`\n\nNote: It is not possible to treat `Separated` as an implicitly bound variable here because the `autoImplicit` option is set to `false`.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_359",
+        "sample": 0,
+        "output": "```lean4\ntheorem exercise_on_derivative_bound (f : \u211d \u2192 \u211d) (hf : f DifferentiableOn (-1..1) \u2227 f''' DifferentiableOn (-1..1)) :\n  \u2203 x \u2208 (-1..1), f''' x \u2265 3 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem exercise_on_derivative_bound (f : \u211d \u2192 \u211d) (hf : f DifferentiableOn (-1..1) \u2227 f''' DifferentiableOn (-1..1)) :\n  \u2203 x \u2208 (-1..1), f''' x \u2265 3 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:58-7:60: error: unexpected token '..'; expected ')', ',' or ':'\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

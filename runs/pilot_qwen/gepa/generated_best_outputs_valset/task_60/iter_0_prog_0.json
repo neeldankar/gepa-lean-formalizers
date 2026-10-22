@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_319",
+        "sample": 0,
+        "output": "```lean4\ntheorem open_iff_no_limit_points_of_complement (M : Type) [TopologicalSpace M] (U : Set M) :\n  IsOpen U \u2194 \u2200 (x : M), x \u2208 U \u2192 \u2200 (F : Filter M), F.ne_bot \u2192 x \u2208 \u2a05 (s : Set M) (h : s \u2208 F), s \u2229 U \u2260 \u2205 :=\n  by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem open_iff_no_limit_points_of_complement (M : Type) [TopologicalSpace M] (U : Set M) :\n  IsOpen U \u2194 \u2200 (x : M), x \u2208 U \u2192 \u2200 (F : Filter M), F.ne_bot \u2192 x \u2208 \u2a05 (s : Set M) (h : s \u2208 F), s \u2229 U \u2260 \u2205 :=\n  by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:52-8:58: error(lean.invalidField): Invalid field `ne_bot`: The environment does not contain `Filter.ne_bot`, so it is not possible to project the field `ne_bot` from an expression\n  F\nof type `Filter M`\n",
+            "-:8:61-8:101: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Membership M Prop\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

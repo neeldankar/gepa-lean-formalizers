@@ -1,0 +1,27 @@
+{
+ "run_id": "pilot_qwen",
+ "best_idx": 0,
+ "candidates": [
+  {
+   "instructions": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block."
+  },
+  {
+   "instructions": "Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The problem is accompanied by a \"Lean 4 context\" (imports, opens, and possibly definitions). Requirements:\n\n1. Use exactly the given context: do not add imports, opens, or definitions. If the context defines names (e.g. `Rl`, `K_topology`), use those names in your statement rather than redefining them. Note that some `open`s in the context may be irrelevant to the problem (e.g. `open Real` for a question about ℤ[i]) — that is fine, just don't let them mislead you.\n2. The statement must compile. `autoImplicit` is off, so every identifier must either be explicitly bound by you or already exist in Mathlib with the exact spelling and capitalization. Never invent notation or guess names.\n3. End the statement with `:= by sorry`.\n4. The statement must faithfully and precisely capture the entire English problem: all variables, quantifiers, hypotheses (as named assumptions), and the exact conclusion. A judge checks semantic fidelity, so do not strengthen, weaken, or omit anything.\n5. Put only the final theorem in a ```lean4 code block.\n\nKnown compilation pitfalls (these caused failures before — avoid them):\n- Exact Mathlib names: `Nat.Coprime` (capital C), not `Nat.coprime`; Euler's totient is `Nat.totient`, not `Nat.phi`.\n- `⁻¹` needs an `Inv` instance, which neither `ℤ` nor `ℕ` has. To express \"d' is the inverse of d modulo m\", write `d * d' ≡ 1 [MOD m]` (for ℕ), or work in `ZMod m`, e.g. `(d : ZMod m) * (d' : ZMod m) = 1`.\n- Congruence notation is type-specific: `a ≡ b [MOD n]` is `Nat.ModEq` and requires `a b : ℕ`; `a ≡ b [ZMOD n]` is `Int.ModEq` and requires `a b : ℤ`. Do not mix ℕ terms with `[ZMOD ...]` without explicit coercions. Phrasing congruences as equalities in `ZMod n` is often the cleanest option.\n- Gaussian integers: ℤ[i] is `GaussianInt` in Mathlib (scoped notation `ℤ[i]`); the element a + bi is `⟨a, b⟩ : GaussianInt`. There is no identifier `𝕜` for a base field — never write things like `𝕜 i`.\n\nUseful domain mappings:\n- \"Two topologies on the same space are not comparable\" means neither is coarser than the other: `¬ (T1 ≤ T2) ∧ ¬ (T2 ≤ T1)`, using the lattice order `≤` on `TopologicalSpace X`.\n- \"x is divisible by y in ring R\" is `(y : R) ∣ x`, with both sides living in R (e.g. `(⟨1, 1⟩ : GaussianInt) ^ 2 ∣ 2`).\n\nStrategy:\n1. Identify the objects, hypotheses, and claim in the problem.\n2. Map each to the correct Mathlib type/constant, double-checking exact spelling and capitalization.\n3. Choose ambient types so every operation typechecks: matching ℕ/ℤ (or `ZMod n`) for congruences, the right ring for `∣` and `^`, and an available `Inv` instance before using `⁻¹`.\n4. Introduce variables and hypotheses as named parameters, then state the conclusion.\n5. Before finalizing, mentally verify that every identifier exists in Mathlib and every operation has the required typeclass instance."
+  }
+ ],
+ "parents": [
+  [
+   null
+  ],
+  [
+   0
+  ]
+ ],
+ "val_aggregate_scores": [
+  0.05714285714285714,
+  0.02857142857142857
+ ],
+ "total_metric_calls": 158,
+ "adapter_metric_calls": 158,
+ "reflection_calls": 3
+}

@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_152",
+        "sample": 0,
+        "output": "```lean4\ntheorem triangle_inequality_for_complex_moduli (x y : \u2102) : |x - y| \u2265 ||x| - |y|| := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem triangle_inequality_for_complex_moduli (x y : \u2102) : |x - y| \u2265 ||x| - |y|| := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:39-7:42: error: unexpected token '||'; expected term\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

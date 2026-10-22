@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_254",
+        "sample": 0,
+        "output": "```lean4\ntheorem vector_spaces_over_Q_isomorphic (n : \u2115) (hn : n \u2260 0) : \n  FiniteDimensional.QuotientIsomorphism (FiniteDimensional.of (Fin n) \u211d) (FiniteDimensional.of (Fin 1) \u211d) := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem vector_spaces_over_Q_isomorphic (n : \u2115) (hn : n \u2260 0) : \n  FiniteDimensional.QuotientIsomorphism (FiniteDimensional.of (Fin n) \u211d) (FiniteDimensional.of (Fin 1) \u211d) := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:2-8:39: error(lean.unknownIdentifier): Unknown constant `FiniteDimensional.QuotientIsomorphism`\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

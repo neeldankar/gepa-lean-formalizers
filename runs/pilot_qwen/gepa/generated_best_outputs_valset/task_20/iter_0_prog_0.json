@@ -1,0 +1,19 @@
+[
+    {
+        "item_id": "pnv_101",
+        "sample": 0,
+        "output": "```lean4\ntheorem Artin_exercise_1_3_15 (p : \u2115) (hp : Nat.Prime p) (a : \u2115) :\n  IsPrimitiveRoot a p \u2194 \u2200 q : \u2115, q \u2223 p - 1 \u2227 Nat.Prime q \u2192 a ^ (p - 1 / q) \u2262 1 [ZMOD p] := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Artin_exercise_1_3_15 (p : \u2115) (hp : Nat.Prime p) (a : \u2115) :\n  IsPrimitiveRoot a p \u2194 \u2200 q : \u2115, q \u2223 p - 1 \u2227 Nat.Prime q \u2192 a ^ (p - 1 / q) \u2262 1 [ZMOD p] := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:8:75: error: expected token\n",
+            "-:8:59-8:74: error: Type mismatch\n  a ^ (p - 1 / q)\nhas type\n  \u2115\nbut is expected to have type\n  Prop\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]

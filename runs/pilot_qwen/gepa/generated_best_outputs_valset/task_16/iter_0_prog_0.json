@@ -1,0 +1,18 @@
+[
+    {
+        "item_id": "pnv_081",
+        "sample": 0,
+        "output": "```lean4\ntheorem Dummit_Foote_exercise_3_5_13 (m n : \u2115) (G1 : Fintype) (G2 : Fintype)\n    [Cyclic G1] [Cyclic G2] (hm : Fintype.card G1 = m) (hn : Fintype.card G2 = n) :\n    Cyclic (Product G1 G2) \u2194 Nat.coprime m n := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem Dummit_Foote_exercise_3_5_13 (m n : \u2115) (G1 : Fintype) (G2 : Fintype)\n    [Cyclic G1] [Cyclic G2] (hm : Fintype.card G1 = m) (hn : Fintype.card G2 = n) :\n    Cyclic (Product G1 G2) \u2194 Nat.coprime m n := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": false,
+        "compile_status": "lean_error",
+        "lean_errors": [
+            "-:7:34-7:41: error: type expected, got\n  (Fintype : Type ?u.6 \u2192 Type ?u.6)\n"
+        ],
+        "judge": null,
+        "score": 0
+    }
+]
