@@ -3,9 +3,9 @@
 ## Now
 
 - **Chunk:** 5 of 7, session 1 done: the combined job is running on pod 6 (relaunched 2026-10-22 06:37 UTC after Deviation 1). `prereg.md` frozen at e631bdb; Deviations only (1 so far)
-- **Status:** pod 6 (`qybccgbwec39wd`, H100 80GB, no network volume) runs `scripts/chunk5_job.py` in tmux `chunk5`. Together's Kimi-K3 is mostly returning 503s; B_s0 and B_s1 stopped (5 attempts used on one call), so the sanity check will fail and the job will push and stop the pod with no final eval (Neel's option 1).
+- **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
 - **Next:** when the preflight gate shows Together healthy again: new pod, resume the stopped runs from their saved GEPA state, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
-- **Spent so far:** $15.13 of $300 in `runs/costs.jsonl` as pushed (to 06:36 UTC); chunk 5 $6.91 metered by 06:54 UTC on the pod plus $1.42 unmetered pod time (chunk 5 cap $180)
+- **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
 - **Waiting on Neel:** a pod for the resume once the job has pushed (a `Results: chunk5` commit) and Kimi-K3 passes the preflight.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
@@ -28,6 +28,12 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 5 · job ended: 1 of 6 GEPA runs done, no final eval
+
+- **Run chunk5 (relaunch) outcome** (from `runs/chunk5_job_end.json`): ended 08:44 UTC, exit 1, pushed (commit 5a2dcc4). The sanity check failed as expected. D_s0 DONE (869 metric calls, sanity limit 873; 12 reflections). B_s0, B_s1, B_s2, D_s2 STOPPED after 5 attempts with HTTP 503; D_s1 after 5 attempts with HTTP 429 ("all replicas at capacity"). 44 failed reflection attempts since the relaunch (40 HTTP 503, 4 HTTP 429), the last at 08:38 UTC. No scores read.
+- **Cost:** chunk 5 $20.48 metered, plus $1.42 unmetered pod time; $31.81 logged in total.
+- **Next:** live preflight to see whether Kimi-K3 on Together is healthy; if the gate opens, new pod, rename the 5 STOPPED markers, rerun the combined job (resume, then final eval). Check first that D_s0's DONE run returns without new work.
 
 ### 2026-10-22 · chunk 5 · Kimi-K3 mostly down; two runs stopped; letting the job run out (Neel)
 

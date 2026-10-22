@@ -1,0 +1,61 @@
+{
+ "job_end": "2026-10-22T08:44:08Z",
+ "exit": 1,
+ "gepa_exit_codes": {
+  "B_s0": 1,
+  "B_s1": 1,
+  "B_s2": 1,
+  "D_s0": 0,
+  "D_s1": 1,
+  "D_s2": 1
+ },
+ "runs": {
+  "B_s0": {
+   "done": false,
+   "stopped": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"ser",
+   "total_metric_calls": null,
+   "reflection_calls": null,
+   "saved_candidate_files": 5
+  },
+  "B_s1": {
+   "done": false,
+   "stopped": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"ser",
+   "total_metric_calls": null,
+   "reflection_calls": null,
+   "saved_candidate_files": 7
+  },
+  "B_s2": {
+   "done": false,
+   "stopped": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"ser",
+   "total_metric_calls": null,
+   "reflection_calls": null,
+   "saved_candidate_files": 9
+  },
+  "D_s0": {
+   "done": true,
+   "stopped": null,
+   "total_metric_calls": 869,
+   "reflection_calls": 12,
+   "saved_candidate_files": 11
+  },
+  "D_s1": {
+   "done": false,
+   "stopped": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 429: b'{\"id\":\"ae08b474-aws_ue2\",\"error\":{\"message\":\"All replicas ",
+   "total_metric_calls": null,
+   "reflection_calls": null,
+   "saved_candidate_files": 8
+  },
+  "D_s2": {
+   "done": false,
+   "stopped": "ReflectionFailed: 1 reflection call(s) failed; first: LLMError: gave up after 5 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"ser",
+   "total_metric_calls": null,
+   "reflection_calls": null,
+   "saved_candidate_files": 7
+  }
+ },
+ "failed_attempts_since_relaunch": 44,
+ "failed_503": 40,
+ "failed_429": 4,
+ "chunk5_usd_metered": 20.48,
+ "total_usd_logged": 31.81
+}
