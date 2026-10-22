@@ -40,5 +40,21 @@
   ],
   "usd": 1.195,
   "failed_attempts": 0
+ },
+ "arm_f_pnv_011": {
+  "finish_reason": "stop",
+  "completion_tokens": 808,
+  "compiled": true,
+  "format_failure": false,
+  "seconds": 322.7,
+  "provider": "Together",
+  "usd": 0.014,
+  "failed_attempts": [
+   {
+    "time": "2026-10-22T19:19:30+00:00",
+    "seconds": 300.5,
+    "error": "reply without choices: {'message': 'A Timeout Occurred', 'code': 504, 'metadata': {'error_type': 'timeout'}}"
+   }
+  ]
  }
 }
