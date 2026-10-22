@@ -6,7 +6,7 @@
 - **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
 - **Next:** resume on a new pod with Kimi-K3 through OpenRouter pinned to Together (Deviation 2): the 5 stopped runs, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
 - **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
-- **Waiting on Neel:** the new pod's direct TCP SSH line (`root@IP -p PORT`); the proxy line can't run rsync or remote commands.
+- **Waiting on Neel:** the tripwire paused chunk 5 at 20:43 UTC (D_s2's reflection call: 3 upstream 504s at 300 s). Resume or hold? Pod 7 idles meanwhile; stop at about 21:14 UTC without an answer.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,14 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 5 · pod 7: tripwire tripped (D_s2 504s); the pause worked, the tripwire killed itself; fixed
+
+- **Relaunch** at 20:26:53 UTC with the IncompleteRead fix. B_s2 had reached its budget before the 20:25 pause (DONE, 830 metric calls, limit 873) and is skipped with D_s0; 4 runs resumed. B_s0, B_s1 and D_s1 had new reflections (all provider Together) and kept iterating.
+- **Trip** at 20:43:53 UTC: D_s2's reflection call failed 3 times (20:32:08, 20:37:38, about 20:43:40), each "A Timeout Occurred" (code 504 inside an HTTP 200 reply) at 300.6 s. That is 3 failed attempts in 15 min, so the rule fired. All job processes stopped, no STOPPED or DONE markers were written, and GEPA state is kept (pushed, 93cc069).
+- **Bug:** the pause found processes with `pgrep -f`, which also matched the tmux server, because the server's argv holds run_job.sh's command. Killing the server took every tmux session down, the tripwire's own included. So `/workspace/TRIPWIRE` was never written, nothing was pushed, and the 30 min timer never started. Fix: `job_pids` reads `/proc` and kills only Python processes run as `-m scripts.chunk5_job` or `-m scripts.gepa_run`, never itself. Tested in pytest (226 pass) and live on the pod: a fake job session was killed and another session survived.
+- **Pod 7** has been idle since 20:43 UTC (vLLM servers up).
+- **Cost:** chunk 5 $25.24 metered by 20:45 UTC.
 
 ### 2026-10-22 · chunk 5 · pod 7 resume: D_s2 stopped on an unretried cut-off reply; paused, fixed
 
