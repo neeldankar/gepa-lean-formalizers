@@ -322,6 +322,22 @@ def fresh_cache_dir(root=ROOT / "cache/preflight"):
     return path
 
 
+def preflight_limits(cfg, argv):
+    """Preflight-only call limits, on the in-memory cfg: --once means one attempt per call, no retries
+    (a rerun Neel asked to make exactly once); --cap S lowers every per-attempt timeout to at most S seconds."""
+    llm = cfg["llm"]
+    if "--once" in argv:
+        llm["retries"] = llm["long_retries"] = 0
+        for lim in llm.get("purpose_limits", {}).values():
+            lim["retries"] = 0
+    if "--cap" in argv:
+        cap = float(argv[argv.index("--cap") + 1])
+        llm["timeout_seconds"] = min(llm["timeout_seconds"], cap)
+        llm["long_timeout_seconds"] = min(llm.get("long_timeout_seconds", cap), cap)
+        for lim in llm.get("purpose_limits", {}).values():
+            lim["timeout_seconds"] = min(lim["timeout_seconds"], cap)
+
+
 def preflight(cfg, summary, argv=()):
     """Live tests of every API model GEPA and the final eval need, before paying for a pod."""
     from gepa.strategies.instruction_proposal import InstructionProposalSignature
@@ -339,8 +355,7 @@ def preflight(cfg, summary, argv=()):
         return {"new_cost_rows": n - before[0], "usd": usd - before[1]}
 
     only = set(argv[argv.index("--only") + 1].split(",")) if "--only" in argv else None
-    if "--once" in argv:  # one attempt per call, no retries (a rerun Neel asked to make exactly once)
-        cfg["llm"]["retries"] = cfg["llm"]["long_retries"] = 0
+    preflight_limits(cfg, argv)
     want = lambda name: only is None or name in only
     checker = AxleChecker(cfg["axle"])
     cache = fresh_cache_dir() if "--fresh" in argv else None  # a new cache dir: every call is live

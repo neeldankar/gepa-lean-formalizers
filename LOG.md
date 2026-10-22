@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 4 of 7 in progress (pilot). Today's live API preflight failed; GEPA pilot run, chunk 5 dry run and freeze not done
-- **Status:** no pod running. Kimi-K3 on Together answered HTTP 503 "Service unavailable" to the long reflection check and to arm F (21:31 UTC); an earlier long check got no reply in 29 min. The short 3-record reflection passed at 20:50. GEPA is gated on a full, recent preflight, so nothing launched.
-- **Next:** Neel decides (see the 2026-10-21 preflight entry); then a full preflight from the laptop; then a pod, and `scripts/chunk4_pod_queue.sh` runs setup, the gate, the GEPA pilot run, the chunk 5 dry run, and stops the pod.
-- **Spent so far:** $8.06 of $300 (chunk 4: $8.03 of its $30 cap)
-- **Waiting on Neel:** what to do about Kimi-K3; then a pod; labels (`~/Desktop/chunk4_labeling.html`, rebuilt page); the three prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions)
+- **Chunk:** 4 of 7 in progress (pilot). The Oct 22 00:03 UTC full preflight failed (5 of 7); GEPA pilot run, chunk 5 dry run and freeze not done
+- **Status:** no pod running. Full preflight, 600 s cap per attempt: the long (15-record) reflection got HTTP 503 from Together on both attempts; arm F used all 16,384 output tokens on reasoning and gave no Lean statement. Short reflection and all 4 judge checks passed. Gate closed, nothing launched.
+- **Next:** Neel decides (see the 2026-10-22 preflight entry); then a full preflight from the laptop; then a pod, and `scripts/chunk4_pod_queue.sh` runs setup, the gate, the GEPA pilot run, the chunk 5 dry run, and stops the pod.
+- **Spent so far:** $8.39 of $300 (chunk 4: $8.36 of its $30 cap)
+- **Waiting on Neel:** what to do about Kimi-K3 (long reflection 503s; arm F hits the 16,384-token cap); then a pod; labels (`~/Desktop/chunk4_labeling.html`, rebuilt page); the three prereg drafts in `runs/chunk4/` (Q3, few-shot, analysis additions)
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,18 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-22 · chunk 4 · full preflight rerun, 600 s cap: failed (5 of 7)
+
+- **Did:** new preflight flag `--cap S` (every per-attempt timeout at most S seconds, preflight only; `config.yaml` unchanged). Fixed `--once`: it now also zeroes the per-purpose retries (reflection kept 1). Test added; 189 tests pass.
+- **Run** `preflight --fresh --cap 600`, 00:03 to 00:22 UTC, laptop, run id `preflight`. Log `runs/chunk4/preflight_2026-10-21/attempt3_full_cap600_0003.log`. Numbers from `runs/chunk4/api_preflight.json`:
+  - reflection_minibatch_3 (Kimi-K3): pass, 101 s, 971 in / 5,038 out tokens, $0.08
+  - reflection_long_15 (Kimi-K3): fail, HTTP 503 "Service unavailable" on both attempts (00:10 after 340 s, 00:16), 685 s total
+  - arm_f_generate (Kimi-K3, pnv_004): fail, 315 s, 645 in / 16,384 out tokens, all reasoning, finish length, no Lean statement, $0.25 (Oct 18: 6,849 out tokens, pass)
+  - opt and ref judges on pnv_258 and pnv_260: all 4 pass, 0 to 7 s each
+  - Gate (`chunk4 preflight_ok`): closed. The Oct 18 results are archived as `runs/chunk4/api_preflight_2026-10-18.json`.
+- **Cost:** $0.33 this entry, chunk 4 $8.36, total $8.39.
+- **Waiting on Neel:** Kimi-K3 decision. Two separate problems: the long reflection is not being served (503), and arm F now runs past `generation.max_tokens` 16,384 (raising it would change a setting the prereg holds identical across arms).
 
 ### 2026-10-21 · chunk 4 · cut scope; live API preflight failed (Kimi-K3 slow, then 503)
 

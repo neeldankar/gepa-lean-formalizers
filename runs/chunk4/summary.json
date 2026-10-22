@@ -321,11 +321,11 @@
   }
  },
  "costs": {
-  "usd_total": 7.7988531499999985,
+  "usd_total": 8.357856649999997,
   "by_chunk": {
    "4": {
-    "calls": 418,
-    "usd": 7.7988531499999985
+    "calls": 426,
+    "usd": 8.357856649999997
    }
   },
   "by_run": {
@@ -366,8 +366,8 @@
     "usd": 0.0005223
    },
    "preflight": {
-    "calls": 9,
-    "usd": 0.7597587000000001
+    "calls": 17,
+    "usd": 1.3187621999999999
    }
   },
   "by_purpose": {
@@ -376,16 +376,16 @@
     "usd": 6.949249999999999
    },
    "generate": {
-    "calls": 239,
-    "usd": 0.10467
+    "calls": 240,
+    "usd": 0.352365
    },
    "opt_judge": {
-    "calls": 52,
-    "usd": 0.013425899999999998
+    "calls": 54,
+    "usd": 0.013936199999999998
    },
    "ref_judge": {
-    "calls": 39,
-    "usd": 0.060549900000000004
+    "calls": 41,
+    "usd": 0.0614391
    },
    "gloss": {
     "calls": 40,
@@ -396,12 +396,12 @@
     "usd": 0.0005223
    },
    "reflection": {
-    "calls": 4,
-    "usd": 0.652197
+    "calls": 7,
+    "usd": 0.962106
    }
   }
  },
- "costs_all_chunks_usd": 7.832487380000001,
+ "costs_all_chunks_usd": 8.391490880000001,
  "stats": {
   "qwen_nothink": {
    "outputs": 30,
@@ -565,23 +565,57 @@
   "started": "2026-10-18T21:28:43+00:00"
  },
  "preflight": {
-  "all_pass": true,
+  "all_pass": false,
   "checks": {
-   "arm_f_generate": {
+   "reflection_minibatch_3": {
     "pass": true,
     "reasons": [],
     "model": "moonshotai/Kimi-K3",
-    "seconds": 79.8,
-    "usd": 0.10467000000000048,
+    "seconds": 101.3,
+    "usd": 0.0784830000000003,
     "usage": {
-     "prompt_tokens": 645,
-     "completion_tokens": 6849,
-     "total_tokens": 7494,
+     "prompt_tokens": 971,
+     "completion_tokens": 5038,
+     "total_tokens": 6009,
      "prompt_tokens_details": {
       "cached_tokens": 0
      },
      "completion_tokens_details": {
-      "reasoning_tokens": 6576
+      "reasoning_tokens": 4146
+     }
+    }
+   },
+   "reflection_long_15": {
+    "pass": false,
+    "reasons": [
+     "error: LLMError: gave up after 2 attempts: HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'",
+     "no new cost row (cache hit or not called)",
+     "no new instruction",
+     "reflection failures: ['LLMError: gave up after 2 attempts: HTTP 503: b\\'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }\\'']"
+    ],
+    "model": "moonshotai/Kimi-K3",
+    "seconds": 685.2,
+    "usd": 0.0,
+    "usage": null
+   },
+   "arm_f_generate": {
+    "pass": false,
+    "reasons": [
+     "finish_reason length",
+     "no Lean statement extracted"
+    ],
+    "model": "moonshotai/Kimi-K3",
+    "seconds": 314.9,
+    "usd": 0.24769500000000022,
+    "usage": {
+     "prompt_tokens": 645,
+     "completion_tokens": 16384,
+     "total_tokens": 17029,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 16384
      }
     }
    },
@@ -589,69 +623,33 @@
     "pass": true,
     "reasons": [],
     "model": "openai/gpt-oss-120b",
-    "seconds": 1.9,
-    "usd": 0.00026625000000013443,
+    "seconds": 7.1,
+    "usd": 0.000277649999999241,
     "usage": null
    },
    "ref_judge_pnv_258": {
     "pass": true,
     "reasons": [],
     "model": "deepseek-ai/DeepSeek-V4.1-Flash",
-    "seconds": 0.5,
-    "usd": 0.0003035999999996264,
+    "seconds": 0.4,
+    "usd": 0.0002975999999996759,
     "usage": null
    },
    "opt_judge_pnv_260": {
     "pass": true,
     "reasons": [],
     "model": "openai/gpt-oss-120b",
-    "seconds": 1.1,
-    "usd": 0.00016664999999971286,
+    "seconds": 3.0,
+    "usd": 0.0002326500000009446,
     "usage": null
    },
    "ref_judge_pnv_260": {
     "pass": true,
     "reasons": [],
     "model": "deepseek-ai/DeepSeek-V4.1-Flash",
-    "seconds": 7.2,
-    "usd": 0.00215520000000069,
+    "seconds": 1.3,
+    "usd": 0.0005915999999999144,
     "usage": null
-   },
-   "reflection_minibatch_3": {
-    "pass": true,
-    "reasons": [],
-    "model": "moonshotai/Kimi-K3",
-    "seconds": 66.7,
-    "usd": 0.07330799999999993,
-    "usage": {
-     "prompt_tokens": 971,
-     "completion_tokens": 4693,
-     "total_tokens": 5664,
-     "prompt_tokens_details": {
-      "cached_tokens": 0
-     },
-     "completion_tokens_details": {
-      "reasoning_tokens": 3746
-     }
-    }
-   },
-   "reflection_long_15": {
-    "pass": true,
-    "reasons": [],
-    "model": "moonshotai/Kimi-K3",
-    "seconds": 259.5,
-    "usd": 0.3744329999999998,
-    "usage": {
-     "prompt_tokens": 3611,
-     "completion_tokens": 24240,
-     "total_tokens": 27851,
-     "prompt_tokens_details": {
-      "cached_tokens": 3456
-     },
-     "completion_tokens_details": {
-      "reasoning_tokens": 22225
-     }
-    }
    }
   }
  }

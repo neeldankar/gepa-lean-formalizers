@@ -474,3 +474,9 @@
 {"time": "2026-10-18T21:52:46+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 3611, "completion_tokens": 24240, "usd": 0.374433}
 {"time": "2026-10-21T20:34:56+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 971, "completion_tokens": 6931, "usd": 0.106878}
 {"time": "2026-10-21T20:50:41+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 971, "completion_tokens": 8109, "usd": 0.124548}
+{"time": "2026-10-22T00:05:01+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "prompt_tokens": 971, "completion_tokens": 5038, "usd": 0.078483, "seconds": 101.3}
+{"time": "2026-10-22T00:21:41+00:00", "chunk": 4, "run_id": "preflight", "purpose": "generate", "model": "moonshotai/Kimi-K3", "prompt_tokens": 645, "completion_tokens": 16384, "usd": 0.247695, "seconds": 314.8}
+{"time": "2026-10-22T00:21:48+00:00", "chunk": 4, "run_id": "preflight", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 335, "completion_tokens": 379, "usd": 0.00027765, "seconds": 7.1}
+{"time": "2026-10-22T00:21:49+00:00", "chunk": 4, "run_id": "preflight", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 512, "completion_tokens": 120, "usd": 0.0002976, "seconds": 0.4}
+{"time": "2026-10-22T00:21:52+00:00", "chunk": 4, "run_id": "preflight", "purpose": "opt_judge", "model": "openai/gpt-oss-120b", "prompt_tokens": 275, "completion_tokens": 319, "usd": 0.00023265000000000002, "seconds": 3.0}
+{"time": "2026-10-22T00:21:53+00:00", "chunk": 4, "run_id": "preflight", "purpose": "ref_judge", "model": "deepseek-ai/DeepSeek-V4.1-Flash", "prompt_tokens": 420, "completion_tokens": 388, "usd": 0.0005916, "seconds": 1.3}

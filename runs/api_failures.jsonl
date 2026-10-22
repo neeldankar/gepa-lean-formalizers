@@ -1,0 +1,2 @@
+{"time": "2026-10-22T00:10:41+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "kind": "RetryableError", "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'", "seconds": 340.1}
+{"time": "2026-10-22T00:16:26+00:00", "chunk": 4, "run_id": "preflight", "purpose": "reflection", "model": "moonshotai/Kimi-K3", "kind": "RetryableError", "error": "HTTP 503: b'{ \"error\": {\"message\": \"Service unavailable\", \"type\": \"service_unavailable\"} }'", "seconds": 340.1}

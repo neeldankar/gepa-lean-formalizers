@@ -221,3 +221,16 @@ def test_preflight_api_error_is_a_failed_check():
     assert not v["pass"] and "503" in v["reasons"][0]
     judge = {"kind": "judge", "new_cost_rows": 0, "verdict": "error"}
     assert not chunk4.preflight_verdict(judge)["pass"]
+
+
+def test_preflight_limits_cap_and_once():
+    cfg = copy.deepcopy(load_config())
+    chunk4.preflight_limits(cfg, ["--fresh", "--cap", "600"])
+    client = LLMClient(cfg, 4, run_id="preflight")
+    for purpose in ("reflection", "generate", "judge"):
+        assert client.limits(purpose)[0] <= 600
+    assert client.limits("reflection")[1] == load_config()["llm"]["purpose_limits"]["reflection"]["retries"]
+    assert load_config()["llm"]["long_timeout_seconds"] == 1800  # config.yaml itself is untouched
+    chunk4.preflight_limits(cfg, ["--once"])
+    client = LLMClient(cfg, 4, run_id="preflight")
+    assert all(client.limits(p)[1] == 0 for p in ("reflection", "generate", "judge"))
