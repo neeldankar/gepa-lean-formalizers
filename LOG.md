@@ -6,7 +6,7 @@
 - **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
 - **Next:** resume on a new pod with Kimi-K3 through OpenRouter pinned to Together (Deviation 2): the 5 stopped runs, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
 - **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
-- **Waiting on Neel:** nothing. Resuming B_s0, B_s1, D_s1, D_s2 on pod 7 with streaming and the new tripwire rule (Neel, 2026-10-22); then the final eval, then the pod stops itself.
+- **Waiting on Neel:** nothing. The chunk 5 job finished 2026-10-23 00:29 UTC (exit 0, results 8168a22); pod 7 stopped itself. Next: session 2 checks.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,14 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-23 · chunk 5 · job finished: all six GEPA runs done, final eval written, pod stopped
+
+- **Job** (from `runs/job_summary.json`): started 2026-10-22 22:34:15 UTC, finished 2026-10-23 00:29:34 UTC, exit 0. GEPA exit codes: B_s0, B_s1, D_s2 0; B_s2, D_s0, D_s1 skipped (done). Sanity check: no problems. Push before arm F: pushed (831c452). Outages 0. Final results pushed (8168a22); the pod then stopped itself (SSH refused by 00:33 UTC).
+- **Final eval rows** (`runs/final/`): A, C, E 490 each (test 247, miniF2F 243); B, D 1,470 each (3 runs); F 247 (test only). Missing generations 0 in every arm.
+- **API failures since the resume** (`runs/api_failures.jsonl`): 0 reflection; arm F 10 failed attempts, all retried successfully (none final); ref judge 2, retried. The tripwire never fired.
+- **Cost** (`runs/costs.jsonl`): chunk 5 $45.25 metered, plus $1.42 unmetered pod time (cap $180); $57.79 metered all chunks.
+- **Next:** chunk 5 session 2: invariant and health checks only, no per-arm scores.
 
 ### 2026-10-22 · chunk 5 · tripwire rule: provider-wide outages only
 
