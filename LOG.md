@@ -2,10 +2,10 @@
 
 ## Now
 
-- **Chunk:** 5 of 7, session 1 done: the combined job is running on pod 6 (relaunched 2026-10-22 06:37 UTC after Deviation 1). `prereg.md` frozen at e631bdb; Deviations only (1 so far)
-- **Status:** the chunk 5 job ended 2026-10-22 08:44 UTC, exit 1, results pushed (5a2dcc4); pod 6 refuses SSH (stopped by the job; Neel to confirm in RunPod). D_s0 DONE; B_s0, B_s1, B_s2, D_s1, D_s2 STOPPED on reflection retries (Kimi-K3 on Together). No final eval yet.
-- **Next:** resume on a new pod with Kimi-K3 through OpenRouter pinned to Together (Deviation 2): the 5 stopped runs, then the final eval. Then session 2's checks (invariants and health only, no per-arm scores).
-- **Spent so far:** $31.81 of $300 logged; chunk 5 $20.48 metered plus $1.42 unmetered pod time (cap $180)
+- **Chunk:** 5 of 7, session 1 done: the combined job finished on pod 7 (2026-10-23 00:29 UTC, exit 0). `prereg.md` frozen at e631bdb; Deviations 1 to 3
+- **Status:** all six GEPA runs DONE; final eval written for arms A to F (`runs/final/`, 8168a22), 0 missing generations, 0 outages; pod 7 stopped itself.
+- **Next:** chunk 5 session 2: invariant and health checks only, no per-arm scores.
+- **Spent so far:** $57.79 metered of $300; chunk 5 $45.25 metered plus $1.42 unmetered pod time (cap $180)
 - **Waiting on Neel:** nothing. The chunk 5 job finished 2026-10-23 00:29 UTC (exit 0, results 8168a22); pod 7 stopped itself. Next: session 2 checks.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
