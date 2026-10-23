@@ -237,14 +237,15 @@ def read_labels(labels_path, sample_path):
     sample.jsonl has one line per labeled output: {label_id, arm, item_id, gepa_seed, sample, parts},
     where `parts` lists "random" and/or "disagreement" (prereg Changes, item 13). The random part is one
     set of test items labeled in all four core arms, one GEPA seed per item for B and D. An output
-    picked by both parts is shown once and counts in both.
+    picked by both parts is shown once and counts in both. Deviation 5: an output that did not compile
+    is not shown and carries `fixed_label` ("unfaithful", the compile rule), which is used as its label.
     Returns [{label_id, label, arm, item_id, gepa_seed, sample, parts}].
     """
     with open(labels_path) as f:
         labels = {r["label_id"]: r["label"] for r in csv.DictReader(f)}
     with open(sample_path) as f:
         sample = [json.loads(line) for line in f if line.strip()]
-    return [{**s, "label": labels.get(s["label_id"], "")} for s in sample]
+    return [{**s, "label": s.get("fixed_label") or labels.get(s["label_id"], "")} for s in sample]
 
 
 def hand_check(rows, labeled, resamples, seed):

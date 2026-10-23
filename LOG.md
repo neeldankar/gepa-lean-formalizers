@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 5 of 7 DONE (2026-10-23): session 2 checks passed, Deviation 4 applied, subagent counts match both times. `prereg.md` frozen at e631bdb; Deviations 1 to 4
-- **Status:** all six GEPA runs DONE and within budget; final eval complete for arms A to F (`runs/final/`); every invariant holds (`runs/chunk5_health.json`). After Deviation 4: 1 reference-judge verdict missing (arm D), 0 optimization-judge.
-- **Next:** chunk 6, hand-check and analysis. The sample is built from the post-Deviation-4 rows. Neel labels blind; no results or GEPA prompts opened before he is done.
-- **Spent so far:** $60.43 logged of $300; chunk 5 $47.88 (cap $180), including the $1.42 balancing row and Deviation 4's $1.21
-- **Waiting on Neel:** nothing. Start chunk 6 when ready.
+- **Chunk:** 6 of 7 in progress: hand-check sample and labeling page built (2026-10-23); waiting for Neel's labels. `prereg.md` frozen at e631bdb; Deviations 1 to 5
+- **Status:** chunk 5 done (Deviation 4 applied). Hand-check page `runs/handcheck/labeling.html` has 101 outputs (2 disagreement, 99 random across 55 items); subagent check passed.
+- **Next:** Neel labels blind; then the frozen analysis and the subagent recompute.
+- **Spent so far:** $60.52 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5)
+- **Waiting on Neel:** label the 101 items in `runs/handcheck/labeling.html` and save the export as `runs/handcheck/labels.csv`. Don't open `runs/handcheck/sample.jsonl`, results or GEPA prompts until done.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,19 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-23 · chunk 6 · hand-check sample and labeling page; Deviation 5
+
+- **Neel's choice** (prereg Deviation 5, before any labels or scores): only compiled outputs go on the page. A random-part output that didn't compile gets `fixed_label: unfaithful` (compile rule) in the sample file, so its item stays paired across A to D. `analysis.read_labels` uses `fixed_label` when present.
+- **Built:**
+  - `src/handcheck.py` (sample, page records, pooled summary) and `scripts/chunk6.py sample`.
+  - Seed `analysis.seed` 0. Output in `runs/handcheck/`, the path the frozen `scripts/analyze` names.
+  - Page built by `labeling.build_page` (page key `chunk6-handcheck`), each statement glossed on its own by GLM-5.3-Flash.
+  - Tests: 249 pass (4 new: makeup and pairing, cap of 25 and determinism, page whitelist, fixed labels join and pair).
+- **Sample** (pooled, from `runs/handcheck/sample_summary.json`): 222 sampled outputs, 101 on the page. The disagreement part has 2 outputs: every certified output the reference judge calls unfaithful, after Deviation 4. The random part covers 55 test items x 4 arms = 220 outputs, 99 shown and 121 fixed (did not compile). 0 outputs are in both parts. 0 missing glosses.
+- **Subagent check** (`runs/handcheck/sample_subagent_check.json`, own code, no `src/`): 0 violations in each of 5 checks: disagreement set exact; each random item once per core arm with a valid seed; shown equals compiled and the fixed labels are exact; the page holds exactly the shown ids, whitelisted fields only, no arm, seed or score strings; candidates equal the normalized statements. All 7 pooled counts **match**.
+- **Cost:** $0.09 (136 gloss calls, chunk 6); $60.52 in total.
+- **Next:** Neel labels; then the frozen analysis.
 
 ### 2026-10-23 · chunk 5 · Deviation 4: judge parser fix and re-ask of missing verdicts
 

@@ -1,0 +1,55 @@
+{
+  "test_row_key_duplicates": 0,
+  "check1": {
+    "pass": true,
+    "violations": 0,
+    "pooled_disagreement_population": 2,
+    "sample_disagreement_entries": 2,
+    "entries_not_in_population": 0,
+    "population_missing_from_sample": 0,
+    "size_rule_ok": true
+  },
+  "check2": {
+    "pass": true,
+    "violations": 0,
+    "items_not_once_per_arm": 0,
+    "seed_problems": 0
+  },
+  "check3": {
+    "pass": true,
+    "violations": 0,
+    "no_matching_row": 0,
+    "shown_mismatch": 0,
+    "fixed_label_mismatch": 0,
+    "not_shown_outside_random": 0,
+    "duplicate_label_ids": 0,
+    "run_id_mismatch": 0
+  },
+  "check4": {
+    "pass": true,
+    "violations": 0,
+    "records": 101,
+    "bad_key_sets": 0,
+    "duplicate_page_ids": 0,
+    "page_ids_not_shown": 0,
+    "shown_ids_missing": 0,
+    "forbidden_literal_hits": 0,
+    "run_id_hits": 0,
+    "run_ids_searched": 6,
+    "no_gloss_records": 0,
+    "no_gloss_fields": 0
+  },
+  "check5": {
+    "pass": true,
+    "violations": 0
+  },
+  "check6_counts": {
+    "entries": 222,
+    "shown": 101,
+    "fixed_label_not_shown": 121,
+    "disagreement_part": 2,
+    "random_items": 55,
+    "random_outputs": 220,
+    "in_both_parts": 0
+  }
+}
