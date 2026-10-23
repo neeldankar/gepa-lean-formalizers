@@ -1,0 +1,308 @@
+{
+ "expected_items": {
+  "test": 247,
+  "minif2f": 243
+ },
+ "gepa_budget": {
+  "B_s0": {
+   "total_metric_calls": 830,
+   "done": true,
+   "stopped": false,
+   "within_limit": true
+  },
+  "B_s1": {
+   "total_metric_calls": 836,
+   "done": true,
+   "stopped": false,
+   "within_limit": true
+  },
+  "B_s2": {
+   "total_metric_calls": 830,
+   "done": true,
+   "stopped": false,
+   "within_limit": true
+  },
+  "D_s0": {
+   "total_metric_calls": 869,
+   "done": true,
+   "stopped": false,
+   "within_limit": true
+  },
+  "D_s1": {
+   "total_metric_calls": 805,
+   "done": true,
+   "stopped": false,
+   "within_limit": true
+  },
+  "D_s2": {
+   "total_metric_calls": 802,
+   "done": true,
+   "stopped": false,
+   "within_limit": true
+  }
+ },
+ "arms": {
+  "A": {
+   "coverage_problems": [],
+   "duplicate_keys": 0,
+   "violations": {
+    "judge1_not_compiled": 0,
+    "faithful_label_not_compiled": 0,
+    "certified_not_compiled": 0
+   },
+   "counts": {
+    "rows": 490,
+    "bad_sample_index": 0,
+    "format_failure": 3,
+    "compile_failure_incl_format": 331,
+    "compile_failure_excl_format": 328,
+    "compile_status_failures": {
+     "lean_error": 328
+    },
+    "outage": 0,
+    "judge_missing": 1,
+    "ref_missing": 6,
+    "truth_missing": {
+     "ref_judge_missing": 6
+    },
+    "generation_missing": 0
+   }
+  },
+  "B": {
+   "coverage_problems": [],
+   "duplicate_keys": 0,
+   "violations": {
+    "judge1_not_compiled": 0,
+    "faithful_label_not_compiled": 0,
+    "certified_not_compiled": 0
+   },
+   "counts": {
+    "rows": 1470,
+    "bad_sample_index": 0,
+    "format_failure": 11,
+    "compile_failure_incl_format": 879,
+    "compile_failure_excl_format": 868,
+    "compile_status_failures": {
+     "lean_error": 868
+    },
+    "outage": 0,
+    "judge_missing": 2,
+    "ref_missing": 26,
+    "truth_missing": {
+     "ref_judge_missing": 25
+    },
+    "generation_missing": 0
+   },
+   "counts_per_run": {
+    "B_s0": {
+     "rows": 490,
+     "bad_sample_index": 0,
+     "format_failure": 6,
+     "compile_failure_incl_format": 305,
+     "compile_failure_excl_format": 299,
+     "compile_status_failures": {
+      "lean_error": 299
+     },
+     "outage": 0,
+     "judge_missing": 1,
+     "ref_missing": 12,
+     "truth_missing": {
+      "ref_judge_missing": 11
+     },
+     "generation_missing": 0
+    },
+    "B_s1": {
+     "rows": 490,
+     "bad_sample_index": 0,
+     "format_failure": 1,
+     "compile_failure_incl_format": 295,
+     "compile_failure_excl_format": 294,
+     "compile_status_failures": {
+      "lean_error": 294
+     },
+     "outage": 0,
+     "judge_missing": 0,
+     "ref_missing": 8,
+     "truth_missing": {
+      "ref_judge_missing": 8
+     },
+     "generation_missing": 0
+    },
+    "B_s2": {
+     "rows": 490,
+     "bad_sample_index": 0,
+     "format_failure": 4,
+     "compile_failure_incl_format": 279,
+     "compile_failure_excl_format": 275,
+     "compile_status_failures": {
+      "lean_error": 275
+     },
+     "outage": 0,
+     "judge_missing": 1,
+     "ref_missing": 6,
+     "truth_missing": {
+      "ref_judge_missing": 6
+     },
+     "generation_missing": 0
+    }
+   }
+  },
+  "C": {
+   "coverage_problems": [],
+   "duplicate_keys": 0,
+   "violations": {
+    "judge1_not_compiled": 0,
+    "faithful_label_not_compiled": 0,
+    "certified_not_compiled": 0
+   },
+   "counts": {
+    "rows": 490,
+    "bad_sample_index": 0,
+    "format_failure": 8,
+    "compile_failure_incl_format": 142,
+    "compile_failure_excl_format": 134,
+    "compile_status_failures": {
+     "lean_error": 134
+    },
+    "outage": 0,
+    "judge_missing": 12,
+    "ref_missing": 18,
+    "truth_missing": {
+     "ref_judge_missing": 18
+    },
+    "generation_missing": 0
+   }
+  },
+  "D": {
+   "coverage_problems": [],
+   "duplicate_keys": 0,
+   "violations": {
+    "judge1_not_compiled": 0,
+    "faithful_label_not_compiled": 0,
+    "certified_not_compiled": 0
+   },
+   "counts": {
+    "rows": 1470,
+    "bad_sample_index": 0,
+    "format_failure": 5,
+    "compile_failure_incl_format": 410,
+    "compile_failure_excl_format": 405,
+    "compile_status_failures": {
+     "lean_error": 405
+    },
+    "outage": 0,
+    "judge_missing": 37,
+    "ref_missing": 80,
+    "truth_missing": {
+     "ref_judge_missing": 77
+    },
+    "generation_missing": 0
+   },
+   "counts_per_run": {
+    "D_s0": {
+     "rows": 490,
+     "bad_sample_index": 0,
+     "format_failure": 1,
+     "compile_failure_incl_format": 127,
+     "compile_failure_excl_format": 126,
+     "compile_status_failures": {
+      "lean_error": 126
+     },
+     "outage": 0,
+     "judge_missing": 15,
+     "ref_missing": 32,
+     "truth_missing": {
+      "ref_judge_missing": 31
+     },
+     "generation_missing": 0
+    },
+    "D_s1": {
+     "rows": 490,
+     "bad_sample_index": 0,
+     "format_failure": 3,
+     "compile_failure_incl_format": 143,
+     "compile_failure_excl_format": 140,
+     "compile_status_failures": {
+      "lean_error": 140
+     },
+     "outage": 0,
+     "judge_missing": 11,
+     "ref_missing": 22,
+     "truth_missing": {
+      "ref_judge_missing": 22
+     },
+     "generation_missing": 0
+    },
+    "D_s2": {
+     "rows": 490,
+     "bad_sample_index": 0,
+     "format_failure": 1,
+     "compile_failure_incl_format": 140,
+     "compile_failure_excl_format": 139,
+     "compile_status_failures": {
+      "lean_error": 139
+     },
+     "outage": 0,
+     "judge_missing": 11,
+     "ref_missing": 26,
+     "truth_missing": {
+      "ref_judge_missing": 24
+     },
+     "generation_missing": 0
+    }
+   }
+  },
+  "E": {
+   "coverage_problems": [],
+   "duplicate_keys": 0,
+   "violations": {
+    "judge1_not_compiled": 0,
+    "faithful_label_not_compiled": 0,
+    "certified_not_compiled": 0
+   },
+   "counts": {
+    "rows": 490,
+    "bad_sample_index": 0,
+    "format_failure": 3,
+    "compile_failure_incl_format": 320,
+    "compile_failure_excl_format": 317,
+    "compile_status_failures": {
+     "lean_error": 317
+    },
+    "outage": 0,
+    "judge_missing": 3,
+    "ref_missing": 9,
+    "truth_missing": {
+     "ref_judge_missing": 8
+    },
+    "generation_missing": 0
+   }
+  },
+  "F": {
+   "coverage_problems": [],
+   "duplicate_keys": 0,
+   "violations": {
+    "judge1_not_compiled": 0,
+    "faithful_label_not_compiled": 0,
+    "certified_not_compiled": 0
+   },
+   "counts": {
+    "rows": 247,
+    "bad_sample_index": 0,
+    "format_failure": 11,
+    "compile_failure_incl_format": 32,
+    "compile_failure_excl_format": 21,
+    "compile_status_failures": {
+     "lean_error": 21
+    },
+    "outage": 0,
+    "judge_missing": 2,
+    "ref_missing": 21,
+    "truth_missing": {
+     "ref_judge_missing": 19
+    },
+    "generation_missing": 0
+   }
+  }
+ }
+}

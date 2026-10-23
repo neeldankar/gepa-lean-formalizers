@@ -175,3 +175,92 @@ def test_arm_f_runs_last_after_the_other_arms_are_written_and_pushed(tmp_path, m
 def test_dry_run_never_pushes(tmp_path, monkeypatch):
     order, pushes, rows, error, _ = final_with(monkeypatch, tmp_path, dry=True)
     assert error is None and pushes == [] and order[-2:] == ["F", "wrote F.jsonl.gz"]
+
+
+def fake_row(arm, run_id, dataset, item_id, **kw):
+    row = {"arm": arm, "run_id": run_id, "gepa_seed": None, "dataset": dataset, "item_id": item_id, "sample": 0,
+           "format_failure": False, "compile_status": "ok", "compiled": True, "judge_score": 1, "judge_missing": False,
+           "certified": False, "ref_missing": False, "truth_label": "faithful", "truth_source": "ref_judge",
+           "outage": False, "generation_missing": False}
+    return {**row, **kw}
+
+
+EXPECTED = {"test": {"t1", "t2"}, "minif2f": {"m1"}}
+
+
+def full_rows(arm, run_ids=(None,), datasets=("test", "minif2f")):
+    return [fake_row(arm, r, ds, i) for r in run_ids for ds in datasets for i in sorted(EXPECTED[ds])]
+
+
+def test_arm_health_passes_clean_rows():
+    assert chunk5_job.arm_health(CFG, "A", full_rows("A"), EXPECTED)["pass"]
+    b = chunk5_job.arm_health(CFG, "B", full_rows("B", CFG["arms"]["B"]["gepa_runs"]), EXPECTED)
+    assert b["pass"] and set(b["counts_per_run"]) == set(CFG["arms"]["B"]["gepa_runs"])
+    assert chunk5_job.arm_health(CFG, "F", full_rows("F", datasets=("test",)), EXPECTED)["pass"]
+
+
+def test_faithful_without_compiling_fails():
+    for bad in ({"judge_score": 1, "truth_label": "unfaithful"}, {"judge_score": 0, "truth_label": "faithful"},
+                {"judge_score": 0, "truth_label": "unfaithful", "certified": True}):
+        rows = full_rows("A")
+        rows[0].update(compiled=False, compile_status="lean_error", **bad)
+        h = chunk5_job.arm_health(CFG, "A", rows, EXPECTED)
+        assert not h["pass"] and sum(h["violations"].values()) == 1
+
+
+def test_duplicates_missing_and_extra_ids_fail():
+    rows = full_rows("A")
+    assert chunk5_job.duplicate_keys(rows + rows[:1]) == 1
+    assert not chunk5_job.arm_health(CFG, "A", rows + rows[:1], EXPECTED)["pass"]
+    h = chunk5_job.arm_health(CFG, "A", rows[1:], EXPECTED)
+    assert not h["pass"] and "1 missing" in h["coverage_problems"][0]
+    h = chunk5_job.arm_health(CFG, "A", rows + [fake_row("A", None, "test", "val_item")], EXPECTED)
+    assert not h["pass"] and "1 extra" in h["coverage_problems"][0]
+    h = chunk5_job.arm_health(CFG, "B", full_rows("B", CFG["arms"]["B"]["gepa_runs"][:2]), EXPECTED)
+    assert not h["pass"]  # one GEPA seed has no rows
+
+
+def test_arm_f_with_minif2f_rows_fails():
+    h = chunk5_job.arm_health(CFG, "F", full_rows("F"), EXPECTED)
+    assert not h["pass"] and "unexpected dataset minif2f" in h["coverage_problems"][0]
+
+
+def test_outage_and_missing_generation_fail_but_missing_verdicts_only_count():
+    rows = full_rows("A")
+    rows[0].update(judge_missing=True, judge_score=None, ref_missing=True, truth_label=None, truth_source="ref_judge_missing")
+    h = chunk5_job.arm_health(CFG, "A", rows, EXPECTED)
+    assert h["pass"] and h["counts"]["judge_missing"] == 1 and h["counts"]["truth_missing"] == {"ref_judge_missing": 1}
+    rows[1].update(outage=True, compiled=False, compile_status="outage", truth_label=None, truth_source="outage")
+    assert not chunk5_job.arm_health(CFG, "A", rows, EXPECTED)["pass"]
+
+
+def test_health_counts_hold_no_score_fields():
+    rows = full_rows("A")
+    rows[0].update(format_failure=True, compiled=False, compile_status=None, judge_score=0, truth_label="unfaithful")
+    rows[1].update(compiled=False, compile_status="timeout", judge_score=0, truth_label="unfaithful")
+    c = chunk5_job.health_counts(rows, 1)
+    assert c["format_failure"] == 1 and c["compile_failure_incl_format"] == 2 and c["compile_failure_excl_format"] == 1
+    assert c["compile_status_failures"] == {"timeout": 1}
+    text = json.dumps(chunk5_job.arm_health(CFG, "A", rows, EXPECTED)).lower()
+    assert not any(w in text for w in ("judge_score", "faithful\"", "certified\"", "memoriz", "rate"))
+
+
+def test_budget_report_flags_one_call_over_the_limit(tmp_path):
+    cfg = copy.deepcopy(CFG)
+    ids = list(cfg["gepa"]["runs"])
+    limit = cfg["gepa"]["max_metric_calls"] + 3 + 70
+    for r in ids:
+        fake_run(tmp_path / r, calls=limit)
+    rep = chunk5_job.budget_report(cfg, tmp_path, ids)
+    assert rep["problems"] == [] and rep["runs"][ids[0]]["over_budget_by"] == 73
+    (tmp_path / ids[0] / "candidates.json").write_text(json.dumps({"total_metric_calls": limit + 1}))
+    assert len(chunk5_job.budget_report(cfg, tmp_path, ids)["problems"]) == 1
+
+
+def test_log_unmetered_appends_once(tmp_path):
+    costs, health = tmp_path / "costs.jsonl", tmp_path / "h.json"
+    costs.write_text("")
+    health.write_text(json.dumps({"unmetered_pod_time": {"unmetered_hours": 0.5}}))
+    row = chunk5_job.log_unmetered(CFG, costs, health)
+    assert row["usd"] == 0.5 * CFG["gpu"]["usd_per_hour"] and row["chunk"] == 5
+    assert chunk5_job.log_unmetered(CFG, costs, health) is None and len(costs.read_text().splitlines()) == 1

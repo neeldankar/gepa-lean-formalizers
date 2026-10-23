@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 5 of 7, session 1 done: the combined job finished on pod 7 (2026-10-23 00:29 UTC, exit 0). `prereg.md` frozen at e631bdb; Deviations 1 to 3
-- **Status:** all six GEPA runs DONE; final eval written for arms A to F (`runs/final/`, 8168a22), 0 missing generations, 0 outages; pod 7 stopped itself.
-- **Next:** chunk 5 session 2: invariant and health checks only, no per-arm scores.
-- **Spent so far:** $57.79 metered of $300; chunk 5 $45.25 metered plus $1.42 unmetered pod time (cap $180)
-- **Waiting on Neel:** nothing. The chunk 5 job finished 2026-10-23 00:29 UTC (exit 0, results 8168a22); pod 7 stopped itself. Next: session 2 checks.
+- **Chunk:** 5 of 7 DONE (2026-10-23): session 2 checks passed, subagent counts match. `prereg.md` frozen at e631bdb; Deviations 1 to 3
+- **Status:** all six GEPA runs DONE and within budget; final eval complete for arms A to F (`runs/final/`); every invariant holds (`runs/chunk5_health.json`).
+- **Next:** chunk 6, hand-check and analysis. Neel labels blind; no results or GEPA prompts opened before he is done.
+- **Spent so far:** $59.21 logged of $300; chunk 5 $46.67 (cap $180), including the $1.42 balancing row for session 1's unmetered pod time
+- **Waiting on Neel:** nothing. Start chunk 6 when ready.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,25 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-23 · chunk 5 · session 2: invariants and health checks pass; chunk 5 done
+
+- **Did:** `python -m scripts.chunk5_job check` writes `runs/chunk5_health.json`. It holds counts only: no judge, truth, certificate or memorization numbers, and no rates. The invariants are checked row by row, so no faithful count is ever formed. A fresh subagent recomputed every count from the raw files with its own code, without reading `src/` or `scripts/` (`runs/chunk5_health_subagent.json`). **Match: exact, every field.**
+- **GEPA budget** (800; GEPA checks it between iterations, so the frozen sanity limit is 800 + 3 + 70 = 873 calls): B_s0 830, B_s1 836, B_s2 830, D_s0 869, D_s1 805, D_s2 802 metric calls. All DONE, none STOPPED, all within 873. Every run went over 800 by one iteration's worth, as designed.
+- **Coverage:** A, C and E each have all 247 test and all 243 usable miniF2F items. B and D each have all 490 per GEPA run (1,470 rows). F has 247 test rows and no miniF2F rows. No missing ids, no extra ids, 0 duplicate (arm, run, dataset, item, sample) keys, every sample index 0.
+- **Invariants:** 0 rows judge-faithful but not compiled, 0 truth-faithful but not compiled and 0 certified but not compiled, in every arm.
+- **Health counts per arm** (rows / format failures / compile failures incl. format / judge verdict missing / ref verdict missing / truth label missing). Every non-format compile failure is a Lean error: 0 Lean timeouts, 0 outages, 0 missing generations.
+  - A: 490 / 3 / 331 / 1 / 6 / 6
+  - B: 1,470 / 11 / 879 / 2 / 26 / 25 (s0 490 / 6 / 305 / 1 / 12 / 11; s1 490 / 1 / 295 / 0 / 8 / 8; s2 490 / 4 / 279 / 1 / 6 / 6)
+  - C: 490 / 8 / 142 / 12 / 18 / 18
+  - D: 1,470 / 5 / 410 / 37 / 80 / 77 (s0 490 / 1 / 127 / 15 / 32 / 31; s1 490 / 3 / 143 / 11 / 22 / 22; s2 490 / 1 / 140 / 11 / 26 / 24)
+  - E: 490 / 3 / 320 / 3 / 9 / 8
+  - F: 247 / 11 / 32 / 2 / 21 / 19
+  - A missing ref verdict leaves the truth label empty only when no certificate settles it, so truth-missing ≤ ref-missing. Missing verdicts are kept and left out of the rates (prereg).
+- **Cost:** `chunk5_job log-unmetered` appended session 1's unmetered pod time as one gpu row (`pod_unmetered_session1`, 0.356 h, $1.42). Chunk 5 is now $46.67 logged (cap $180); $59.21 in total. This session made $0 of model, judge or AXLE calls.
+- **Tests:** 239 pass (8 new: invariant, coverage, duplicate, arm F, outage, no-score-fields, budget-limit and balancing-row tests).
+- **5 random raw examples** (seed 5, across all arms; arm, model and scores hidden until chunk 6): test pnv_196 (infinitely many primes ≡ -1 mod 4), test pnv_354 (compact and closed sets at positive distance), minif2f mathd_algebra_114, test pnv_350 (a continuous function on E with no continuous extension), minif2f mathd_numbertheory_229. Each has its English statement and one extracted Lean statement.
+- **Next:** chunk 6.
 
 ### 2026-10-23 · chunk 5 · job finished: all six GEPA runs done, final eval written, pod stopped
 
