@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_060",
+        "sample": 0,
+        "output": "```lean4\ntheorem boolean_ring_is_commutative (R : Type) [Ring R] (h : \u2200 a : R, a * a = a) : \u2200 a b : R, a * b = b * a := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem boolean_ring_is_commutative (R : Type) [Ring R] (h : \u2200 a : R, a * a = a) : \u2200 a b : R, a * b = b * a := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem assumes a ring R with the property \u2200 a, a * a = a (the Boolean ring condition) and concludes \u2200 a b, a * b = b * a, exactly matching the English statement."
+        },
+        "score": 1
+    }
+]

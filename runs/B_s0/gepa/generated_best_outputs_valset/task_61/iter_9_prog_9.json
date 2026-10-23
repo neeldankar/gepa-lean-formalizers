@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_323",
+        "sample": 0,
+        "output": "```lean4\ntheorem f_is_constant (f : \u211d \u2192 \u211d) (h : \u2200 t x, |f t - f x| \u2264 |t - x| ^ 2) : \u2200 x, f x = f 0 := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem f_is_constant (f : \u211d \u2192 \u211d) (h : \u2200 t x, |f t - f x| \u2264 |t - x| ^ 2) : \u2200 x, f x = f 0 := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem includes the same function, hypothesis, and asserts that all values equal a fixed one (f 0), which is equivalent to saying f is constant."
+        },
+        "score": 1
+    }
+]

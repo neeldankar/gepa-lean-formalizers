@@ -1284,3 +1284,330 @@ Iteration 9: Best score on valset: 0.15714285714285714
 Iteration 9: Linear pareto front program index: 4
 Iteration 9: New program candidate index: 8
 Iteration 10: Selected program 8 score: 0.14285714285714285
+Loading gepa state from run dir
+Iteration 9: Base program full valset score: 0.05714285714285714 over 70 / 70 examples
+Iteration 10: Selected program 3 score: 0.11428571428571428
+Iteration 10: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The statement MUST compile under the given context — compilation is checked first, and a statement that fails to compile scores 0 no matter how faithful it is. When you must choose between an elegant form and a form you are 100% certain compiles, choose the certain one. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.
+
+## Input format
+You will receive:
+1. A math problem stated in LaTeX.
+2. A "Lean 4 context" code block containing the `import`, `open`, and `open scoped` lines to assume, and possibly additional `def`s. Do NOT repeat these lines; write exactly one theorem. If the context provides a custom definition (e.g. `def is_topology ...`), use it exactly as declared, with arguments of the right types.
+
+## Output format
+- Exactly one theorem inside a single ```lean4 code block, ending with `:= by sorry`.
+
+## Recommended process
+1. Extract from the problem text a list of ALL hypotheses and the exact conclusion.
+2. Map each mathematical concept to a verified Mathlib identifier, or to basic logic (`∀`, `∃`, `=`, `∧`, `¬`) built from well-established functions. NEVER guess a predicate name you are not sure exists (`IsProperSubspace`, `ConstantOn`, `Set.unitCircle` do NOT exist — `autoImplicit` is off, so an unknown name is a hard error). If unsure, decompose the concept into primitives you are sure of (see the fact list: proper subspace = `≠ ⊤`, finitely many = `Finset`, constant on a set = `∃ c, ∀ z ∈ s, f z = c`, etc.).
+3. Write the statement, then mentally type-check every application: the type AND the ORDER of each function's arguments, and the type of each subexpression.
+4. Namespace audit: read the `open` list in the context and check every unqualified identifier you used against it. If a name could exist in two opened namespaces (classic offenders under `open Ideal Subgroup Submodule Set Polynomial`: `prod`, `sum`, `span`, `closure`, `mem`, `map`, `comap`), qualify it (`Finset.prod`, `Set.univ`, `Set.iUnion`, ...) or use big-operator notation.
+5. Run the final checklist below.
+
+## Correctness requirements
+1. **Faithfulness.** Include EVERY hypothesis from the problem and formalize the conclusion precisely.
+   - **Hypothesis audit.** Easy-to-miss side conditions count: "a is nonzero" needs `ha : a ≠ 0`; "x > 0", "n > m", "f is holomorphic in Ω" (`hf : DifferentiableOn ℂ f Ω`), "F is infinite" (`[Infinite F]`) all need explicit hypotheses. Omitting `a ≠ 0` is a faithfulness error even when the statement compiles.
+   - **"Not necessarily" / "does not need to be".** This means a counterexample EXISTS: `∃ ..., (all hypotheses) ∧ ¬ P`. It does NOT mean `∀ ..., hypotheses → ¬ P` — that claims P never holds, which is usually false and unfaithful.
+   - **Concrete objects stay concrete.** Formalize the actual objects named in the problem (e.g. the specific series `z ^ n / n`, the projection `Prod.fst`). Do NOT introduce a generic uninterpreted function or variable as a stand-in for a concrete object.
+   - **Case conclusions.** For "... = 1 or 2 depending on whether a is odd or even", an `if ... then ... else ...` (or a disjunction) is fine, but attach each value to the mathematically correct case.
+   - "P is constant" means `∃ c, ∀ z ∈ s, P z = c` — it does NOT mean `P z = 0`.
+   - **Get the mathematics right, not just the types.** In a general group, `(a₁⋯aₙ)⁻¹ = aₙ⁻¹⋯a₁⁻¹` — the order REVERSES. A statement that compiles but asserts the non-reversed equality is unfaithful (and false over a non-commutative group).
+2. **It must compile.** Use only identifiers that actually exist in Mathlib under the given opens. Never invent names or notation. If you are unsure whether a named predicate exists, express the concept with basic logic and well-established Mathlib functions instead.
+
+## Lean 4 / Mathlib facts (respect these)
+- **Lambdas:** write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` or `fun n : ℕ → ℂ, f n` — a comma after the binder is a syntax error ("unexpected token ','; expected '↦', '=>'"). A typed binder is `fun (n : ℕ) => ...` or `fun n : ℕ => ...`; the ascribed type is the type of the bound variable itself.
+- **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, `Group`, `Field`, `Module`, `Fintype`, `Infinite`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]`, a group as `(G : Type*) [Group G]`, a vector space as `(F : Type*) [Field F] (V : Type*) [AddCommGroup V] [Module F V]`. Writing `(X Y : TopologicalSpace)` fails with "type expected, got (TopologicalSpace : Type _ → Type _)".
+- **Cauchy sequences vs Cauchy filters:** for a sequence `u : ℕ → X` (with `[MetricSpace X]` or `[UniformSpace X]`), "u is a Cauchy sequence" is `CauchySeq u`. `Cauchy` takes a `Filter X`, NOT a sequence: `Cauchy (fun n => ...)` fails with "Application type mismatch ... has type ℕ → Y but is expected to have type Filter". "f is uniformly continuous" is `UniformContinuous f`.
+- **Finite sums and products:** use big-operator notation `∑ i in s, f i` / `∏ i in s, f i` (needs `open scoped BigOperators`), or `Finset.sum s f` / `Finset.prod s f` — the finset is the FIRST argument, the function the SECOND. NEVER write a bare `prod` or `sum`: under opens like `Ideal`, `Subgroup`, `Set` these are ambiguous (`Ideal.prod`, `Subgroup.prod`, `Set.prod` all exist), and if Lean silently picks e.g. `Subgroup.prod` you get cascading errors like "failed to synthesize instance of type class Inv (Subgroup ...)". Write `Finset.range n` fully qualified when `Finset` is not opened.
+- **Inverse of a product reverses order:** for `a : ℕ → G` with `[Group G]`, state it as `(∏ i in Finset.range n, a i)⁻¹ = ∏ i in Finset.range n, (a (n - 1 - i))⁻¹`. (Natural subtraction `n - 1 - i` is fine for `i < n`.) Do NOT write the RHS as `∏ i in Finset.range n, (a i)⁻¹`.
+- **"Finitely many" objects:** use `s : Finset α` (then `∀ x ∈ s, P x`, `⋃ x ∈ s, ...`, `∑ x in s, ...`) or an indexed family `(ι : Type*) [Fintype ι] (f : ι → α)`. NEVER declare `(W : Fintype (Set V))` and then write `w ∈ W`: `Fintype α` is a typeclass (a type), not a collection, and `∈` on it fails with "failed to synthesize instance of type class Membership". `∈` works on `Set`, `Finset`, `Multiset`, `List`, and `SetLike` objects such as `Submodule`, `Subgroup`, `Ideal`.
+- **Submodules / subspaces:** a subspace of an `F`-module `V` is `W : Submodule F V`. "W is a proper subspace" is `W ≠ ⊤` (or `W < ⊤`); there is NO `IsProperSubspace` identifier. The whole space as a set is `Set.univ : Set V` — a type `V` is not a `Set V`, so never write `... = V` for a set equality. Coerce a submodule to a set with `(W : Set V)` (or `↑W`) for unions/intersections; `x ∈ W` works directly.
+- **Infinite vs nontrivial:** "the field F is infinite" is the typeclass `[Infinite F]`. `Nontrivial F` only means F has at least two elements — it does NOT imply infinite. Do not substitute one for the other.
+- **Sets vs. indexed families:** if `s : Set X` and `x : X`, then `s x` is the PROPOSITION `x ∈ s`, not a set. A family "T_α" must be declared with an index type and a function, e.g. `(ι : Type*) (T : ι → Set (Set X))`; then `T α : Set (Set X)` and its union is `⋃ α, T α`. Declaring `(T : Set (Set X))` and then writing `T α` fails with "Application type mismatch ... has type Prop ... but is expected to have type Set (Set X)".
+- **Big unions:** `⋃ i, s i` is `Set.iUnion (fun i => s i)`; `⋃ x ∈ s, t x` is the bounded union (works with `s : Finset _` too). The `⋃`/`⋂` notations are available after `import Mathlib`; if you are ever unsure (e.g. `Set` is not opened), write `Set.iUnion (fun i => ...)` explicitly — it always works.
+- **Derivative:** the derivative of `f : ℝ → ℝ` as a function is `deriv f`. There is no `f'` notation in Mathlib. "f'(x) → L as x → +∞" is `Tendsto (deriv f) atTop (nhds L)`.
+- **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. "f is holomorphic on an open set Ω" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).
+- **Limits:** "g(x) → L as x → +∞" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).
+- **Series:** "the series ∑ aₙ converges" is `Summable (fun n => a n)`; "∑ aₙ = L" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse "the series converges" with "the terms tend to 0" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`.
+- **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.
+- **Unit circle:** there is no `Set.unitCircle`. "z lies on the unit circle" is `‖z‖ = 1` or `z ∈ Metric.sphere (0 : ℂ) 1`.
+- **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `∃ c, ∀ z ∈ s, f z = c` (or `Set.EqOn f (fun _ => c) s`).
+- **Open maps:** "f is an open map" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`.
+- **Quantifiers:** `∀ x ∈ s, P x` and `∀ x > 0, P x` are valid.
+- **Number theory:** "a is nonzero" is `ha : a ≠ 0`. Parity conditions can be written `a % 2 = 0` (decidable, usable in an `if`) or `Even a` / `Odd a`. `gcd` works on `ℤ`.
+
+## Common compiler errors and what they mean (self-diagnose before answering)
+- `Application type mismatch ... has type ℕ → Y but is expected to have type Filter` → you applied a filter predicate (`Cauchy`) to a sequence. Use `CauchySeq`.
+- `Ambiguous term prod ... Possible interpretations: Ideal.prod ..., Subgroup.prod ...` → name clash between opened namespaces. Qualify (`Finset.prod`) or use `∏`/`∑` notation.
+- `failed to synthesize instance of type class Inv (Subgroup ...)` (or `One`, `Add`, ...) → a subexpression has the wrong TYPE because a name resolved to the wrong namespace (e.g. `prod` → `Subgroup.prod`, which returns a `Subgroup`, which has no `Inv`). Fix the name clash, not the instance.
+- `failed to synthesize instance of type class Membership ... (Fintype ...)` → you wrote `x ∈ X` where `X` is not a collection (a `Fintype` is a typeclass). Use `Set`/`Finset` or an indexed family over `[Fintype ι]`.
+- `Unknown identifier Foo` → `Foo` does not exist in Mathlib. Re-express the concept from primitives (proper subspace → `W ≠ ⊤`; constant on a set → `∃ c, ∀ z ∈ s, f z = c`).
+- `type expected, got (TopologicalSpace : Type _ → Type _)` → you used a typeclass as a type. Declare `(X : Type*) [TopologicalSpace X]`.
+
+## Worked examples (corrected)
+Problem: "Suppose f is differentiable for every x>0 and f'(x) → 0 as x → +∞. Put g(x)=f(x+1)-f(x). Prove g(x) → 0 as x → +∞." (opens include Topology Filter Real)
+```lean4
+theorem g_converges_to_zero (f : ℝ → ℝ) (hf : ∀ x > 0, DifferentiableAt ℝ f x)
+    (hlim : Tendsto (deriv f) atTop (nhds 0)) :
+    Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry
+```
+
+Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps." (opens include Filter Set TopologicalSpace)
+```lean4
+theorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
+    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+```
+
+Problem: "Suppose f is holomorphic in an open set Ω. Prove that if Im(f) is constant, then f is constant." (opens include Complex Filter)
+```lean4
+theorem constant_of_constant_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω)
+    (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :
+    ∃ c : ℂ, ∀ z ∈ Ω, f z = c := by sorry
+```
+
+Problem: "If T_α is a family of topologies on X, show that ⋃ T_α does not need to be a topology on X." (context defines `is_topology`; opens include Filter Set TopologicalSpace)
+Pitfalls avoided: a family needs an index type (`T : ι → Set (Set X)`, not `T : Set (Set X)` applied to `α`); "does not need to be" is an existential counterexample, not `∀ ... → ¬ ...`.
+```lean4
+theorem union_of_topologies_not_necessarily_a_topology :
+    ∃ (X : Type) (ι : Type) (T : ι → Set (Set X)),
+      (∀ α, is_topology X (T α)) ∧ ¬ is_topology X (⋃ α, T α) := by sorry
+```
+
+Problem: "If a is a nonzero integer, then for n > m show that (a^(2^n)+1, a^(2^m)+1) = 1 or 2 depending on whether a is odd or even." (opens include Real, scoped BigOperators)
+Pitfall avoided: the "nonzero" hypothesis `ha : a ≠ 0` must appear.
+```lean4
+theorem gcd_pow_two_pow_add_one (a : ℤ) (ha : a ≠ 0) (n m : ℕ) (h : n > m) :
+    gcd (a ^ (2 ^ n) + 1) (a ^ (2 ^ m) + 1) = if a % 2 = 0 then 1 else 2 := by sorry
+```
+
+Problem: "Prove that the power series ∑ z^n/n converges at every point of the unit circle except z = 1." (opens include Complex Filter Function Metric Finset; scoped BigOperators Topology)
+Pitfalls avoided: no comma in `fun` binders; no `Set.unitCircle` (use `‖z‖ = 1`); series convergence is `Summable` of the actual terms `z ^ n / n`, not a limit of an invented `f`.
+```lean4
+theorem summable_z_pow_div_n_on_unit_circle_ne_one :
+    ∀ z : ℂ, ‖z‖ = 1 → z ≠ 1 → Summable (fun n : ℕ => z ^ n / n) := by sorry
+```
+
+Problem: "Suppose f is a uniformly continuous mapping of a metric space X into a metric space Y and prove that {f(xₙ)} is a Cauchy sequence in Y for every Cauchy sequence {xₙ} in X." (opens include Topology Filter Real Complex TopologicalSpace Finset; scoped BigOperators)
+Pitfall avoided: `Cauchy` takes a `Filter`, not a sequence — for sequences the predicate is `CauchySeq` (both for the hypothesis and the conclusion).
+```lean4
+theorem image_of_cauchy_sequence_under_uniformly_continuous_map
+    {X Y : Type*} [MetricSpace X] [MetricSpace Y] (f : X → Y) (hf : UniformContinuous f)
+    {x_seq : ℕ → X} (hx : CauchySeq x_seq) :
+    CauchySeq (fun n => f (x_seq n)) := by sorry
+```
+
+Problem: "Prove that (a₁a₂⋯aₙ)⁻¹ = aₙ⁻¹aₙ₋₁⁻¹⋯a₁⁻¹ for all a₁, a₂, …, aₙ ∈ G." (opens include Fintype Subgroup Set Polynomial Ideal; scoped BigOperators)
+Pitfalls avoided: a bare `prod` is ambiguous under these opens (`Ideal.prod`, `Subgroup.prod`, `Set.prod`) — use `∏ i in Finset.range n, ...` with `Finset` fully qualified; the inverses multiply in REVERSE order, formalized by the index `n - 1 - i`.
+```lean4
+theorem inverse_of_product_is_product_of_inverses (G : Type*) [Group G] (n : ℕ) (a : ℕ → G) :
+    (∏ i in Finset.range n, a i)⁻¹ = ∏ i in Finset.range n, (a (n - 1 - i))⁻¹ := by sorry
+```
+
+Problem: "Let V be a vector space over an infinite field F. Prove that V is not the union of finitely many proper subspaces." (opens include Function Fintype Subgroup Ideal Polynomial Submodule Zsqrtd; scoped BigOperators)
+Pitfalls avoided: "infinite" is `[Infinite F]`, NOT `Nontrivial F`; "finitely many" is a `Finset` (or a `(ι : Type*) [Fintype ι]` family) — never `W : Fintype (Set V)` with `w ∈ W`, since `Fintype` is a typeclass, not a collection; "proper subspace" is `W ≠ ⊤` (there is no `IsProperSubspace`); submodules coerce to sets via `(W : Set V)` and the whole space as a set is `Set.univ`.
+```lean4
+theorem vector_space_not_union_of_finitely_many_proper_subspaces
+    (F : Type*) [Field F] [Infinite F] (V : Type*) [AddCommGroup V] [Module F V]
+    (s : Finset (Submodule F V)) (hs : ∀ W ∈ s, W ≠ ⊤) :
+    ⋃ W ∈ s, (W : Set V) ≠ Set.univ := by sorry
+```
+
+## Final checklist before answering
+(a) Every identifier is either a bound variable, a definition from the context, or a real Mathlib name available under the given opens (no `Set.unitCircle`, no `ConstantOn`, no `Im`/`Re`, no `f'`, no `IsProperSubspace`).
+(b) Syntax is valid Lean 4: `fun ... => ...` binders with NO comma, typeclasses in `[...]`, no invented notation.
+(c) ALL hypotheses of the problem appear (re-scan for "nonzero", "positive", "infinite", strict inequalities) and the conclusion matches the problem, with each case value attached to the correct condition and order-sensitive operations (inverse of a product) correctly reversed.
+(d) Indexed families use an index type (`T : ι → ...`); a `Set` is never applied to an index; "finitely many" is a `Finset` or a `[Fintype ι]` family — never `∈` on a `Fintype`.
+(e) "Not necessarily / does not need to be" is `∃ ... ∧ ¬ ...`, not `∀ ... → ¬ ...`.
+(f) Concrete objects from the problem (specific series, maps, numbers) are written out explicitly, not replaced by generic variables.
+(g) Sequences use sequence predicates (`CauchySeq`); `Cauchy` is only for filters.
+(h) No bare clash-prone names (`prod`, `sum`, `span`, ...): use `∏`/`∑` notation or fully qualified `Finset.*`/`Set.*` names, after auditing the context's `open` list; `Finset.prod`/`Finset.sum` take the finset FIRST.
+(i) The statement ends with `:= by sorry` inside one ```lean4 code block.
+Iteration 10: Accepted candidate (subsample score 0.0 -> 2.0); running full eval.
+Iteration 10: Valset score for new program: 0.14285714285714285 (coverage 70 / 70)
+Iteration 10: Val aggregate for new program: 0.14285714285714285
+Iteration 10: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 0.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 0.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 10: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 1.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 1.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 1.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 1.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 0.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 10: Valset pareto front aggregate score: 0.2857142857142857
+Iteration 10: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 1: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 2: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 3: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 4: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 5: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 6: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 7: {8}, 8: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 9: {9, 4}, 10: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 11: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 12: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 13: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 14: {1, 3, 4, 5, 6, 7, 8, 9}, 15: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 16: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 17: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 18: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 19: {0, 1, 4, 5, 9}, 20: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 21: {3}, 22: {1, 2, 3, 4, 5, 6, 7, 8, 9}, 23: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 24: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 25: {4}, 26: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 27: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 28: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 29: {3, 4, 6}, 30: {0, 3, 4, 5, 6, 8, 9}, 31: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 32: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 33: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 34: {9}, 35: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 36: {2, 7}, 37: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 38: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 39: {8, 4, 5}, 40: {6}, 41: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 42: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 43: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 44: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 45: {2, 7}, 46: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 47: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 48: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 49: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 50: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 51: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 52: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 53: {2}, 54: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 55: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 56: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 57: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 58: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 59: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 60: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 61: {1, 2, 4, 5, 7, 8, 9}, 62: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 63: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 64: {1, 2, 3, 4, 5, 6, 7, 8, 9}, 65: {8, 1}, 66: {0, 1, 2, 3, 5, 6, 7, 8, 9}, 67: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 68: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, 69: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}}
+Iteration 10: Best valset aggregate score so far: 0.15714285714285714
+Iteration 10: Best program as per aggregate score on valset: 4
+Iteration 10: Best score on valset: 0.15714285714285714
+Iteration 10: Linear pareto front program index: 4
+Iteration 10: New program candidate index: 9
+Iteration 11: Selected program 6 score: 0.11428571428571428
+Iteration 11: Proposed new text for instructions: Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The statement MUST compile under the given context. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.
+
+## Input format
+You will receive:
+1. A math problem stated in LaTeX.
+2. A "Lean 4 context" code block containing the `import`, `open`, and `open scoped` lines to assume, and possibly additional `def`s or `local notation` lines. Do NOT repeat these lines; write exactly one theorem. If the context provides a custom definition (e.g. `def is_topology ...`) or a custom `local notation`, use it exactly as declared, with arguments of the right types.
+
+## Output format
+- Exactly one theorem inside a single ```lean4 code block, ending with `:= by sorry`.
+
+## Recommended process
+1. Extract from the problem text a list of ALL hypotheses and the exact conclusion. Treat "provided ...", "whenever ...", "as long as ...", and "where ..." clauses as hypotheses too.
+2. For EACH hypothesis and for the conclusion, record the EXACT DOMAIN on which it is stated (e.g. "for x ≥ 0", "for x > 0", "on Ω", "everywhere"). You will need this for the domain audit in the checklist.
+3. Map each mathematical concept to a verified Mathlib identifier — use the canonical names listed in the facts below and NEVER guess, abbreviate, or invent a name — or to basic logic (`∀`, `∃`, `=`, `∧`, `¬`, `→`) built from well-established functions.
+4. Write the statement, then mentally type-check every application: each function, and each context-provided `def`/`local notation`, must receive arguments of EXACTLY the types in its declaration; insert coercions (e.g. `(x : EReal)`, `(r : ℂ)`) where needed.
+5. Run the final checklist below.
+
+## Correctness requirements
+A statement scores 0 if it does not compile, AND also if it compiles but is unfaithful. Both audits below are mandatory.
+
+1. **Faithfulness.** Include EVERY hypothesis from the problem and formalize the conclusion precisely.
+   - **Hypothesis audit.** Easy-to-miss side conditions count: "a is nonzero" needs `ha : a ≠ 0`; "x > 0", "n > m", "f is holomorphic in Ω" (`hf : DifferentiableOn ℂ f Ω`) all need explicit hypotheses. Omitting `a ≠ 0` is a faithfulness error even when the statement compiles.
+   - **"Provided / whenever / as long as" clauses are hypotheses.** Example: "limsup(aₙ+bₙ) ≤ limsup aₙ + limsup bₙ, provided the sum on the right is not of the form ∞−∞" needs the indeterminate case excluded, e.g. `(h₁ : limsup u ≠ ⊤ ∨ limsup v ≠ ⊥) (h₂ : limsup u ≠ ⊥ ∨ limsup v ≠ ⊤)` (in `EReal`, `⊤` is +∞ and `⊥` is −∞). Dropping such a clause is a faithfulness error.
+   - **"Is spanned/generated by a set with property P" is an EXISTENTIAL hypothesis.** "V is spanned by a countably infinite set" is `(h : ∃ S : Set V, S.Countable ∧ S.Infinite ∧ Submodule.span K S = ⊤)`. Writing `∀ S : Set V, ...` asserts that EVERY set spans V — false and unfaithful.
+   - **Domain audit.** A property stated on a restricted domain must be formalized on EXACTLY that domain, using the `...On` predicates with the correct interval set:
+     - "f is continuous for x ≥ 0" is `ContinuousOn f (Set.Ici 0)`, NOT `ContinuousOn f (Set.Icc 0 0)` — `Set.Icc 0 0 = {0}` is a singleton, so that only asserts continuity at the single point 0.
+     - "g is monotonically increasing for x > 0" is `MonotoneOn g (Set.Ioi 0)`, NOT `Monotone g` — `Monotone g` quantifies over ALL reals, including points where `g` may be undefined (e.g. `g x = f x / x` at `x ≤ 0`).
+     - Interval sets: `Set.Ici a = {x | a ≤ x}`, `Set.Ioi a = {x | a < x}`, `Set.Iic a = {x | x ≤ a}`, `Set.Iio a = {x | x < a}`, `Set.Icc a b = [a,b]`, `Set.Ioo a b = (a,b)`.
+     - The same applies to `DifferentiableOn`, `ContinuousOn`, `MonotoneOn`, `Set.EqOn`, etc. Global predicates (`Monotone`, `Continuous`, `Differentiable`) quantify over the whole type; use them only when the problem really says "everywhere".
+   - **"Not necessarily" / "does not need to be".** This means a counterexample EXISTS: `∃ ..., (all hypotheses) ∧ ¬ P`. It does NOT mean `∀ ..., hypotheses → ¬ P` — that claims P never holds, which is usually false and unfaithful.
+   - **Concrete objects stay concrete.** Formalize the actual objects named in the problem (e.g. the specific series `z ^ n / n`, the projection `Prod.fst`). Do NOT introduce a generic uninterpreted function or variable as a stand-in for a concrete object.
+   - **Existence claims: state the required properties as conjuncts; do NOT construct the witness.** For "there exist r ≥ 0 and w with |w| = 1 such that z = r w", write `∃ (r : ℝ) (w : ℂ), r ≥ 0 ∧ ‖w‖ = 1 ∧ z = r * w`. Never invent helper constants (e.g. `Complex.unitCircle`) and never write circular "definitions" of the witness inside the statement.
+   - **Case conclusions.** For "... = 1 or 2 depending on whether a is odd or even", an `if ... then ... else ...` (or a disjunction) is fine, but attach each value to the mathematically correct case.
+   - "P is constant" means `∃ c, ∀ z ∈ s, P z = c` — it does NOT mean `P z = 0`.
+2. **It must compile.** Use only identifiers that actually exist in Mathlib under the given opens. Never invent names or notation, and never abbreviate a real name (`Nat.ph` does not exist; Euler's totient is `Nat.totient`). If you are unsure whether a named predicate exists, express the concept with basic logic and well-established Mathlib functions instead.
+   - **Dot notation is not a guessing tool.** `x.f` only works when the namespace of `x`'s type actually declares `f`. A `Set V` is definitionally `V → Prop`, so `S.Span` fails with "Invalid field `Span`" (Lean looks for `Set.Span` / `Function.Span`, which do not exist). The span of a set is `Submodule.span R S`.
+   - **Match the declared types of context-provided notation/defs.** If the context declares `local notation "limsup" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, then `limsup` accepts ONLY `ℕ → EReal`; passing a `ℕ → ℝ` sequence fails with "Application type mismatch". Either declare the sequences as `(u v : ℕ → EReal)` or coerce each term: `fun n => (u n : EReal)`.
+   - **Read type-class synthesis errors as type mismatches.** "failed to synthesize `AddCommMonoid Prop`" means a `Set`/predicate (`V → Prop`) was passed where a function into an algebraic structure was expected — e.g. `LinearIndependent R S` with `S : Set V` is wrong; write `LinearIndependent R (fun x : S => (x : V))`.
+
+## Lean 4 / Mathlib facts (respect these)
+- **Lambdas:** write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` or `fun n : ℕ → ℂ, f n` — a comma after the binder is a syntax error ("unexpected token ','; expected '↦', '=>'"). A typed binder is `fun (n : ℕ) => ...` or `fun n : ℕ => ...`; the ascribed type is the type of the bound variable itself.
+- **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, `Field`, `Module`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]`. Writing `(X Y : TopologicalSpace)` fails with "type expected, got (TopologicalSpace : Type _ → Type _)". An unspecified vector space is `(K : Type*) [Field K] (V : Type*) [AddCommGroup V] [Module K V]` — do not hard-code a scalar field like `ℚ` unless the problem names one.
+- **Sets vs. indexed families:** if `s : Set X` and `x : X`, then `s x` is the PROPOSITION `x ∈ s`, not a set. A family "T_α" must be declared with an index type and a function, e.g. `(ι : Type*) (T : ι → Set (Set X))`; then `T α : Set (Set X)` and its union is `⋃ α, T α` (`Set.iUnion`, needs `open Set`). Declaring `(T : Set (Set X))` and then writing `T α` fails with "Application type mismatch ... has type Prop ... but is expected to have type Set (Set X)".
+- **A `Set` is a predicate:** `Set X` is `X → Prop`. Dot notation on a set resolves in the `Set`/`Function` namespaces and fails with "Invalid field" unless the declaration exists there — use full canonical names for anything algebraic (`Submodule.span R S`, NOT `S.Span`). (`Set.Countable`, `Set.Infinite`, `Set.Finite` DO exist, so `S.Countable` etc. are fine.)
+- **Big unions/intersections vs. binary ones:** `⋃ i, U i` and `⋂ i, C i` (with a binder) are `Set.iUnion` / `Set.iInter`. The symbols `∪` and `∩` are BINARY infix operators only — writing `∩ i, C i` is a syntax error ("unexpected token '∩'; expected ..."). "The intersection is nonempty" is `(⋂ i, C i).Nonempty` or `(⋂ i, C i) ≠ ∅`; "each C i is nonempty" is `∀ i, (C i).Nonempty` or `∀ i, C i ≠ ∅`.
+- **Chaining conditions on a quantified family:** prefer nested implications over one long `∧`-chain mixed with `→`, because `∀` and `→` extend as far right as possible, so `A ∧ B ∧ ∀ i j, i ≤ j → P i j → Q` puts `Q` INSIDE the `∀` — rarely what you intend. Write e.g. `∀ (C : ℕ → Set X), (∀ i, IsClosed (C i)) → (∀ i, (C i).Nonempty) → (∀ i j, i ≤ j → C j ⊆ C i) → (⋂ i, C i).Nonempty`.
+- **Interval sets:** `Set.Ici a` is [a, ∞), `Set.Ioi a` is (a, ∞), `Set.Iic a` is (-∞, a], `Set.Iio a` is (-∞, a), `Set.Icc a b` is [a, b], `Set.Ioo a b` is (a, b). Beware: `Set.Icc 0 0 = {0}`.
+- **Derivative:** the derivative of `f : ℝ → ℝ` as a function is `deriv f`. There is no `f'` notation in Mathlib. "f'(x) → L as x → +∞" is `Tendsto (deriv f) atTop (nhds L)`.
+- **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. "f is holomorphic on an open set Ω" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).
+- **Limits:** "g(x) → L as x → +∞" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).
+- **Series:** "the series ∑ aₙ converges" is `Summable (fun n => a n)`; "∑ aₙ = L" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse "the series converges" with "the terms tend to 0" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`.
+- **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.
+- **Unit circle / unit modulus:** there is no `Set.unitCircle` and no `Complex.unitCircle`. "z lies on the unit circle" is `‖z‖ = 1` or `z ∈ Metric.sphere (0 : ℂ) 1`; "|w| = 1" is `‖w‖ = 1` (or `Complex.abs w = 1`).
+- **Real-to-complex coercion:** `Complex.ofReal r` or `(r : ℂ)`. In `z = r * w` with `r : ℝ` and `w : ℂ`, Lean inserts the coercion automatically, but writing `z = (r : ℂ) * w` is safest.
+- **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `∃ c, ∀ z ∈ s, f z = c` (or `Set.EqOn f (fun _ => c) s`).
+- **Open maps:** "f is an open map" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`.
+- **Quantifiers:** `∀ x ∈ s, P x` and `∀ x > 0, P x` are valid.
+- **Number theory:** "a is nonzero" is `ha : a ≠ 0`. Parity conditions can be written `a % 2 = 0` (decidable, usable in an `if`) or `Even a` / `Odd a`. `gcd` works on `ℤ`. Euler's totient function is `Nat.totient : ℕ → ℕ` — there is NO `Nat.ph` or `Nat.phi`. "n ∣ φ(aⁿ − 1)" is `n ∣ Nat.totient (a ^ n - 1)`; on `ℕ` subtraction is truncated, so `a ^ n - 1` with `ha : a > 1` is fine, and `a` should stay `: ℕ` because `Nat.totient` takes `ℕ`.
+- **Extended reals (`EReal`):** `EReal` is ℝ with ±∞ adjoined; `⊤` is +∞, `⊥` is −∞, and `(x : EReal)` coerces `x : ℝ`. `Filter.limsup u atTop : EReal` for `u : ℕ → EReal`. A limsup of real sequences can be phrased either with `(u v : ℕ → EReal)` or with explicit coercions `fun n => (u n : EReal)` — match whatever the context's notation expects.
+- **Linear algebra:** `LinearIndependent R v` takes an indexed FAMILY `v : ι → M`, NOT a set. For `S : Set V`, write `LinearIndependent R (fun x : S => (x : V))` (subtype coercion). The span of `S : Set V` is `Submodule.span R S : Submodule R V`; "S spans V" is `Submodule.span R S = ⊤` (`⊤` is the whole module). `S.Countable` (`Set.Countable`) means "at most countable" — it ALREADY includes finite sets, so "finite or countably infinite" is exactly `S.Countable`; "countably infinite" is `S.Countable ∧ S.Infinite`.
+
+## Worked examples (corrected)
+Problem: "Suppose f is differentiable for every x>0 and f'(x) → 0 as x → +∞. Put g(x)=f(x+1)-f(x). Prove g(x) → 0 as x → +∞." (opens include Topology Filter Real)
+```lean4
+theorem g_converges_to_zero (f : ℝ → ℝ) (hf : ∀ x > 0, DifferentiableAt ℝ f x)
+    (hlim : Tendsto (deriv f) atTop (nhds 0)) :
+    Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry
+```
+
+Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps." (opens include Filter Set TopologicalSpace)
+```lean4
+theorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
+    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+```
+
+Problem: "Suppose f is holomorphic in an open set Ω. Prove that if Im(f) is constant, then f is constant." (opens include Complex Filter)
+```lean4
+theorem constant_of_constant_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω)
+    (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :
+    ∃ c : ℂ, ∀ z ∈ Ω, f z = c := by sorry
+```
+
+Problem: "If T_α is a family of topologies on X, show that ⋃ T_α does not need to be a topology on X." (context defines `is_topology`; opens include Filter Set TopologicalSpace)
+Pitfalls avoided: a family needs an index type (`T : ι → Set (Set X)`, not `T : Set (Set X)` applied to `α`); "does not need to be" is an existential counterexample, not `∀ ... → ¬ ...`.
+```lean4
+theorem union_of_topologies_not_necessarily_a_topology :
+    ∃ (X : Type) (ι : Type) (T : ι → Set (Set X)),
+      (∀ α, is_topology X (T α)) ∧ ¬ is_topology X (⋃ α, T α) := by sorry
+```
+
+Problem: "If a is a nonzero integer, then for n > m show that (a^(2^n)+1, a^(2^m)+1) = 1 or 2 depending on whether a is odd or even." (opens include Real, scoped BigOperators)
+Pitfall avoided: the "nonzero" hypothesis `ha : a ≠ 0` must appear.
+```lean4
+theorem gcd_pow_two_pow_add_one (a : ℤ) (ha : a ≠ 0) (n m : ℕ) (h : n > m) :
+    gcd (a ^ (2 ^ n) + 1) (a ^ (2 ^ m) + 1) = if a % 2 = 0 then 1 else 2 := by sorry
+```
+
+Problem: "Prove that the power series ∑ z^n/n converges at every point of the unit circle except z = 1." (opens include Complex Filter Function Metric Finset; scoped BigOperators Topology)
+Pitfalls avoided: no comma in `fun` binders; no `Set.unitCircle` (use `‖z‖ = 1`); series convergence is `Summable` of the actual terms `z ^ n / n`, not a limit of an invented `f`.
+```lean4
+theorem summable_z_pow_div_n_on_unit_circle_ne_one :
+    ∀ z : ℂ, ‖z‖ = 1 → z ≠ 1 → Summable (fun n : ℕ => z ^ n / n) := by sorry
+```
+
+Problem: "Suppose (a) f is continuous for x ≥ 0, (b) f′(x) exists for x > 0, (c) f(0)=0, (d) f′ is monotonically increasing. Put g(x)=f(x)/x (x>0) and prove that g is monotonically increasing." (opens include Topology Filter Real Complex TopologicalSpace Finset; scoped BigOperators)
+Pitfalls avoided: "continuous for x ≥ 0" is `ContinuousOn f (Set.Ici 0)` — NOT `Set.Icc 0 0`, which is the singleton {0} and would only give continuity at 0; since g is only defined for x > 0, the conclusion is `MonotoneOn ... (Set.Ioi 0)`, NOT `Monotone` over all of ℝ; likewise f′'s monotonicity is on (0,∞).
+```lean4
+theorem g_is_monotonically_increasing (f : ℝ → ℝ) (hf_cont : ContinuousOn f (Set.Ici 0))
+    (hf_diff : ∀ x > 0, DifferentiableAt ℝ f x) (hf0 : f 0 = 0)
+    (hderiv_monotone : MonotoneOn (deriv f) (Set.Ioi 0)) :
+    MonotoneOn (fun x => f x / x) (Set.Ioi 0) := by sorry
+```
+
+Problem: "Show that X is countably compact if and only if every nested sequence C₁ ⊇ C₂ ⊇ ⋯ of closed nonempty sets of X has a nonempty intersection." (context defines `countably_compact`; opens include Filter Set TopologicalSpace; scoped Topology)
+Pitfalls avoided: the indexed intersection is `⋂ i, C i` (iInter) — binary `∩` applied to a binder (`∩ i, C i`) is a syntax error; the conditions on the family are chained with nested `→`, not a mixed `∧`/`→` chain (which would push the conclusion inside the `∀`).
+```lean4
+theorem countably_compact_iff_nested_closed_sets_intersect (X : Type*) [TopologicalSpace X] :
+    countably_compact X ↔
+      ∀ (C : ℕ → Set X), (∀ i, IsClosed (C i)) → (∀ i, (C i).Nonempty) →
+        (∀ i j, i ≤ j → C j ⊆ C i) → (⋂ i, C i).Nonempty := by sorry
+```
+
+Problem: "If z is a complex number, prove that there exists an r ≥ 0 and a complex number w with |w| = 1 such that z = rw." (opens include Topology Filter Real Complex TopologicalSpace Finset; scoped BigOperators)
+Pitfalls avoided: there is no `Complex.unitCircle`; "|w| = 1" is `‖w‖ = 1`; the existence claim is a clean conjunction of the three required properties — do not try to construct the witness inside the statement.
+```lean4
+theorem complex_number_polar_form (z : ℂ) :
+    ∃ (r : ℝ) (w : ℂ), r ≥ 0 ∧ ‖w‖ = 1 ∧ z = r * w := by sorry
+```
+
+Problem: "If a > 1 is an integer, show that n ∣ φ(aⁿ − 1), where φ is the Euler φ-function." (opens include Fintype Set Real Ideal Polynomial; scoped BigOperators)
+Pitfall avoided: Euler's totient is `Nat.totient` — `Nat.ph` / `Nat.phi` do NOT exist ("Unknown constant"). Keep `a : ℕ` since `Nat.totient` takes `ℕ`; truncated subtraction in `a ^ n - 1` is fine because `a > 1`.
+```lean4
+theorem euler_totient_divides (a : ℕ) (ha : a > 1) (n : ℕ) :
+    n ∣ Nat.totient (a ^ n - 1) := by sorry
+```
+
+Problem: "For any two real sequences {aₙ}, {bₙ}, prove that limsup (aₙ + bₙ) ≤ limsup aₙ + limsup bₙ, provided the sum on the right is not of the form ∞−∞." (opens include Topology Filter Real Complex TopologicalSpace Finset; scoped BigOperators; context provides `local notation "limsup" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`)
+Pitfalls avoided: the notation is ascribed type `ℕ → EReal`, so the sequences are declared at EXACTLY that type — passing `ℕ → ℝ` gives "Application type mismatch" (the alternative is coercing every term: `fun n => (u n : EReal)`); the "provided ... not ∞−∞" clause is included as two hypotheses excluding the two indeterminate cases.
+```lean4
+theorem limsup_add_le_limsup_add (u v : ℕ → EReal)
+    (h₁ : limsup u ≠ ⊤ ∨ limsup v ≠ ⊥) (h₂ : limsup u ≠ ⊥ ∨ limsup v ≠ ⊤) :
+    limsup (fun n => u n + v n) ≤ limsup u + limsup v := by sorry
+```
+
+Problem: "Let V be a vector space which is spanned by a countably infinite set. Prove that every linearly independent subset of V is finite or countably infinite." (opens include Function Fintype Subgroup Ideal Polynomial Submodule Zsqrtd; scoped BigOperators)
+Pitfalls avoided: "spanned by a set" is an EXISTENTIAL (`∃ S, ...`), not `∀ S` (which would claim every set spans); the span of a set is `Submodule.span K S = ⊤` — there is no `S.Span`, because `Set V` is `V → Prop` and dot notation fails with "Invalid field"; `LinearIndependent K` takes a family `ι → V`, so the set is wrapped as `fun x : S => (x : V)` — passing `S` directly triggers "failed to synthesize AddCommMonoid Prop"; `Set.Countable` already means "finite or countably infinite", so the conclusion is just `S.Countable`; the unspecified scalar field is a general `(K : Type*) [Field K]`.
+```lean4
+theorem linearly_independent_subset_countable (K : Type*) [Field K] (V : Type*) [AddCommGroup V]
+    [Module K V] (h : ∃ S : Set V, S.Countable ∧ S.Infinite ∧ Submodule.span K S = ⊤) :
+    ∀ S : Set V, LinearIndependent K (fun x : S => (x : V)) → S.Countable := by sorry
+```
+
+## Final checklist before answering
+(a) Every identifier is either a bound variable, a definition from the context, or a real Mathlib name available under the given opens — double-check the risky ones: no `Set.unitCircle`, no `Complex.unitCircle`, no `ConstantOn`, no `Im`/`Re`, no `f'`, no `Nat.ph` (totient is `Nat.totient`), no `S.Span` (span is `Submodule.span`).
+(b) Syntax is valid Lean 4: `fun ... => ...` binders with NO comma, typeclasses in `[...]`, no invented notation; `⋂`/`⋃` (with binders) for indexed intersections/unions, binary `∩`/`∪` only between two sets; conditions on quantified families chained with `→`, not mixed `∧`/`→`.
+(c) ALL hypotheses of the problem appear (re-scan for "nonzero", "positive", strict inequalities, and "provided/whenever/as long as" side conditions) and the conclusion matches the problem, with each case value attached to the correct condition.
+(d) DOMAIN AUDIT: every property stated on a restricted domain uses the matching `...On` predicate with the right interval set (`Set.Ici` for ≥, `Set.Ioi` for >, `Set.Iic` for ≤, `Set.Iio` for <, `Set.Icc`/`Set.Ioo` for bounded intervals); nothing is quantified over a larger domain than the problem states — watch out for expressions undefined outside the domain, like `f x / x` at `x ≤ 0`, and remember `Set.Icc 0 0 = {0}`.
+(e) Indexed families use an index type (`T : ι → ...`); a `Set` is never applied to an index.
+(f) "Not necessarily / does not need to be" is `∃ ... ∧ ¬ ...`, not `∀ ... → ¬ ...`.
+(g) Concrete objects from the problem (specific series, maps, numbers) are written out explicitly, not replaced by generic variables; existence claims list the required properties as conjuncts rather than inventing witness-constructor constants.
+(h) The statement ends with `:= by sorry` inside one ```lean4 code block.
+(i) Every argument passed to a context-provided `def` or `local notation` has EXACTLY the declared type (e.g. a `limsup` notation taking `ℕ → EReal` never receives a `ℕ → ℝ`); coercions like `(u n : EReal)` or `(r : ℂ)` are inserted where needed.
+(j) `LinearIndependent` is applied to a family `ι → M` (subtype coercion `fun x : S => (x : V)` for sets); "spans V" is `Submodule.span R S = ⊤`; "spanned/generated by a ... set" is `∃`, not `∀`; no dot-notation guesses on sets.
+`
+Iteration 11: Accepted candidate (subsample score 0.0 -> 2.0); running full eval.
+Iteration 11: Valset score for new program: 0.15714285714285714 (coverage 70 / 70)
+Iteration 11: Val aggregate for new program: 0.15714285714285714
+Iteration 11: Individual valset scores for new program: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 1.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 0.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 1.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 0.0, 35: 0.0, 36: 0.0, 37: 0.0, 38: 0.0, 39: 0.0, 40: 0.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 0.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 0.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 1.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 0.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 11: New valset pareto front scores: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 1.0, 8: 0.0, 9: 1.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 1.0, 15: 0.0, 16: 0.0, 17: 0.0, 18: 0.0, 19: 1.0, 20: 0.0, 21: 1.0, 22: 1.0, 23: 0.0, 24: 0.0, 25: 1.0, 26: 0.0, 27: 1.0, 28: 0.0, 29: 1.0, 30: 1.0, 31: 0.0, 32: 0.0, 33: 0.0, 34: 1.0, 35: 0.0, 36: 1.0, 37: 0.0, 38: 0.0, 39: 1.0, 40: 1.0, 41: 0.0, 42: 0.0, 43: 0.0, 44: 0.0, 45: 1.0, 46: 0.0, 47: 0.0, 48: 0.0, 49: 0.0, 50: 0.0, 51: 0.0, 52: 0.0, 53: 1.0, 54: 0.0, 55: 0.0, 56: 0.0, 57: 0.0, 58: 0.0, 59: 1.0, 60: 0.0, 61: 1.0, 62: 0.0, 63: 0.0, 64: 1.0, 65: 1.0, 66: 1.0, 67: 0.0, 68: 0.0, 69: 0.0}
+Iteration 11: Valset pareto front aggregate score: 0.3
+Iteration 11: Updated valset pareto front programs: {0: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 1: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 2: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 3: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 4: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 5: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 6: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 7: {8}, 8: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 9: {9, 4}, 10: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 11: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 12: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 13: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 14: {1, 3, 4, 5, 6, 7, 8, 9, 10}, 15: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 16: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 17: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 18: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 19: {0, 1, 4, 5, 9, 10}, 20: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 21: {10, 3}, 22: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 23: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 24: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 25: {4}, 26: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 27: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 28: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 29: {10, 3, 4, 6}, 30: {0, 3, 4, 5, 6, 8, 9, 10}, 31: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 32: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 33: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 34: {9}, 35: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 36: {2, 7}, 37: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 38: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 39: {8, 4, 5}, 40: {6}, 41: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 42: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 43: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 44: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 45: {2, 7}, 46: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 47: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 48: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 49: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 50: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 51: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 52: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 53: {2}, 54: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 55: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 56: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 57: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 58: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 59: {10}, 60: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 61: {1, 2, 4, 5, 7, 8, 9, 10}, 62: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 63: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 64: {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 65: {8, 1}, 66: {0, 1, 2, 3, 5, 6, 7, 8, 9, 10}, 67: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 68: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 69: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}}
+Iteration 11: Best valset aggregate score so far: 0.15714285714285714
+Iteration 11: Best program as per aggregate score on valset: 4
+Iteration 11: Best score on valset: 0.15714285714285714
+Iteration 11: Linear pareto front program index: 4
+Iteration 11: New program candidate index: 10

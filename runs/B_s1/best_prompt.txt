@@ -1,0 +1,125 @@
+Translate the following math problem into a single Lean 4 theorem statement using Mathlib. The statement MUST compile under the given context. End the statement with `:= by sorry`. Put the final statement in a ```lean4 code block.
+
+## Input format
+You will receive:
+1. A math problem stated in LaTeX.
+2. A "Lean 4 context" code block containing the `import`, `open`, and `open scoped` lines to assume, and possibly additional `def`s. Do NOT repeat these lines; write exactly one theorem. If the context provides a custom definition (e.g. `def is_topology ...`), use it exactly as declared, with arguments of the right types.
+
+## Output format
+- ALWAYS produce an answer: exactly one theorem inside a single, properly OPENED AND CLOSED ```lean4 code block, ending with `:= by sorry`.
+- NEVER return an empty response, prose only, or an unclosed code block. Even if the problem is hard to formalize or you are unsure of the exact identifiers, output your best-effort theorem. A missing or unparseable code block scores zero automatically — a best-effort statement can still compile and score.
+
+## Recommended process
+1. Extract from the problem text a list of ALL hypotheses and the exact conclusion.
+2. Map each mathematical concept to a verified Mathlib identifier, or to basic logic (`∀`, `∃`, `=`, `∧`, `¬`) built from well-established functions.
+3. Write the statement, then mentally type-check every application, including coercions between number types (ℕ, ℤ, ℚ, ℝ, ℂ) and coefficient embeddings into polynomials.
+4. Compare the STRENGTH of each formal hypothesis against the English: it must be neither weaker nor stronger than what the problem states.
+5. Run the final checklist below.
+
+## Correctness requirements
+1. **Faithfulness.** Include EVERY hypothesis from the problem and formalize the conclusion precisely.
+   - **Hypothesis audit.** Easy-to-miss side conditions count: "a is nonzero" needs `ha : a ≠ 0`; "x > 0", "n > m", "n is a positive integer" (`hn : 0 < n`), "f is holomorphic in Ω" (`hf : DifferentiableOn ℂ f Ω`) all need explicit hypotheses. Omitting `a ≠ 0` or `0 < n` is a faithfulness error even when the statement compiles.
+   - **Do not weaken hypotheses.** The formal hypothesis must be exactly as strong as the English one. Example: "|x| = n" (the order of a group element equals n) is `orderOf x = n`, NOT `x ^ n = 1` — the latter is strictly weaker (it only says n is *an* exponent of x, not *the* order) and is judged unfaithful.
+   - **"Not necessarily" / "does not need to be".** This means a counterexample EXISTS: `∃ ..., (all hypotheses) ∧ ¬ P`. It does NOT mean `∀ ..., hypotheses → ¬ P` — that claims P never holds, which is usually false and unfaithful.
+   - **"There are infinitely many ... such that P".** Formalize as infinitude of a set: `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). Do NOT formalize as `P a` for a single variable, and do NOT universally quantify over `a`.
+   - **Concrete objects stay concrete.** Formalize the actual objects named in the problem (e.g. the specific series `z ^ n / n`, the projection `Prod.fst`, the specific polynomial `X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ)`). Do NOT introduce a generic uninterpreted function or variable as a stand-in for a concrete object (e.g. never declare `(f : ℚ[X] → ℚ[X])` and write `f (...)` when the problem names one specific polynomial).
+   - **Case conclusions.** For "... = 1 or 2 depending on whether a is odd or even", an `if ... then ... else ...` (or a disjunction) is fine, but attach each value to the mathematically correct case.
+   - "P is constant" means `∃ c, ∀ z ∈ s, P z = c` — it does NOT mean `P z = 0`.
+2. **It must compile.** Use only identifiers that actually exist in Mathlib under the given opens. Never invent names or notation. If you are unsure whether a named predicate exists, express the concept with basic logic and well-established Mathlib functions instead.
+
+## Lean 4 / Mathlib facts (respect these)
+- **Lambdas:** write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` or `fun n : ℕ → ℂ, f n` — a comma after the binder is a syntax error ("unexpected token ','; expected '↦', '=>'"). A typed binder is `fun (n : ℕ) => ...` or `fun n : ℕ => ...`; the ascribed type is the type of the bound variable itself.
+- **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, `Group`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]` and groups as `(G : Type*) [Group G]`. Writing `(X Y : TopologicalSpace)` fails with "type expected, got (TopologicalSpace : Type _ → Type _)".
+- **Sets vs. indexed families:** if `s : Set X` and `x : X`, then `s x` is the PROPOSITION `x ∈ s`, not a set. A family "T_α" must be declared with an index type and a function, e.g. `(ι : Type*) (T : ι → Set (Set X))`; then `T α : Set (Set X)` and its union is `⋃ α, T α` (`Set.iUnion`, needs `open Set`). Declaring `(T : Set (Set X))` and then writing `T α` fails with "Application type mismatch ... has type Prop ... but is expected to have type Set (Set X)".
+- **Derivative:** the derivative of `f : ℝ → ℝ` as a function is `deriv f`. There is no `f'` notation in Mathlib. "f'(x) → L as x → +∞" is `Tendsto (deriv f) atTop (nhds L)`.
+- **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. "f is holomorphic on an open set Ω" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).
+- **Limits:** "g(x) → L as x → +∞" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).
+- **Series:** "the series ∑ aₙ converges" is `Summable (fun n => a n)`; "∑ aₙ = L" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse "the series converges" with "the terms tend to 0" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`.
+- **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.
+- **Unit circle:** there is no `Set.unitCircle`. "z lies on the unit circle" is `‖z‖ = 1` or `z ∈ Metric.sphere (0 : ℂ) 1`.
+- **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `∃ c, ∀ z ∈ s, f z = c` (or `Set.EqOn f (fun _ => c) s`).
+- **Open maps:** "f is an open map" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`.
+- **Quantifiers:** `∀ x ∈ s, P x` and `∀ x > 0, P x` are valid.
+- **Number theory:** "a is nonzero" is `ha : a ≠ 0`. Parity conditions can be written `a % 2 = 0` (decidable, usable in an `if`) or `Even a` / `Odd a`. `gcd` works on `ℤ`.
+- **Group theory:** the order of an element `x : G` (with `[Group G]`) is `orderOf x : ℕ`. "|x| = n" is `hord : orderOf x = n` — there is no `|x|` notation for order, and `x ^ n = 1` is NOT an acceptable substitute (it is weaker). "n is a positive integer" is `hn : 0 < n`.
+- **Polynomials:** the type of univariate polynomials over a ring `R` is `Polynomial R`, with notation `R[X]` after `open Polynomial`. The indeterminate is `X : R[X]`. Embed a coefficient `a : R` as the constant polynomial `C a : R[X]`. Write concrete polynomials with these, e.g. `(X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ) : ℚ[X])`.
+  - **Coercions into polynomials are NOT automatic across rings:** an integer `a : ℤ` used as a coefficient of a polynomial over `ℚ` must be coerced explicitly: `C (a : ℚ)`. Writing `... + a` with `a : ℤ` inside `ℚ[X]`, or mixing raw numerals without `C`, can fail with typeclass errors such as `failed to synthesize instance ... HSub`/`HAdd`/`HMul`.
+  - "p is irreducible in ℚ[X]" is `Irreducible (p : ℚ[X])`.
+- **Infinitely many:** "there are infinitely many integers a such that P a" is `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). "At most countable" is `Set.Countable` (e.g. `T.Countable` for `T : Set (Set ℝ)`); a union of a set of sets is `⋃₀ T` (`Set.sUnion`, needs `open Set`); open intervals are `Set.Ioo a b` (`Ioo` after `open Set`).
+
+## Worked examples (corrected)
+Problem: "Suppose f is differentiable for every x>0 and f'(x) → 0 as x → +∞. Put g(x)=f(x+1)-f(x). Prove g(x) → 0 as x → +∞." (opens include Topology Filter Real)
+```lean4
+theorem g_converges_to_zero (f : ℝ → ℝ) (hf : ∀ x > 0, DifferentiableAt ℝ f x)
+    (hlim : Tendsto (deriv f) atTop (nhds 0)) :
+    Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry
+```
+
+Problem: "Show that π₁ : X × Y → X and π₂ : X × Y → Y are open maps." (opens include Filter Set TopologicalSpace)
+```lean4
+theorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :
+    IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry
+```
+
+Problem: "Suppose f is holomorphic in an open set Ω. Prove that if Im(f) is constant, then f is constant." (opens include Complex Filter)
+```lean4
+theorem constant_of_constant_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω)
+    (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :
+    ∃ c : ℂ, ∀ z ∈ Ω, f z = c := by sorry
+```
+
+Problem: "If T_α is a family of topologies on X, show that ⋃ T_α does not need to be a topology on X." (context defines `is_topology`; opens include Filter Set TopologicalSpace)
+Pitfalls avoided: a family needs an index type (`T : ι → Set (Set X)`, not `T : Set (Set X)` applied to `α`); "does not need to be" is an existential counterexample, not `∀ ... → ¬ ...`.
+```lean4
+theorem union_of_topologies_not_necessarily_a_topology :
+    ∃ (X : Type) (ι : Type) (T : ι → Set (Set X)),
+      (∀ α, is_topology X (T α)) ∧ ¬ is_topology X (⋃ α, T α) := by sorry
+```
+
+Problem: "If a is a nonzero integer, then for n > m show that (a^(2^n)+1, a^(2^m)+1) = 1 or 2 depending on whether a is odd or even." (opens include Real, scoped BigOperators)
+Pitfall avoided: the "nonzero" hypothesis `ha : a ≠ 0` must appear.
+```lean4
+theorem gcd_pow_two_pow_add_one (a : ℤ) (ha : a ≠ 0) (n m : ℕ) (h : n > m) :
+    gcd (a ^ (2 ^ n) + 1) (a ^ (2 ^ m) + 1) = if a % 2 = 0 then 1 else 2 := by sorry
+```
+
+Problem: "Prove that the power series ∑ z^n/n converges at every point of the unit circle except z = 1." (opens include Complex Filter Function Metric Finset; scoped BigOperators Topology)
+Pitfalls avoided: no comma in `fun` binders; no `Set.unitCircle` (use `‖z‖ = 1`); series convergence is `Summable` of the actual terms `z ^ n / n`, not a limit of an invented `f`.
+```lean4
+theorem summable_z_pow_div_n_on_unit_circle_ne_one :
+    ∀ z : ℂ, ‖z‖ = 1 → z ≠ 1 → Summable (fun n : ℕ => z ^ n / n) := by sorry
+```
+
+Problem: "Let x be an element of G. Prove that if |x| = n for some positive integer n then x⁻¹ = x^(n-1)." (opens include Fintype Subgroup Set Polynomial Ideal; scoped BigOperators)
+Pitfalls avoided: "|x| = n" is `orderOf x = n`, NOT the weaker `x ^ n = 1`; "positive integer n" adds the hypothesis `hn : 0 < n`.
+```lean4
+theorem inverse_equal_to_power_minus_one (G : Type*) [Group G] (x : G) (n : ℕ)
+    (hn : 0 < n) (hord : orderOf x = n) :
+    x⁻¹ = x ^ (n - 1) := by sorry
+```
+
+Problem: "Show that there is an infinite number of integers a such that f(x) = x^7 + 15x^2 - 30x + a is irreducible in ℚ[x]." (opens include Fintype Set Real Ideal Polynomial; scoped BigOperators)
+Pitfalls avoided: "infinite number of a" is `Set.Infinite {a : ℤ | ...}`, not a claim about one `a`; the polynomial is written concretely with `X` and `C` (no generic `f : ℚ[X] → ℚ[X]`); the integer `a` is coerced via `C (a : ℚ)` so no `HSub`/`HAdd` typeclass failure occurs.
+```lean4
+theorem infinite_irreducible_polynomials :
+    Set.Infinite {a : ℤ | Irreducible (X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ) : ℚ[X])} := by sorry
+```
+
+Problem: "Prove that every open set in ℝ is the union of an at most countable collection of disjoint segments." (opens include Topology Filter Real Complex TopologicalSpace Finset Set; scoped BigOperators)
+Pitfall avoided: even when the formalization is nontrivial, you MUST still emit one closed code block with a best-effort theorem — an empty answer scores zero. "At most countable" is `Set.Countable`; "segments" are open intervals `Ioo a b`; union of a set of sets is `⋃₀ T`.
+```lean4
+theorem open_set_eq_countable_union_disjoint_intervals (s : Set ℝ) (hs : IsOpen s) :
+    ∃ T : Set (Set ℝ), T.Countable ∧ (∀ t ∈ T, ∃ a b : ℝ, t = Ioo a b) ∧
+      (∀ t₁ ∈ T, ∀ t₂ ∈ T, t₁ ≠ t₂ → Disjoint t₁ t₂) ∧ s = ⋃₀ T := by sorry
+```
+
+## Final checklist before answering
+(a) Every identifier is either a bound variable, a definition from the context, or a real Mathlib name available under the given opens (no `Set.unitCircle`, no `ConstantOn`, no `Im`/`Re`, no `f'`, no `|x|` for order).
+(b) Syntax is valid Lean 4: `fun ... => ...` binders with NO comma, typeclasses in `[...]`, no invented notation.
+(c) ALL hypotheses of the problem appear (re-scan for "nonzero", "positive", strict inequalities) and NONE are weakened: `orderOf x = n` rather than `x ^ n = 1`; `0 < n` included when n is said to be positive. The conclusion matches the problem, with each case value attached to the correct condition.
+(d) Indexed families use an index type (`T : ι → ...`); a `Set` is never applied to an index.
+(e) "Not necessarily / does not need to be" is `∃ ... ∧ ¬ ...`, not `∀ ... → ¬ ...`.
+(f) Concrete objects from the problem (specific series, maps, numbers, polynomials) are written out explicitly — polynomials via `X` and `C` with explicit coercions like `C (a : ℚ)` — never replaced by generic variables or functions.
+(g) "Infinitely many ... such that P" is `Set.Infinite { ... | P ... }`; "at most countable" is `Set.Countable`.
+(h) The statement ends with `:= by sorry` inside exactly one OPENED AND CLOSED ```lean4 code block — never an empty, prose-only, or unclosed answer.
+`

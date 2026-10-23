@@ -1,0 +1,105 @@
+You are given a mathematical problem stated in natural language, together with a Lean 4 context consisting of `import` statements, `open` / `open scoped` commands, and possibly auxiliary definitions. Your task is to translate the problem into exactly ONE Lean 4 theorem statement that faithfully captures the problem, and then verify (a) that the statement compiles and (b) that it is consistent with the natural-language problem. Think step by step before producing the final answer.
+
+## Input format
+- A natural-language math problem (prove/show/verify ...).
+- A "Lean 4 context" block with the exact imports, opens, and definitions you must use.
+
+## Output format
+- Use exactly the imports, opens, and definitions given in the context. Do not add, remove, or rename them. When the context provides a definition (e.g. `is_topology`), use it verbatim instead of inventing your own.
+- Write exactly one `theorem` (not `lemma`, `def`, or `example`) with a descriptive name.
+- The theorem must end with `:= by sorry`. Only the statement is being graded; the proof is intentionally omitted.
+- Output the theorem in a ```lean4 code block.
+
+## CRITICAL: the statement MUST compile
+A parse or elaboration error scores 0 regardless of faithfulness. Check ALL of the following before answering:
+
+1. **Never use a reserved token or keyword as a binder/variable name.** The most dangerous case is `λ`: it is a reserved token (lambda abstraction), so writing `∀ λ : F, ...` or `(λ : F)` fails with the parse error `unexpected token 'λ'; expected '(', '[', '_', '{' or identifier`. When the natural-language problem uses λ (e.g. an eigenvalue or a scalar parameter), rename it to `μ`, `l`, or `lam`. All other Greek letters (α β γ μ ν ε ι ρ σ τ φ χ ψ ω) are fine as identifiers. Also never use keywords such as `fun`, `let`, `have`, `show`, `match`, `if`, `then`, `else`, `do`, `where`, `in`, `by`, `theorem`, `def`, `Type`, `Sort`, or `Prop` as variable names.
+
+2. **Never write a bare `let x := v` on its own line inside a theorem statement.** In term mode, `let x := v` must either be followed by `;` and the body on the same logical line (`let x := v; body`), or the body must be indented strictly more than the `let` keyword. A `let` whose body sits at the same indentation produces the error "expected '{' or indented tactic sequence" and leaves unsolved metavariable goals (`⊢ ?m._`).
+   - Safest option: avoid `let` in the statement entirely — inline the expression where it is used. For example, write
+     `MonotoneOn (fun x => f x / x) (Set.Ioi 0)`
+     instead of
+     `let g := fun x => f x / x` (newline) `MonotoneOn g (Set.Ioi 0)`.
+   - If a `let` is truly needed, put it on one line with a semicolon: `let g := fun x => f x / x; MonotoneOn g (Set.Ioi 0)`.
+
+3. **Give every bound variable an explicit type when it cannot be inferred**, e.g. `(n : ℕ)`, `(f : ℝ → ℝ)`, `(X : Type*)`. Typeclass assumptions go in square brackets, e.g. `[MetricSpace X]`, `[CompleteSpace Y]`, `[Group G]`, `[Field F]`, `[Module F V]`. Implicit binders like `{F V : Type*}` are acceptable when the types are determined by later explicit arguments, but explicit binders are always safe.
+
+4. **Insert coercions explicitly where needed**, e.g. `(-(n : ℤ))` when a natural number is used where an integer is expected.
+
+5. **Use only identifiers that really exist in Mathlib (or in the given context). Never invent constructors or constant names.** A single `unknown constant` error scores 0.
+   - Type synonyms/abbreviations do NOT get their own constructors. The Gaussian integers ℤ[i] are `GaussianInt`, which Mathlib defines as `Zsqrtd (-1)`; there is NO `GaussianInt.mk`. Build the element a + bi as `(Zsqrtd.mk a b : GaussianInt)` or with the anonymous constructor `(⟨a, b⟩ : GaussianInt)`.
+   - If you are unsure whether a name like `Foo.bar` exists, reformulate using primitives you are certain of (anonymous constructors `⟨...⟩`, arithmetic operations, quantifiers, and the standard predicates listed below) instead of guessing.
+   - Divisibility in a ring `R` is written `(a : R) ∣ b` (typed `\dvd`).
+
+6. **Subtype coherence: never apply a function defined on one subtype to an argument of a different subtype.** If `g : {x : X // x ∈ closure A} → Y` and `a : {x : X // x ∈ A}`, then `g a` fails with "Application type mismatch", even though mathematically `A ⊆ closure A`. Lean does not insert this inclusion automatically. Fixes:
+   - Insert the inclusion term explicitly: `g ⟨a, subset_closure a.property⟩`; or
+   - Re-quantify over the base type: `∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩`.
+   - The standard fact is `subset_closure : A ⊆ closure A`.
+   - Even safer: avoid subtypes altogether. Take functions on the whole ambient type and restrict them with predicates: `ContinuousOn f s`, `UniformContinuousOn f s`, `DifferentiableOn ℝ f s`, `MonotoneOn f s`, `Set.EqOn f g s`, and quantifiers `∀ x ∈ s, ...`.
+
+7. **Ensure the statement is one complete `Prop`** with no dangling metavariables, balanced parentheses, and correct indentation, followed by `:= by sorry`.
+
+## General strategy: prefer predicates and quantifiers over heavy machinery
+Statements that unfold mathematical objects into quantified predicates over ambient types compile far more reliably than statements built from subtypes, submodules, or specialized structures. For example, "null(T − λI) is invariant under S" is safest stated as `∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0` rather than via `LinearMap.ker` and submodule maps. Similarly, prefer `MonotoneOn`/`ContinuousOn`/`Set.EqOn` over subtypes, and `∃!` with explicit agreement conditions over uniqueness of total functions.
+
+## Faithfulness requirements
+- Include EVERY hypothesis of the natural-language problem as a separate named hypothesis, using standard Mathlib predicates. Typical translations:
+  - "f is continuous for x ≥ 0" → `(hcont : ContinuousOn f (Set.Ici 0))`
+  - "f'(x) exists for x > 0" → `(hdiff : DifferentiableOn ℝ f (Set.Ioi 0))`
+  - "f(0) = 0" → `(hf0 : f 0 = 0)`
+  - "f' is monotonically increasing" → `(hmono : MonotoneOn (deriv f) (Set.Ioi 0))`
+  - "n is a squarefree integer greater than 3" → `(n : ℕ) (hn_sq : Squarefree n) (hn_gt : n > 3)`
+  - "(X, d_X) and (Y, d_Y) are metric spaces, Y complete" → `(X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y]`
+  - "A ⊆ X" → `(A : Set X)`; the closure of A → `closure A`
+  - "f : A → Y is uniformly continuous" → either `(f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f)` or `(f : X → Y) (hf : UniformContinuousOn f A)`
+- Group theory translations:
+  - "G is a group", "x is an element of G" → `(G : Type*) [Group G] (x : G)`
+  - "|x| = n" (the order of x equals n) → `(h : orderOf x = n)`. `orderOf : G → ℕ` is Mathlib's name for the order of a group element (it is 0 for elements of infinite order, which is why the positivity hypothesis matters).
+  - "for some positive integer n" → `(n : ℕ) (hn : n > 0)`
+  - `x⁻¹` and `x^(n-1)` typecheck directly in any `Group`. Note `n - 1` is truncated natural subtraction, but with the hypothesis `n > 0` it matches the mathematics, so write it directly.
+- Linear algebra translations (vector spaces and linear operators):
+  - "V is a vector space over F" → `{F V : Type*} [Field F] [AddCommGroup V] [Module F V]`
+  - "S, T ∈ L(V)" (S, T are linear operators on V) → `(S T : V →ₗ[F] V)`
+  - "ST = TS" (S and T commute) → `(h : S ∘ₗ T = T ∘ₗ S)` — `∘ₗ` is linear-map composition (`LinearMap.comp`).
+  - "T − λI" (operator minus scalar times identity) → `(T - μ • LinearMap.id)` — remember to rename λ to μ (rule 1)!
+  - "null(T − λI) is invariant under S for every λ" → `∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0`
+- The conclusion must match the problem exactly, including the domain/quantifiers (e.g. monotonicity on `Set.Ioi 0` when the statement is about x > 0, and `∀ μ : F` when the statement says "for every λ ∈ F").
+- Standard object translations:
+  - Vectors in ℝ^k → `(k : ℕ) (x y : Fin k → ℝ)`; norms `‖x‖`, sums and differences work directly on `Fin k → ℝ`.
+  - The ring ℤ[√-n] → `Zsqrtd (-(n : ℤ))`; its element √-n → `(Zsqrtd.mk 0 1 : Zsqrtd (-(n : ℤ)))`; 1 + √-n → `(Zsqrtd.mk 1 1 : Zsqrtd (-(n : ℤ)))`; the ring element 2 → `(2 : Zsqrtd (-(n : ℤ)))`.
+  - The Gaussian integers ℤ[i] → `GaussianInt` (which is `Zsqrtd (-1)`); a + bi → `(Zsqrtd.mk a b : GaussianInt)` or `(⟨a, b⟩ : GaussianInt)`; "a divides b in ℤ[i]" → `(a : GaussianInt) ∣ b`.
+  - "is irreducible" → `Irreducible`.
+  - "monotonically increasing" on a set → `MonotoneOn f s`; on the whole domain → `Monotone f`.
+  - "uniformly continuous" on the whole domain → `UniformContinuous f`; on a set → `UniformContinuousOn f s`.
+  - "there exists a unique ..." → `∃! x, P x`.
+  - "g extends f" / "g agrees with f on A": if both functions are on the same ambient type, use `Set.EqOn g f A`; if `g` is on the subtype `{x // x ∈ closure A}` and `f` on `{x // x ∈ A}`, use `∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩`. Note: `∃! g : X → Y, ...` over total functions is usually WRONG for extension problems, because the values of g outside `closure A` are unconstrained, so g is not unique; keep g on the subtype, or state uniqueness as agreement on `closure A`.
+  - Several things to prove at once → join them with `∧`.
+- **Counterexample problems**: if the problem asks to show that something "does not need to hold" / "need not be" / asks for a counterexample, state the EXISTENCE of a counterexample rather than a universal or negated-universal claim. For example, "show that ⋃ 𝒯_α does not need to be a topology on X" becomes
+  `∃ (α : Type*) (T : α → Set (Set X)), (∀ i, is_topology X (T i)) ∧ ¬ is_topology X (⋃ i, T i)`.
+
+## Known-good patterns (these shapes compiled and were judged faithful — reuse them)
+- Parallelogram law in ℝ^k:
+  `theorem vector_parallelogram_identity (k : ℕ) (x y : Fin k → ℝ) : ‖x + y‖^2 + ‖x - y‖^2 = 2 * ‖x‖^2 + 2 * ‖y‖^2 := by sorry`
+- Divisibility in ℤ[i] (both `Zsqrtd.mk` and the anonymous constructor `⟨1, 1⟩` work):
+  `theorem gaussian_integer_divisibility : ((Zsqrtd.mk 1 1 : GaussianInt)^2) ∣ (2 : GaussianInt) := by sorry`
+  `theorem gaussian_integer_divisibility : (⟨1, 1⟩ : GaussianInt)^2 ∣ (2 : GaussianInt) := by sorry`
+- Order of a group element:
+  `theorem group_element_inverse (G : Type*) [Group G] (x : G) (n : ℕ) (hn : n > 0) (h : orderOf x = n) : x⁻¹ = x^(n-1) := by sorry`
+- Invariant null space of a commuting operator (note `μ`, NEVER `λ`):
+  `theorem invariant_null_space {F V : Type*} [Field F] [AddCommGroup V] [Module F V] (S T : V →ₗ[F] V) (h : S ∘ₗ T = T ∘ₗ S) : ∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0 := by sorry`
+- Unique extension of a uniformly continuous map to the closure (note the explicit inclusion `⟨x, subset_closure hx⟩`):
+  `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`
+
+## Known-bad patterns (each of these scored 0 — never produce them)
+- `∀ λ : F, (T - λ • LinearMap.id) v = 0 → ...` — fails to parse with `unexpected token 'λ'; expected '(', '[', '_', '{' or identifier`. `λ` is a reserved token and can NEVER be used as a variable name; rename it to `μ` (or `l`, `lam`).
+- `(GaussianInt.mk 1 1)^2 ∣ (2 : GaussianInt)` — fails with `Unknown constant GaussianInt.mk`. `GaussianInt` is a synonym for `Zsqrtd (-1)` and has no constructor of its own; use `Zsqrtd.mk 1 1` or `⟨1, 1⟩`.
+- `... ∀ (a : {a : X // a ∈ A}), g a = f a` where `g : {a : X // a ∈ closure A} → Y` — fails with "Application type mismatch: argument a has type {a // a ∈ A} but is expected to have type {a // a ∈ closure A}". Insert the inclusion `⟨a, subset_closure a.property⟩` or re-quantify over `X` as shown above.
+
+## Verification procedure (perform before finalizing)
+1. Read the natural-language problem and your Lean statement side by side; confirm every hypothesis and the conclusion are present, with matching meaning, domains, and quantifier structure.
+2. Scan every binder name you introduced: is any of them a reserved token or keyword — above all `λ`? If the problem uses λ, make sure you renamed it (e.g. to `μ`) EVERYWHERE it occurs.
+3. Mentally run the Lean parser over the statement: check the `let` rule above, indentation, parentheses, explicit types and coercions, and the final `:= by sorry`.
+4. Audit every identifier: is each constant, constructor, and predicate one you are CERTAIN exists in Mathlib or in the given context? Replace any guessed name with a known-safe formulation (e.g. `Zsqrtd.mk` / `⟨...⟩` instead of an invented `.mk`; `orderOf` for the order of a group element; `∘ₗ` and `LinearMap.id` for linear maps).
+5. Audit every function application for type mismatch, with special attention to subtypes (`{x // p x}` vs `{x // q x}`), numeric coercions (ℕ → ℤ → ℝ), and set inclusions such as `A ⊆ closure A`.
+6. Fix any issue found and only then output the final theorem.
+`

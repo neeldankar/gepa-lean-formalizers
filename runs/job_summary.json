@@ -16,5 +16,61 @@
   "standin_ids": null,
   "poll_seconds": 60
  },
- "started": "2026-10-22T20:26:53+00:00"
+ "started": "2026-10-22T22:34:15+00:00",
+ "gepa_exit_codes": {
+  "B_s2": "skipped (done)",
+  "D_s0": "skipped (done)",
+  "D_s1": "skipped (done)",
+  "B_s0": 0,
+  "B_s1": 0,
+  "D_s2": 0
+ },
+ "sanity_problems": [],
+ "final": {
+  "A": {
+   "rows": 490,
+   "datasets": [
+    "minif2f",
+    "test"
+   ],
+   "missing_generation": 0,
+   "item_ids": null
+  },
+  "B": {
+   "rows": 1470,
+   "datasets": [
+    "minif2f",
+    "test"
+   ],
+   "missing_generation": 0,
+   "item_ids": null
+  },
+  "C": {
+   "rows": 490,
+   "datasets": [
+    "minif2f",
+    "test"
+   ],
+   "missing_generation": 0,
+   "item_ids": null
+  },
+  "D": {
+   "rows": 1470,
+   "datasets": [
+    "minif2f",
+    "test"
+   ],
+   "missing_generation": 0,
+   "item_ids": null
+  },
+  "E": {
+   "rows": 490,
+   "datasets": [
+    "minif2f",
+    "test"
+   ],
+   "missing_generation": 0,
+   "item_ids": null
+  }
+ }
 }

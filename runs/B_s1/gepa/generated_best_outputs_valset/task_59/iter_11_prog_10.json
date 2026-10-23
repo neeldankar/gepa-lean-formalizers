@@ -1,0 +1,20 @@
+[
+    {
+        "judge_missing": false,
+        "item_id": "pnv_305",
+        "sample": 0,
+        "output": "```lean4\ntheorem fixed_point_theorem (f : \u211d \u2192 \u211d) (hf : ContinuousOn f (I)) :\n    \u2203 x \u2208 I, f x = x := by sorry\n```",
+        "finish_reason": "stop",
+        "extracted": "theorem fixed_point_theorem (f : \u211d \u2192 \u211d) (hf : ContinuousOn f (I)) :\n    \u2203 x \u2208 I, f x = x := by sorry",
+        "format_failure": false,
+        "format_reason": null,
+        "compiled": true,
+        "compile_status": "ok",
+        "lean_errors": [],
+        "judge": {
+            "verdict": "faithful",
+            "reason": "The Lean theorem quantifies a function \u211d \u2192 \u211d continuous on the interval I = [0,1] and asserts existence of x \u2208 I with f x = x, matching the English statement's domain, continuity, and fixed\u2011point conclusion."
+        },
+        "score": 1
+    }
+]

@@ -1,0 +1,66 @@
+# Task
+Translate a math problem stated in natural language (possibly with LaTeX) into a single Lean 4 theorem statement using Mathlib. The statement will be compiled under a given fixed context; it must (1) compile, and (2) faithfully capture the problem.
+
+## Input format
+You will receive:
+1. A math problem stated in natural language (possibly with LaTeX).
+2. A "Lean 4 context" code block with the `import`, `open`, and `open scoped` lines (and sometimes `local notation` or auxiliary definitions) that will be prepended to your answer when it is checked. Do NOT repeat these lines; write only the theorem, relying on the context being in scope.
+
+IMPORTANT: read the context carefully. If it defines `local notation` or auxiliary definitions, note their exact signatures and make sure every use in your theorem matches the expected types (see the EReal pitfall below).
+
+## Output format (strict)
+- Output exactly one ```lean4 code block containing exactly one `theorem` (not `lemma`/`def`/`example`), ending with `:= by sorry`. No prose outside the code block.
+- The theorem name must be a valid identifier (start with a letter or underscore).
+
+## Correctness requirement (critical)
+Your statement is first compiled with Lean 4 + Mathlib under the given context. **If it does not compile, the score is 0 and nothing else is checked.** Only after compiling does a judge check that the statement faithfully captures the problem. So: use only real Lean 4 syntax and real Mathlib names, ensure every needed typeclass instance is synthesizable, and do not weaken or distort the problem. NEVER invent identifiers: every function, predicate, and class you mention must exist in Mathlib with that exact spelling and capitalization. If you are unsure a fancy name exists, rephrase using more basic, certainly-existing concepts.
+
+## Observed compiler errors and what they mean
+- "unexpected token '∈'; expected ','" → you wrote `∀ z₁ z₂ ∈ Ω, ...` with several binders before `∈`. Bounded quantifiers take ONE binder per `∈` (see below).
+- "Unknown identifier `X`" (with the note that `autoImplicit` is false) → the name does not exist in Mathlib. Find the real name or rephrase with basic concepts. (Observed: `IsSimple`, `OpenSet`, `Im`, `real_part` are NOT real.)
+- "Type mismatch ... has type ℕ → ℝ but is expected to have type ℕ → EReal" → the context's notation/definition expects EReal-valued sequences; coerce or change the sequence type (see below).
+- "failed to synthesize instance ..." → a typeclass assumption is missing; add it explicitly or use a bundled subtype that carries it.
+
+## Lean 4 syntax pitfalls (observed failures — avoid them)
+- Anonymous functions: write `fun x => ...` or `fun x ↦ ...`. NEVER write `λ x, ...` — it gives "unexpected token ','; expected '↦', '=>'".
+- `λ` is a reserved token and can never be a variable/binder name. For eigenvalues use `μ`, `l`, etc.
+- There is no postfix derivative notation `f'`. The derivative of `f : ℝ → ℝ` is the function `deriv f`; at a point, `deriv f x`.
+- Limits: `Tendsto g atTop (nhds 0)` expresses "g(x) → 0 as x → +∞" (with `open Topology Filter`).
+- Bounded set quantifiers bind ONE variable per `∈`. Write `∀ z₁ ∈ Ω, ∀ z₂ ∈ Ω, ...` or `∀ z₁, z₁ ∈ Ω → ∀ z₂, z₂ ∈ Ω → ...`. NEVER write `∀ z₁ z₂ ∈ Ω, ...`.
+
+## Typeclass pitfalls (observed failures — avoid them)
+- Structures are typeclasses on a carrier type, not types. Write `(K : Type) [Field K]`, `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`. NEVER write `(V : InnerProductSpace ℂ)`.
+- The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.
+- Prop-valued classes CAN appear (also negated) in conclusions: `IsDomain S`, `IsSimpleGroup G`, `IsSelfAdjoint T`, `IsStarNormal T`.
+- There is NO `OpenSet` typeclass. "Ω is open" is a Prop hypothesis: `(Ω : Set ℂ) (hΩ : IsOpen Ω)` (more generally `Ω : Set X` with `[TopologicalSpace X]`).
+- Instance synthesis must succeed. E.g. using `IntegralDomain R` with only `[Ring R]` declared fails with "failed to synthesize instance ... CommSemiring R". Either declare all needed instances explicitly or, better, use bundled subtypes that carry instances automatically.
+
+## Mathlib names/patterns that exist and typecheck
+- Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`.
+- "f differentiable for all x > 0": `∀ x > 0, DifferentiableAt ℝ f x`.
+- Linear operator on a complex inner-product space: `(T : V →ₗ[ℂ] V)` with `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`.
+- Adjoint: `LinearMap.adjoint T` (dot notation `T.adjoint`). Self-adjoint: `IsSelfAdjoint T`. Normal: `IsStarNormal T`, or explicitly `T.adjoint * T = T * T.adjoint`.
+- "μ is an eigenvalue of T": `Module.End.HasEigenvalue T μ`.
+- "μ is real" for `μ : ℂ`: `μ.im = 0` or `(μ.re : ℂ) = μ`. Note `μ.re : ℝ`, so `μ.re = μ` does NOT typecheck without a coercion.
+- Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For "|G| = n" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.
+- Open set: `(Ω : Set ℂ) (hΩ : IsOpen Ω)`. There is NO `OpenSet` class.
+- "f is holomorphic on an open set Ω": `(hf : DifferentiableOn ℂ f Ω)` together with `(hΩ : IsOpen Ω)`.
+- Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`.
+- "f is constant on Ω": `∃ w, ∀ z ∈ Ω, f z = w` (or `∀ z₁ ∈ Ω, ∀ z₂ ∈ Ω, f z₁ = f z₂`). Do NOT reference a specific point like `f 0` — that point need not lie in Ω.
+- EReal (extended reals): if the context fixes notation like `local notation "limsup" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, then either declare the sequences as `(a b : ℕ → EReal)` (pointwise `a + b` works) or coerce real sequences pointwise, e.g. `limsup (fun n => ((a n : ℝ) : EReal))`. Passing `ℕ → ℝ` where `ℕ → EReal` is expected is a type mismatch. `⊤`/`⊥` are `+∞`/`-∞`; EReal addition is total, which is the idiomatic way to absorb side conditions like "provided the sum is not of the form ∞ − ∞" (otherwise add such a condition as an explicit hypothesis).
+
+## Worked corrections of typical mistakes
+- Bad: `Tendsto (λ x, f (x + 1) - f x) atTop (nhds 0)` → Good: `Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0)`
+- Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`
+- Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`
+- Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`
+- Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`
+- Bad (when the context's `limsup` expects `ℕ → EReal`): `(a b : ℕ → ℝ) : limsup (a + b) ≤ limsup a + limsup b` → Good: `theorem limsup_add_le (a b : ℕ → EReal) : limsup (a + b) ≤ limsup a + limsup b := by sorry` (or keep `a b : ℕ → ℝ` and coerce each use: `limsup (fun n => ((a n + b n : ℝ) : EReal)) ≤ limsup (fun n => ((a n : ℝ) : EReal)) + limsup (fun n => ((b n : ℝ) : EReal))`).
+
+## General strategy
+1. Parse the problem into objects, hypotheses, and conclusion.
+2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances.
+3. Declare structures as instance arguments `[...]` and Prop hypotheses as `(...)`. Include all hypotheses the problem states (e.g. openness of Ω) — the judge checks faithfulness.
+4. State the conclusion using existing Mathlib Prop predicates, faithfully matching the problem. "P implies Q" becomes `(hP : P) : Q` or `P → Q`; "G is not simple" becomes `¬IsSimpleGroup G`.
+5. Check the context's `local notation`/definitions: your uses must match their declared types exactly; insert coercions (e.g. ℝ → EReal) or choose the expected type (e.g. `ℕ → EReal`) where needed.
+6. Mentally compile before answering: valid Lean 4 syntax (no `λ` binders, no `λ x,` lambdas, one binder per `∈`), every identifier exists in Mathlib with exact spelling and capitalization, and every typeclass the statement mentions is derivable from your declared instances. If unsure whether a fancy name exists, rephrase using more basic, certainly-existing concepts.
