@@ -2,10 +2,10 @@
 
 ## Now
 
-- **Chunk:** 5 of 7 DONE (2026-10-23): session 2 checks passed, subagent counts match. `prereg.md` frozen at e631bdb; Deviations 1 to 3
-- **Status:** all six GEPA runs DONE and within budget; final eval complete for arms A to F (`runs/final/`); every invariant holds (`runs/chunk5_health.json`).
-- **Next:** chunk 6, hand-check and analysis. Neel labels blind; no results or GEPA prompts opened before he is done.
-- **Spent so far:** $59.21 logged of $300; chunk 5 $46.67 (cap $180), including the $1.42 balancing row for session 1's unmetered pod time
+- **Chunk:** 5 of 7 DONE (2026-10-23): session 2 checks passed, Deviation 4 applied, subagent counts match both times. `prereg.md` frozen at e631bdb; Deviations 1 to 4
+- **Status:** all six GEPA runs DONE and within budget; final eval complete for arms A to F (`runs/final/`); every invariant holds (`runs/chunk5_health.json`). After Deviation 4: 1 reference-judge verdict missing (arm D), 0 optimization-judge.
+- **Next:** chunk 6, hand-check and analysis. The sample is built from the post-Deviation-4 rows. Neel labels blind; no results or GEPA prompts opened before he is done.
+- **Spent so far:** $60.43 logged of $300; chunk 5 $47.88 (cap $180), including the $1.42 balancing row and Deviation 4's $1.21
 - **Waiting on Neel:** nothing. Start chunk 6 when ready.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
@@ -28,6 +28,32 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-23 · chunk 5 · Deviation 4: judge parser fix and re-ask of missing verdicts
+
+- **Diagnosis** (blind, counts only): 160 missing reference-judge verdicts. 144 replies were empty: the judge spent its whole 4,000-token cap reasoning (350 of 2,256 final-eval ref calls ended at exactly 4,000 tokens). 14 were valid JSON that the frozen regex cut at a `}` inside the reason (Lean set notation). 2 were JSON cut off. Missing rows were longer (median 146 vs 118 characters; Mann-Whitney AUC 0.67, p 4e-13), and missingness rose by length quartile: 12, 34, 52, 62 rows. 57 missing optimization-judge verdicts: about 43 regex misses and 14 malformed JSON.
+- **Neel** (before any scores were seen): prereg Deviation 4. Parser fix for both judges. Reference judge re-asked up to 3 times at 16,000 tokens, same prompt, temperature 0. Optimization judge's malformed rows re-asked up to 3 times with its original settings. Truth recomputed with the certificate first. Charged to chunk 5.
+- **Code:**
+  - `judge.parse_json_reply` keeps the regex pass and falls back to whole-object decoding, so any reply the old parser read gives the same result.
+  - `run_judge`, `reference_judge` and `optimization_judge` take `samples` and `max_tokens`.
+  - `score.truth_from` holds the frozen truth rule.
+  - `final_eval.deviation4` does the pass.
+  - `chunk5_job deviation4` runs it on the laptop.
+  - Config `judges.deviation4: {attempts: 3, first_sample: 2, ref_max_tokens: 16000}`.
+  - Tests: 245 pass (6 new: set-notation parse, truth rule, re-parse, re-ask samples and caps, still missing / certified / untouched rows, counters).
+- **Outcome** (`runs/chunk5_deviation4.json`; the rows before it are in git at 0100806). Per arm: reference judge re-parsed / recovered by re-ask / still missing, then optimization judge re-parsed / recovered by re-ask.
+  - A: 0 / 6 / 0, then 1 / 0
+  - B: 1 / 25 / 0, then 2 / 0
+  - C: 1 / 17 / 0, then 9 / 3
+  - D: 10 / 69 / 1, then 27 / 10
+  - E: 0 / 9 / 0, then 3 / 0
+  - F: 2 / 19 / 0, then 1 / 1
+
+  Left missing: 1 reference-judge verdict (arm D, 3 attempts used), 0 optimization-judge. 156 calls, 112 of them over 4,000 tokens.
+- **Subagent check** (`runs/chunk5_deviation4_subagent.json`, own code, no `src/`): key sets identical; 0 changes outside the eligible rows and the allowed fields; 0 violations of each of 11 frozen-rule checks (truth branches, missing flags, judge score, error tags, faithful implies compiled). Per-arm counts **match** exactly. `check` still passes.
+- **GEPA limitation** (in prereg): GEPA's history is unchanged. 96 of 4,480 saved full-validation evaluations had a missing optimization-judge verdict (B 17, D 79), and GEPA scored those as 0. The fixed parser reads all 96.
+- **Cost:** $1.21 (chunk 5). Chunk 5 is now $47.88 (cap $180); $60.43 in total.
+- **Next:** chunk 6.
 
 ### 2026-10-23 · chunk 5 · session 2: invariants and health checks pass; chunk 5 done
 

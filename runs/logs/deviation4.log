@@ -1,0 +1,8 @@
+arm A: {'ref': {'reasked:1': 6}, 'opt': {'reparsed': 1}, 'ref_missing_after': 0, 'opt_missing_after': 0, 'truth_missing_after': 0}
+arm B: {'ref': {'reasked:1': 24, 'reasked:2': 1, 'reparsed': 1}, 'opt': {'reparsed': 2}, 'ref_missing_after': 0, 'opt_missing_after': 0, 'truth_missing_after': 0}
+arm C: {'ref': {'reasked:1': 17, 'reparsed': 1}, 'opt': {'reasked:1': 2, 'reasked:2': 1, 'reparsed': 9}, 'ref_missing_after': 0, 'opt_missing_after': 0, 'truth_missing_after': 0}
+arm D: {'ref': {'reasked:1': 64, 'reasked:2': 5, 'reparsed': 10, 'still_missing': 1}, 'opt': {'reasked:1': 7, 'reasked:2': 3, 'reparsed': 27}, 'ref_missing_after': 1, 'opt_missing_after': 0, 'truth_missing_after': 1}
+arm E: {'ref': {'reasked:1': 9}, 'opt': {'reparsed': 3}, 'ref_missing_after': 0, 'opt_missing_after': 0, 'truth_missing_after': 0}
+arm F: {'ref': {'reasked:1': 16, 'reasked:2': 3, 'reparsed': 2}, 'opt': {'reasked:1': 1, 'reparsed': 1}, 'ref_missing_after': 0, 'opt_missing_after': 0, 'truth_missing_after': 0}
+cost $1.21
+exit 0

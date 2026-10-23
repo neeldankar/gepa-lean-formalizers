@@ -66,11 +66,15 @@ def truth_score(checker, client, cfg, item, raw_output, prepared=None):
             return out
     out["ref_judge"] = judge.reference_judge(client, cfg, item["informal_stmt"], reference, p["normalized"])
     out["ref_missing"] = judge.is_missing(out["ref_judge"]["verdict"])
-    if out["certificate"] and out["certificate"]["certified"]:
-        out.update(truth_label="faithful", truth_source="certificate")
-    elif out["ref_missing"]:
-        out.update(truth_label=None, truth_source="ref_judge_missing")
-    else:
-        verdict = out["ref_judge"]["verdict"]
-        out.update(truth_label="faithful" if verdict == "faithful" else "unfaithful", truth_source="ref_judge")
+    label, source = truth_from(bool(out["certificate"] and out["certificate"]["certified"]), out["ref_judge"]["verdict"])
+    out.update(truth_label=label, truth_source=source)
     return out
+
+
+def truth_from(certified, ref_verdict):
+    """(truth_label, truth_source) for a compiled candidate: the certificate first, then the reference judge."""
+    if certified:
+        return "faithful", "certificate"
+    if judge.is_missing(ref_verdict):
+        return None, "ref_judge_missing"
+    return ("faithful" if ref_verdict == "faithful" else "unfaithful"), "ref_judge"

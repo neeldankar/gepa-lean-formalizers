@@ -1,0 +1,117 @@
+{
+ "time": "2026-10-23T01:56:12+00:00",
+ "arms": {
+  "A": {
+   "ref": {
+    "reasked:1": 6
+   },
+   "opt": {
+    "reparsed": 1
+   },
+   "ref_missing_after": 0,
+   "opt_missing_after": 0,
+   "truth_missing_after": 0
+  },
+  "B": {
+   "ref": {
+    "reasked:1": 24,
+    "reasked:2": 1,
+    "reparsed": 1
+   },
+   "opt": {
+    "reparsed": 2
+   },
+   "ref_missing_after": 0,
+   "opt_missing_after": 0,
+   "truth_missing_after": 0
+  },
+  "C": {
+   "ref": {
+    "reasked:1": 17,
+    "reparsed": 1
+   },
+   "opt": {
+    "reasked:1": 2,
+    "reasked:2": 1,
+    "reparsed": 9
+   },
+   "ref_missing_after": 0,
+   "opt_missing_after": 0,
+   "truth_missing_after": 0
+  },
+  "D": {
+   "ref": {
+    "reasked:1": 64,
+    "reasked:2": 5,
+    "reparsed": 10,
+    "still_missing": 1
+   },
+   "opt": {
+    "reasked:1": 7,
+    "reasked:2": 3,
+    "reparsed": 27
+   },
+   "ref_missing_after": 1,
+   "opt_missing_after": 0,
+   "truth_missing_after": 1
+  },
+  "E": {
+   "ref": {
+    "reasked:1": 9
+   },
+   "opt": {
+    "reparsed": 3
+   },
+   "ref_missing_after": 0,
+   "opt_missing_after": 0,
+   "truth_missing_after": 0
+  },
+  "F": {
+   "ref": {
+    "reasked:1": 16,
+    "reasked:2": 3,
+    "reparsed": 2
+   },
+   "opt": {
+    "reasked:1": 1,
+    "reparsed": 1
+   },
+   "ref_missing_after": 0,
+   "opt_missing_after": 0,
+   "truth_missing_after": 0
+  }
+ },
+ "gepa_opt_judge_missing": {
+  "B_s0": {
+   "saved_evaluations": 770,
+   "missing": 9,
+   "parser_would_read": 9
+  },
+  "B_s1": {
+   "saved_evaluations": 770,
+   "missing": 4,
+   "parser_would_read": 4
+  },
+  "B_s2": {
+   "saved_evaluations": 770,
+   "missing": 4,
+   "parser_would_read": 4
+  },
+  "D_s0": {
+   "saved_evaluations": 770,
+   "missing": 28,
+   "parser_would_read": 28
+  },
+  "D_s1": {
+   "saved_evaluations": 700,
+   "missing": 24,
+   "parser_would_read": 24
+  },
+  "D_s2": {
+   "saved_evaluations": 700,
+   "missing": 27,
+   "parser_would_read": 27
+  }
+ },
+ "usd": 1.2110447999999963
+}

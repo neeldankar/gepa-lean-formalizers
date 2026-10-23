@@ -16,8 +16,9 @@ from src.data.firewall import heldout_items
 from src.generate import generate
 from src.llm import LLMError
 from src.prompting import load_fewshot, load_instructions
-from src.scoring import memorization
-from src.scoring.score import judge_score, prepare, truth_score
+from src.scoring import judge, memorization
+from src.scoring.normalize import normalize_statement
+from src.scoring.score import judge_score, prepare, truth_from, truth_score
 
 
 def arm_prompts(cfg, arm, runs_dir):
@@ -95,6 +96,51 @@ def eval_arm(cfg, arm, gen, judge, checker, runs_dir, root, mem_index=None, item
         for (r, _), m in zip(test, matches):
             r["memorized"] = m
     return rows
+
+
+def _refill(stored, need_tag, ask, samples):
+    """(verdict dict, note): the stored reply re-parsed, else one re-ask per sample index until one parses."""
+    parsed = judge.parse_json_reply(stored or "", need_tag)
+    if parsed:
+        return parsed, "reparsed"
+    for n, sample in enumerate(samples, 1):
+        res = ask([sample])
+        if not judge.is_missing(res["verdict"]):
+            return res, f"reasked:{n}"
+    return res, "still_missing"
+
+
+def deviation4(cfg, rows, items, client):
+    """Deviation 4 (Neel, 2026-10-23, before any scores were seen): fill missing judge verdicts in final rows.
+    Reference judge: the fixed parser on the stored reply, else up to `attempts` re-asks (same prompt,
+    temperature 0, `ref_max_tokens`). Optimization judge: the same with its original settings. Truth is
+    recomputed under the frozen rule (certificate first). Rows with nothing missing come back unchanged."""
+    d4 = cfg["judges"]["deviation4"]
+    samples = range(d4["first_sample"], d4["first_sample"] + d4["attempts"])
+
+    def fix(row):
+        if not (row["ref_missing"] or row["judge_missing"]):
+            return row
+        row, item, note = dict(row), items[row["item_id"]], {}
+        if row["ref_missing"]:
+            reference = normalize_statement(item["formal_stmt"])
+            res, note["ref"] = _refill(row["ref_reason"], True, lambda s: judge.reference_judge(
+                client, cfg, item["informal_stmt"], reference, row["normalized"], max_tokens=d4["ref_max_tokens"],
+                samples=s), samples)
+            row.update(ref_verdict=res["verdict"], ref_reason=res["reason"], ref_error_tag=res.get("error_tag"),
+                       ref_missing=judge.is_missing(res["verdict"]))
+            row["truth_label"], row["truth_source"] = truth_from(row["certified"], row["ref_verdict"])
+        if row["judge_missing"]:
+            res, note["opt"] = _refill(row["judge_reason"], False, lambda s: judge.optimization_judge(
+                client, cfg, item["informal_stmt"], row["normalized"], samples=s), samples)
+            missing = judge.is_missing(res["verdict"])
+            row.update(judge_verdict=res["verdict"], judge_reason=res["reason"], judge_missing=missing,
+                       judge_score=None if missing else int(res["verdict"] == "faithful"))
+        row["deviation4"] = note
+        return row
+
+    with ThreadPoolExecutor(cfg["generation"]["workers"]) as pool:
+        return list(pool.map(fix, rows))
 
 
 def write_rows(path, rows):

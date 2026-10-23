@@ -62,6 +62,9 @@ judges:
   gloss: zai-org/GLM-5.3-Flash
   max_tokens: 4000
   gloss_max_tokens: 8000
+  # Deviation 4 (Neel, 2026-10-23, before any scores were seen): fill missing final-eval verdicts once. Fixed parser
+  # on the stored reply, else re-asks on samples 2 to 4; the reference judge's re-asks get a 16,000-token cap.
+  deviation4: {attempts: 3, first_sample: 2, ref_max_tokens: 16000}
 
 scoring:
   stripper: ours  # set by the chunk 2 contest: AXLE remove_comments only if it passes every strip.CASES entry

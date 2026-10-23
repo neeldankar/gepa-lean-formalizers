@@ -264,3 +264,19 @@ def test_log_unmetered_appends_once(tmp_path):
     row = chunk5_job.log_unmetered(CFG, costs, health)
     assert row["usd"] == 0.5 * CFG["gpu"]["usd_per_hour"] and row["chunk"] == 5
     assert chunk5_job.log_unmetered(CFG, costs, health) is None and len(costs.read_text().splitlines()) == 1
+
+
+def test_deviation4_counts_and_gepa_missing(tmp_path):
+    rows = [fake_row("A", None, "test", "t1", ref_missing=False, judge_missing=False, deviation4={"ref": "reparsed", "opt": "reasked:2"}),
+            fake_row("A", None, "test", "t2", ref_missing=True, judge_missing=False, truth_label=None, deviation4={"ref": "still_missing"}),
+            fake_row("A", None, "minif2f", "m1")]
+    c = chunk5_job.deviation4_counts(rows)
+    assert c == {"ref": {"reparsed": 1, "still_missing": 1}, "opt": {"reasked:2": 1}, "ref_missing_after": 1,
+                 "opt_missing_after": 0, "truth_missing_after": 1}
+    d = tmp_path / "B_s0/candidates"
+    d.mkdir(parents=True)
+    lines = [{"instructions": "x"}, {"judge_verdict": "faithful", "judge_reason": "ok"},
+             {"judge_verdict": "missing", "judge_reason": '{"verdict": "faithful", "reason": "uses {x}"}'},
+             {"judge_verdict": "missing", "judge_reason": "no json"}]
+    (d / "a.jsonl").write_text("\n".join(json.dumps(x) for x in lines) + "\n")
+    assert chunk5_job.gepa_missing_counts(tmp_path, ["B_s0"]) == {"B_s0": {"saved_evaluations": 3, "missing": 2, "parser_would_read": 1}}

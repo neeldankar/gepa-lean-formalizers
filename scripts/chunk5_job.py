@@ -3,6 +3,7 @@
 Usage: python -m scripts.chunk5_job [--dry-run]
        python -m scripts.chunk5_job check           (session 2: invariants and health counts, no scores)
        python -m scripts.chunk5_job log-unmetered   (session 2: session 1's unmetered pod time as one gpu row)
+       python -m scripts.chunk5_job deviation4      (Deviation 4: fill missing judge verdicts, then `check`)
 
 Real run (chunk 5): the six GEPA runs in parallel (one subprocess each), one GPU meter for the pod,
 then the sanity check, then the final eval of every arm on test and miniF2F into runs/final/.
@@ -26,12 +27,12 @@ from datetime import datetime, timezone
 from src.axle_check import AxleChecker
 from src.config import ROOT, load_config, load_env
 from src.costs import GpuMeter
-from src.data.firewall import gepa_items
+from src.data.firewall import gepa_items, heldout_items
 from src.data.proofnet import read_jsonl
-from src.final_eval import eval_arm, read_rows, write_rows
+from src.final_eval import deviation4, eval_arm, read_rows, write_rows
 from src.generate import formalizer_client
-from src.llm import BudgetExceeded, LLMClient
-from src.scoring import memorization
+from src.llm import BudgetExceeded, LLMClient, spent
+from src.scoring import judge, memorization
 
 DRY_RUNS = ("B_s0", "D_s0")
 DRY_OVERRIDE = {"max_metric_calls": 10, "val_limit": 5}
@@ -289,12 +290,58 @@ def log_unmetered(cfg, costs_path=ROOT / "runs/costs.jsonl", health_path=ROOT / 
     return row
 
 
+def deviation4_counts(rows):
+    """Per judge: how each missing verdict was handled, and how many are still missing. Counts only."""
+    notes = [r["deviation4"] for r in rows if "deviation4" in r]
+    return {"ref": dict(sorted(Counter(n["ref"] for n in notes if "ref" in n).items())),
+            "opt": dict(sorted(Counter(n["opt"] for n in notes if "opt" in n).items())),
+            "ref_missing_after": sum(bool(r["ref_missing"]) for r in rows),
+            "opt_missing_after": sum(bool(r["judge_missing"]) for r in rows),
+            "truth_missing_after": sum(r["truth_label"] is None and not r["generation_missing"] for r in rows)}
+
+
+def gepa_missing_counts(runs_dir, run_ids):
+    """Optimization-judge verdicts saved as missing in GEPA's candidate outputs (scored 0 for GEPA), and how
+    many of them the Deviation 4 parser reads. GEPA's history is left as it was."""
+    out = {}
+    for run_id in run_ids:
+        rows = [json.loads(line) for f in sorted((runs_dir / run_id / "candidates").glob("*.jsonl"))
+                for line in f.read_text().splitlines()[1:] if line.strip()]
+        missing = [r for r in rows if judge.is_missing(r.get("judge_verdict"))]
+        out[run_id] = {"saved_evaluations": len(rows), "missing": len(missing),
+                       "parser_would_read": sum(judge.parse_json_reply(r.get("judge_reason") or "", False) is not None
+                                                for r in missing)}
+    return out
+
+
+def run_deviation4(cfg, runs_dir, final_dir):
+    client = LLMClient(cfg, 5, run_id="deviation4")
+    items = {it["id"]: it for name in ("test", "minif2f") for it in heldout_items(name, cfg, runs_dir=runs_dir)}
+    before = spent(5)
+    out = {"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "arms": {}}
+    for arm in cfg["arms"]:
+        path = final_dir / f"{arm}.jsonl.gz"
+        rows = deviation4(cfg, read_rows(path), items, client)
+        write_rows(path, rows)
+        out["arms"][arm] = deviation4_counts(rows)
+        print(f"arm {arm}: {out['arms'][arm]}", flush=True)
+    out["gepa_opt_judge_missing"] = gepa_missing_counts(runs_dir, list(cfg["gepa"]["runs"]))
+    out["usd"] = spent(5) - before
+    return out
+
+
 def main(argv):
     if argv[:1] == ["check"]:
         out = health_check(load_config(), ROOT / "runs", ROOT / "runs/final")
         (ROOT / "runs/chunk5_health.json").write_text(json.dumps(out, indent=1) + "\n")
         print("PASS" if out["pass"] else "FAIL")
         sys.exit(0 if out["pass"] else 1)
+    if argv[:1] == ["deviation4"]:
+        load_env()
+        out = run_deviation4(load_config(), ROOT / "runs", ROOT / "runs/final")
+        (ROOT / "runs/chunk5_deviation4.json").write_text(json.dumps(out, indent=1) + "\n")
+        print(f"cost ${out['usd']:.2f}")
+        return
     if argv[:1] == ["log-unmetered"]:
         print(log_unmetered(load_config()))
         return

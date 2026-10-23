@@ -1,5 +1,5 @@
 {
- "time": "2026-10-23T01:35:14+00:00",
+ "time": "2026-10-23T02:01:27+00:00",
  "expected_items": {
   "test": 247,
   "minif2f": 243
@@ -76,11 +76,9 @@
      "lean_error": 328
     },
     "outage": 0,
-    "judge_missing": 1,
-    "ref_missing": 6,
-    "truth_missing": {
-     "ref_judge_missing": 6
-    },
+    "judge_missing": 0,
+    "ref_missing": 0,
+    "truth_missing": {},
     "generation_missing": 0
    },
    "pass": true
@@ -103,11 +101,9 @@
      "lean_error": 868
     },
     "outage": 0,
-    "judge_missing": 2,
-    "ref_missing": 26,
-    "truth_missing": {
-     "ref_judge_missing": 25
-    },
+    "judge_missing": 0,
+    "ref_missing": 0,
+    "truth_missing": {},
     "generation_missing": 0
    },
    "counts_per_run": {
@@ -121,11 +117,9 @@
       "lean_error": 299
      },
      "outage": 0,
-     "judge_missing": 1,
-     "ref_missing": 12,
-     "truth_missing": {
-      "ref_judge_missing": 11
-     },
+     "judge_missing": 0,
+     "ref_missing": 0,
+     "truth_missing": {},
      "generation_missing": 0
     },
     "B_s1": {
@@ -139,10 +133,8 @@
      },
      "outage": 0,
      "judge_missing": 0,
-     "ref_missing": 8,
-     "truth_missing": {
-      "ref_judge_missing": 8
-     },
+     "ref_missing": 0,
+     "truth_missing": {},
      "generation_missing": 0
     },
     "B_s2": {
@@ -155,11 +147,9 @@
       "lean_error": 275
      },
      "outage": 0,
-     "judge_missing": 1,
-     "ref_missing": 6,
-     "truth_missing": {
-      "ref_judge_missing": 6
-     },
+     "judge_missing": 0,
+     "ref_missing": 0,
+     "truth_missing": {},
      "generation_missing": 0
     }
    },
@@ -183,11 +173,9 @@
      "lean_error": 134
     },
     "outage": 0,
-    "judge_missing": 12,
-    "ref_missing": 18,
-    "truth_missing": {
-     "ref_judge_missing": 18
-    },
+    "judge_missing": 0,
+    "ref_missing": 0,
+    "truth_missing": {},
     "generation_missing": 0
    },
    "pass": true
@@ -210,10 +198,10 @@
      "lean_error": 405
     },
     "outage": 0,
-    "judge_missing": 37,
-    "ref_missing": 80,
+    "judge_missing": 0,
+    "ref_missing": 1,
     "truth_missing": {
-     "ref_judge_missing": 77
+     "ref_judge_missing": 1
     },
     "generation_missing": 0
    },
@@ -228,11 +216,9 @@
       "lean_error": 126
      },
      "outage": 0,
-     "judge_missing": 15,
-     "ref_missing": 32,
-     "truth_missing": {
-      "ref_judge_missing": 31
-     },
+     "judge_missing": 0,
+     "ref_missing": 0,
+     "truth_missing": {},
      "generation_missing": 0
     },
     "D_s1": {
@@ -245,10 +231,10 @@
       "lean_error": 140
      },
      "outage": 0,
-     "judge_missing": 11,
-     "ref_missing": 22,
+     "judge_missing": 0,
+     "ref_missing": 1,
      "truth_missing": {
-      "ref_judge_missing": 22
+      "ref_judge_missing": 1
      },
      "generation_missing": 0
     },
@@ -262,11 +248,9 @@
       "lean_error": 139
      },
      "outage": 0,
-     "judge_missing": 11,
-     "ref_missing": 26,
-     "truth_missing": {
-      "ref_judge_missing": 24
-     },
+     "judge_missing": 0,
+     "ref_missing": 0,
+     "truth_missing": {},
      "generation_missing": 0
     }
    },
@@ -290,11 +274,9 @@
      "lean_error": 317
     },
     "outage": 0,
-    "judge_missing": 3,
-    "ref_missing": 9,
-    "truth_missing": {
-     "ref_judge_missing": 8
-    },
+    "judge_missing": 0,
+    "ref_missing": 0,
+    "truth_missing": {},
     "generation_missing": 0
    },
    "pass": true
@@ -317,11 +299,9 @@
      "lean_error": 21
     },
     "outage": 0,
-    "judge_missing": 2,
-    "ref_missing": 21,
-    "truth_missing": {
-     "ref_judge_missing": 19
-    },
+    "judge_missing": 0,
+    "ref_missing": 0,
+    "truth_missing": {},
     "generation_missing": 0
    },
    "pass": true

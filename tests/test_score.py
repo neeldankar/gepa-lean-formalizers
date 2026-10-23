@@ -109,3 +109,12 @@ def test_candidate_compiled_with_autoimplicit_off():
     checker = Checker()
     score.prepare(checker, ITEM, GOOD)
     assert "set_option autoImplicit false in\ntheorem candidate" in checker.contents[0]
+
+
+def test_truth_from_puts_the_certificate_first():
+    from src.scoring.score import truth_from
+    assert truth_from(True, "missing") == ("faithful", "certificate")
+    assert truth_from(True, "unfaithful") == ("faithful", "certificate")
+    assert truth_from(False, "missing") == (None, "ref_judge_missing")
+    assert truth_from(False, "faithful") == ("faithful", "ref_judge")
+    assert truth_from(False, "unfaithful") == ("unfaithful", "ref_judge")

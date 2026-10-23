@@ -6,7 +6,7 @@ import pytest
 from src.axle_check import AxleChecker
 from src.config import ROOT, load_config
 from src.data.firewall import FirewallError
-from src.final_eval import arm_prompts, eval_arm, read_rows, write_rows
+from src.final_eval import arm_prompts, deviation4, eval_arm, read_rows, write_rows
 from src.llm import LLMClient
 from src.mocks import MockAxleClient, MockPosts
 
@@ -99,3 +99,67 @@ def test_arm_f_call_out_of_retries_is_a_missing_row_not_an_error(monkeypatch):
     assert set(row) >= {"arm", "item_id", "dataset", "sample", "gepa_seed", "memorized"}
     with pytest.raises(LLMError):  # any other arm still fails loudly
         final_eval.score_row(CFG, "C", "reform-8b", None, None, "test", "instructions", item, 0, None, None, None)
+
+
+class ScriptedJudge:
+    """Stands in for LLMClient.chat: replies per (purpose, sample) from a script, records every call."""
+
+    def __init__(self, replies):
+        self.replies, self.calls = replies, []
+
+    def chat(self, model, messages, purpose, max_tokens, sample):
+        self.calls.append((purpose, sample, max_tokens))
+        return self.replies.get((purpose, sample), "")
+
+
+def d4_row(**kw):
+    row = {"arm": "A", "run_id": None, "dataset": "test", "item_id": "pnv_x", "sample": 0, "normalized": "theorem X : True := by sorry",
+           "compiled": True, "certified": False, "judge_verdict": "faithful", "judge_reason": "ok", "judge_score": 1,
+           "judge_missing": False, "ref_verdict": "unfaithful", "ref_reason": "r", "ref_error_tag": "Missing premise",
+           "ref_missing": False, "truth_label": "unfaithful", "truth_source": "ref_judge", "outage": False,
+           "generation_missing": False}
+    return {**row, **kw}
+
+
+D4_ITEMS = {"pnv_x": {"id": "pnv_x", "informal_stmt": "Show True.", "formal_stmt": "theorem t : True := by sorry"}}
+REF_MISSING = dict(ref_verdict="missing", ref_reason="", ref_error_tag=None, ref_missing=True, truth_label=None,
+                   truth_source="ref_judge_missing")
+OPT_MISSING = dict(judge_verdict="missing", judge_reason="", judge_score=None, judge_missing=True)
+
+
+def test_deviation4_reparses_without_calling():
+    from src.scoring.judge import ERROR_TAGS
+    stored = '{"verdict": "unfaithful", "reason": "uses {x | x > 0}", "error_tag": "%s"}' % ERROR_TAGS[1]
+    rows = [d4_row(**{**REF_MISSING, "ref_reason": stored}), d4_row(**{**OPT_MISSING, "judge_reason": '{"verdict": "faithful", "reason": "a {b}"}'})]
+    judge = ScriptedJudge({})
+    out = deviation4(CFG, rows, D4_ITEMS, judge)
+    assert judge.calls == []
+    assert out[0]["ref_verdict"] == "unfaithful" and not out[0]["ref_missing"] and out[0]["truth_source"] == "ref_judge"
+    assert out[0]["deviation4"] == {"ref": "reparsed"}
+    assert out[1]["judge_score"] == 1 and not out[1]["judge_missing"] and out[1]["deviation4"] == {"opt": "reparsed"}
+
+
+def test_deviation4_reasks_with_new_samples_and_caps():
+    ok = '{"verdict": "faithful", "reason": "same", "error_tag": null}'
+    judge = ScriptedJudge({("ref_judge", 3): ok, ("opt_judge", 4): '{"verdict": "unfaithful", "reason": "no"}'})
+    rows = [d4_row(**REF_MISSING), d4_row(**OPT_MISSING)]
+    out = deviation4(CFG, rows, D4_ITEMS, judge)
+    ref_calls = [c for c in judge.calls if c[0] == "ref_judge"]
+    opt_calls = [c for c in judge.calls if c[0] == "opt_judge"]
+    assert ref_calls == [("ref_judge", 2, 16000), ("ref_judge", 3, 16000)]
+    assert opt_calls == [("opt_judge", s, CFG["judges"]["max_tokens"]) for s in (2, 3, 4)]
+    assert out[0]["deviation4"] == {"ref": "reasked:2"} and out[0]["truth_label"] == "faithful"
+    assert out[1]["deviation4"] == {"opt": "reasked:3"} and out[1]["judge_score"] == 0
+
+
+def test_deviation4_still_missing_certified_and_untouched_rows():
+    judge = ScriptedJudge({})
+    still = d4_row(**REF_MISSING)
+    cert = d4_row(**{**REF_MISSING, "certified": True, "truth_label": "faithful", "truth_source": "certificate"})
+    clean = d4_row()
+    out = deviation4(CFG, [still, clean], D4_ITEMS, judge)
+    assert len(judge.calls) == 3 and out[0]["ref_missing"] and out[0]["truth_label"] is None
+    assert out[0]["deviation4"] == {"ref": "still_missing"} and out[1] == clean and "deviation4" not in out[1]
+    judge.replies[("ref_judge", 2)] = '{"verdict": "unfaithful", "reason": "r", "error_tag": "Missing premise"}'
+    out = deviation4(CFG, [cert], D4_ITEMS, judge)
+    assert out[0]["ref_verdict"] == "unfaithful" and (out[0]["truth_label"], out[0]["truth_source"]) == ("faithful", "certificate")
