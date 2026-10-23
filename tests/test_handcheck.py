@@ -80,3 +80,21 @@ def test_fixed_labels_join_and_pair(tmp_path):
     assert all(x["label"] == "faithful" for x in labeled if x["shown"])
     out = hand_check(rows, labeled, resamples=50, seed=0)
     assert out["random_items_paired"] == out["random_items"] and out["items_dropped"] == 0
+
+
+def storage_keys(page):
+    import re
+    line = re.search(r"const KEY = [^;]*;", page).group(0)
+    return set(re.findall(r'"((?:labels|notes|pos):[^"]+)"', line))
+
+
+def test_chunk6_storage_keys_differ_from_the_pilot_pages():
+    """All file:// pages share one browser origin, so a new key keeps pilot labels out of chunk 6."""
+    from scripts.chunk6 import OUT, PAGE_KEY
+    pilot = {f"{p}:{k}" for p in ("labels", "notes", "pos") for k in ("chunk4-pilot", "chunk2-demo")}
+    rendered = storage_keys(render_page([], PAGE_KEY))
+    built_page = (OUT / "labeling.html").read_text()
+    built = storage_keys(built_page)
+    assert rendered == built == {"labels:chunk6-handcheck", "notes:chunk6-handcheck", "pos:chunk6-handcheck"}
+    assert not built & pilot and not built & storage_keys((OUT.parent / "chunk4/labeling.html").read_text())
+    assert 'download("labels.csv"' in built_page

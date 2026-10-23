@@ -41,6 +41,7 @@ Template:
 - **Subagent check** (`runs/handcheck/sample_subagent_check.json`, own code, no `src/`): 0 violations in each of 5 checks: disagreement set exact; each random item once per core arm with a valid seed; shown equals compiled and the fixed labels are exact; the page holds exactly the shown ids, whitelisted fields only, no arm, seed or score strings; candidates equal the normalized statements. All 7 pooled counts **match**.
 - **Cost:** $0.09 (136 gloss calls, chunk 6); $60.52 in total.
 - **Next:** Neel labels; then the frozen analysis.
+- **Desktop copy** (Neel): `~/Desktop/chunk6_labeling.html`, byte-identical to `runs/handcheck/labeling.html`. Same rebuilt UI as `~/Desktop/chunk4_labeling.html`: with the data stripped, only the item count and the storage keys differ. Keys `labels:` / `notes:` / `pos:chunk6-handcheck`, so no pilot labels carry over. The export is labels.csv. New test that the keys differ from the pilot's; 250 pass.
 
 ### 2026-10-23 · chunk 5 · Deviation 4: judge parser fix and re-ask of missing verdicts
 
