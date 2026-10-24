@@ -102,7 +102,7 @@ def test_projection_arithmetic():
     assert p["arm_f_usd"] == pytest.approx(247 * 0.021)
     chunk5 = 72 + 48 + (eval_h + 0.5) * 4 + 490 * 0.013 + 247 * 0.021
     assert p["chunk5_usd_serial"] == pytest.approx(chunk5)
-    assert p["total_usd_upper"] == pytest.approx(20 + chunk5 + 10)
+    assert p["total_usd_upper"] == pytest.approx(20 + chunk5 + cfg["budget"]["chunk_caps_usd"][6] + cfg["budget"]["chunk_caps_usd"][7])
 
 
 def test_gpu_balance_tops_up_to_wall_clock(tmp_path):

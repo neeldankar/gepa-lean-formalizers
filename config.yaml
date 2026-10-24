@@ -27,7 +27,7 @@ axle:
 
 budget:
   total_usd: 300
-  chunk_caps_usd: {1: 0, 2: 10, 3: 3, 4: 30, 5: 180, 6: 5, 7: 5}
+  chunk_caps_usd: {1: 0, 2: 10, 3: 3, 4: 30, 5: 180, 6: 5, 7: 30}  # 7: Neel approved up to $30 for exploratory truth scoring (2026-10-24)
 
 llm:
   base_url: https://api.together.xyz/v1

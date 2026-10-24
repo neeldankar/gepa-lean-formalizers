@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 6 of 7 done (2026-10-24); chunk 7 (writeup) next. `prereg.md` frozen at e631bdb; Deviations 1 to 5
-- **Status:** labels in, frozen analysis run (`results.json`, `figures/`), subagent recompute matches (`runs/chunk6_compare.json`). Q1, Q2 and Q3 are all inconclusive. labels.csv provenance: the stop rule fired (101 of 101 match the ChatGPT page) and Neel overrode it; see the 2026-10-24 entry.
-- **Next:** Neel starts chunk 7.
-- **Spent so far:** $60.52 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5)
-- **Waiting on Neel:** start chunk 7.
+- **Chunk:** 7 of 7 in progress, paused by Neel 2026-10-24. Resume with "Continue chunk 7". `prereg.md` frozen at e631bdb; Deviations 1 to 5
+- **Finished in chunk 7:** chunk 7 code and tests (`scripts/chunk7.py`, `src/chunk7.py`); the GEPA rules list (`writeup/gepa_rules.md`); a first writeup draft (`writeup/writeup.md`, not yet shown to Neel); prompt lengths and Deviation 4 facts JSON; chunk 7 cap raised to $30.
+- **Left for chunk 7:** (1) provenance: read, scan and store `chatgpt_labels_transcript.pdf` and the labels-only extract; (2) rerun `scripts.chunk7 candidate-truth` (paused, $0.71 spent, resumes from the cache) and `compile-errors`; (3) `writeup/numbers.json` and `scripts.chunk7 check`, then show Neel the draft; (4) README, repo cleanup, email drafts, final checks. The repo stays private.
+- **Spent so far:** $61.23 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $0.71 (cap $30)
+- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop (macOS blocks this terminal from Downloads).
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,24 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-24 · chunk 7 · started, paused by Neel (provenance step waiting on the transcript PDF)
+
+- **Neel's account of the labels** (2026-10-24): he recorded his own faithful and unfaithful calls by typing them into a ChatGPT conversation, and ChatGPT only formatted them into the page and CSV. The transcript is to be stored in `runs/handcheck/provenance/` with ChatGPT's per-item explanations dropped from a labels-only extract; the full PDF is kept unchanged (Neel's choice). The earlier entry's facts stand as history. **Not done yet:** `~/Desktop/chatgpt_labels_transcript.pdf` is not on the Desktop, so it has not been read, scanned or stored.
+- **Done:**
+  - Code: `src/chunk7.py`, `scripts/chunk7.py` (modes `candidate-truth`, `compile-errors`, `prompt-lengths`, `facts`, `check`) and `tests/test_chunk7.py`. Tests: 258 pass (6 new).
+  - `config.yaml` `chunk_caps_usd[7]` raised from $5 to $30, Neel's approval for exploratory truth scoring. `tests/test_chunk4.py` now reads the chunk 6 and 7 caps from config instead of a hard-coded $10.
+  - `writeup/gepa_rules.md`: the rules GEPA wrote, read from the six `best_prompt.txt` (exploratory).
+  - `runs/chunk7/prompt_lengths.json` and `runs/chunk7/writeup_facts.json` (Deviation 4 totals).
+  - `writeup/writeup.md`: first draft, not yet shown to Neel. `writeup/numbers.json` is not written yet.
+  - Related-work abstracts fetched (GEPA, ReForm, FormaRL, BetterTogether, Beyond Compilation) for the related-work lines.
+- **Paused mid-run:** `scripts.chunk7 candidate-truth` (exploratory truth labels for GEPA's 1,939 compiled validation outputs) was stopped cleanly with SIGTERM. Cache writes are atomic, and 0 partial cache files were left. Spend so far, from `runs/chunk7/pause_spend.json`: 516 calls, $0.71 logged under chunk 7. Every finished call is cached, so a rerun resumes at no cost for those. No output files from this mode were written yet.
+- **Cost:** $0.71 this entry (chunk 7 cap $30).
+- **Left for chunk 7:**
+  1. Provenance: Neel puts the PDF on the Desktop; then read it, scan it for secrets and personal info, check that his typed calls match `labels.csv`, store the PDF plus `labels_typed.csv`, and add a LOG entry.
+  2. Rerun `python -m scripts.chunk7 candidate-truth` (resumes from the cache), then `compile-errors`.
+  3. Write `writeup/numbers.json`, run `python -m scripts.chunk7 check`, and show Neel the writeup draft.
+  4. After his comments: the README with reproduction steps, repo cleanup, the Axiom and Pramaana email drafts (drafts only), the final checks (numbers, em dashes, secret scan of the full history), then push. The repo stays private.
 
 ### 2026-10-24 · chunk 6 · labels in, frozen analysis, subagent recompute (chunk 6 done)
 
