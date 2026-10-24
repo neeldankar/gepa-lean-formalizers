@@ -1,0 +1,12 @@
+{
+ "labels_rows": 101,
+ "matches_ai_review": 101,
+ "stop_if_at_least": 99,
+ "labels_csv_downloaded_from": [
+  "https://chatgpt.com/"
+ ],
+ "ai_page_downloaded_from": [
+  "https://chatgpt.com/"
+ ],
+ "decision": "stop rule fired; Neel overrode it on 2026-10-24: the labels are his own, ChatGPT only helped with formatting"
+}

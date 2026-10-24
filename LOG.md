@@ -2,11 +2,11 @@
 
 ## Now
 
-- **Chunk:** 6 of 7 in progress: hand-check sample and labeling page built (2026-10-23); waiting for Neel's labels. `prereg.md` frozen at e631bdb; Deviations 1 to 5
-- **Status:** chunk 5 done (Deviation 4 applied). Hand-check page `runs/handcheck/labeling.html` has 101 outputs (2 disagreement, 99 random across 55 items); subagent check passed.
-- **Next:** Neel labels blind; then the frozen analysis and the subagent recompute.
+- **Chunk:** 6 of 7 done (2026-10-24); chunk 7 (writeup) next. `prereg.md` frozen at e631bdb; Deviations 1 to 5
+- **Status:** labels in, frozen analysis run (`results.json`, `figures/`), subagent recompute matches (`runs/chunk6_compare.json`). Q1, Q2 and Q3 are all inconclusive. labels.csv provenance: the stop rule fired (101 of 101 match the ChatGPT page) and Neel overrode it; see the 2026-10-24 entry.
+- **Next:** Neel starts chunk 7.
 - **Spent so far:** $60.52 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5)
-- **Waiting on Neel:** label the 101 items in `runs/handcheck/labeling.html` and save the export as `runs/handcheck/labels.csv`. Don't open `runs/handcheck/sample.jsonl`, results or GEPA prompts until done.
+- **Waiting on Neel:** start chunk 7.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +28,54 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-24 · chunk 6 · labels in, frozen analysis, subagent recompute (chunk 6 done)
+
+- **AI review page and provenance of labels.csv** (from `runs/handcheck/provenance_check.json`):
+  - An AI pre-review page, `chunk6_reviewed.html`, existed: downloaded from chatgpt.com, with its own embedded labels (`AI_REVIEW`, storage key `labels:chunk6-ai-review-v1`, separate from the hand-check page's). Neel said he did not use it. It was found in the repo folder, moved to `~/Desktop`, and is not committed.
+  - Before anything ran, the labels file Neel provided was compared with `AI_REVIEW`: 101 of 101 labels match, against a stop line of 99 set before counting. Its download record also says chatgpt.com, not the local page. The stop rule fired and nothing ran.
+  - Neel overrode it (2026-10-24): the labels are his own, and ChatGPT only helped with formatting. The run went ahead on his word. Readers should weigh the hand-check numbers with this in mind.
+- **Label check** (`runs/handcheck/labels_check.json`, `python -m scripts.chunk6 validate`): header ok, 101 rows, no duplicates, 0 missing ids, 0 stray ids, 0 blank labels. 81 faithful, 19 unfaithful, 1 unsure (the unsure one is in the disagreement part).
+- **Frozen analysis:** `python -m scripts.analyze --labels runs/handcheck/labels.csv --sample runs/handcheck/sample.jsonl`, run locally, writing `results.json` and `figures/`. The analysis code is unchanged.
+- **Subagent check:** a fresh subagent read only the raw files, `prereg.md` and `config.yaml`, and wrote `runs/chunk6_subagent.json` with its own code. `python -m scripts.chunk6 compare` gives `runs/chunk6_compare.json`: 128 values checked, 0 mismatches. Point estimates and counts agree to float rounding; intervals are within 0.41 points (tolerance 0.5). Its first file rounded to 4 decimals, so it was rewritten at full precision with the method unchanged.
+- **Results** (test split, 247 items, points with 95% paired-bootstrap CIs, 10,000 resamples, threshold 5 points):
+
+| Arm | Truth score | Judge score | Judge false-positive rate | Compile rate | Faithful among compiled |
+|---|---|---|---|---|---|
+| A | 4.5 [2.0, 7.3] | 4.9 [2.4, 7.7] | 6.9 [0.0, 17.6] | 11.7 | 37.9 |
+| B | 7.3 [3.6, 11.5] | 10.1 [5.7, 14.8] | 17.3 [8.7, 27.2] | 20.4 | 35.8 |
+| C | 51.0 [44.9, 57.1] | 59.9 [53.8, 66.0] | 16.3 [10.7, 22.3] | 67.2 | 75.9 |
+| D | 51.1 [44.9, 57.5] | 59.1 [52.9, 65.3] | 14.8 [9.7, 20.5] | 66.4 | 77.0 |
+| E | 6.5 [3.6, 9.7] | 6.1 [3.2, 9.3] | 0.0 [0.0, 0.0] | 13.4 | 48.5 |
+| F | 71.7 [66.0, 76.9] | 80.6 [75.7, 85.4] | 13.5 [9.1, 18.1] | 87.0 | 82.3 |
+
+| Contrast | Ours, points [95% CI] | Subagent | Decision (ours / subagent) |
+|---|---|---|---|
+| Q1 | 2.8 [-0.4, 6.6] | 2.8 [-0.4, 6.5] | inconclusive / inconclusive |
+| Q2 | -2.7 [-8.9, 3.2] | -2.7 [-8.9, 3.2] | inconclusive / inconclusive |
+| Q3_qwen3-8b | 10.4 [-1.9, 21.8] | 10.4 [-1.9, 22.1] | inconclusive / inconclusive |
+| Q3_reform-8b | -1.4 [-6.7, 4.1] | -1.4 [-6.9, 4.1] | inconclusive / inconclusive |
+| judge_gain_minus_truth_gain_qwen3-8b (descriptive) | 2.4 [0.4, 4.9] | 2.4 [0.4, 4.9] | none |
+| judge_gain_minus_truth_gain_reform-8b (descriptive) | -0.9 [-5.9, 4.0] | -0.9 [-6.1, 4.0] | none |
+| A_to_B compile_part | 3.3 [1.1, 6.3] | 3.3 [1.1, 6.4] | none |
+| A_to_B meaning_part | -0.4 [-4.2, 3.5] | -0.4 [-4.2, 3.5] | none |
+| C_to_D compile_part | -0.6 [-4.3, 3.3] | -0.6 [-4.2, 3.3] | none |
+| C_to_D meaning_part | 0.7 [-3.0, 4.6] | 0.7 [-3.1, 4.7] | none |
+
+- **Without exact matches** (13 items dropped): Q1 2.3 [-0.6, 5.6]; Q2 -1.7 [-7.8, 4.3]; Q3_qwen3-8b 10.5 [-4.9, 24.8]; Q3_reform-8b -1.8 [-7.3, 3.7]
+- **Reference judge vs hand labels** (random part, compiled outputs with a definite label): agrees on 89 of 99 (89.9%); false positives 2 of 99 (2.0%), false negatives 8 of 99 (8.1%). Per arm agree/n: A 4/7, B 13/16, C 36/38, D 36/38
+- **Random part, hand labels as truth** (55 of 55 items paired): Q1 3.6 [-3.6, 10.9]; Q2 0.0 [-14.5, 14.5]; Q3_qwen3-8b 0.0 [0.0, 0.0]; Q3_reform-8b 0.0 [-7.3, 7.4]
+
+- **Readings:**
+  - **Q1** (does GEPA make Qwen3-8B more faithful): inconclusive. The estimate is positive, but the interval includes 0.
+  - **Q2** (does GEPA add less to ReForm-8B): inconclusive.
+  - **Q3** (do judge gains overstate real gains): inconclusive for both models. The Qwen3-8B false-positive rate rises in the point estimate, but the interval includes 0.
+  - Most of Qwen3-8B's truth gain is the compile part.
+- **Judge error rate:** the reference judge against the hand labels is in the hand-check line above.
+- **5 raw examples:** `runs/chunk6_examples.json` (`python -m scripts.chunk6 examples`, seed 0).
+- **Tests:** 252 pass (new: the label validator, and comparison with exact points and CI tolerance).
+- **Cost:** $0.00 this entry; $60.52 total logged.
+- **Next:** chunk 7 (writeup).
 
 ### 2026-10-23 · chunk 6 · hand-check sample and labeling page; Deviation 5
 

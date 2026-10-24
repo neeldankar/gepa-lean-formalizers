@@ -1,0 +1,15 @@
+{
+ "header_ok": true,
+ "rows": 101,
+ "rows_ok": true,
+ "no_duplicates": true,
+ "missing_ids": 0,
+ "stray_ids": 0,
+ "bad_or_blank_labels": 0,
+ "ok": true,
+ "label_counts": {
+  "faithful": 81,
+  "unfaithful": 19,
+  "unsure": 1
+ }
+}

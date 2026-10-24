@@ -1,0 +1,389 @@
+{
+ "per_arm": {
+  "A": {
+   "truth": {
+    "estimate": 4.4534412955465585,
+    "ci": [
+     2.0242914979757085,
+     7.28744939271255
+    ]
+   },
+   "judge": {
+    "estimate": 4.8582995951417,
+    "ci": [
+     2.42914979757085,
+     7.6923076923076925
+    ]
+   },
+   "fpr": {
+    "estimate": 6.896551724137931,
+    "ci": [
+     0.0,
+     17.391304347826086
+    ]
+   },
+   "outputs": 247,
+   "compile_rate": 11.740890688259109,
+   "faithful_given_compiled": 37.93103448275862
+  },
+  "B": {
+   "truth": {
+    "estimate": 7.287449392712551,
+    "ci": [
+     3.643724696356275,
+     11.470985155195683
+    ]
+   },
+   "judge": {
+    "estimate": 10.121457489878543,
+    "ci": [
+     5.668016194331984,
+     14.844804318488528
+    ]
+   },
+   "fpr": {
+    "estimate": 17.336860670194003,
+    "ci": [
+     8.771929824561402,
+     26.923076923076923
+    ]
+   },
+   "outputs": 741,
+   "compile_rate": 20.3778677462888,
+   "faithful_given_compiled": 35.76158940397351
+  },
+  "C": {
+   "truth": {
+    "estimate": 51.012145748987855,
+    "ci": [
+     44.93927125506073,
+     57.08502024291497
+    ]
+   },
+   "judge": {
+    "estimate": 59.91902834008097,
+    "ci": [
+     53.84615384615385,
+     65.9919028340081
+    ]
+   },
+   "fpr": {
+    "estimate": 16.265060240963855,
+    "ci": [
+     10.674157303370785,
+     22.085889570552148
+    ]
+   },
+   "outputs": 247,
+   "compile_rate": 67.20647773279353,
+   "faithful_given_compiled": 75.90361445783132
+  },
+  "D": {
+   "truth": {
+    "estimate": 51.14709851551957,
+    "ci": [
+     44.939271255060724,
+     57.22334682860995
+    ]
+   },
+   "judge": {
+    "estimate": 59.10931174089069,
+    "ci": [
+     53.036437246963565,
+     65.31713900134953
+    ]
+   },
+   "fpr": {
+    "estimate": 14.839923797895448,
+    "ci": [
+     9.696969696969697,
+     20.55052338026343
+    ]
+   },
+   "outputs": 741,
+   "compile_rate": 66.39676113360325,
+   "faithful_given_compiled": 77.03252032520325
+  },
+  "E": {
+   "truth": {
+    "estimate": 6.477732793522267,
+    "ci": [
+     3.643724696356275,
+     9.7165991902834
+    ]
+   },
+   "judge": {
+    "estimate": 6.0728744939271255,
+    "ci": [
+     3.2388663967611335,
+     9.31174089068826
+    ]
+   },
+   "fpr": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "outputs": 247,
+   "compile_rate": 13.360323886639677,
+   "faithful_given_compiled": 48.484848484848484
+  },
+  "F": {
+   "truth": {
+    "estimate": 71.65991902834008,
+    "ci": [
+     65.9919028340081,
+     77.32793522267207
+    ]
+   },
+   "judge": {
+    "estimate": 80.5668016194332,
+    "ci": [
+     75.7085020242915,
+     85.4251012145749
+    ]
+   },
+   "fpr": {
+    "estimate": 13.488372093023257,
+    "ci": [
+     9.090909090909092,
+     18.181818181818183
+    ]
+   },
+   "outputs": 247,
+   "compile_rate": 87.04453441295547,
+   "faithful_given_compiled": 82.32558139534883
+  }
+ },
+ "contrasts": {
+  "Q1": {
+   "estimate": 2.8340080971659924,
+   "ci": [
+    -0.4048582995951415,
+    6.477732793522268
+   ],
+   "decision": "inconclusive"
+  },
+  "Q2": {
+   "estimate": -2.699055330634274,
+   "ci": [
+    -8.906882591093119,
+    3.2388663967611366
+   ],
+   "decision": "inconclusive"
+  },
+  "Q3_qwen3-8b": {
+   "estimate": 10.440308946056073,
+   "ci": [
+    -1.8512555279401626,
+    22.050828330773882
+   ],
+   "decision": "inconclusive"
+  },
+  "Q3_reform-8b": {
+   "estimate": -1.425136443068407,
+   "ci": [
+    -6.854308104377872,
+    4.136846133577865
+   ],
+   "decision": "inconclusive"
+  }
+ },
+ "descriptive": {
+  "judge_gain_minus_truth_gain_qwen3-8b": {
+   "estimate": 2.42914979757085,
+   "ci": [
+    0.40485829959514064,
+    4.858299595141698
+   ]
+  },
+  "judge_gain_minus_truth_gain_reform-8b": {
+   "estimate": -0.9446693657219996,
+   "ci": [
+    -6.0728744939271095,
+    4.0485829959514135
+   ]
+  }
+ },
+ "truth_gain_split": {
+  "A_to_B": {
+   "compile_part": {
+    "estimate": 3.2760947461491927,
+    "ci": [
+     1.108540582224793,
+     6.3796773402036555
+    ]
+   },
+   "meaning_part": {
+    "estimate": -0.44208664898320044,
+    "ci": [
+     -4.183535762483131,
+     3.5238032542268742
+    ]
+   },
+   "total": {
+    "estimate": 2.8340080971659924,
+    "ci": [
+     -0.40485829959514186,
+     6.477732793522268
+    ]
+   }
+  },
+  "C_to_D": {
+   "compile_part": {
+    "estimate": -0.6146041656504534,
+    "ci": [
+     -4.214502614470116,
+     3.294394732544246
+    ]
+   },
+   "meaning_part": {
+    "estimate": 0.7495569321821737,
+    "ci": [
+     -3.140411083042824,
+     4.671612132597448
+    ]
+   },
+   "total": {
+    "estimate": 0.13495276653172028,
+    "ci": [
+     -4.858299595141703,
+     5.263157894736839
+    ]
+   }
+  }
+ },
+ "without_exact_matches": {
+  "items_dropped": 13,
+  "Q1": {
+   "estimate": 2.279202279202279,
+   "ci": [
+    -0.5722460658082973,
+    5.507246376811594
+   ]
+  },
+  "Q2": {
+   "estimate": -1.7094017094017087,
+   "ci": [
+    -7.8762306610407915,
+    4.323570432357043
+   ]
+  },
+  "Q3_qwen3-8b": {
+   "estimate": 10.498270009139574,
+   "ci": [
+    -4.6669811320754695,
+    24.597989105552134
+   ]
+  },
+  "Q3_reform-8b": {
+   "estimate": -1.8114285645611865,
+   "ci": [
+    -7.392840838916687,
+    3.9323514904138555
+   ]
+  }
+ },
+ "hand_check": {
+  "agreement": {
+   "A": {
+    "agree": 4,
+    "n": 7
+   },
+   "B": {
+    "agree": 13,
+    "n": 16
+   },
+   "C": {
+    "agree": 36,
+    "n": 38
+   },
+   "D": {
+    "agree": 36,
+    "n": 38
+   },
+   "all": {
+    "agree": 89,
+    "n": 99
+   }
+  },
+  "errors": {
+   "A": {
+    "false_positive": 0,
+    "false_negative": 3,
+    "n": 7
+   },
+   "B": {
+    "false_positive": 0,
+    "false_negative": 3,
+    "n": 16
+   },
+   "C": {
+    "false_positive": 1,
+    "false_negative": 1,
+    "n": 38
+   },
+   "D": {
+    "false_positive": 1,
+    "false_negative": 1,
+    "n": 38
+   },
+   "all": {
+    "false_positive": 2,
+    "false_negative": 8,
+    "n": 99
+   }
+  },
+  "random_part_contrasts": {
+   "Q1": {
+    "estimate": 3.6363636363636367,
+    "ci": [
+     -3.636363636363635,
+     10.90909090909091
+    ]
+   },
+   "Q2": {
+    "estimate": 3.552713678800501e-15,
+    "ci": [
+     -14.545454545454543,
+     14.545454545454543
+    ]
+   },
+   "Q3_qwen3-8b": {
+    "estimate": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "Q3_reform-8b": {
+    "estimate": 0.0,
+    "ci": [
+     -7.317073170731708,
+     7.436090225563907
+    ]
+   }
+  },
+  "random_items": 55,
+  "random_items_paired": 55,
+  "unsure": 1,
+  "disagreement_part": 2
+ },
+ "notes": [
+  "Truth label recomputed from raw fields (compile fail or format fail -> unfaithful; certified -> faithful; else ref_verdict; missing ref verdict -> missing); matches stored truth_label on all test rows; no missing verdicts, outages or missing generations occur on test, so the missing-data rules never bind.",
+  "Judge score: 1 if compiled and optimization judge says faithful, 0 otherwise; missing judge verdict on a compiled output would be excluded (none occur).",
+  "FPR denominator: compiled outputs with both judge verdict and truth label present (equals all compiled outputs here).",
+  "GEPA arms (B, D): truth, judge and FPR computed per seed (ratio of sums over items) and averaged over the 3 seeds; in each bootstrap resample items are drawn with replacement (shared across arms, paired) and B's and D's 3 seeds are each redrawn with replacement independently, averaging the per-seed resampled ratios over the drawn seeds.",
+  "per_arm compile_rate and faithful_given_compiled for B and D are pooled over the 3 seeds (as prereg prescribes for the split), not seed-averaged; point estimates only.",
+  "Truth gain split: compile_part = f0*(c1-c0), meaning_part = c1*(f1-f0), c and f pooled over drawn seeds within each resample; total is their sum (equals the pooled truth gain).",
+  "Decision rule: effect if CI excludes 0 and |estimate| >= 5; else no meaningful effect if -5 <= lo and hi <= 5; else inconclusive. Decisions given only for main Q1-Q3.",
+  "Without exact matches: an item is dropped (from all arms, keeping pairing) if any output for it in arms A, B (any seed), C or D (any seed) has a non-empty memorized list (exact match against any listed source).",
+  "Hand check: hand label = fixed_label where present, else labels.csv; 'unsure' is treated as a missing label (excluded from agreement/errors and from that arm's hand-truth rate and FPR on the random part).",
+  "Reference judge agreement/errors use ref_verdict (not the certificate) on random-part outputs that compiled and have a definite hand label; non-compiled (fixed_label) outputs have no ref verdict and are excluded.",
+  "Random-part Q1-Q3: hand labels as truth, the single sampled seed per item for B and D (no seed averaging or seed resampling), FPR = compiled & opt-judge faithful & hand unfaithful / compiled with definite hand label; bootstrap over the paired random items with its own RNG (seed 0).",
+  "Random-part Q3 bootstrap: resamples with no compiled labeled output in an arm make the FPR ratio undefined; they are dropped from the percentile interval (undefined resamples per contrast: {'Q3_qwen3-8b': 6}).",
+  "Consistency checks: truth_label mismatches 0, judge_score mismatches 0, sample rows lacking any label 0, labels.csv ids not in sample 0."
+ ]
+}

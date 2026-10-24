@@ -98,3 +98,30 @@ def test_chunk6_storage_keys_differ_from_the_pilot_pages():
     assert rendered == built == {"labels:chunk6-handcheck", "notes:chunk6-handcheck", "pos:chunk6-handcheck"}
     assert not built & pilot and not built & storage_keys((OUT.parent / "chunk4/labeling.html").read_text())
     assert 'download("labels.csv"' in built_page
+
+
+def test_validate_labels(tmp_path):
+    from src.handcheck import validate_labels
+    sample = build_sample(fake_rows(), seed=0)
+    (tmp_path / "sample.jsonl").write_text("".join(json.dumps(s) + "\n" for s in sample))
+    shown = [s["label_id"] for s in sample if s["shown"]]
+
+    def check(rows):
+        (tmp_path / "labels.csv").write_text("label_id,label\n" + "".join(f"{i},{l}\n" for i, l in rows))
+        return validate_labels(tmp_path / "labels.csv", tmp_path / "sample.jsonl")
+
+    good = [(i, "faithful") for i in shown]
+    assert check(good)["ok"] and check(good)["label_counts"] == {"faithful": len(shown)}
+    assert check(good[1:])["missing_ids"] == 1 and not check(good[1:])["ok"]
+    assert check(good[:-1] + [(shown[-1], "")])["bad_or_blank_labels"] == 1 and not check(good[:-1] + [(shown[-1], "")])["ok"]
+    stray = check(good[:-1] + [("zzzzzzzz", "faithful")])
+    assert stray["stray_ids"] == 1 and stray["missing_ids"] == 1 and not stray["ok"]
+
+
+def test_compare_exact_points_and_ci_tolerance():
+    from src.handcheck import compare
+    ours = {"Q1": {"estimate": 2.5, "ci": [-1.0, 6.0], "decision": "inconclusive"}, "n": 7}
+    assert compare(ours, {"Q1": {"estimate": 2.5, "ci": [-0.6, 6.4], "decision": "inconclusive"}, "n": 7})["ok"]
+    bad = compare(ours, {"Q1": {"estimate": 2.6, "ci": [-1.0, 6.6], "decision": "effect"}, "n": 8})
+    assert {m["key"] for m in bad["mismatches"]} == {"Q1.estimate", "Q1.ci", "Q1.decision", "n"}
+    assert not compare(ours, {})["ok"] and compare(ours, {})["checked"] == 4

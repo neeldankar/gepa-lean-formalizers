@@ -1,0 +1,57 @@
+[
+ {
+  "arm": "D",
+  "item_id": "pnv_146",
+  "english": "Let $n$ be a positive integer, and let $f_{n}(z)=n+(n-1) z+$ $(n-2) z^{2}+\\cdots+z^{n-1}$. Prove that $f_{n}$ has no roots in the closed unit disk $\\{z \\in \\mathbb{C}:|z| \\leq 1\\}$.",
+  "candidate": "theorem candidate (n : ℕ) (hn : 0 < n) : \n  ∀ z : ℂ, Complex.abs z ≤ 1 → \n    (Finset.range n).sum (fun k => (n - k : ℂ) * z^k) ≠ 0 := by\n  sorry",
+  "compiled": false,
+  "judge_score": 0,
+  "certified": false,
+  "ref_verdict": null,
+  "truth_label": "unfaithful"
+ },
+ {
+  "arm": "D",
+  "item_id": "pnv_354",
+  "english": "Suppose $K$ and $F$ are disjoint sets in a metric space $X, K$ is compact, $F$ is closed. Prove that there exists $\\delta>0$ such that $d(p, q)>\\delta$ if $p \\in K, q \\in F$.",
+  "candidate": "theorem candidate (X : Type*) [MetricSpace X] (K F : Set X) \n  (h_disjoint : Disjoint K F) \n  (hK_compact : IsCompact K) \n  (hF_closed : IsClosed F) : \n  ∃ δ > 0, ∀ p ∈ K, ∀ q ∈ F, dist p q > δ := by\n  sorry",
+  "compiled": true,
+  "judge_score": 1,
+  "certified": false,
+  "ref_verdict": "faithful",
+  "truth_label": "faithful"
+ },
+ {
+  "arm": "A",
+  "item_id": "pnv_245",
+  "english": "Let $\\varphi: R \\rightarrow S$ be a surjective homomorphism of rings. Prove that the image of the center of $R$ is contained in the center of $S$.",
+  "candidate": "theorem candidate (R S : Type) [CommRing R] [CommRing S] (φ : R →+* S) (hφ : Function.Surjective φ) :\n  φ '' Center R ⊆ Center S := by\n  sorry",
+  "compiled": false,
+  "judge_score": 0,
+  "certified": false,
+  "ref_verdict": null,
+  "truth_label": "unfaithful"
+ },
+ {
+  "arm": "C",
+  "item_id": "pnv_113",
+  "english": "Let $Y$ be an ordered set in the order topology. Let $f, g: X \\rightarrow Y$ be continuous. Let $h: X \\rightarrow Y$ be the function $h(x)=\\min \\{f(x), g(x)\\}.$ Show that $h$ is continuous.",
+  "candidate": "theorem candidate (X Y : Type*) [TopologicalSpace X] [LinearOrder Y] [TopologicalSpace Y] \n  [OrderTopology Y] (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :\n  Continuous (fun x => min (f x) (g x)) := by\n  sorry",
+  "compiled": true,
+  "judge_score": 1,
+  "certified": true,
+  "ref_verdict": "faithful",
+  "truth_label": "faithful"
+ },
+ {
+  "arm": "E",
+  "item_id": "pnv_177",
+  "english": "Suppose that $f$ is holomorphic in an open set $\\Omega$. Prove that if $|f|$ is constant, then $f$ is constant.",
+  "candidate": "theorem candidate (f : ℂ → ℂ) (Ω : Set ℂ) [IsOpen Ω] (h_open : IsOpen Ω) (h_const : ∀ z₁ z₂ ∈ Ω, |f z₁| = |f z₂|) : ∃ c : ℂ, ∀ z ∈ Ω, f z = c := by\n  sorry",
+  "compiled": false,
+  "judge_score": 0,
+  "certified": false,
+  "ref_verdict": null,
+  "truth_label": "unfaithful"
+ }
+]
