@@ -1,0 +1,63 @@
+{
+ "note": "exploratory. Slope of (judge score minus truth score) in points per GEPA iteration, within run and pooled over a model's three runs; x is the iteration that proposed the candidate (0 = seed). The interval resamples the 70 validation items only: candidates share a lineage and are the ones GEPA kept.",
+ "resamples": 10000,
+ "seed": 0,
+ "seed_pass_items_differ": {
+  "per_run": {
+   "B_s0": 1,
+   "B_s1": 1,
+   "B_s2": 0,
+   "D_s0": 6,
+   "D_s1": 3,
+   "D_s2": 7
+  },
+  "min": 0,
+  "max": 7
+ },
+ "B": {
+  "model": "Qwen3-8B",
+  "all": {
+   "slope": -0.04594180704441042,
+   "ci": [
+    -0.2238751549624444,
+    0.10902975278932386
+   ],
+   "candidates": 33,
+   "mean_gap": 0.9956709956709957,
+   "max_x": 11
+  },
+  "without_seed_candidate": {
+   "slope": -0.12879236945626985,
+   "ci": [
+    -0.39661583230047953,
+    0.1002317184889799
+   ],
+   "candidates": 30,
+   "mean_gap": 1.0952380952380953,
+   "max_x": 11
+  }
+ },
+ "D": {
+  "model": "ReForm-8B",
+  "all": {
+   "slope": -0.08951750067138126,
+   "ci": [
+    -0.26836781068720916,
+    0.07619390277612449
+   ],
+   "candidates": 31,
+   "mean_gap": 6.082949308755761,
+   "max_x": 19
+  },
+  "without_seed_candidate": {
+   "slope": -0.11966479494050425,
+   "ci": [
+    -0.2852497205876412,
+    0.03595778965747852
+   ],
+   "candidates": 28,
+   "mean_gap": 6.122448979591836,
+   "max_x": 19
+  }
+ }
+}

@@ -2,17 +2,17 @@
 
 ## Now
 
-- **Chunk:** 7 of 7 in progress, waiting on Neel's review (2026-10-24). `prereg.md` frozen at e631bdb; Deviations 1 to 5
+- **Chunk:** 7 of 7 in progress, waiting on Neel's review (2026-10-25). `prereg.md` frozen at e631bdb; Deviations 1 to 5
 - **Finished in chunk 7:**
-  - Exploratory: candidate truth and its figure, the compile-error breakdown for A and B, and the GEPA rules list.
-  - The writeup draft with `numbers.json`, `README.md`, and both email drafts (not sent).
+  - Exploratory: candidate truth and its figure (now with the gap slope and seed-pass caveat in the caption), the gap slope, the Mathlib name check of the six prompts, the compile-error breakdown for A and B, and the GEPA rules list.
+  - The writeup, shortened to about 600 words, with `numbers.json`; `README.md`; both email drafts (not sent).
   - `scripts.chunk7 check` passes: numbers, em dashes, secret scan of the full history.
 - **Left for chunk 7:**
-  1. Provenance: read, scan and store `chatgpt_labels_transcript.pdf` and the labels-only extract, and confirm the typed calls match `labels.csv`.
-  2. Neel's edits to the writeup (it is long for one page) and the emails, then rerun `check`.
+  1. Provenance: read, scan and store `chatgpt_labels_transcript.pdf` and the labels-only extract, and confirm the typed calls match `labels.csv`. Until then the writeup's "the transcript is in the repo" is not yet true.
+  2. Neel's review of the short writeup; the Pramaana email is on hold (Neel may re-angle it after the transcript and the slope result). Rerun `check` after any edit.
   3. Neel signs off. The repo stays private until he says otherwise.
 - **Spent so far:** $62.29 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $1.78 (cap $30)
-- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop; read `writeup/writeup.md` and the two email drafts.
+- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop; review the short `writeup/writeup.md`; decide the Pramaana email's angle.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -34,6 +34,26 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-25 · chunk 7 · gap slope, prompt-name check, writeup cut to about 600 words (Neel's three asks)
+
+- **Gap slope** (`python -m scripts.chunk7 gap-slope`; `runs/chunk7/gap_slope.json`, exploratory): judge minus truth per candidate on the 70 validation items, regressed on the GEPA iteration that proposed the candidate (seed = 0), within run, pooled over each model's 3 runs; 10000 item-bootstrap resamples, seed 0.
+  - Qwen3-8B: -0.05 [-0.22, 0.11] points per iteration, 33 candidates, mean gap 1.0 points.
+  - ReForm-8B: -0.09 [-0.27, 0.08] points per iteration, 31 candidates, mean gap 6.1 points.
+  - Without the seed candidates (seed-pass caveat, 0 to 7 of 70 items differ per run): Qwen3-8B -0.13 [-0.40, 0.10], ReForm-8B -0.12 [-0.29, 0.04].
+  - Reading: no sign the gap grows; ReForm-8B's gap looks like steady judge leniency. The interval covers item sampling only.
+  - The figure's x axis is now the GEPA iteration, and its caption gives both slopes and the caveat.
+- **Prompt names** (`python -m scripts.chunk7 prompt-names`; `runs/chunk7/prompt_names.json`, exploratory, AXLE only, $0): names in backtick spans and code blocks of the six prompts, checked as a constant (bare, then under the GEPA items' opens, where an ambiguous name counts as existing) or as a namespace.
+  - 158 distinct names, 139 exist, 19 absent, 0 outages.
+  - All 14 names the prompts call nonexistent are absent (14).
+  - Of the 124 names never warned against or shown failing, 4 are absent: Complex.abs, FiniteDimensional.finrank, Set.IsConnected, Set.Uncountable.
+  - The role rule (warned, error example, recommended) is a regex over the prompt text; I read the lines behind every warned-but-existing and recommended-but-absent name and tightened it until none was mis-tagged.
+  - So the answer to Neel's question: the names the prompts warn against really are absent, and a few names they recommend are absent too.
+- **Writeup** cut to about 600 words (651 by `wc -w`, with table and heading markup): question, setup, table, four findings, short limitations with the provenance line, related work in 2 sentences. The name-check line and the slope result are in finding 4.
+- **Axiom email:** "lists of ... Mathlib names that do not exist" became "warnings against Mathlib names that do not exist". The Pramaana email is unchanged, on hold.
+- **Checks:** `scripts.chunk7 check` ok (every number matches its JSON source, 0 em dashes, history secret scan clean); pytest passes.
+- **Cost:** $0 this entry (AXLE and the bootstrap are free); chunk 7 $1.78 of $30.
+- **Next:** Neel reviews the short writeup; the transcript PDF; the Pramaana email angle.
 
 ### 2026-10-24 · chunk 7 · exploratory runs, writeup draft and checks, README, email drafts (waiting on Neel)
 

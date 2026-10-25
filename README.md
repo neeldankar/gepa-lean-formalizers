@@ -64,7 +64,7 @@ python -m scripts.chunk7 check        # every writeup number against its JSON so
 5. Chunk 6, the hand-check:
    - `python -m scripts.chunk6 sample` builds the blind page. Label it, then export `labels.csv`.
    - Then run `scripts.analyze` as above, and `python -m scripts.chunk6 compare` against an independent recompute.
-6. Chunk 7, exploratory: `python -m scripts.chunk7 prompt-lengths | facts | candidate-truth | compile-errors`.
+6. Chunk 7, exploratory: `python -m scripts.chunk7 prompt-lengths | candidate-truth | facts | seed-check | gap-slope | prompt-names | compile-errors`.
 
 **Expect differences from scratch:**
 - Without `cache/`, a from-scratch run repeats every model, judge and AXLE call. Every logged cost is in `runs/costs.jsonl`.

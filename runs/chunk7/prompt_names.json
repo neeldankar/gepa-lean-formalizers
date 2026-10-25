@@ -1,0 +1,2778 @@
+{
+ "note": "exploratory. Names in backtick spans and code blocks of runs/{B,D}_s*/best_prompt.txt; the role comes from the clause around the name (src/chunk7.py prompt_names) and a name can have several.",
+ "opens_tried": "open BigOperators Complex ComplexConjugate ContinuousLinearMap ENNReal Filter FiniteDimensional Finset Fintype Function Ideal InnerProductSpace LinearMap MeasureTheory Metric Module Module.End Polynomial RCLike Real Set Subgroup Submodule TopologicalSpace Topology Zsqrtd intervalIntegral",
+ "totals": {
+  "distinct_names": 158,
+  "outages": 0,
+  "exist": 139,
+  "n_absent": 19,
+  "absent": [
+   "Complex.abs",
+   "Complex.norm",
+   "Connected",
+   "ConstantOn",
+   "FiniteDimensional.finrank",
+   "GaussianInt.mk",
+   "Im",
+   "IntegralDomain",
+   "Interior",
+   "IsSimple",
+   "IsSubring",
+   "Nat.phi",
+   "OneClass",
+   "OpenSet",
+   "Re",
+   "Set.IsConnected",
+   "Set.Uncountable",
+   "Set.unitCircle",
+   "real_part"
+  ],
+  "warned": {
+   "names": 14,
+   "n_absent": 14,
+   "absent": [
+    "Complex.norm",
+    "Connected",
+    "ConstantOn",
+    "GaussianInt.mk",
+    "Im",
+    "Interior",
+    "IsSimple",
+    "IsSubring",
+    "Nat.phi",
+    "OneClass",
+    "OpenSet",
+    "Re",
+    "Set.unitCircle",
+    "real_part"
+   ],
+   "exist": []
+  },
+  "error_example": {
+   "names": 28,
+   "n_absent": 9,
+   "absent": [
+    "ConstantOn",
+    "GaussianInt.mk",
+    "Im",
+    "IntegralDomain",
+    "IsSimple",
+    "IsSubring",
+    "OneClass",
+    "OpenSet",
+    "Re"
+   ],
+   "exist": [
+    "Algebra",
+    "Complex",
+    "ContinuousOn",
+    "Fintype",
+    "Fintype.card",
+    "GaussianInt",
+    "Group",
+    "HAdd",
+    "HMul",
+    "HSub",
+    "InnerProductSpace",
+    "LinearMap",
+    "LinearMap.id",
+    "NNReal",
+    "Ring",
+    "Set",
+    "Tendsto",
+    "TopologicalSpace",
+    "atTop"
+   ]
+  },
+  "recommended": {
+   "names": 143,
+   "n_absent": 10,
+   "absent": [
+    "Complex.abs",
+    "Complex.norm",
+    "Connected",
+    "ConstantOn",
+    "FiniteDimensional.finrank",
+    "IntegralDomain",
+    "Interior",
+    "Nat.phi",
+    "Set.IsConnected",
+    "Set.Uncountable"
+   ],
+   "exist": [
+    "AddCommGroup",
+    "BigOperators",
+    "CommRing",
+    "CompleteSpace",
+    "Complex",
+    "Complex.im",
+    "Complex.re",
+    "Continuous",
+    "ContinuousAt",
+    "ContinuousOn",
+    "Countable",
+    "Differentiable",
+    "DifferentiableAt",
+    "DifferentiableOn",
+    "Disjoint",
+    "EReal",
+    "Even",
+    "Field",
+    "Filter",
+    "Filter.atTop",
+    "Filter.liminf",
+    "Filter.limsup",
+    "Fin",
+    "Finite",
+    "FiniteDimensional",
+    "Finset",
+    "Finset.Icc",
+    "Finset.prod",
+    "Finset.range",
+    "Finset.sum",
+    "Fintype",
+    "Fintype.card",
+    "Function.Commute",
+    "GaussianInt",
+    "Group",
+    "HasDerivAt",
+    "HasSum",
+    "Ideal",
+    "InnerProductSpace",
+    "Int.ModEq",
+    "Int.gcd",
+    "Ioo",
+    "Irreducible",
+    "IsClosed",
+    "IsCompact",
+    "IsConj",
+    "IsConnected",
+    "IsCoprime",
+    "IsCyclic",
+    "IsDomain",
+    "IsOpen",
+    "IsOpenMap",
+    "IsSelfAdjoint",
+    "IsSimpleGroup",
+    "IsStarNormal",
+    "IsUnit",
+    "LE",
+    "LinearMap",
+    "LinearMap.adjoint",
+    "LinearMap.comp",
+    "LinearMap.id",
+    "LinearMap.ker",
+    "Matrix",
+    "Measurable",
+    "MeasurableSet",
+    "Metric.ball",
+    "Metric.closedBall",
+    "Metric.sphere",
+    "MetricSpace",
+    "Module",
+    "Module.End",
+    "Module.End.HasEigenvalue",
+    "Module.rank",
+    "Monotone",
+    "MonotoneOn",
+    "Nat",
+    "Nat.Coprime",
+    "Nat.ModEq",
+    "Nat.Prime",
+    "Nat.card",
+    "Nat.choose",
+    "Nat.factorial",
+    "Nat.gcd",
+    "Nat.lcm",
+    "Nat.totient",
+    "NormedAddCommGroup",
+    "NormedField",
+    "Odd",
+    "OfNat",
+    "Polynomial",
+    "Prime",
+    "Prod.fst",
+    "Prod.snd",
+    "Real",
+    "Real.cos",
+    "Real.exp",
+    "Real.log",
+    "Real.sin",
+    "Real.sqrt",
+    "Set",
+    "Set.Countable",
+    "Set.EqOn",
+    "Set.Icc",
+    "Set.Ici",
+    "Set.Infinite",
+    "Set.Ioi",
+    "Set.Ioo",
+    "Set.Nonempty",
+    "Set.iUnion",
+    "Set.inclusion",
+    "Set.sUnion",
+    "Set.univ",
+    "Squarefree",
+    "Subgroup",
+    "Subgroup.closure",
+    "Submodule",
+    "Subring",
+    "Summable",
+    "Tendsto",
+    "TendstoUniformly",
+    "TopologicalSpace",
+    "Topology",
+    "UniformContinuous",
+    "UniformContinuousOn",
+    "ZMod",
+    "Zsqrtd",
+    "Zsqrtd.mk",
+    "atTop",
+    "generateFrom",
+    "orderOf",
+    "sInf",
+    "sSup",
+    "subset_closure"
+   ]
+  },
+  "only_recommended": {
+   "names": 124,
+   "n_absent": 4,
+   "absent": [
+    "Complex.abs",
+    "FiniteDimensional.finrank",
+    "Set.IsConnected",
+    "Set.Uncountable"
+   ]
+  }
+ },
+ "names": {
+  "IsSimple": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example",
+    "warned"
+   ],
+   "lines": [
+    "B_s0: - \"Unknown identifier `X`\" (with the note that `autoImplicit` is false) → the name does not exist in Mathlib. Find the real name or rephrase with basic concepts. (Observed: `IsSimple`, `OpenSet`, `Im`, `real_part` are NOT real.)",
+    "B_s0: - Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For \"|G| = n\" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.",
+    "B_s0: - Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`"
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "OpenSet": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example",
+    "warned"
+   ],
+   "lines": [
+    "B_s0: - \"Unknown identifier `X`\" (with the note that `autoImplicit` is false) → the name does not exist in Mathlib. Find the real name or rephrase with basic concepts. (Observed: `IsSimple`, `OpenSet`, `Im`, `real_part` are NOT real.)",
+    "B_s0: - There is NO `OpenSet` typeclass. \"Ω is open\" is a Prop hypothesis: `(Ω : Set ℂ) (hΩ : IsOpen Ω)` (more generally `Ω : Set X` with `[TopologicalSpace X]`).",
+    "B_s0: - Open set: `(Ω : Set ℂ) (hΩ : IsOpen Ω)`. There is NO `OpenSet` class.",
+    "B_s0: - Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`"
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Im": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "error_example",
+    "warned"
+   ],
+   "lines": [
+    "B_s0: - \"Unknown identifier `X`\" (with the note that `autoImplicit` is false) → the name does not exist in Mathlib. Find the real name or rephrase with basic concepts. (Observed: `IsSimple`, `OpenSet`, `Im`, `real_part` are NOT real.)",
+    "B_s0: - Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`.",
+    "B_s0: - Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`",
+    "B_s1: - **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.",
+    "B_s1: (a) Every identifier is either a bound variable, a definition from the context, or a real Mathlib name available under the given opens (no `Set.unitCircle`, no `ConstantOn`, no `Im`/`Re`, no `f'`, no `|x|` for order).",
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - **Real / imaginary part → `Complex.re z` / `Complex.im z` (or `z.re` / `z.im`). `Re` / `Im` do NOT exist** (a real failure used `Im (f z)` → unknown identifier → score 0).",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).",
+    "B_s2: A real failure wrote `Im (f z)` → unknown identifier → score 0. Write `(f z).im` or `Complex.im (f z)`. \"Im(f) is constant on Ω\" → `∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c`.",
+    "B_s2: (The failed attempt used `Im` and `ConstantOn` — neither exists — and replaced Ω with `univ` and holomorphic with `ContinuousOn`. Correct: `Complex.im` via `(f z).im`; \"constant\" expanded as `∃ c, ∀ z ∈ Ω, …`; Ω kept as a bounded open set; holomorphic as `DifferentiableOn ℂ f Ω`.)",
+    "B_s2: - **Syntax:** `fun`, never `λ`; no guessed projections (`.norm`); no guessed names (`Nat.phi`, `Im`, `ConstantOn`)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "real_part": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "warned"
+   ],
+   "lines": [
+    "B_s0: - \"Unknown identifier `X`\" (with the note that `autoImplicit` is false) → the name does not exist in Mathlib. Find the real name or rephrase with basic concepts. (Observed: `IsSimple`, `OpenSet`, `Im`, `real_part` are NOT real.)",
+    "B_s0: - Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Tendsto": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Limits: `Tendsto g atTop (nhds 0)` expresses \"g(x) → 0 as x → +∞\" (with `open Topology Filter`).",
+    "B_s0: - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.",
+    "B_s0: - Bad: `Tendsto (λ x, f (x + 1) - f x) atTop (nhds 0)` → Good: `Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0)`",
+    "B_s1: - **Derivative:** the derivative of `f : ℝ → ℝ` as a function is `deriv f`. There is no `f'` notation in Mathlib. \"f'(x) → L as x → +∞\" is `Tendsto (deriv f) atTop (nhds L)`.",
+    "B_s1: - **Limits:** \"g(x) → L as x → +∞\" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).",
+    "B_s1: - **Series:** \"the series ∑ aₙ converges\" is `Summable (fun n => a n)`; \"∑ aₙ = L\" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse \"the series converges\" with \"the terms tend to 0\" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`.",
+    "B_s1: (hlim : Tendsto (deriv f) atTop (nhds 0)) :",
+    "B_s1: Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry",
+    "B_s2: - \"f tends to L\" → `Tendsto f atTop (𝓝 L)` (needs `open Filter` for `atTop`)."
+   ],
+   "outage": false,
+   "exists": "constant under the items' opens"
+  },
+  "atTop": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Limits: `Tendsto g atTop (nhds 0)` expresses \"g(x) → 0 as x → +∞\" (with `open Topology Filter`).",
+    "B_s0: - Bad: `Tendsto (λ x, f (x + 1) - f x) atTop (nhds 0)` → Good: `Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0)`",
+    "B_s1: - **Derivative:** the derivative of `f : ℝ → ℝ` as a function is `deriv f`. There is no `f'` notation in Mathlib. \"f'(x) → L as x → +∞\" is `Tendsto (deriv f) atTop (nhds L)`.",
+    "B_s1: - **Limits:** \"g(x) → L as x → +∞\" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).",
+    "B_s1: - **Series:** \"the series ∑ aₙ converges\" is `Summable (fun n => a n)`; \"∑ aₙ = L\" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse \"the series converges\" with \"the terms tend to 0\" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`.",
+    "B_s1: (hlim : Tendsto (deriv f) atTop (nhds 0)) :",
+    "B_s1: Tendsto (fun x => f (x + 1) - f x) atTop (nhds 0) := by sorry",
+    "B_s2: - \"f tends to L\" → `Tendsto f atTop (𝓝 L)` (needs `open Filter` for `atTop`).",
+    "B_s2: - \"uniform convergence\" → `TendstoUniformly F f atTop`.",
+    "B_s2: - \"limsup / liminf\" → `Filter.limsup u atTop` / `Filter.liminf u atTop` (needs `open Filter`); if the context supplies a `local notation \"limsup\"`, use it with arguments of exactly the declared type."
+   ],
+   "outage": false,
+   "exists": "constant under the items' opens"
+  },
+  "Topology": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Limits: `Tendsto g atTop (nhds 0)` expresses \"g(x) → 0 as x → +∞\" (with `open Topology Filter`).",
+    "B_s1: - **Limits:** \"g(x) → L as x → +∞\" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).",
+    "B_s2: - \"neighborhood of x\" → `𝓝 x` (needs `open scoped Topology`) or `nhds x`."
+   ],
+   "outage": false,
+   "exists": "namespace"
+  },
+  "Filter": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Limits: `Tendsto g atTop (nhds 0)` expresses \"g(x) → 0 as x → +∞\" (with `open Topology Filter`).",
+    "B_s1: - **Limits:** \"g(x) → L as x → +∞\" is `Tendsto (fun x => g x) atTop (nhds L)` (needs `open Filter` and `open Topology` for `Tendsto`/`atTop`/`nhds`).",
+    "B_s2: - \"f tends to L\" → `Tendsto f atTop (𝓝 L)` (needs `open Filter` for `atTop`).",
+    "B_s2: - \"limsup / liminf\" → `Filter.limsup u atTop` / `Filter.liminf u atTop` (needs `open Filter`); if the context supplies a `local notation \"limsup\"`, use it with arguments of exactly the declared type."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Field": {
+   "runs": [
+    "B_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Structures are typeclasses on a carrier type, not types. Write `(K : Type) [Field K]`, `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`. NEVER write `(V : InnerProductSpace ℂ)`.",
+    "B_s0: - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.",
+    "B_s0: - Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`.",
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`",
+    "D_s2: 3. **Give every bound variable an explicit type when it cannot be inferred**, e.g. `(n : ℕ)`, `(f : ℝ → ℝ)`, `(X : Type*)`. Typeclass assumptions go in square brackets, e.g. `[MetricSpace X]`, `[CompleteSpace Y]`, `[Group G]`, `[Field F]`, `[Module F V]`. Implicit binders like `{F V : Type*}` are acceptable when the types are determined by later explicit arguments, but explicit binders are always safe.",
+    "D_s2: - \"V is a vector space over F\" → `{F V : Type*} [Field F] [AddCommGroup V] [Module F V]`",
+    "D_s2: `theorem invariant_null_space {F V : Type*} [Field F] [AddCommGroup V] [Module F V] (S T : V →ₗ[F] V) (h : S ∘ₗ T = T ∘ₗ S) : ∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0 := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "NormedAddCommGroup": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Structures are typeclasses on a carrier type, not types. Write `(K : Type) [Field K]`, `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`. NEVER write `(V : InnerProductSpace ℂ)`.",
+    "B_s0: - Linear operator on a complex inner-product space: `(T : V →ₗ[ℂ] V)` with `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`.",
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "InnerProductSpace": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Structures are typeclasses on a carrier type, not types. Write `(K : Type) [Field K]`, `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`. NEVER write `(V : InnerProductSpace ℂ)`.",
+    "B_s0: - Linear operator on a complex inner-product space: `(T : V →ₗ[ℂ] V)` with `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`.",
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "FiniteDimensional": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Structures are typeclasses on a carrier type, not types. Write `(K : Type) [Field K]`, `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`. NEVER write `(V : InnerProductSpace ℂ)`.",
+    "B_s0: - Linear operator on a complex inner-product space: `(T : V →ₗ[ℂ] V)` with `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V]`.",
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IntegralDomain": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.",
+    "B_s0: - Instance synthesis must succeed. E.g. using `IntegralDomain R` with only `[Ring R]` declared fails with \"failed to synthesize instance ... CommSemiring R\". Either declare all needed instances explicitly or, better, use bundled subtypes that carry instances automatically.",
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`"
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Group": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2",
+    "D_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.",
+    "B_s0: - Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For \"|G| = n\" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.",
+    "B_s0: - Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`",
+    "B_s1: - **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, `Group`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]` and groups as `(G : Type*) [Group G]`. Writing `(X Y : TopologicalSpace)` fails with \"type expected, got (TopologicalSpace : Type _ → Type _)\".",
+    "B_s1: - **Group theory:** the order of an element `x : G` (with `[Group G]`) is `orderOf x : ℕ`. \"|x| = n\" is `hord : orderOf x = n` — there is no `|x|` notation for order, and `x ^ n = 1` is NOT an acceptable substitute (it is weaker). \"n is a positive integer\" is `hn : 0 < n`.",
+    "B_s1: theorem inverse_equal_to_power_minus_one (G : Type*) [Group G] (x : G) (n : ℕ)",
+    "B_s2: With `{G : Type*} [Group G]`, writing `K ≤ G` or `H.relindex G` fails. The whole group as a subgroup is `⊤ : Subgroup G`; the index `|G : H|` is `H.relindex ⊤` (or `H.index`); `H.relindex K` means `|K : H|`. Same pattern for `Submodule R M`, `Ideal R`. Do NOT add finiteness assumptions the problem doesn't have. Correct formalization of \"H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|\":",
+    "B_s2: theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :",
+    "B_s2: theorem ab_conj_ba {G : Type*} [Group G] (a b : G) :",
+    "B_s2: theorem inv_eq_pow_order_sub_one {G : Type*} [Group G] (x : G) (n : ℕ) (hn : 0 < n)",
+    "B_s2: theorem finite_group_element_has_order (G : Type*) [Group G] [Fintype G] (a : G) :",
+    "B_s2: (\"finite group\" → `[Group G] [Fintype G]` because the problem states finiteness; \"positive integer n\" → `∃ n : ℕ, 0 < n ∧ …`; the conclusion is the literal equation `a ^ n = 1`, NOT `orderOf a = n`, because the problem asserts a power equals the identity rather than naming \"the order of a\".)",
+    "D_s2: 3. **Give every bound variable an explicit type when it cannot be inferred**, e.g. `(n : ℕ)`, `(f : ℝ → ℝ)`, `(X : Type*)`. Typeclass assumptions go in square brackets, e.g. `[MetricSpace X]`, `[CompleteSpace Y]`, `[Group G]`, `[Field F]`, `[Module F V]`. Implicit binders like `{F V : Type*}` are acceptable when the types are determined by later explicit arguments, but explicit binders are always safe.",
+    "D_s2: - \"G is a group\", \"x is an element of G\" → `(G : Type*) [Group G] (x : G)`",
+    "D_s2: - `x⁻¹` and `x^(n-1)` typecheck directly in any `Group`. Note `n - 1` is truncated natural subtraction, but with the hypothesis `n > 0` it matches the mathematics, so write it directly.",
+    "D_s2: `theorem group_element_inverse (G : Type*) [Group G] (x : G) (n : ℕ) (hn : n > 0) (h : orderOf x = n) : x⁻¹ = x^(n-1) := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsDomain": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.",
+    "B_s0: - Prop-valued classes CAN appear (also negated) in conclusions: `IsDomain S`, `IsSimpleGroup G`, `IsSelfAdjoint T`, `IsStarNormal T`.",
+    "B_s0: - Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`.",
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsSelfAdjoint": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.",
+    "B_s0: - Prop-valued classes CAN appear (also negated) in conclusions: `IsDomain S`, `IsSimpleGroup G`, `IsSelfAdjoint T`, `IsStarNormal T`.",
+    "B_s0: - Adjoint: `LinearMap.adjoint T` (dot notation `T.adjoint`). Self-adjoint: `IsSelfAdjoint T`. Normal: `IsStarNormal T`, or explicitly `T.adjoint * T = T * T.adjoint`.",
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Module.End.HasEigenvalue": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - The conclusion must be a `Prop`. Classes like `IntegralDomain R`, `Field K`, `Group G` are NOT Props and cannot be the conclusion. Use Prop-valued predicates: `IsDomain S`, `IsSelfAdjoint T`, `Module.End.HasEigenvalue T μ`, `Tendsto ...`, etc.",
+    "B_s0: - \"μ is an eigenvalue of T\": `Module.End.HasEigenvalue T μ`.",
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsSimpleGroup": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Prop-valued classes CAN appear (also negated) in conclusions: `IsDomain S`, `IsSimpleGroup G`, `IsSelfAdjoint T`, `IsStarNormal T`.",
+    "B_s0: - Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For \"|G| = n\" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.",
+    "B_s0: - Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`",
+    "B_s0: 4. State the conclusion using existing Mathlib Prop predicates, faithfully matching the problem. \"P implies Q\" becomes `(hP : P) : Q` or `P → Q`; \"G is not simple\" becomes `¬IsSimpleGroup G`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsStarNormal": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Prop-valued classes CAN appear (also negated) in conclusions: `IsDomain S`, `IsSimpleGroup G`, `IsSelfAdjoint T`, `IsStarNormal T`.",
+    "B_s0: - Adjoint: `LinearMap.adjoint T` (dot notation `T.adjoint`). Self-adjoint: `IsSelfAdjoint T`. Normal: `IsStarNormal T`, or explicitly `T.adjoint * T = T * T.adjoint`.",
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2",
+    "D_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - There is NO `OpenSet` typeclass. \"Ω is open\" is a Prop hypothesis: `(Ω : Set ℂ) (hΩ : IsOpen Ω)` (more generally `Ω : Set X` with `[TopologicalSpace X]`).",
+    "B_s0: - Open set: `(Ω : Set ℂ) (hΩ : IsOpen Ω)`. There is NO `OpenSet` class.",
+    "B_s0: - Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`",
+    "B_s1: - **\"There are infinitely many ... such that P\".** Formalize as infinitude of a set: `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). Do NOT formalize as `P a` for a single variable, and do NOT universally quantify over `a`.",
+    "B_s1: - **Sets vs. indexed families:** if `s : Set X` and `x : X`, then `s x` is the PROPOSITION `x ∈ s`, not a set. A family \"T_α\" must be declared with an index type and a function, e.g. `(ι : Type*) (T : ι → Set (Set X))`; then `T α : Set (Set X)` and its union is `⋃ α, T α` (`Set.iUnion`, needs `open Set`). Declaring `(T : Set (Set X))` and then writing `T α` fails with \"Application type mismatch ... has type Prop ... but is expected to have type Set (Set X)\".",
+    "B_s1: - **Infinitely many:** \"there are infinitely many integers a such that P a\" is `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). \"At most countable\" is `Set.Countable` (e.g. `T.Countable` for `T : Set (Set ℝ)`); a union of a set of sets is `⋃₀ T` (`Set.sUnion`, needs `open Set`); open intervals are `Set.Ioo a b` (`Ioo` after `open Set`).",
+    "B_s1: theorem constant_of_constant_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω)",
+    "B_s1: Pitfalls avoided: a family needs an index type (`T : ι → Set (Set X)`, not `T : Set (Set X)` applied to `α`); \"does not need to be\" is an existential counterexample, not `∀ ... → ¬ ...`.",
+    "B_s1: ∃ (X : Type) (ι : Type) (T : ι → Set (Set X)),",
+    "B_s1: theorem open_set_eq_countable_union_disjoint_intervals (s : Set ℝ) (hs : IsOpen s) :",
+    "B_s1: ∃ T : Set (Set ℝ), T.Countable ∧ (∀ t ∈ T, ∃ a b : ℝ, t = Ioo a b) ∧",
+    "B_s1: (d) Indexed families use an index type (`T : ι → ...`); a `Set` is never applied to an index.",
+    "B_s2: - \"S is connected\" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S`.",
+    "B_s2: - **\"f is holomorphic on an open set Ω\" → bind `(Ω : Set ℂ)` `(hΩ : IsOpen Ω)` and `(hf : DifferentiableOn ℂ f Ω)`.** Do not weaken to `ContinuousOn`; do not replace `Ω` with `Set.univ`.",
+    "B_s2: ¬ ∀ S : Set ℝ, IsConnected S → IsConnected (interior S) := by sorry",
+    "B_s2: or equivalently `∃ S : Set ℝ, IsConnected S ∧ ¬ IsConnected (interior S)`.",
+    "B_s2: A real failure wrote `ConstantOn f (Set.univ : Set ℂ)` → unknown identifier → score 0, and it also silently replaced \"holomorphic on an open set Ω\" with \"continuous on univ\" — doubly unfaithful. \"f is constant on S\" → `∃ c, ∀ z ∈ S, f z = c`. Keep `Ω` as a binder with `(hΩ : IsOpen Ω)`; keep \"holomorphic\" as `DifferentiableOn ℂ f Ω`.",
+    "B_s2: 4. \"X is countably compact iff every nested sequence C₁ ⊇ C₂ ⊇ ⋯ of closed nonempty sets has nonempty intersection\", with a context `def countably_compact X := ∀ U : ℕ → Set X, (∀ i, IsOpen (U i)) ∧ ((univ : Set X) ⊆ ⋃ i, U i) → (∃ t : Finset ℕ, (univ : Set X) ⊆ ⋃ i ∈ t, U i)`:",
+    "B_s2: countably_compact X ↔ ∀ C : ℕ → Set X,",
+    "B_s2: theorem constant_of_constant_imaginary_part (Ω : Set ℂ) (hΩ : IsOpen Ω) (f : ℂ → ℂ)",
+    "D_s0: - Subtype coercions are NOT transitive/automatic. If `A : Set X` and `a : A` (type `↥A`), then `(a : closure A)` FAILS with a type mismatch (\"has type ↑A but is expected to have type ↑(closure A)\"). Instead write the agreement condition explicitly, e.g.:",
+    "D_s2: - \"A ⊆ X\" → `(A : Set X)`; the closure of A → `closure A`",
+    "D_s2: `∃ (α : Type*) (T : α → Set (Set X)), (∀ i, is_topology X (T i)) ∧ ¬ is_topology X (⋃ i, T i)`.",
+    "D_s2: `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsOpen": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - There is NO `OpenSet` typeclass. \"Ω is open\" is a Prop hypothesis: `(Ω : Set ℂ) (hΩ : IsOpen Ω)` (more generally `Ω : Set X` with `[TopologicalSpace X]`).",
+    "B_s0: - Open set: `(Ω : Set ℂ) (hΩ : IsOpen Ω)`. There is NO `OpenSet` class.",
+    "B_s0: - \"f is holomorphic on an open set Ω\": `(hf : DifferentiableOn ℂ f Ω)` together with `(hΩ : IsOpen Ω)`.",
+    "B_s0: - Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`",
+    "B_s1: - **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. \"f is holomorphic on an open set Ω\" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).",
+    "B_s1: theorem constant_of_constant_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω)",
+    "B_s1: theorem open_set_eq_countable_union_disjoint_intervals (s : Set ℝ) (hs : IsOpen s) :",
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: 11. **Re-read the original problem** and verify the statement says *exactly* that: every side condition present as a binder, none invented, quantifiers in the right order, negations in the right place, the exact domain preserved (an open set `Ω` stays `Ω` with `(hΩ : IsOpen Ω)` — do NOT replace it with `univ`), and the exact strength of hypotheses preserved (\"holomorphic\" stays `DifferentiableOn ℂ f Ω` — do NOT weaken it to `ContinuousOn`).",
+    "B_s2: - \"S is open / closed / compact\" → `IsOpen S` / `IsClosed S` / `IsCompact S`.",
+    "B_s2: - **\"f is holomorphic on an open set Ω\" → bind `(Ω : Set ℂ)` `(hΩ : IsOpen Ω)` and `(hf : DifferentiableOn ℂ f Ω)`.** Do not weaken to `ContinuousOn`; do not replace `Ω` with `Set.univ`.",
+    "B_s2: A real failure wrote `ConstantOn f (Set.univ : Set ℂ)` → unknown identifier → score 0, and it also silently replaced \"holomorphic on an open set Ω\" with \"continuous on univ\" — doubly unfaithful. \"f is constant on S\" → `∃ c, ∀ z ∈ S, f z = c`. Keep `Ω` as a binder with `(hΩ : IsOpen Ω)`; keep \"holomorphic\" as `DifferentiableOn ℂ f Ω`.",
+    "B_s2: 4. \"X is countably compact iff every nested sequence C₁ ⊇ C₂ ⊇ ⋯ of closed nonempty sets has nonempty intersection\", with a context `def countably_compact X := ∀ U : ℕ → Set X, (∀ i, IsOpen (U i)) ∧ ((univ : Set X) ⊆ ⋃ i, U i) → (∃ t : Finset ℕ, (univ : Set X) ⊆ ⋃ i ∈ t, U i)`:",
+    "B_s2: theorem constant_of_constant_imaginary_part (Ω : Set ℂ) (hΩ : IsOpen Ω) (f : ℂ → ℂ)",
+    "B_s2: - Are the domain and strength of every hypothesis exactly as stated (open set Ω kept as Ω with `IsOpen Ω`, not `univ`; \"holomorphic\" as `DifferentiableOn ℂ f Ω`, not `ContinuousOn`; literal equations like `aⁿ = e` kept literal as `a ^ n = 1`)?"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "TopologicalSpace": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2",
+    "D_s1"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - There is NO `OpenSet` typeclass. \"Ω is open\" is a Prop hypothesis: `(Ω : Set ℂ) (hΩ : IsOpen Ω)` (more generally `Ω : Set X` with `[TopologicalSpace X]`).",
+    "B_s1: - **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, `Group`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]` and groups as `(G : Type*) [Group G]`. Writing `(X Y : TopologicalSpace)` fails with \"type expected, got (TopologicalSpace : Type _ → Type _)\".",
+    "B_s1: theorem projections_are_open_maps (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] :",
+    "B_s2: {X : Type*} [TopologicalSpace X] :",
+    "D_s1: - **Check that types line up.** Example: `Rl` and `K_topology` are terms of `TopologicalSpace ℝ`, so \"not comparable\" is `¬ (Rl ≤ K_topology) ∧ ¬ (K_topology ≤ Rl)` using the order on topological spaces.",
+    "D_s1: - Topology generated by a basis: `generateFrom ...`; comparison of topologies: `≤` on `TopologicalSpace X`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Ring": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example"
+   ],
+   "lines": [
+    "B_s0: - Instance synthesis must succeed. E.g. using `IntegralDomain R` with only `[Ring R]` declared fails with \"failed to synthesize instance ... CommSemiring R\". Either declare all needed instances explicitly or, better, use bundled subtypes that carry instances automatically.",
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Subring": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`.",
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`",
+    "B_s0: 2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "CommRing": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsSubring": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example",
+    "warned"
+   ],
+   "lines": [
+    "B_s0: - Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`.",
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`"
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "OneClass": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example",
+    "warned"
+   ],
+   "lines": [
+    "B_s0: - Subring of a field: `(S : Subring K)` with `(K : Type) [Field K]`. A `Subring` contains `1` by definition and inherits `CommRing` from `K`; state the conclusion as `IsDomain S`. Do NOT invent classes like `IsSubring R K` or `OneClass R`.",
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`"
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "DifferentiableAt": {
+   "runs": [
+    "B_s0",
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - \"f differentiable for all x > 0\": `∀ x > 0, DifferentiableAt ℝ f x`.",
+    "B_s1: - **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. \"f is holomorphic on an open set Ω\" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).",
+    "B_s1: theorem g_converges_to_zero (f : ℝ → ℝ) (hf : ∀ x > 0, DifferentiableAt ℝ f x)"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "LinearMap.adjoint": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Adjoint: `LinearMap.adjoint T` (dot notation `T.adjoint`). Self-adjoint: `IsSelfAdjoint T`. Normal: `IsStarNormal T`, or explicitly `T.adjoint * T = T * T.adjoint`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Fintype": {
+   "runs": [
+    "B_s0",
+    "B_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For \"|G| = n\" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.",
+    "B_s0: - Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`",
+    "B_s2: - \"G is finite\" → `[Fintype G]` (or `[Finite G]`); the problem stating finiteness justifies the binder.",
+    "B_s2: - \"finite set\" → `s : Finset α`; cardinality → `s.card`; \"fintype\" → `Fintype α` with `Fintype.card α`; \"finite type\" → `Finite α`.",
+    "B_s2: theorem finite_group_element_has_order (G : Type*) [Group G] [Fintype G] (a : G) :",
+    "B_s2: (\"finite group\" → `[Group G] [Fintype G]` because the problem states finiteness; \"positive integer n\" → `∃ n : ℕ, 0 < n ∧ …`; the conclusion is the literal equation `a ^ n = 1`, NOT `orderOf a = n`, because the problem asserts a power equals the identity rather than naming \"the order of a\".)",
+    "B_s2: - Are ALL of the problem's hypotheses present as binders — including \"where\"-clauses, positivity, parity, primality, openness, nonzeroness, coprimality, minimality — and none invented (e.g. no `Fintype` unless stated)?"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Fintype.card": {
+   "runs": [
+    "B_s0",
+    "B_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Simple group: `IsSimpleGroup G` with `(G : Type) [Group G]` (Prop-valued, so `¬IsSimpleGroup G` typechecks). For \"|G| = n\" add `[Fintype G]` and `(h : Fintype.card G = n)`. There is NO `IsSimple`.",
+    "B_s0: - Bad: `(G : Type) [Fintype G] [Group G] (h : Fintype.card G = 1365) : ¬IsSimple G` → Good: `theorem card_1365_not_simple (G : Type) [Group G] [Fintype G] (h : Fintype.card G = 1365) : ¬IsSimpleGroup G := by sorry`",
+    "B_s2: - \"finite set\" → `s : Finset α`; cardinality → `s.card`; \"fintype\" → `Fintype α` with `Fintype.card α`; \"finite type\" → `Finite α`.",
+    "B_s2: Conversely, \"there is a positive integer n such that aⁿ = e\" is literally `∃ n : ℕ, 0 < n ∧ a ^ n = 1` — do NOT \"upgrade\" it to `orderOf`. Same for minimal polynomial (`minpoly`), group order (`Nat.card G` / `Fintype.card G`), degree, rank, totient (`Nat.totient`): use the dedicated definition exactly when the problem names the notion."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "DifferentiableOn": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - \"f is holomorphic on an open set Ω\": `(hf : DifferentiableOn ℂ f Ω)` together with `(hΩ : IsOpen Ω)`.",
+    "B_s0: - Bad: `(f : ℂ → ℂ) (Ω : Set ℂ) [OpenSet Ω] : ∀ z₁ z₂ ∈ Ω, Im (f z₁) = Im (f z₂) → ...` → Good: `theorem constant_of_const_imaginary_part (f : ℂ → ℂ) (Ω : Set ℂ) (hΩ : IsOpen Ω) (hf : DifferentiableOn ℂ f Ω) (h : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) : ∃ w : ℂ, ∀ z ∈ Ω, f z = w := by sorry`",
+    "B_s1: - **Hypothesis audit.** Easy-to-miss side conditions count: \"a is nonzero\" needs `ha : a ≠ 0`; \"x > 0\", \"n > m\", \"n is a positive integer\" (`hn : 0 < n`), \"f is holomorphic in Ω\" (`hf : DifferentiableOn ℂ f Ω`) all need explicit hypotheses. Omitting `a ≠ 0` or `0 < n` is a faithfulness error even when the statement compiles.",
+    "B_s1: - **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. \"f is holomorphic on an open set Ω\" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).",
+    "B_s1: (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :",
+    "B_s2: 11. **Re-read the original problem** and verify the statement says *exactly* that: every side condition present as a binder, none invented, quantifiers in the right order, negations in the right place, the exact domain preserved (an open set `Ω` stays `Ω` with `(hΩ : IsOpen Ω)` — do NOT replace it with `univ`), and the exact strength of hypotheses preserved (\"holomorphic\" stays `DifferentiableOn ℂ f Ω` — do NOT weaken it to `ContinuousOn`).",
+    "B_s2: - **\"f is holomorphic on an open set Ω\" → bind `(Ω : Set ℂ)` `(hΩ : IsOpen Ω)` and `(hf : DifferentiableOn ℂ f Ω)`.** Do not weaken to `ContinuousOn`; do not replace `Ω` with `Set.univ`.",
+    "B_s2: - \"derivative\" → `deriv f x` / `HasDerivAt f f' x`; \"differentiable\" → `Differentiable ℝ f`; \"differentiable on a set\" → `DifferentiableOn ℝ f S` (over ℂ: `DifferentiableOn ℂ f S`).",
+    "B_s2: A real failure wrote `ConstantOn f (Set.univ : Set ℂ)` → unknown identifier → score 0, and it also silently replaced \"holomorphic on an open set Ω\" with \"continuous on univ\" — doubly unfaithful. \"f is constant on S\" → `∃ c, ∀ z ∈ S, f z = c`. Keep `Ω` as a binder with `(hΩ : IsOpen Ω)`; keep \"holomorphic\" as `DifferentiableOn ℂ f Ω`.",
+    "B_s2: (hf : DifferentiableOn ℂ f Ω) (hIm : ∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c) :",
+    "B_s2: (The failed attempt used `Im` and `ConstantOn` — neither exists — and replaced Ω with `univ` and holomorphic with `ContinuousOn`. Correct: `Complex.im` via `(f z).im`; \"constant\" expanded as `∃ c, ∀ z ∈ Ω, …`; Ω kept as a bounded open set; holomorphic as `DifferentiableOn ℂ f Ω`.)",
+    "B_s2: - Are the domain and strength of every hypothesis exactly as stated (open set Ω kept as Ω with `IsOpen Ω`, not `univ`; \"holomorphic\" as `DifferentiableOn ℂ f Ω`, not `ContinuousOn`; literal equations like `aⁿ = e` kept literal as `a ^ n = 1`)?",
+    "D_s2: - Even safer: avoid subtypes altogether. Take functions on the whole ambient type and restrict them with predicates: `ContinuousOn f s`, `UniformContinuousOn f s`, `DifferentiableOn ℝ f s`, `MonotoneOn f s`, `Set.EqOn f g s`, and quantifiers `∀ x ∈ s, ...`.",
+    "D_s2: - \"f'(x) exists for x > 0\" → `(hdiff : DifferentiableOn ℝ f (Set.Ioi 0))`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Complex.re": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`.",
+    "B_s1: - **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.",
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - Field projection `.foo` only works if `Namespace.foo` actually exists. Do NOT guess projections: `(w : ℂ).norm` fails because there is no `Complex.norm`. Use known functions/notation instead (`‖w‖`, `Complex.abs w`). Safe Complex projections that DO exist: `z.re`, `z.im` (i.e. `Complex.re z`, `Complex.im z`).",
+    "B_s2: - **Real / imaginary part → `Complex.re z` / `Complex.im z` (or `z.re` / `z.im`). `Re` / `Im` do NOT exist** (a real failure used `Im (f z)` → unknown identifier → score 0).",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).",
+    "B_s2: **(P18) Complex parts are lowercase: `Complex.re` / `Complex.im`.**"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Complex.im": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`.",
+    "B_s1: - **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.",
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - Field projection `.foo` only works if `Namespace.foo` actually exists. Do NOT guess projections: `(w : ℂ).norm` fails because there is no `Complex.norm`. Use known functions/notation instead (`‖w‖`, `Complex.abs w`). Safe Complex projections that DO exist: `z.re`, `z.im` (i.e. `Complex.re z`, `Complex.im z`).",
+    "B_s2: - **Real / imaginary part → `Complex.re z` / `Complex.im z` (or `z.re` / `z.im`). `Re` / `Im` do NOT exist** (a real failure used `Im (f z)` → unknown identifier → score 0).",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).",
+    "B_s2: **(P18) Complex parts are lowercase: `Complex.re` / `Complex.im`.**",
+    "B_s2: A real failure wrote `Im (f z)` → unknown identifier → score 0. Write `(f z).im` or `Complex.im (f z)`. \"Im(f) is constant on Ω\" → `∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c`.",
+    "B_s2: (The failed attempt used `Im` and `ConstantOn` — neither exists — and replaced Ω with `univ` and holomorphic with `ContinuousOn`. Correct: `Complex.im` via `(f z).im`; \"constant\" expanded as `∃ c, ∀ z ∈ Ω, …`; Ω kept as a bounded open set; holomorphic as `DifferentiableOn ℂ f Ω`.)"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Complex": {
+   "runs": [
+    "B_s0",
+    "B_s1"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Complex real/imaginary parts: `(f z).re` and `(f z).im` (i.e. `Complex.re`, `Complex.im`; with `open Complex` also `re`/`im`). There is NO `Im` or `real_part`. Remember `(f z).im : ℝ`.",
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`",
+    "B_s1: - **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "EReal": {
+   "runs": [
+    "B_s0",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - EReal (extended reals): if the context fixes notation like `local notation \"limsup\" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, then either declare the sequences as `(a b : ℕ → EReal)` (pointwise `a + b` works) or coerce real sequences pointwise, e.g. `limsup (fun n => ((a n : ℝ) : EReal))`. Passing `ℕ → ℝ` where `ℕ → EReal` is expected is a type mismatch. `⊤`/`⊥` are `+∞`/`-∞`; EReal addition is total, which is the idiomatic way to absorb side conditions like \"provided the sum is not of the form ∞ − ∞\" (otherwise add such a condition as an explicit hypothesis).",
+    "B_s0: - Bad (when the context's `limsup` expects `ℕ → EReal`): `(a b : ℕ → ℝ) : limsup (a + b) ≤ limsup a + limsup b` → Good: `theorem limsup_add_le (a b : ℕ → EReal) : limsup (a + b) ≤ limsup a + limsup b := by sorry` (or keep `a b : ℕ → ℝ` and coerce each use: `limsup (fun n => ((a n + b n : ℝ) : EReal)) ≤ limsup (fun n => ((a n : ℝ) : EReal)) + limsup (fun n => ((b n : ℝ) : EReal))`).",
+    "B_s0: 5. Check the context's `local notation`/definitions: your uses must match their declared types exactly; insert coercions (e.g. ℝ → EReal) or choose the expected type (e.g. `ℕ → EReal`) where needed.",
+    "B_s2: 2. **Map objects to types** using the context. **If the context defines a `local notation` or `def` that fixes an argument type, your binders must carry EXACTLY that type.** E.g. with `local notation \"limsup\" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, the sequences must be `(a b : ℕ → EReal)` — `ℕ → ℝ` is a type mismatch.",
+    "B_s2: - **Extended reals → `EReal`; +∞ is `⊤`, −∞ is `⊥`. \"The sum is not of the form ∞ − ∞\" → `¬ ((x = ⊤ ∧ y = ⊥) ∨ (x = ⊥ ∧ y = ⊤))` — it excludes BOTH mixed cases, NOT `x = ⊤ ∧ y = ⊤`.**",
+    "B_s2: If the context's `local notation \"limsup\"` is defined for `u : ℕ → EReal`, the binders must be `(a b : ℕ → EReal)`. And \"provided the sum is not of the form ∞ − ∞\" means excluding the two mixed cases `(⊤, ⊥)` and `(⊥, ⊤)` — writing `¬ (limsup a = ⊤ ∧ limsup b = ⊤)` excludes the wrong thing and is unfaithful.",
+    "B_s2: 3. \"limsup(aₙ + bₙ) ≤ limsup aₙ + limsup bₙ provided the right side is not ∞ − ∞\", with context notation `limsup` for `ℕ → EReal`:",
+    "B_s2: theorem limsup_add_le (a b : ℕ → EReal)",
+    "B_s2: (`fun`, not `λ`; binders typed `ℕ → EReal` to match the notation; the side condition excludes both `(⊤,⊥)` and `(⊥,⊤)`.)",
+    "B_s2: - **Types:** `Nat.*` functions receive ℕ (coprimality on ℤ is `IsCoprime`); congruences use `[MOD …]` (ℕ) / `[ZMOD …]` (ℤ) with matching types; binders match any context-provided notation exactly (e.g. `ℕ → EReal`); casts explicit wherever types mix (`(r : ℂ)`, `(N : ℤ)`, `(i : ℚ)`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Filter.limsup": {
+   "runs": [
+    "B_s0",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - EReal (extended reals): if the context fixes notation like `local notation \"limsup\" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, then either declare the sequences as `(a b : ℕ → EReal)` (pointwise `a + b` works) or coerce real sequences pointwise, e.g. `limsup (fun n => ((a n : ℝ) : EReal))`. Passing `ℕ → ℝ` where `ℕ → EReal` is expected is a type mismatch. `⊤`/`⊥` are `+∞`/`-∞`; EReal addition is total, which is the idiomatic way to absorb side conditions like \"provided the sum is not of the form ∞ − ∞\" (otherwise add such a condition as an explicit hypothesis).",
+    "B_s2: 2. **Map objects to types** using the context. **If the context defines a `local notation` or `def` that fixes an argument type, your binders must carry EXACTLY that type.** E.g. with `local notation \"limsup\" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, the sequences must be `(a b : ℕ → EReal)` — `ℕ → ℝ` is a type mismatch.",
+    "B_s2: - \"limsup / liminf\" → `Filter.limsup u atTop` / `Filter.liminf u atTop` (needs `open Filter`); if the context supplies a `local notation \"limsup\"`, use it with arguments of exactly the declared type."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Filter.atTop": {
+   "runs": [
+    "B_s0",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - EReal (extended reals): if the context fixes notation like `local notation \"limsup\" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, then either declare the sequences as `(a b : ℕ → EReal)` (pointwise `a + b` works) or coerce real sequences pointwise, e.g. `limsup (fun n => ((a n : ℝ) : EReal))`. Passing `ℕ → ℝ` where `ℕ → EReal` is expected is a type mismatch. `⊤`/`⊥` are `+∞`/`-∞`; EReal addition is total, which is the idiomatic way to absorb side conditions like \"provided the sum is not of the form ∞ − ∞\" (otherwise add such a condition as an explicit hypothesis).",
+    "B_s2: 2. **Map objects to types** using the context. **If the context defines a `local notation` or `def` that fixes an argument type, your binders must carry EXACTLY that type.** E.g. with `local notation \"limsup\" => fun u : ℕ → EReal => Filter.limsup u Filter.atTop`, the sequences must be `(a b : ℕ → EReal)` — `ℕ → ℝ` is a type mismatch."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Algebra": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "error_example"
+   ],
+   "lines": [
+    "B_s0: - Bad: `(R : Type) [Ring R] [Algebra R K] [IsSubring R K] [OneClass R] : IntegralDomain R` → Good: `(K : Type) [Field K] (S : Subring K) : IsDomain S`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "LinearMap": {
+   "runs": [
+    "B_s0",
+    "D_s1"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`",
+    "D_s1: - **Check that every identifier is in scope** given the exact imports/opens of the context, and respect opened namespaces (e.g. with `open LinearMap`, `ker` resolves; otherwise write `LinearMap.ker`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Re": {
+   "runs": [
+    "B_s0",
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "error_example",
+    "warned"
+   ],
+   "lines": [
+    "B_s0: - Bad: `(V : InnerProductSpace ℂ) (T : LinearMap ℂ V V) : T = T.adj ↔ ∀ (λ : Complex) (v : V), ... → Re λ = λ` → Good: `(V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℂ V] [FiniteDimensional ℂ V] (T : V →ₗ[ℂ] V) (hT : IsStarNormal T) : IsSelfAdjoint T ↔ ∀ μ : ℂ, Module.End.HasEigenvalue T μ → μ.im = 0`",
+    "B_s1: - **Complex parts:** real/imaginary parts are `Complex.re` and `Complex.im`, or `re`/`im` after `open Complex`, or dot notation `(f z).im`. There is no `Im` or `Re` identifier.",
+    "B_s1: (a) Every identifier is either a bound variable, a definition from the context, or a real Mathlib name available under the given opens (no `Set.unitCircle`, no `ConstantOn`, no `Im`/`Re`, no `f'`, no `|x|` for order).",
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - **Real / imaginary part → `Complex.re z` / `Complex.im z` (or `z.re` / `z.im`). `Re` / `Im` do NOT exist** (a real failure used `Im (f z)` → unknown identifier → score 0).",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Subgroup": {
+   "runs": [
+    "B_s0",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: 2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances.",
+    "B_s2: With `{G : Type*} [Group G]`, writing `K ≤ G` or `H.relindex G` fails. The whole group as a subgroup is `⊤ : Subgroup G`; the index `|G : H|` is `H.relindex ⊤` (or `H.index`); `H.relindex K` means `|K : H|`. Same pattern for `Submodule R M`, `Ideal R`. Do NOT add finiteness assumptions the problem doesn't have. Correct formalization of \"H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|\":",
+    "B_s2: theorem Lagrange_chain_rule {G : Type*} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :",
+    "B_s2: If the context defines e.g. `Subgroup.relindex (H K : Subgroup G) : ℕ`, pass `⊤` for the whole group, never the type `G` itself. Likewise, a context `local notation` fixes the exact type of its argument — match it. If the context defines a custom predicate (e.g. `countably_compact X`), apply it exactly as declared."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Ideal": {
+   "runs": [
+    "B_s0",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: 2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances.",
+    "B_s2: With `{G : Type*} [Group G]`, writing `K ≤ G` or `H.relindex G` fails. The whole group as a subgroup is `⊤ : Subgroup G`; the index `|G : H|` is `H.relindex ⊤` (or `H.index`); `H.relindex K` means `|K : H|`. Same pattern for `Submodule R M`, `Ideal R`. Do NOT add finiteness assumptions the problem doesn't have. Correct formalization of \"H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|\":"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Module.End": {
+   "runs": [
+    "B_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s0: 2. Map each object to a standard Mathlib type, preferring bundled subtypes (`Subring K`, `Subgroup G`, `Ideal R`, `Module.End ℂ V`) over ad-hoc predicates, since they bring the required instances."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "orderOf": {
+   "runs": [
+    "B_s1",
+    "B_s2",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Do not weaken hypotheses.** The formal hypothesis must be exactly as strong as the English one. Example: \"|x| = n\" (the order of a group element equals n) is `orderOf x = n`, NOT `x ^ n = 1` — the latter is strictly weaker (it only says n is *an* exponent of x, not *the* order) and is judged unfaithful.",
+    "B_s1: - **Group theory:** the order of an element `x : G` (with `[Group G]`) is `orderOf x : ℕ`. \"|x| = n\" is `hord : orderOf x = n` — there is no `|x|` notation for order, and `x ^ n = 1` is NOT an acceptable substitute (it is weaker). \"n is a positive integer\" is `hn : 0 < n`.",
+    "B_s1: Pitfalls avoided: \"|x| = n\" is `orderOf x = n`, NOT the weaker `x ^ n = 1`; \"positive integer n\" adds the hypothesis `hn : 0 < n`.",
+    "B_s1: (hn : 0 < n) (hord : orderOf x = n) :",
+    "B_s1: (c) ALL hypotheses of the problem appear (re-scan for \"nonzero\", \"positive\", strict inequalities) and NONE are weakened: `orderOf x = n` rather than `x ^ n = 1`; `0 < n` included when n is said to be positive. The conclusion matches the problem, with each case value attached to the correct condition.",
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: 5. **Use Mathlib's dedicated definition when the problem NAMES a notion; translate literal equations literally.** \"The order of x is n\" is `orderOf x = n`, NOT `x ^ n = 1`. But if the problem's conclusion is literally \"aⁿ = e\", write `a ^ n = 1` (the identity `e` is `1` in multiplicative notation) — do NOT replace it with `orderOf`. Same distinction for minimal polynomial (`minpoly`), rank, degree, totient (`Nat.totient`).",
+    "B_s2: - \"the order of an element x\" (|x| = n) → `orderOf x = n` (`orderOf : G → ℕ`; `0` for infinite order). NOT an invented `order x`. But a literal equation \"aⁿ = e\" is `a ^ n = 1`.",
+    "B_s2: \"|x| = n\" (the ORDER of a group element) is `orderOf x = n`, NOT `x ^ n = 1`:",
+    "B_s2: (hx : orderOf x = n) : x⁻¹ = x ^ (n - 1) := by sorry",
+    "B_s2: Conversely, \"there is a positive integer n such that aⁿ = e\" is literally `∃ n : ℕ, 0 < n ∧ a ^ n = 1` — do NOT \"upgrade\" it to `orderOf`. Same for minimal polynomial (`minpoly`), group order (`Nat.card G` / `Fintype.card G`), degree, rank, totient (`Nat.totient`): use the dedicated definition exactly when the problem names the notion.",
+    "B_s2: (\"finite group\" → `[Group G] [Fintype G]` because the problem states finiteness; \"positive integer n\" → `∃ n : ℕ, 0 < n ∧ …`; the conclusion is the literal equation `a ^ n = 1`, NOT `orderOf a = n`, because the problem asserts a power equals the identity rather than naming \"the order of a\".)",
+    "D_s2: - \"|x| = n\" (the order of x equals n) → `(h : orderOf x = n)`. `orderOf : G → ℕ` is Mathlib's name for the order of a group element (it is 0 for elements of infinite order, which is why the positivity hypothesis matters).",
+    "D_s2: `theorem group_element_inverse (G : Type*) [Group G] (x : G) (n : ℕ) (hn : n > 0) (h : orderOf x = n) : x⁻¹ = x^(n-1) := by sorry`",
+    "D_s2: 4. Audit every identifier: is each constant, constructor, and predicate one you are CERTAIN exists in Mathlib or in the given context? Replace any guessed name with a known-safe formulation (e.g. `Zsqrtd.mk` / `⟨...⟩` instead of an invented `.mk`; `orderOf` for the order of a group element; `∘ₗ` and `LinearMap.id` for linear maps)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.Infinite": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **\"There are infinitely many ... such that P\".** Formalize as infinitude of a set: `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). Do NOT formalize as `P a` for a single variable, and do NOT universally quantify over `a`.",
+    "B_s1: - **Infinitely many:** \"there are infinitely many integers a such that P a\" is `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). \"At most countable\" is `Set.Countable` (e.g. `T.Countable` for `T : Set (Set ℝ)`); a union of a set of sets is `⋃₀ T` (`Set.sUnion`, needs `open Set`); open intervals are `Set.Ioo a b` (`Ioo` after `open Set`).",
+    "B_s1: Pitfalls avoided: \"infinite number of a\" is `Set.Infinite {a : ℤ | ...}`, not a claim about one `a`; the polynomial is written concretely with `X` and `C` (no generic `f : ℚ[X] → ℚ[X]`); the integer `a` is coerced via `C (a : ℚ)` so no `HSub`/`HAdd` typeclass failure occurs.",
+    "B_s1: Set.Infinite {a : ℤ | Irreducible (X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ) : ℚ[X])} := by sorry",
+    "B_s1: (g) \"Infinitely many ... such that P\" is `Set.Infinite { ... | P ... }`; \"at most countable\" is `Set.Countable`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Prod.fst": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Concrete objects stay concrete.** Formalize the actual objects named in the problem (e.g. the specific series `z ^ n / n`, the projection `Prod.fst`, the specific polynomial `X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ)`). Do NOT introduce a generic uninterpreted function or variable as a stand-in for a concrete object (e.g. never declare `(f : ℚ[X] → ℚ[X])` and write `f (...)` when the problem names one specific polynomial).",
+    "B_s1: - **Open maps:** \"f is an open map\" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "MetricSpace": {
+   "runs": [
+    "B_s1",
+    "D_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, `Group`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]` and groups as `(G : Type*) [Group G]`. Writing `(X Y : TopologicalSpace)` fails with \"type expected, got (TopologicalSpace : Type _ → Type _)\".",
+    "D_s0: - Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.",
+    "D_s0: - \"Y is complete\" → `[CompleteSpace Y]`; \"metric spaces\" → `[MetricSpace X] [MetricSpace Y]`",
+    "D_s2: 3. **Give every bound variable an explicit type when it cannot be inferred**, e.g. `(n : ℕ)`, `(f : ℝ → ℝ)`, `(X : Type*)`. Typeclass assumptions go in square brackets, e.g. `[MetricSpace X]`, `[CompleteSpace Y]`, `[Group G]`, `[Field F]`, `[Module F V]`. Implicit binders like `{F V : Type*}` are acceptable when the types are determined by later explicit arguments, but explicit binders are always safe.",
+    "D_s2: - \"(X, d_X) and (Y, d_Y) are metric spaces, Y complete\" → `(X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y]`",
+    "D_s2: `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "NormedField": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Typeclasses:** `TopologicalSpace`, `MetricSpace`, `NormedField`, `Group`, etc. are typeclasses, not types. Declare spaces as `(X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]` and groups as `(G : Type*) [Group G]`. Writing `(X Y : TopologicalSpace)` fails with \"type expected, got (TopologicalSpace : Type _ → Type _)\"."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.iUnion": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Sets vs. indexed families:** if `s : Set X` and `x : X`, then `s x` is the PROPOSITION `x ∈ s`, not a set. A family \"T_α\" must be declared with an index type and a function, e.g. `(ι : Type*) (T : ι → Set (Set X))`; then `T α : Set (Set X)` and its union is `⋃ α, T α` (`Set.iUnion`, needs `open Set`). Declaring `(T : Set (Set X))` and then writing `T α` fails with \"Application type mismatch ... has type Prop ... but is expected to have type Set (Set X)\"."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Differentiable": {
+   "runs": [
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Differentiability:** `DifferentiableAt ℝ f x`, `DifferentiableOn ℝ f s`, `Differentiable ℝ f`. \"f is holomorphic on an open set Ω\" is `DifferentiableOn ℂ f Ω` (plus `hΩ : IsOpen Ω` when given).",
+    "B_s2: - \"derivative\" → `deriv f x` / `HasDerivAt f f' x`; \"differentiable\" → `Differentiable ℝ f`; \"differentiable on a set\" → `DifferentiableOn ℝ f S` (over ℂ: `DifferentiableOn ℂ f S`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Summable": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Series:** \"the series ∑ aₙ converges\" is `Summable (fun n => a n)`; \"∑ aₙ = L\" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse \"the series converges\" with \"the terms tend to 0\" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`.",
+    "B_s1: Pitfalls avoided: no comma in `fun` binders; no `Set.unitCircle` (use `‖z‖ = 1`); series convergence is `Summable` of the actual terms `z ^ n / n`, not a limit of an invented `f`.",
+    "B_s1: ∀ z : ℂ, ‖z‖ = 1 → z ≠ 1 → Summable (fun n : ℕ => z ^ n / n) := by sorry"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "HasSum": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Series:** \"the series ∑ aₙ converges\" is `Summable (fun n => a n)`; \"∑ aₙ = L\" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse \"the series converges\" with \"the terms tend to 0\" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Finset.range": {
+   "runs": [
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Series:** \"the series ∑ aₙ converges\" is `Summable (fun n => a n)`; \"∑ aₙ = L\" is `HasSum (fun n => a n) L`; a partial sum is `∑ k in Finset.range n, a k`. Do NOT confuse \"the series converges\" with \"the terms tend to 0\" — never render series convergence as `Tendsto (fun n => a n) atTop (nhds 0)`.",
+    "B_s2: - intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`.",
+    "B_s2: `∑ i in s, f i` needs `open scoped BigOperators`; if in doubt use `Finset.sum s (fun i => f i)`. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is over `Finset.Icc 1 (p - 1)`, NOT `Finset.range p`. For set-valued families, `⋃ i, U i` / `⋂ i, C i` are the indexed operators — `∪`/`∩` are binary only (see P17)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.unitCircle": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "warned"
+   ],
+   "lines": [
+    "B_s1: - **Unit circle:** there is no `Set.unitCircle`. \"z lies on the unit circle\" is `‖z‖ = 1` or `z ∈ Metric.sphere (0 : ℂ) 1`.",
+    "B_s1: Pitfalls avoided: no comma in `fun` binders; no `Set.unitCircle` (use `‖z‖ = 1`); series convergence is `Summable` of the actual terms `z ^ n / n`, not a limit of an invented `f`.",
+    "B_s1: (a) Every identifier is either a bound variable, a definition from the context, or a real Mathlib name available under the given opens (no `Set.unitCircle`, no `ConstantOn`, no `Im`/`Re`, no `f'`, no `|x|` for order)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Metric.sphere": {
+   "runs": [
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Unit circle:** there is no `Set.unitCircle`. \"z lies on the unit circle\" is `‖z‖ = 1` or `z ∈ Metric.sphere (0 : ℂ) 1`.",
+    "B_s2: - \"ball / closed ball / sphere\" → `Metric.ball x r` / `Metric.closedBall x r` / `Metric.sphere x r`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "ConstantOn": {
+   "runs": [
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended",
+    "warned"
+   ],
+   "lines": [
+    "B_s1: - **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `∃ c, ∀ z ∈ s, f z = c` (or `Set.EqOn f (fun _ => c) s`).",
+    "B_s1: (a) Every identifier is either a bound variable, a definition from the context, or a real Mathlib name available under the given opens (no `Set.unitCircle`, no `ConstantOn`, no `Im`/`Re`, no `f'`, no `|x|` for order).",
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: 4. **If a notion has NO Mathlib predicate, expand it into quantifiers over existing functions** instead of inventing a name. \"f is constant on S\" has no `ConstantOn` — write `∃ c, ∀ x ∈ S, f x = c` (or `∀ x ∈ S, ∀ y ∈ S, f x = f y`). \"Im(f) is constant\" → `∃ c : ℝ, ∀ z ∈ S, (f z).im = c`.",
+    "B_s2: - **\"f is constant (on S)\" → there is NO `ConstantOn` in Mathlib.** Write `∃ c, ∀ z ∈ S, f z = c` (or `∀ z ∈ S, ∀ w ∈ S, f z = f w`). \"Im(f) is constant on Ω\" → `∃ c : ℝ, ∀ z ∈ Ω, (f z).im = c`.",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).",
+    "B_s2: **(P19) There is no `ConstantOn`; expand \"constant\" into quantifiers, and keep the problem's exact domain and hypothesis strength.**",
+    "B_s2: A real failure wrote `ConstantOn f (Set.univ : Set ℂ)` → unknown identifier → score 0, and it also silently replaced \"holomorphic on an open set Ω\" with \"continuous on univ\" — doubly unfaithful. \"f is constant on S\" → `∃ c, ∀ z ∈ S, f z = c`. Keep `Ω` as a binder with `(hΩ : IsOpen Ω)`; keep \"holomorphic\" as `DifferentiableOn ℂ f Ω`.",
+    "B_s2: (The failed attempt used `Im` and `ConstantOn` — neither exists — and replaced Ω with `univ` and holomorphic with `ContinuousOn`. Correct: `Complex.im` via `(f z).im`; \"constant\" expanded as `∃ c, ∀ z ∈ Ω, …`; Ω kept as a bounded open set; holomorphic as `DifferentiableOn ℂ f Ω`.)",
+    "B_s2: - **Syntax:** `fun`, never `λ`; no guessed projections (`.norm`); no guessed names (`Nat.phi`, `Im`, `ConstantOn`)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Set.EqOn": {
+   "runs": [
+    "B_s1",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **No `ConstantOn`:** Mathlib has no `ConstantOn` predicate. Use `∃ c, ∀ z ∈ s, f z = c` (or `Set.EqOn f (fun _ => c) s`).",
+    "D_s2: - Even safer: avoid subtypes altogether. Take functions on the whole ambient type and restrict them with predicates: `ContinuousOn f s`, `UniformContinuousOn f s`, `DifferentiableOn ℝ f s`, `MonotoneOn f s`, `Set.EqOn f g s`, and quantifiers `∀ x ∈ s, ...`.",
+    "D_s2: Statements that unfold mathematical objects into quantified predicates over ambient types compile far more reliably than statements built from subtypes, submodules, or specialized structures. For example, \"null(T − λI) is invariant under S\" is safest stated as `∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0` rather than via `LinearMap.ker` and submodule maps. Similarly, prefer `MonotoneOn`/`ContinuousOn`/`Set.EqOn` over subtypes, and `∃!` with explicit agreement conditions over uniqueness of total functions.",
+    "D_s2: - \"g extends f\" / \"g agrees with f on A\": if both functions are on the same ambient type, use `Set.EqOn g f A`; if `g` is on the subtype `{x // x ∈ closure A}` and `f` on `{x // x ∈ A}`, use `∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩`. Note: `∃! g : X → Y, ...` over total functions is usually WRONG for extension problems, because the values of g outside `closure A` are unconstrained, so g is not unique; keep g on the subtype, or state uniqueness as agreement on `closure A`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsOpenMap": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Open maps:** \"f is an open map\" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`.",
+    "B_s1: IsOpenMap (Prod.fst : X × Y → X) ∧ IsOpenMap (Prod.snd : X × Y → Y) := by sorry"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Prod.snd": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Open maps:** \"f is an open map\" is `IsOpenMap f`. The product projections are `Prod.fst : X × Y → X` and `Prod.snd : X × Y → Y`. To state two claims in one theorem, conjoin them with `∧`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Even": {
+   "runs": [
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Number theory:** \"a is nonzero\" is `ha : a ≠ 0`. Parity conditions can be written `a % 2 = 0` (decidable, usable in an `if`) or `Even a` / `Odd a`. `gcd` works on `ℤ`.",
+    "B_s2: - \"even / odd\" → `Even n` / `Odd n`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Odd": {
+   "runs": [
+    "B_s1",
+    "B_s2",
+    "D_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Number theory:** \"a is nonzero\" is `ha : a ≠ 0`. Parity conditions can be written `a % 2 = 0` (decidable, usable in an `if`) or `Even a` / `Odd a`. `gcd` works on `ℤ`.",
+    "B_s2: - \"even / odd\" → `Even n` / `Odd n`.",
+    "B_s2: \"Let p be an odd prime\" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)`. \"… = a/b, where a, b are integers. Show p ∣ a\" means: bind `a b : ℤ` universally with the hypothesis that the sum equals `(a : ℚ) / b`, conclude `(p : ℤ) ∣ a`:",
+    "B_s2: theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)",
+    "B_s2: Add `(hn : 0 < n)` (or use `n : ℕ+`). Same for \"nonzero\" (`hx : x ≠ 0`), \"n ≥ 2\" (`(hn : 2 ≤ n)`), \"odd prime\" (both `Nat.Prime p` and `Odd p`):",
+    "D_s0: - Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.",
+    "D_s0: - \"equals 1 or 2 depending on whether a is odd or even\" → `= if Odd a then 1 else 2`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Polynomial": {
+   "runs": [
+    "B_s1",
+    "B_s2",
+    "D_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Polynomials:** the type of univariate polynomials over a ring `R` is `Polynomial R`, with notation `R[X]` after `open Polynomial`. The indeterminate is `X : R[X]`. Embed a coefficient `a : R` as the constant polynomial `C a : R[X]`. Write concrete polynomials with these, e.g. `(X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ) : ℚ[X])`.",
+    "B_s2: - \"polynomial over R\" → `Polynomial R` (notation `R[X]` needs `open Polynomial`).",
+    "D_s0: - Add explicit type ascriptions where elaboration is ambiguous, e.g. `(Polynomial.X^3 + 6 * Polynomial.X + 12 : Polynomial ℚ)`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "HSub": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "error_example"
+   ],
+   "lines": [
+    "B_s1: - **Coercions into polynomials are NOT automatic across rings:** an integer `a : ℤ` used as a coefficient of a polynomial over `ℚ` must be coerced explicitly: `C (a : ℚ)`. Writing `... + a` with `a : ℤ` inside `ℚ[X]`, or mixing raw numerals without `C`, can fail with typeclass errors such as `failed to synthesize instance ... HSub`/`HAdd`/`HMul`.",
+    "B_s1: Pitfalls avoided: \"infinite number of a\" is `Set.Infinite {a : ℤ | ...}`, not a claim about one `a`; the polynomial is written concretely with `X` and `C` (no generic `f : ℚ[X] → ℚ[X]`); the integer `a` is coerced via `C (a : ℚ)` so no `HSub`/`HAdd` typeclass failure occurs."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "HAdd": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "error_example"
+   ],
+   "lines": [
+    "B_s1: - **Coercions into polynomials are NOT automatic across rings:** an integer `a : ℤ` used as a coefficient of a polynomial over `ℚ` must be coerced explicitly: `C (a : ℚ)`. Writing `... + a` with `a : ℤ` inside `ℚ[X]`, or mixing raw numerals without `C`, can fail with typeclass errors such as `failed to synthesize instance ... HSub`/`HAdd`/`HMul`.",
+    "B_s1: Pitfalls avoided: \"infinite number of a\" is `Set.Infinite {a : ℤ | ...}`, not a claim about one `a`; the polynomial is written concretely with `X` and `C` (no generic `f : ℚ[X] → ℚ[X]`); the integer `a` is coerced via `C (a : ℚ)` so no `HSub`/`HAdd` typeclass failure occurs."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "HMul": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "error_example"
+   ],
+   "lines": [
+    "B_s1: - **Coercions into polynomials are NOT automatic across rings:** an integer `a : ℤ` used as a coefficient of a polynomial over `ℚ` must be coerced explicitly: `C (a : ℚ)`. Writing `... + a` with `a : ℤ` inside `ℚ[X]`, or mixing raw numerals without `C`, can fail with typeclass errors such as `failed to synthesize instance ... HSub`/`HAdd`/`HMul`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Irreducible": {
+   "runs": [
+    "B_s1",
+    "D_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - \"p is irreducible in ℚ[X]\" is `Irreducible (p : ℚ[X])`.",
+    "B_s1: Set.Infinite {a : ℤ | Irreducible (X ^ 7 + C 15 * X ^ 2 - C 30 * X + C (a : ℚ) : ℚ[X])} := by sorry",
+    "D_s0: - Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.",
+    "D_s2: - \"is irreducible\" → `Irreducible`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.Countable": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Infinitely many:** \"there are infinitely many integers a such that P a\" is `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). \"At most countable\" is `Set.Countable` (e.g. `T.Countable` for `T : Set (Set ℝ)`); a union of a set of sets is `⋃₀ T` (`Set.sUnion`, needs `open Set`); open intervals are `Set.Ioo a b` (`Ioo` after `open Set`).",
+    "B_s1: Pitfall avoided: even when the formalization is nontrivial, you MUST still emit one closed code block with a best-effort theorem — an empty answer scores zero. \"At most countable\" is `Set.Countable`; \"segments\" are open intervals `Ioo a b`; union of a set of sets is `⋃₀ T`.",
+    "B_s1: (g) \"Infinitely many ... such that P\" is `Set.Infinite { ... | P ... }`; \"at most countable\" is `Set.Countable`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.sUnion": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Infinitely many:** \"there are infinitely many integers a such that P a\" is `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). \"At most countable\" is `Set.Countable` (e.g. `T.Countable` for `T : Set (Set ℝ)`); a union of a set of sets is `⋃₀ T` (`Set.sUnion`, needs `open Set`); open intervals are `Set.Ioo a b` (`Ioo` after `open Set`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.Ioo": {
+   "runs": [
+    "B_s1",
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Infinitely many:** \"there are infinitely many integers a such that P a\" is `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). \"At most countable\" is `Set.Countable` (e.g. `T.Countable` for `T : Set (Set ℝ)`); a union of a set of sets is `⋃₀ T` (`Set.sUnion`, needs `open Set`); open intervals are `Set.Ioo a b` (`Ioo` after `open Set`).",
+    "B_s2: - intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Ioo": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: - **Infinitely many:** \"there are infinitely many integers a such that P a\" is `Set.Infinite {a : ℤ | P a}` (or `{a : ℤ | P a}.Infinite` with `open Set`). \"At most countable\" is `Set.Countable` (e.g. `T.Countable` for `T : Set (Set ℝ)`); a union of a set of sets is `⋃₀ T` (`Set.sUnion`, needs `open Set`); open intervals are `Set.Ioo a b` (`Ioo` after `open Set`).",
+    "B_s1: Pitfall avoided: even when the formalization is nontrivial, you MUST still emit one closed code block with a best-effort theorem — an empty answer scores zero. \"At most countable\" is `Set.Countable`; \"segments\" are open intervals `Ioo a b`; union of a set of sets is `⋃₀ T`.",
+    "B_s1: ∃ T : Set (Set ℝ), T.Countable ∧ (∀ t ∈ T, ∃ a b : ℝ, t = Ioo a b) ∧"
+   ],
+   "outage": false,
+   "exists": "constant under the items' opens"
+  },
+  "Disjoint": {
+   "runs": [
+    "B_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s1: (∀ t₁ ∈ T, ∀ t₂ ∈ T, t₁ ≠ t₂ → Disjoint t₁ t₂) ∧ s = ⋃₀ T := by sorry"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsConnected": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"S is connected\" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S`.",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).",
+    "B_s2: ¬ ∀ S : Set ℝ, IsConnected S → IsConnected (interior S) := by sorry",
+    "B_s2: or equivalently `∃ S : Set ℝ, IsConnected S ∧ ¬ IsConnected (interior S)`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsClosed": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"S is open / closed / compact\" → `IsOpen S` / `IsClosed S` / `IsCompact S`.",
+    "B_s2: (∀ i, IsClosed (C i)) → (∀ i, (C i).Nonempty) → (∀ i, C (i + 1) ⊆ C i) →"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsCompact": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"S is open / closed / compact\" → `IsOpen S` / `IsClosed S` / `IsCompact S`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsCyclic": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"G is cyclic\" → `IsCyclic G`; \"subgroup generated by S\" → `Subgroup.closure S`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsUnit": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"x is a unit\" → `IsUnit x`; \"minimal polynomial\" → `minpoly R x`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsConj": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"a is conjugate to b\" → `IsConj a b`.",
+    "B_s2: or equivalently `IsConj (a * b) (b * a)`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "IsCoprime": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"coprime\" — naturals → `Nat.Coprime m n` (**arguments MUST be ℕ; passing an ℤ is a type error**); integers or a general ring → `IsCoprime x y` (Bézout: `∃ u v, u * x + v * y = 1`).",
+    "B_s2: `Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`.",
+    "B_s2: (`Nat.totient`, not `Nat.phi`; `M₁` and `d'` bound; the \"where\"-clause present as `hdd'`; all-ℕ so `Nat.Coprime` and `[MOD N]` typecheck. An ℤ variant would use `IsCoprime` and `[ZMOD (N : ℤ)]`.)",
+    "B_s2: - **Types:** `Nat.*` functions receive ℕ (coprimality on ℤ is `IsCoprime`); congruences use `[MOD …]` (ℕ) / `[ZMOD …]` (ℤ) with matching types; binders match any context-provided notation exactly (e.g. `ℕ → EReal`); casts explicit wherever types mix (`(r : ℂ)`, `(N : ℤ)`, `(i : ℚ)`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Real.sqrt": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"square root\" → `Real.sqrt x` (after `open Real`, just `sqrt x`); \"exp/log/sin/cos\" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.totient": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: 5. **Use Mathlib's dedicated definition when the problem NAMES a notion; translate literal equations literally.** \"The order of x is n\" is `orderOf x = n`, NOT `x ^ n = 1`. But if the problem's conclusion is literally \"aⁿ = e\", write `a ^ n = 1` (the identity `e` is `1` in multiplicative notation) — do NOT replace it with `orderOf`. Same distinction for minimal polynomial (`minpoly`), rank, degree, totient (`Nat.totient`).",
+    "B_s2: 8. **Type audit.** For every application, check argument types: `Nat.Coprime` / `Nat.totient` / `Nat.choose` / `Nat.gcd` take ℕ only; `[ZMOD n]` takes ℤ; context notations take exactly the types they declare. Insert explicit casts — `(N : ℤ)`, `(r : ℂ)`, `(i : ℚ)` — wherever types differ. Never rely on implicit coercion in mixed-type arithmetic like `r * w`.",
+    "B_s2: - **Euler's totient φ(n) → `Nat.totient n`. `Nat.phi` does NOT exist.**",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).",
+    "B_s2: Conversely, \"there is a positive integer n such that aⁿ = e\" is literally `∃ n : ℕ, 0 < n ∧ a ^ n = 1` — do NOT \"upgrade\" it to `orderOf`. Same for minimal polynomial (`minpoly`), group order (`Nat.card G` / `Fintype.card G`), degree, rank, totient (`Nat.totient`): use the dedicated definition exactly when the problem names the notion.",
+    "B_s2: If the problem says \"if M₁ ≡ M^d (mod N) … where d′ satisfies d d′ ≡ 1 (mod φ(N))\", then `M₁` and `d'` are binders AND `(hdd' : d * d' ≡ 1 [MOD Nat.totient N])` is a hypothesis. Leaving `M₁` free is an unknown-identifier error; dropping the `d d' ≡ 1` condition is unfaithful.",
+    "B_s2: `Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`.",
+    "B_s2: (d : ℕ) (hd : Nat.Coprime d (Nat.totient N)) (M₁ d' : ℕ)",
+    "B_s2: (hM1 : M₁ ≡ M ^ d [MOD N]) (hdd' : d * d' ≡ 1 [MOD Nat.totient N]) :",
+    "B_s2: (`Nat.totient`, not `Nat.phi`; `M₁` and `d'` bound; the \"where\"-clause present as `hdd'`; all-ℕ so `Nat.Coprime` and `[MOD N]` typecheck. An ℤ variant would use `IsCoprime` and `[ZMOD (N : ℤ)]`.)"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Complex.abs": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - Field projection `.foo` only works if `Namespace.foo` actually exists. Do NOT guess projections: `(w : ℂ).norm` fails because there is no `Complex.norm`. Use known functions/notation instead (`‖w‖`, `Complex.abs w`). Safe Complex projections that DO exist: `z.re`, `z.im` (i.e. `Complex.re z`, `Complex.im z`).",
+    "B_s2: - **Complex absolute value / modulus → `Complex.abs w` or `‖w‖`. NOT `Complex.norm`, NOT `(w : ℂ).norm`.**",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Interior": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended",
+    "warned"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"interior / closure / frontier of S\" → `interior S` / `closure S` / `frontier S`. NOT `Interior S`.",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Connected": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended",
+    "warned"
+   ],
+   "lines": [
+    "B_s2: 3. **Map each notion to the EXACT Mathlib identifier** (reference table below). Never guess a plausible-looking name — a wrong name is a compile error and an automatic 0. Mathlib naming conventions: most predicates are `IsX` (`IsConnected`, `IsOpen`, `IsClosed`, `IsCompact`, `IsCyclic`, `IsUnit`, `IsConj`, `IsCoprime`); most operations are lowercase (`interior`, `closure`, `frontier`, `deriv`, `orderOf`, `Real.sqrt`, `Nat.totient`, `Complex.im`, `Complex.re`, `Complex.abs`). **Capitalized variants like `Im`, `Re`, `Interior`, `Connected`, `ConstantOn` do NOT exist.**",
+    "B_s2: - \"S is connected\" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S`.",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Nat.Coprime": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 8. **Type audit.** For every application, check argument types: `Nat.Coprime` / `Nat.totient` / `Nat.choose` / `Nat.gcd` take ℕ only; `[ZMOD n]` takes ℤ; context notations take exactly the types they declare. Insert explicit casts — `(N : ℤ)`, `(r : ℂ)`, `(i : ℚ)` — wherever types differ. Never rely on implicit coercion in mixed-type arithmetic like `r * w`.",
+    "B_s2: - \"coprime\" — naturals → `Nat.Coprime m n` (**arguments MUST be ℕ; passing an ℤ is a type error**); integers or a general ring → `IsCoprime x y` (Bézout: `∃ u v, u * x + v * y = 1`).",
+    "B_s2: `Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`.",
+    "B_s2: theorem RSA_decrypt_key_property (N : ℕ) (hN : 0 < N) (M : ℕ) (hM : Nat.Coprime M N)",
+    "B_s2: (d : ℕ) (hd : Nat.Coprime d (Nat.totient N)) (M₁ d' : ℕ)",
+    "B_s2: (`Nat.totient`, not `Nat.phi`; `M₁` and `d'` bound; the \"where\"-clause present as `hdd'`; all-ℕ so `Nat.Coprime` and `[MOD N]` typecheck. An ℤ variant would use `IsCoprime` and `[ZMOD (N : ℤ)]`.)"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.choose": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 8. **Type audit.** For every application, check argument types: `Nat.Coprime` / `Nat.totient` / `Nat.choose` / `Nat.gcd` take ℕ only; `[ZMOD n]` takes ℤ; context notations take exactly the types they declare. Insert explicit casts — `(N : ℤ)`, `(r : ℂ)`, `(i : ℚ)` — wherever types differ. Never rely on implicit coercion in mixed-type arithmetic like `r * w`.",
+    "B_s2: - \"integers mod n\" → `ZMod n`; \"n choose k\" → `Nat.choose n k`; \"n!\" → `Nat.factorial n`.",
+    "B_s2: `Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.gcd": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 8. **Type audit.** For every application, check argument types: `Nat.Coprime` / `Nat.totient` / `Nat.choose` / `Nat.gcd` take ℕ only; `[ZMOD n]` takes ℤ; context notations take exactly the types they declare. Insert explicit casts — `(N : ℤ)`, `(r : ℂ)`, `(i : ℚ)` — wherever types differ. Never rely on implicit coercion in mixed-type arithmetic like `r * w`.",
+    "B_s2: - \"gcd / lcm of naturals\" → `Nat.gcd` / `Nat.lcm`.",
+    "B_s2: `Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "ContinuousOn": {
+   "runs": [
+    "B_s2",
+    "D_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: 11. **Re-read the original problem** and verify the statement says *exactly* that: every side condition present as a binder, none invented, quantifiers in the right order, negations in the right place, the exact domain preserved (an open set `Ω` stays `Ω` with `(hΩ : IsOpen Ω)` — do NOT replace it with `univ`), and the exact strength of hypotheses preserved (\"holomorphic\" stays `DifferentiableOn ℂ f Ω` — do NOT weaken it to `ContinuousOn`).",
+    "B_s2: - \"f is continuous / continuous at x / continuous on S\" → `Continuous f` / `ContinuousAt f x` / `ContinuousOn f S`.",
+    "B_s2: - **\"f is holomorphic on an open set Ω\" → bind `(Ω : Set ℂ)` `(hΩ : IsOpen Ω)` and `(hf : DifferentiableOn ℂ f Ω)`.** Do not weaken to `ContinuousOn`; do not replace `Ω` with `Set.univ`.",
+    "B_s2: (The failed attempt used `Im` and `ConstantOn` — neither exists — and replaced Ω with `univ` and holomorphic with `ContinuousOn`. Correct: `Complex.im` via `(f z).im`; \"constant\" expanded as `∃ c, ∀ z ∈ Ω, …`; Ω kept as a bounded open set; holomorphic as `DifferentiableOn ℂ f Ω`.)",
+    "B_s2: - Are the domain and strength of every hypothesis exactly as stated (open set Ω kept as Ω with `IsOpen Ω`, not `univ`; \"holomorphic\" as `DifferentiableOn ℂ f Ω`, not `ContinuousOn`; literal equations like `aⁿ = e` kept literal as `a ^ n = 1`)?",
+    "D_s2: - Even safer: avoid subtypes altogether. Take functions on the whole ambient type and restrict them with predicates: `ContinuousOn f s`, `UniformContinuousOn f s`, `DifferentiableOn ℝ f s`, `MonotoneOn f s`, `Set.EqOn f g s`, and quantifiers `∀ x ∈ s, ...`.",
+    "D_s2: Statements that unfold mathematical objects into quantified predicates over ambient types compile far more reliably than statements built from subtypes, submodules, or specialized structures. For example, \"null(T − λI) is invariant under S\" is safest stated as `∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0` rather than via `LinearMap.ker` and submodule maps. Similarly, prefer `MonotoneOn`/`ContinuousOn`/`Set.EqOn` over subtypes, and `∃!` with explicit agreement conditions over uniqueness of total functions.",
+    "D_s2: - \"f is continuous for x ≥ 0\" → `(hcont : ContinuousOn f (Set.Ici 0))`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Complex.norm": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended",
+    "warned"
+   ],
+   "lines": [
+    "B_s2: - Field projection `.foo` only works if `Namespace.foo` actually exists. Do NOT guess projections: `(w : ℂ).norm` fails because there is no `Complex.norm`. Use known functions/notation instead (`‖w‖`, `Complex.abs w`). Safe Complex projections that DO exist: `z.re`, `z.im` (i.e. `Complex.re z`, `Complex.im z`).",
+    "B_s2: - **Complex absolute value / modulus → `Complex.abs w` or `‖w‖`. NOT `Complex.norm`, NOT `(w : ℂ).norm`.**",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "LE": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - Errors like `failed to synthesize LE Type` / `OfNat Type 0` mean a notation was misparsed and Lean read a type-level comparison. When a special type is risky, use the plain base type plus an explicit hypothesis (e.g. `r : ℝ` with `(hr : 0 ≤ r)` instead of `r : ℝ≥0`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "OfNat": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - Errors like `failed to synthesize LE Type` / `OfNat Type 0` mean a notation was misparsed and Lean read a type-level comparison. When a special type is risky, use the plain base type plus an explicit hypothesis (e.g. `r : ℝ` with `(hr : 0 ≤ r)` instead of `r : ℝ≥0`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.IsConnected": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"S is connected\" → `IsConnected S` (full name `Set.IsConnected`; available after `open Set`). NOT `Connected S`.",
+    "B_s2: If unsure of a name, prefer the standard Mathlib spelling above and fully qualify it (e.g. `Set.IsConnected`). NEVER emit a name you are not certain exists — if no certain name exists for a notion, expand the notion into quantifiers over names you do know (see Method step 4)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Set.Nonempty": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"S is nonempty\" → `S.Nonempty` (`Set.Nonempty S`) or `S ≠ ∅`.",
+    "B_s2: (The failed attempt wrote `(∩ i, C i) ≠ ∅` — `∩` is binary, a parse error. The indexed intersection is `⋂ i, C i`, mirroring the `⋃ i, U i` in the context's def, and it is parenthesized before `.Nonempty`. \"Nested C₁ ⊇ C₂ ⊇ ⋯\" is `∀ i, C (i + 1) ⊆ C i`; \"nonempty\" is `Set.Nonempty` via dot notation.)"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Continuous": {
+   "runs": [
+    "B_s2",
+    "D_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"f is continuous / continuous at x / continuous on S\" → `Continuous f` / `ContinuousAt f x` / `ContinuousOn f S`.",
+    "D_s0: - Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.",
+    "D_s0: - multiple conclusion properties (\"g extends f, is continuous, and is uniformly continuous\") → conjoin them: `(agreement condition) ∧ Continuous g ∧ UniformContinuous g`",
+    "D_s2: `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "ContinuousAt": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"f is continuous / continuous at x / continuous on S\" → `Continuous f` / `ContinuousAt f x` / `ContinuousOn f S`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Metric.ball": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"ball / closed ball / sphere\" → `Metric.ball x r` / `Metric.closedBall x r` / `Metric.sphere x r`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Metric.closedBall": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"ball / closed ball / sphere\" → `Metric.ball x r` / `Metric.closedBall x r` / `Metric.sphere x r`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "TendstoUniformly": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"uniform convergence\" → `TendstoUniformly F f atTop`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Subgroup.closure": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"G is cyclic\" → `IsCyclic G`; \"subgroup generated by S\" → `Subgroup.closure S`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Finite": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"G is finite\" → `[Fintype G]` (or `[Finite G]`); the problem stating finiteness justifies the binder.",
+    "B_s2: - \"finite set\" → `s : Finset α`; cardinality → `s.card`; \"fintype\" → `Fintype α` with `Fintype.card α`; \"finite type\" → `Finite α`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.Prime": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"p is prime\" (natural) → `Nat.Prime p`; (general ring) → `Prime p`.",
+    "B_s2: \"Let p be an odd prime\" requires BOTH `(hp : Nat.Prime p)` and `(hodd : Odd p)`. \"… = a/b, where a, b are integers. Show p ∣ a\" means: bind `a b : ℤ` universally with the hypothesis that the sum equals `(a : ℚ) / b`, conclude `(p : ℤ) ∣ a`:",
+    "B_s2: theorem p_divides_a (p : ℕ) (hp : Nat.Prime p) (hodd : Odd p) (a b : ℤ)",
+    "B_s2: Add `(hn : 0 < n)` (or use `n : ℕ+`). Same for \"nonzero\" (`hx : x ≠ 0`), \"n ≥ 2\" (`(hn : 2 ≤ n)`), \"odd prime\" (both `Nat.Prime p` and `Odd p`):"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Prime": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"p is prime\" (natural) → `Nat.Prime p`; (general ring) → `Prime p`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.phi": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended",
+    "warned"
+   ],
+   "lines": [
+    "B_s2: - **Euler's totient φ(n) → `Nat.totient n`. `Nat.phi` does NOT exist.**",
+    "B_s2: `Connected`, `Interior`, `Nat.phi`, `Complex.norm`, `Im`, `Re`, `ConstantOn` do NOT exist; the correct names are `IsConnected`, `interior`, `Nat.totient`, `Complex.abs` / `‖·‖`, `Complex.im`, `Complex.re`, and an explicit `∃ c, ∀ z ∈ S, f z = c`. With `autoImplicit` off, an unknown identifier is a compile error (score 0).",
+    "B_s2: (`Nat.totient`, not `Nat.phi`; `M₁` and `d'` bound; the \"where\"-clause present as `hdd'`; all-ℕ so `Nat.Coprime` and `[MOD N]` typecheck. An ℤ variant would use `IsCoprime` and `[ZMOD (N : ℤ)]`.)",
+    "B_s2: - **Syntax:** `fun`, never `λ`; no guessed projections (`.norm`); no guessed names (`Nat.phi`, `Im`, `ConstantOn`)."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Nat.ModEq": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - Congruence mod n — naturals → `a ≡ b [MOD n]` (`Nat.ModEq`); integers → `a ≡ b [ZMOD n]` (`Int.ModEq`). Both are global notations (no `open` needed). For `[ZMOD n]`, all of `n a b` must be ℤ; cast a natural modulus: `(N : ℤ)`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Int.ModEq": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - Congruence mod n — naturals → `a ≡ b [MOD n]` (`Nat.ModEq`); integers → `a ≡ b [ZMOD n]` (`Int.ModEq`). Both are global notations (no `open` needed). For `[ZMOD n]`, all of `n a b` must be ℤ; cast a natural modulus: `(N : ℤ)`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "ZMod": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"integers mod n\" → `ZMod n`; \"n choose k\" → `Nat.choose n k`; \"n!\" → `Nat.factorial n`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.factorial": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"integers mod n\" → `ZMod n`; \"n choose k\" → `Nat.choose n k`; \"n!\" → `Nat.factorial n`.",
+    "B_s2: `Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.lcm": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"gcd / lcm of naturals\" → `Nat.gcd` / `Nat.lcm`.",
+    "B_s2: `Nat.Coprime`, `Nat.totient`, `Nat.gcd`, `Nat.lcm`, `Nat.choose`, `Nat.factorial` take ℕ only. Either keep the variables in ℕ, or switch the notion (`IsCoprime` for ℤ) — never pass an ℤ to `Nat.Coprime`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Matrix": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"matrix\" → `Matrix m n R`; \"rank / finite rank\" → `Module.rank R M` / `FiniteDimensional.finrank R M`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Module.rank": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"matrix\" → `Matrix m n R`; \"rank / finite rank\" → `Module.rank R M` / `FiniteDimensional.finrank R M`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "FiniteDimensional.finrank": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"matrix\" → `Matrix m n R`; \"rank / finite rank\" → `Module.rank R M` / `FiniteDimensional.finrank R M`."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Set.univ": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - **\"f is holomorphic on an open set Ω\" → bind `(Ω : Set ℂ)` `(hΩ : IsOpen Ω)` and `(hf : DifferentiableOn ℂ f Ω)`.** Do not weaken to `ContinuousOn`; do not replace `Ω` with `Set.univ`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Real": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"square root\" → `Real.sqrt x` (after `open Real`, just `sqrt x`); \"exp/log/sin/cos\" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Real.exp": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"square root\" → `Real.sqrt x` (after `open Real`, just `sqrt x`); \"exp/log/sin/cos\" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Real.log": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"square root\" → `Real.sqrt x` (after `open Real`, just `sqrt x`); \"exp/log/sin/cos\" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Real.sin": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"square root\" → `Real.sqrt x` (after `open Real`, just `sqrt x`); \"exp/log/sin/cos\" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Real.cos": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"square root\" → `Real.sqrt x` (after `open Real`, just `sqrt x`); \"exp/log/sin/cos\" → `Real.exp` / `Real.log` / `Real.sin` / `Real.cos`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "NNReal": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "error_example"
+   ],
+   "lines": [
+    "B_s2: - **Nonnegative reals: the type `ℝ≥0` (= `NNReal`) exists, but mixing it into arithmetic with `ℝ`/`ℂ` often fails to unify or coerce. PREFER `r : ℝ` with a `(hr : 0 ≤ r)` binder and explicit casts, e.g. `z = (r : ℂ) * w`.**"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Filter.liminf": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"limsup / liminf\" → `Filter.limsup u atTop` / `Filter.liminf u atTop` (needs `open Filter`); if the context supplies a `local notation \"limsup\"`, use it with arguments of exactly the declared type."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "HasDerivAt": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"derivative\" → `deriv f x` / `HasDerivAt f f' x`; \"differentiable\" → `Differentiable ℝ f`; \"differentiable on a set\" → `DifferentiableOn ℝ f S` (over ℂ: `DifferentiableOn ℂ f S`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "BigOperators": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"sum/product over a finite set\" → `∑ x in s, f x` / `∏ x in s, f x` (needs `open scoped BigOperators`) or `Finset.sum s f` / `Finset.prod s f` (always parses).",
+    "B_s2: `∑ i in s, f i` needs `open scoped BigOperators`; if in doubt use `Finset.sum s (fun i => f i)`. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is over `Finset.Icc 1 (p - 1)`, NOT `Finset.range p`. For set-valued families, `⋃ i, U i` / `⋂ i, C i` are the indexed operators — `∪`/`∩` are binary only (see P17)."
+   ],
+   "outage": false,
+   "exists": "namespace"
+  },
+  "Finset.sum": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"sum/product over a finite set\" → `∑ x in s, f x` / `∏ x in s, f x` (needs `open scoped BigOperators`) or `Finset.sum s f` / `Finset.prod s f` (always parses).",
+    "B_s2: `∑ i in s, f i` needs `open scoped BigOperators`; if in doubt use `Finset.sum s (fun i => f i)`. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is over `Finset.Icc 1 (p - 1)`, NOT `Finset.range p`. For set-valued families, `⋃ i, U i` / `⋂ i, C i` are the indexed operators — `∪`/`∩` are binary only (see P17)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Finset.prod": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"sum/product over a finite set\" → `∑ x in s, f x` / `∏ x in s, f x` (needs `open scoped BigOperators`) or `Finset.sum s f` / `Finset.prod s f` (always parses)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Finset": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"finite set\" → `s : Finset α`; cardinality → `s.card`; \"fintype\" → `Fintype α` with `Fintype.card α`; \"finite type\" → `Finite α`.",
+    "B_s2: 4. \"X is countably compact iff every nested sequence C₁ ⊇ C₂ ⊇ ⋯ of closed nonempty sets has nonempty intersection\", with a context `def countably_compact X := ∀ U : ℕ → Set X, (∀ i, IsOpen (U i)) ∧ ((univ : Set X) ⊆ ⋃ i, U i) → (∃ t : Finset ℕ, (univ : Set X) ⊆ ⋃ i ∈ t, U i)`:"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Finset.Icc": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`.",
+    "B_s2: `∑ i in s, f i` needs `open scoped BigOperators`; if in doubt use `Finset.sum s (fun i => f i)`. Match the index set exactly: `1 + 1/2 + … + 1/(p-1)` is over `Finset.Icc 1 (p - 1)`, NOT `Finset.range p`. For set-valued families, `⋃ i, U i` / `⋂ i, C i` are the indexed operators — `∪`/`∩` are binary only (see P17).",
+    "B_s2: (h : (∑ i in Finset.Icc 1 (p - 1), (1 : ℚ) / (i : ℚ)) = (a : ℚ) / (b : ℚ)) :"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.Icc": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - intervals: `Finset.Icc a b`, `Finset.range n` (= {0,…,n-1}), `Set.Icc a b`, `Set.Ioo a b`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "sSup": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"supremum / infimum of a set\" → `sSup S` / `sInf S`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "sInf": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"supremum / infimum of a set\" → `sSup S` / `sInf S`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "MeasurableSet": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"measurable set / function\" → `MeasurableSet S` / `Measurable f`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Measurable": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: - \"measurable set / function\" → `MeasurableSet S` / `Measurable f`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Submodule": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: With `{G : Type*} [Group G]`, writing `K ≤ G` or `H.relindex G` fails. The whole group as a subgroup is `⊤ : Subgroup G`; the index `|G : H|` is `H.relindex ⊤` (or `H.index`); `H.relindex K` means `|K : H|`. Same pattern for `Submodule R M`, `Ideal R`. Do NOT add finiteness assumptions the problem doesn't have. Correct formalization of \"H ≤ K ≤ G ⇒ |G:H| = |G:K|·|K:H|\":"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat.card": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: Conversely, \"there is a positive integer n such that aⁿ = e\" is literally `∃ n : ℕ, 0 < n ∧ a ^ n = 1` — do NOT \"upgrade\" it to `orderOf`. Same for minimal polynomial (`minpoly`), group order (`Nat.card G` / `Fintype.card G`), degree, rank, totient (`Nat.totient`): use the dedicated definition exactly when the problem names the notion."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Nat": {
+   "runs": [
+    "B_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "B_s2: **(P14) Number-type discipline for `Nat.*` functions.**",
+    "B_s2: - **Types:** `Nat.*` functions receive ℕ (coprimality on ℤ is `IsCoprime`); congruences use `[MOD …]` (ℕ) / `[ZMOD …]` (ℤ) with matching types; binders match any context-provided notation exactly (e.g. `ℕ → EReal`); casts explicit wherever types mix (`(r : ℂ)`, `(N : ℤ)`, `(i : ℚ)`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.inclusion": {
+   "runs": [
+    "D_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s0: or use `Set.inclusion subset_closure : ↥A → ↥(closure A)`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "subset_closure": {
+   "runs": [
+    "D_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s0: or use `Set.inclusion subset_closure : ↥A → ↥(closure A)`.",
+    "D_s0: (Here `subset_closure : A ⊆ closure A` turns a proof of `x ∈ A` into a proof of `x ∈ closure A`.)",
+    "D_s2: - Insert the inclusion term explicitly: `g ⟨a, subset_closure a.property⟩`; or",
+    "D_s2: - Re-quantify over the base type: `∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩`.",
+    "D_s2: - The standard fact is `subset_closure : A ⊆ closure A`.",
+    "D_s2: - \"g extends f\" / \"g agrees with f on A\": if both functions are on the same ambient type, use `Set.EqOn g f A`; if `g` is on the subtype `{x // x ∈ closure A}` and `f` on `{x // x ∈ A}`, use `∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩`. Note: `∃! g : X → Y, ...` over total functions is usually WRONG for extension problems, because the values of g outside `closure A` are unconstrained, so g is not unique; keep g on the subtype, or state uniqueness as agreement on `closure A`.",
+    "D_s2: - Unique extension of a uniformly continuous map to the closure (note the explicit inclusion `⟨x, subset_closure hx⟩`):",
+    "D_s2: `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`",
+    "D_s2: - `... ∀ (a : {a : X // a ∈ A}), g a = f a` where `g : {a : X // a ∈ closure A} → Y` — fails with \"Application type mismatch: argument a has type {a // a ∈ A} but is expected to have type {a // a ∈ closure A}\". Insert the inclusion `⟨a, subset_closure a.property⟩` or re-quantify over `X` as shown above."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Int.gcd": {
+   "runs": [
+    "D_s0"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s0: - Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "CompleteSpace": {
+   "runs": [
+    "D_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s0: - Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.",
+    "D_s0: - \"Y is complete\" → `[CompleteSpace Y]`; \"metric spaces\" → `[MetricSpace X] [MetricSpace Y]`",
+    "D_s2: 3. **Give every bound variable an explicit type when it cannot be inferred**, e.g. `(n : ℕ)`, `(f : ℝ → ℝ)`, `(X : Type*)`. Typeclass assumptions go in square brackets, e.g. `[MetricSpace X]`, `[CompleteSpace Y]`, `[Group G]`, `[Field F]`, `[Module F V]`. Implicit binders like `{F V : Type*}` are acceptable when the types are determined by later explicit arguments, but explicit binders are always safe.",
+    "D_s2: - \"(X, d_X) and (Y, d_Y) are metric spaces, Y complete\" → `(X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y]`",
+    "D_s2: `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "UniformContinuous": {
+   "runs": [
+    "D_s0",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s0: - Use only identifiers that exist in Mathlib under the given opens, with correct signatures, e.g. `Irreducible`, `Int.gcd : ℤ → ℤ → ℕ`, `Odd`, `MetricSpace`, `CompleteSpace`, `UniformContinuous`, `Continuous`, `closure`.",
+    "D_s0: - multiple conclusion properties (\"g extends f, is continuous, and is uniformly continuous\") → conjoin them: `(agreement condition) ∧ Continuous g ∧ UniformContinuous g`",
+    "D_s2: - \"f : A → Y is uniformly continuous\" → either `(f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f)` or `(f : X → Y) (hf : UniformContinuousOn f A)`",
+    "D_s2: - \"uniformly continuous\" on the whole domain → `UniformContinuous f`; on a set → `UniformContinuousOn f s`.",
+    "D_s2: `theorem extend_uniformly_continuous (X Y : Type*) [MetricSpace X] [MetricSpace Y] [CompleteSpace Y] (A : Set X) (f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f) : ∃! g : {a : X // a ∈ closure A} → Y, Continuous g ∧ UniformContinuous g ∧ ∀ (x : X) (hx : x ∈ A), g ⟨x, subset_closure hx⟩ = f ⟨x, hx⟩ := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "LinearMap.ker": {
+   "runs": [
+    "D_s1",
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s1: - **Check that every identifier is in scope** given the exact imports/opens of the context, and respect opened namespaces (e.g. with `open LinearMap`, `ker` resolves; otherwise write `LinearMap.ker`).",
+    "D_s1: - Null space / eigenspace: `LinearMap.ker (T - l • LinearMap.id)` for `null (T - λI)`.",
+    "D_s1: - Invariance of a subspace under `S`: `∀ v : V, v ∈ LinearMap.ker (...) → S v ∈ LinearMap.ker (...)`.",
+    "D_s2: Statements that unfold mathematical objects into quantified predicates over ambient types compile far more reliably than statements built from subtypes, submodules, or specialized structures. For example, \"null(T − λI) is invariant under S\" is safest stated as `∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0` rather than via `LinearMap.ker` and submodule maps. Similarly, prefer `MonotoneOn`/`ContinuousOn`/`Set.EqOn` over subtypes, and `∃!` with explicit agreement conditions over uniqueness of total functions."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Countable": {
+   "runs": [
+    "D_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s1: - **Formalize the FULL strength of the statement; never weaken the conclusion.** Example: \"there exists a point p at which E condenses\" means every neighborhood of p contains uncountably many points of E, i.e. `∃ p : ℝ, ∀ U ∈ 𝓝 p, ¬ Countable (U ∩ E)` (equivalently `Set.Uncountable (U ∩ E)`). A statement like `∃ p, p ∈ closure E ∧ p ∉ E` is strictly weaker and is judged unfaithful.",
+    "D_s1: - Neighborhood filter: `𝓝 p`; uncountability: `Set.Uncountable s` or `¬ Countable s`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.Uncountable": {
+   "runs": [
+    "D_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s1: - **Formalize the FULL strength of the statement; never weaken the conclusion.** Example: \"there exists a point p at which E condenses\" means every neighborhood of p contains uncountably many points of E, i.e. `∃ p : ℝ, ∀ U ∈ 𝓝 p, ¬ Countable (U ∩ E)` (equivalently `Set.Uncountable (U ∩ E)`). A statement like `∃ p, p ∈ closure E ∧ p ∉ E` is strictly weaker and is judged unfaithful.",
+    "D_s1: - Neighborhood filter: `𝓝 p`; uncountability: `Set.Uncountable s` or `¬ Countable s`."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "Function.Commute": {
+   "runs": [
+    "D_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s1: - **Keep all quantifiers and hypotheses.** \"for every λ ∈ F\" becomes `∀ l : F, ...`; \"ST = TS\" becomes `S ∘ₗ T = T ∘ₗ S` (or `Function.Commute S T`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "LinearMap.id": {
+   "runs": [
+    "D_s1",
+    "D_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "D_s1: - Null space / eigenspace: `LinearMap.ker (T - l • LinearMap.id)` for `null (T - λI)`.",
+    "D_s1: - Composition of linear maps: `S ∘ₗ T`; scalar multiple of the identity: `l • LinearMap.id`.",
+    "D_s2: Statements that unfold mathematical objects into quantified predicates over ambient types compile far more reliably than statements built from subtypes, submodules, or specialized structures. For example, \"null(T − λI) is invariant under S\" is safest stated as `∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0` rather than via `LinearMap.ker` and submodule maps. Similarly, prefer `MonotoneOn`/`ContinuousOn`/`Set.EqOn` over subtypes, and `∃!` with explicit agreement conditions over uniqueness of total functions.",
+    "D_s2: - \"T − λI\" (operator minus scalar times identity) → `(T - μ • LinearMap.id)` — remember to rename λ to μ (rule 1)!",
+    "D_s2: - \"null(T − λI) is invariant under S for every λ\" → `∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0`",
+    "D_s2: `theorem invariant_null_space {F V : Type*} [Field F] [AddCommGroup V] [Module F V] (S T : V →ₗ[F] V) (h : S ∘ₗ T = T ∘ₗ S) : ∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0 := by sorry`",
+    "D_s2: - `∀ λ : F, (T - λ • LinearMap.id) v = 0 → ...` — fails to parse with `unexpected token 'λ'; expected '(', '[', '_', '{' or identifier`. `λ` is a reserved token and can NEVER be used as a variable name; rename it to `μ` (or `l`, `lam`).",
+    "D_s2: 4. Audit every identifier: is each constant, constructor, and predicate one you are CERTAIN exists in Mathlib or in the given context? Replace any guessed name with a known-safe formulation (e.g. `Zsqrtd.mk` / `⟨...⟩` instead of an invented `.mk`; `orderOf` for the order of a group element; `∘ₗ` and `LinearMap.id` for linear maps)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "generateFrom": {
+   "runs": [
+    "D_s1"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s1: - Topology generated by a basis: `generateFrom ...`; comparison of topologies: `≤` on `TopologicalSpace X`."
+   ],
+   "outage": false,
+   "exists": "constant under the items' opens"
+  },
+  "MonotoneOn": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: `MonotoneOn (fun x => f x / x) (Set.Ioi 0)`",
+    "D_s2: `let g := fun x => f x / x` (newline) `MonotoneOn g (Set.Ioi 0)`.",
+    "D_s2: - If a `let` is truly needed, put it on one line with a semicolon: `let g := fun x => f x / x; MonotoneOn g (Set.Ioi 0)`.",
+    "D_s2: - Even safer: avoid subtypes altogether. Take functions on the whole ambient type and restrict them with predicates: `ContinuousOn f s`, `UniformContinuousOn f s`, `DifferentiableOn ℝ f s`, `MonotoneOn f s`, `Set.EqOn f g s`, and quantifiers `∀ x ∈ s, ...`.",
+    "D_s2: Statements that unfold mathematical objects into quantified predicates over ambient types compile far more reliably than statements built from subtypes, submodules, or specialized structures. For example, \"null(T − λI) is invariant under S\" is safest stated as `∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0` rather than via `LinearMap.ker` and submodule maps. Similarly, prefer `MonotoneOn`/`ContinuousOn`/`Set.EqOn` over subtypes, and `∃!` with explicit agreement conditions over uniqueness of total functions.",
+    "D_s2: - \"f' is monotonically increasing\" → `(hmono : MonotoneOn (deriv f) (Set.Ioi 0))`",
+    "D_s2: - \"monotonically increasing\" on a set → `MonotoneOn f s`; on the whole domain → `Monotone f`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.Ioi": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: `MonotoneOn (fun x => f x / x) (Set.Ioi 0)`",
+    "D_s2: `let g := fun x => f x / x` (newline) `MonotoneOn g (Set.Ioi 0)`.",
+    "D_s2: - If a `let` is truly needed, put it on one line with a semicolon: `let g := fun x => f x / x; MonotoneOn g (Set.Ioi 0)`.",
+    "D_s2: - \"f'(x) exists for x > 0\" → `(hdiff : DifferentiableOn ℝ f (Set.Ioi 0))`",
+    "D_s2: - \"f' is monotonically increasing\" → `(hmono : MonotoneOn (deriv f) (Set.Ioi 0))`",
+    "D_s2: - The conclusion must match the problem exactly, including the domain/quantifiers (e.g. monotonicity on `Set.Ioi 0` when the statement is about x > 0, and `∀ μ : F` when the statement says \"for every λ ∈ F\")."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Module": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: 3. **Give every bound variable an explicit type when it cannot be inferred**, e.g. `(n : ℕ)`, `(f : ℝ → ℝ)`, `(X : Type*)`. Typeclass assumptions go in square brackets, e.g. `[MetricSpace X]`, `[CompleteSpace Y]`, `[Group G]`, `[Field F]`, `[Module F V]`. Implicit binders like `{F V : Type*}` are acceptable when the types are determined by later explicit arguments, but explicit binders are always safe.",
+    "D_s2: - \"V is a vector space over F\" → `{F V : Type*} [Field F] [AddCommGroup V] [Module F V]`",
+    "D_s2: `theorem invariant_null_space {F V : Type*} [Field F] [AddCommGroup V] [Module F V] (S T : V →ₗ[F] V) (h : S ∘ₗ T = T ∘ₗ S) : ∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0 := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "GaussianInt": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "error_example",
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - Type synonyms/abbreviations do NOT get their own constructors. The Gaussian integers ℤ[i] are `GaussianInt`, which Mathlib defines as `Zsqrtd (-1)`; there is NO `GaussianInt.mk`. Build the element a + bi as `(Zsqrtd.mk a b : GaussianInt)` or with the anonymous constructor `(⟨a, b⟩ : GaussianInt)`.",
+    "D_s2: - The Gaussian integers ℤ[i] → `GaussianInt` (which is `Zsqrtd (-1)`); a + bi → `(Zsqrtd.mk a b : GaussianInt)` or `(⟨a, b⟩ : GaussianInt)`; \"a divides b in ℤ[i]\" → `(a : GaussianInt) ∣ b`.",
+    "D_s2: `theorem gaussian_integer_divisibility : ((Zsqrtd.mk 1 1 : GaussianInt)^2) ∣ (2 : GaussianInt) := by sorry`",
+    "D_s2: `theorem gaussian_integer_divisibility : (⟨1, 1⟩ : GaussianInt)^2 ∣ (2 : GaussianInt) := by sorry`",
+    "D_s2: - `(GaussianInt.mk 1 1)^2 ∣ (2 : GaussianInt)` — fails with `Unknown constant GaussianInt.mk`. `GaussianInt` is a synonym for `Zsqrtd (-1)` and has no constructor of its own; use `Zsqrtd.mk 1 1` or `⟨1, 1⟩`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Zsqrtd": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - Type synonyms/abbreviations do NOT get their own constructors. The Gaussian integers ℤ[i] are `GaussianInt`, which Mathlib defines as `Zsqrtd (-1)`; there is NO `GaussianInt.mk`. Build the element a + bi as `(Zsqrtd.mk a b : GaussianInt)` or with the anonymous constructor `(⟨a, b⟩ : GaussianInt)`.",
+    "D_s2: - The ring ℤ[√-n] → `Zsqrtd (-(n : ℤ))`; its element √-n → `(Zsqrtd.mk 0 1 : Zsqrtd (-(n : ℤ)))`; 1 + √-n → `(Zsqrtd.mk 1 1 : Zsqrtd (-(n : ℤ)))`; the ring element 2 → `(2 : Zsqrtd (-(n : ℤ)))`.",
+    "D_s2: - The Gaussian integers ℤ[i] → `GaussianInt` (which is `Zsqrtd (-1)`); a + bi → `(Zsqrtd.mk a b : GaussianInt)` or `(⟨a, b⟩ : GaussianInt)`; \"a divides b in ℤ[i]\" → `(a : GaussianInt) ∣ b`.",
+    "D_s2: - `(GaussianInt.mk 1 1)^2 ∣ (2 : GaussianInt)` — fails with `Unknown constant GaussianInt.mk`. `GaussianInt` is a synonym for `Zsqrtd (-1)` and has no constructor of its own; use `Zsqrtd.mk 1 1` or `⟨1, 1⟩`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "GaussianInt.mk": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "error_example",
+    "warned"
+   ],
+   "lines": [
+    "D_s2: - Type synonyms/abbreviations do NOT get their own constructors. The Gaussian integers ℤ[i] are `GaussianInt`, which Mathlib defines as `Zsqrtd (-1)`; there is NO `GaussianInt.mk`. Build the element a + bi as `(Zsqrtd.mk a b : GaussianInt)` or with the anonymous constructor `(⟨a, b⟩ : GaussianInt)`.",
+    "D_s2: - `(GaussianInt.mk 1 1)^2 ∣ (2 : GaussianInt)` — fails with `Unknown constant GaussianInt.mk`. `GaussianInt` is a synonym for `Zsqrtd (-1)` and has no constructor of its own; use `Zsqrtd.mk 1 1` or `⟨1, 1⟩`."
+   ],
+   "outage": false,
+   "exists": null
+  },
+  "UniformContinuousOn": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - Even safer: avoid subtypes altogether. Take functions on the whole ambient type and restrict them with predicates: `ContinuousOn f s`, `UniformContinuousOn f s`, `DifferentiableOn ℝ f s`, `MonotoneOn f s`, `Set.EqOn f g s`, and quantifiers `∀ x ∈ s, ...`.",
+    "D_s2: - \"f : A → Y is uniformly continuous\" → either `(f : {a : X // a ∈ A} → Y) (hf : UniformContinuous f)` or `(f : X → Y) (hf : UniformContinuousOn f A)`",
+    "D_s2: - \"uniformly continuous\" on the whole domain → `UniformContinuous f`; on a set → `UniformContinuousOn f s`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Set.Ici": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - \"f is continuous for x ≥ 0\" → `(hcont : ContinuousOn f (Set.Ici 0))`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Squarefree": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - \"n is a squarefree integer greater than 3\" → `(n : ℕ) (hn_sq : Squarefree n) (hn_gt : n > 3)`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "AddCommGroup": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - \"V is a vector space over F\" → `{F V : Type*} [Field F] [AddCommGroup V] [Module F V]`",
+    "D_s2: `theorem invariant_null_space {F V : Type*} [Field F] [AddCommGroup V] [Module F V] (S T : V →ₗ[F] V) (h : S ∘ₗ T = T ∘ₗ S) : ∀ μ : F, ∀ v : V, (T - μ • LinearMap.id) v = 0 → (T - μ • LinearMap.id) (S v) = 0 := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "LinearMap.comp": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - \"ST = TS\" (S and T commute) → `(h : S ∘ₗ T = T ∘ₗ S)` — `∘ₗ` is linear-map composition (`LinearMap.comp`)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Fin": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - Vectors in ℝ^k → `(k : ℕ) (x y : Fin k → ℝ)`; norms `‖x‖`, sums and differences work directly on `Fin k → ℝ`.",
+    "D_s2: `theorem vector_parallelogram_identity (k : ℕ) (x y : Fin k → ℝ) : ‖x + y‖^2 + ‖x - y‖^2 = 2 * ‖x‖^2 + 2 * ‖y‖^2 := by sorry`"
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Monotone": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - \"monotonically increasing\" on a set → `MonotoneOn f s`; on the whole domain → `Monotone f`."
+   ],
+   "outage": false,
+   "exists": "constant"
+  },
+  "Zsqrtd.mk": {
+   "runs": [
+    "D_s2"
+   ],
+   "roles": [
+    "recommended"
+   ],
+   "lines": [
+    "D_s2: - Divisibility in ℤ[i] (both `Zsqrtd.mk` and the anonymous constructor `⟨1, 1⟩` work):",
+    "D_s2: - `(GaussianInt.mk 1 1)^2 ∣ (2 : GaussianInt)` — fails with `Unknown constant GaussianInt.mk`. `GaussianInt` is a synonym for `Zsqrtd (-1)` and has no constructor of its own; use `Zsqrtd.mk 1 1` or `⟨1, 1⟩`.",
+    "D_s2: 4. Audit every identifier: is each constant, constructor, and predicate one you are CERTAIN exists in Mathlib or in the given context? Replace any guessed name with a known-safe formulation (e.g. `Zsqrtd.mk` / `⟨...⟩` instead of an invented `.mk`; `orderOf` for the order of a group element; `∘ₗ` and `LinearMap.id` for linear maps)."
+   ],
+   "outage": false,
+   "exists": "constant"
+  }
+ }
+}

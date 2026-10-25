@@ -6,6 +6,9 @@ Exploratory (labeled so wherever they appear):
   get the final-eval truth label (certificate first, then the reference judge, with Deviation 4's re-ask).
 - compile errors for arms A and B: each non-compiling test output is re-checked through AXLE and put in a
   bucket by its first Lean error.
+- the judge-minus-truth gap over GEPA iterations: a within-run slope pooled per model, with an item bootstrap.
+- Mathlib names in the six optimized prompts: each name checked with AXLE, and whether the prompt warns
+  against it or recommends it.
 
 The number check: every number in the writeup must be listed in numbers.json, and every listed number
 with a source must equal that JSON value at the precision shown.
@@ -14,6 +17,8 @@ import json
 import re
 from collections import Counter
 from functools import reduce
+
+import numpy as np
 
 from src.axle_check import OUTAGE
 from src.scoring.compile import candidate_content
@@ -69,6 +74,126 @@ def candidate_summary(rows):
                                 "truth_missing": sum(r["truth_label"] is None and r["truth_source"] != "outage" for r in rs),
                                 "outages": sum(r["truth_source"] == "outage" for r in rs)})
     return out
+
+
+def candidate_iterations(run_dir):
+    """{candidate index: x}: 0 for the seed prompt, i + 1 for a candidate proposed at GEPA iteration i."""
+    log = json.loads((run_dir / "gepa/run_log.json").read_text())
+    return {0: 0, **{p: e["i"] + 1 for e in log for p in (e.get("new_program_indices") or [])}}
+
+
+def _slope(x, gaps, groups):
+    """Within-group OLS slope of gaps on x (one common slope, an intercept per group); gaps may be 2-D
+    (candidates x resamples)."""
+    xd, gd = x.astype(float).copy(), gaps.astype(float).copy()
+    for g in np.unique(groups):
+        m = groups == g
+        xd[m] -= xd[m].mean()
+        gd[m] -= gd[m].mean(axis=0)
+    return (xd @ gd) / (xd @ xd)
+
+
+def gap_slope(rows, iters, n_boot, seed, exclude=()):
+    """Slope of (judge score minus truth score), in points per GEPA iteration, pooled within run.
+
+    rows: candidate-truth rows of one model; iters: {run_id: {candidate: x}}; exclude: candidate indices
+    left out. Each resample draws the validation items with replacement, the same draw for every candidate."""
+    cells = {}
+    for r in rows:
+        if r["candidate"] not in exclude:
+            cells.setdefault((r["run_id"], r["candidate"]), {})[r["item_id"]] = r["judge_score"] - (r["truth_label"] == "faithful")
+    keys = sorted(cells)
+    items = sorted({i for c in cells.values() for i in c})
+    d = 100 * np.array([[cells[k][i] for i in items] for k in keys])
+    x = np.array([iters[run][cand] for run, cand in keys])
+    groups = np.array([run for run, _ in keys])
+    idx = np.random.default_rng(seed).integers(0, len(items), (n_boot, len(items)))
+    boot = _slope(x, d[:, idx].mean(axis=2), groups)
+    lo, hi = np.percentile(boot, [2.5, 97.5])
+    return {"slope": float(_slope(x, d.mean(axis=1), groups)), "ci": [float(lo), float(hi)],
+            "candidates": len(keys), "mean_gap": float(d.mean()), "max_x": int(x.max())}
+
+
+# --- Mathlib names in the optimized prompts ---------------------------------------------------------
+
+IDENT = re.compile(r"(?<![\w.'@\\])@?([A-Za-z_][\w']*(?:\.[A-Za-z_][\w']*)*)")
+KEYWORDS = {"theorem", "lemma", "def", "fun", "by", "sorry", "import", "open", "scoped", "Type", "Prop", "Sort",
+            "have", "show", "let", "in", "at", "with", "then", "else", "if", "match", "where", "from", "set_option",
+            "autoImplicit", "Mathlib", "local", "notation", "variable", "example", "true", "false", "theorem_name"}
+PLACEHOLDERS = {"IsX", "Foo.bar", "Namespace.foo"}  # the prompts' own placeholder names, not claims about Mathlib
+SPANS = r"((?:`X+`(?:\s*(?:,|/|\bor\b|\band\b)\s*)?)+)"  # a list of (masked) backtick spans
+# a nonexistence claim: "no `X`", "an invented `X`", "no guessed names (`X`", "invent classes like `X`",
+# or "`X`, `Y` do NOT exist"
+# ("NOT `X`" is left out: "NOT `ContinuousOn`" or "NOT `x ^ n = 1`" are about meaning, not existence)
+WARN_BEFORE = re.compile(r"(?:\b(?:no|NO)|nonexistent|invented|invent\w* (?:\w+ )?like)\s+(?:an? |the )?(?:invented |nonexistent |guessed \w+ \(?)?"
+                         + SPANS + r"(?![\s`X/,]*(?:unless|typeclass failure))")
+WARN_AFTER = re.compile(SPANS + r"\s*(?:\u2014|-|,)?\s*(?:(?:do|does|are|is) (?:NOT|not) (?:exist|real)|(?:don't|doesn't) exist|neither exists)")
+UNKNOWN = re.compile(r"Unknown (?:constant|identifier) `?([\w.']+)")
+CLAUSE = re.compile(r"Good:|→|;|(?<=[.)])\s+(?=[A-Z(`])")
+BINDER = re.compile(r"(?:[(\[{⦃]|∀|∃|fun|λ)\s*((?:[^\s:(){}\[\],]+\s+)*[^\s:(){}\[\],]+)\s*:")
+DEFINED = re.compile(r"(?:theorem|lemma|def|abbrev|structure|class|inductive|instance)\s+([^\s:({\[]+)")
+
+
+def mathlib_like(tok):
+    """A namespaced name (first part capitalized, 2+ characters, so not a field of a variable `T.adj`), a
+    capitalized name of 2+ characters, or a lowercase name of 4+ characters with camelCase or an underscore.
+    Bound variables and the items' own definitions are dropped by the caller."""
+    if tok in KEYWORDS or tok in PLACEHOLDERS or not tok.isascii() or tok.isupper() and len(tok) > 2:
+        return False
+    if "." in tok:
+        return tok[0].isupper() and len(tok.split(".")[0]) >= 2
+    return (tok[0].isupper() and len(tok) >= 2) or (len(tok) >= 4 and (any(c.isupper() for c in tok) or "_" in tok))
+
+
+def defined_names(text):
+    return set(DEFINED.findall(text)) | set(re.findall(r'notation\s+"([^"]+)"', text))
+
+
+def prompt_names(text, exclude=frozenset()):
+    """{name: {"roles": {...}, "lines": [line, ...]}} for the names in backtick spans and fenced code blocks
+    (Lean comments dropped). Role by the clause the span sits in: "warned" when it says the name does not
+    exist (WARN_BEFORE, WARN_AFTER, or an "Unknown constant" message);
+    "error_example" on the Bad side of a Bad/Good pair or in a clause about a failure; otherwise "recommended".
+    Binders, theorem names and `exclude` (the items' own definitions) are left out."""
+    out = {}
+    lines = text.splitlines()
+    in_block = False
+    for line in lines:
+        if line.strip().startswith("```"):
+            in_block = not in_block
+            continue
+        line = line.replace("```", "   ")  # a fence mentioned mid-sentence is not a span
+        spans = [(line, None)] if in_block else [(m.group(1), m.start()) for m in re.finditer(r"`([^`]+)`", line)]
+        # clause separators and warnings outside the spans (a span's own arrows and semicolons don't split it)
+        masked = re.sub(r"`([^`]+)`", lambda m: "`" + "X" * len(m.group(1)) + "`", line)
+        seps = [m.span() for m in CLAUSE.finditer(masked)]
+        before = [m.span(1) for m in WARN_BEFORE.finditer(masked)]
+        after = [m.span(1) for m in WARN_AFTER.finditer(masked)]
+        for span, pos in spans:
+            skip = defined_names(span) | {n for b in BINDER.findall(span) for n in b.split()}
+            role = "recommended"
+            if pos is not None:
+                start = max([e for _, e in seps if e <= pos], default=0)
+                end = min([b for b, _ in seps if b > pos], default=len(line))
+                clause = masked[start:end]
+                if any(a <= pos < b for a, b in before + after):
+                    role = "warned"
+                elif "Bad:" in clause or re.search(r"\bfail", clause, re.IGNORECASE):
+                    role = "error_example"
+            unknown = set(UNKNOWN.findall(span))
+            for tok in IDENT.findall(re.sub(r"--.*|Unknown (?:constant|identifier)", "", span)):
+                if mathlib_like(tok) and tok not in skip and tok not in exclude:
+                    e = out.setdefault(tok, {"roles": set(), "lines": []})
+                    e["roles"].add("warned" if tok in unknown else role)
+                    if line.strip() not in e["lines"]:
+                        e["lines"].append(line.strip())
+    return out
+
+
+def name_check_contents(name, opens):
+    """Three ways a name can exist: a constant, a constant under the items' opens, a namespace."""
+    return [f"import Mathlib\n\n#check @{name}\n", f"import Mathlib\n\n{opens}\n\n#check @{name}\n",
+            f"import Mathlib\n\nopen {name} in\nexample : True := trivial\n"]
 
 
 # --- compile errors for arms A and B ---------------------------------------------------------------

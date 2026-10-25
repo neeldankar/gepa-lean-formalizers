@@ -13,7 +13,7 @@ Read from `runs/{B,D}_s{0,1,2}/best_prompt.txt` and compared with the seed promp
 
 | Rule | Runs |
 |---|---|
-| Never invent identifiers. Lists of names that do not exist (for example `Im`, `Re`, `ConstantOn`, `IsSimple`, `OpenSet`, `Nat.phi`, `GaussianInt.mk`, `Set.unitCircle`, `Complex.norm`) | B_s0, B_s1, B_s2, D_s1, D_s2 |
+| Never invent identifiers, with warnings naming identifiers that do not exist (for example `Im`, `Re`, `ConstantOn`, `IsSimple`, `OpenSet`, `Nat.phi`, `GaussianInt.mk`, `Set.unitCircle`, `Complex.norm`). AXLE confirms all 14 names they call nonexistent are absent; but 4 names they present as usable are absent too (`Complex.abs`, `FiniteDimensional.finrank`, `Set.IsConnected`, `Set.Uncountable`; `runs/chunk7/prompt_names.json`) | B_s0, B_s1, B_s2, D_s1, D_s2 |
 | No Lean 3 lambdas (`λ x, ...`); write `fun x => ...` | B_s0, B_s1, B_s2 |
 | `λ` is reserved and cannot be a variable name; rename an eigenvalue to `μ` | B_s0, D_s1, D_s2 |
 | Typeclasses are not types: `(X : Type*) [TopologicalSpace X]`, and instances must be synthesizable | B_s0, B_s1, B_s2, D_s2 |

@@ -1,8 +1,10 @@
-"""Chunk 7: candidate ordering and summary, the compile-error buckets, and the writeup number check."""
+"""Chunk 7: candidate ordering and summary, the gap slope, the prompt names, the compile-error buckets, and the
+writeup number check."""
 import json
 
 from src.axle_check import CheckResult
-from src.chunk7 import candidate_files, candidate_summary, check_numbers, compile_errors, em_dashes, error_bucket, numbers_in
+from src.chunk7 import (candidate_files, candidate_iterations, candidate_summary, check_numbers, compile_errors, em_dashes,
+                        error_bucket, gap_slope, numbers_in, prompt_names)
 
 
 def test_candidate_files_follow_gepa_order(tmp_path):
@@ -67,3 +69,43 @@ def test_em_dash_scan(tmp_path):
     (tmp_path / "a.md").write_text("fine - here")
     (tmp_path / "b.md").write_text("bad \u2014 here")
     assert em_dashes(sorted(tmp_path.glob("*.md"))) == {str(tmp_path / "b.md"): 1}
+
+
+def test_candidate_iterations_seed_is_zero(tmp_path):
+    (tmp_path / "gepa").mkdir()
+    (tmp_path / "gepa/run_log.json").write_text(json.dumps([{"i": 0, "new_program_indices": [1]}, {"i": 1},
+                                                            {"i": 2, "new_program_indices": [2]}]))
+    assert candidate_iterations(tmp_path) == {0: 0, 1: 1, 2: 3}
+
+
+def _gap_rows(gap_items):
+    """Two runs, candidates at x = 0..3; at x the first gap_items(x) of 10 items are judged faithful but are not."""
+    return [{"run_id": run, "candidate": x, "item_id": f"v{i}", "judge_score": int(i < gap_items(x)), "truth_label": "unfaithful"}
+            for run in ("B_s0", "B_s1") for x in range(4) for i in range(10)]
+
+
+def test_gap_slope_recovers_a_linear_gap_and_a_constant_one():
+    iters = {run: {x: x for x in range(4)} for run in ("B_s0", "B_s1")}
+    s = gap_slope(_gap_rows(lambda x: x), iters, 200, 0)
+    assert abs(s["slope"] - 10) < 1e-9 and s["candidates"] == 8 and s["ci"][0] <= 10 <= s["ci"][1]
+    flat = gap_slope(_gap_rows(lambda x: 3), iters, 200, 0)
+    assert abs(flat["slope"]) < 1e-9 and abs(flat["mean_gap"] - 30) < 1e-9 and max(map(abs, flat["ci"])) < 1e-9
+    assert gap_slope(_gap_rows(lambda x: x), iters, 50, 0, exclude={0})["candidates"] == 6
+
+
+def test_prompt_names_roles_and_exclusions():
+    text = "\n".join([
+        "- There is NO `OpenSet` class. Use `(hΩ : IsOpen Ω)`.",
+        "- Bad: `(G : Type) [Group G] : ¬IsSimple G` → Good: `IsSimpleGroup G`",
+        "- `Re` / `Im` do NOT exist; use `Complex.re`.",
+        "- holomorphic is `DifferentiableOn ℂ f Ω`, NOT `ContinuousOn`; no `Fintype` unless stated.",
+        "- typed `\\IUnion`; a field `z.re`; the item's `K_topology`.",
+        "```lean4",
+        "theorem my_name (x : ℝ) (hx : 0 < x) : Real.sqrt x > 0 := by sorry -- Not `Foo`",
+        "```",
+    ])
+    roles = {k: v["roles"] for k, v in prompt_names(text, exclude={"K_topology"}).items()}
+    assert roles == {"OpenSet": {"warned"}, "IsOpen": {"recommended"}, "Group": {"error_example"},
+                     "IsSimple": {"error_example"}, "IsSimpleGroup": {"recommended"}, "Re": {"warned"}, "Im": {"warned"},
+                     "Complex.re": {"recommended"}, "DifferentiableOn": {"recommended"}, "ContinuousOn": {"recommended"},
+                     "Fintype": {"recommended"}, "Real.sqrt": {"recommended"}}

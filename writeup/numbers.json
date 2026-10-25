@@ -420,5 +420,70 @@
   "value": "10",
   "source": "runs/chunk7/writeup_facts.json",
   "path": "candidates_B.judge_equals_truth"
+ },
+ {
+  "value": "158",
+  "source": "runs/chunk7/prompt_names.json",
+  "path": "totals.distinct_names"
+ },
+ {
+  "value": "14",
+  "source": "runs/chunk7/prompt_names.json",
+  "path": "totals.warned.n_absent"
+ },
+ {
+  "value": "14",
+  "source": "runs/chunk7/prompt_names.json",
+  "path": "totals.warned.names"
+ },
+ {
+  "value": "4",
+  "source": "runs/chunk7/prompt_names.json",
+  "path": "totals.only_recommended.n_absent"
+ },
+ {
+  "value": "124",
+  "source": "runs/chunk7/prompt_names.json",
+  "path": "totals.only_recommended.names"
+ },
+ {
+  "value": "6.1",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "D.all.mean_gap"
+ },
+ {
+  "value": "-0.09",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "D.all.slope"
+ },
+ {
+  "value": "-0.27",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "D.all.ci.0"
+ },
+ {
+  "value": "0.08",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "D.all.ci.1"
+ },
+ {
+  "value": "-0.05",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "B.all.slope"
+ },
+ {
+  "value": "-0.22",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "B.all.ci.0"
+ },
+ {
+  "value": "0.11",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "B.all.ci.1"
+ },
+ {
+  "value": "7",
+  "source": "runs/chunk7/gap_slope.json",
+  "path": "seed_pass_items_differ.max"
  }
 ]
