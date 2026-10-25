@@ -9,10 +9,10 @@
   - `scripts.chunk7 check` passes: numbers, em dashes, secret scan of the full history.
 - **Left for chunk 7:**
   1. Provenance: read, scan and store `chatgpt_labels_transcript.pdf` and the labels-only extract, and confirm the typed calls match `labels.csv`. Until then the writeup's "the transcript is in the repo" is not yet true.
-  2. Neel's review of the short writeup; the Pramaana email is on hold (Neel may re-angle it after the transcript and the slope result). Rerun `check` after any edit.
+  2. Neel's review of the revised writeup and the re-angled Pramaana email. Rerun `check` after any edit.
   3. Neel signs off. The repo stays private until he says otherwise.
 - **Spent so far:** $62.29 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $1.78 (cap $30)
-- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop; review the short `writeup/writeup.md`; decide the Pramaana email's angle.
+- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop; review the revised `writeup/writeup.md` and `writeup/email_pramaana.md`.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -34,6 +34,32 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-25 · chunk 7 · Neel's writeup revisions, citation check, Pramaana email re-angled
+
+- **Writeup:** Neel's six revisions are in:
+  - finding 2 now says "no detectable gain", and notes its interval ends just past 5, so it is inconclusive by the frozen rule
+  - a truth-by-arm line (A to F), plus the E vs B sentence, which is point estimates only since no interval was preregistered
+  - finding 1 says the compile gain came from fewer syntax errors, not fewer invented names
+  - finding 3 says the judge errs toward "unfaithful", so truth rates are conservative
+  - the limitations add one optimization judge and that all deviations are dated in prereg.md; the author line is updated
+  - the related work wording is checked against the papers
+  - Length: 714 by `wc -w` (681 without table markup).
+- **Citations** checked on the arXiv pages (web-fetch subagent, v1 dates):
+  - GEPA 2507.19457, Agrawal et al., 25 Jul 2025
+  - ReForm 2510.24592, Chen et al., 28 Oct 2025
+  - FormaRL 2508.18914, Huang et al., 26 Aug 2025
+  - BetterTogether 2407.10930, Soylu et al., 15 Jul 2024
+  - Beyond Compilation 2606.31002, Zhang et al., 30 Jun 2026
+  - All authors and years were right. Wording changes:
+    - GEPA "evolves prompts by reflection" became "by reflecting in natural language on its rollouts" (abstract wording).
+    - ReForm and FormaRL now "train formalizers on Lean compile plus LLM consistency rewards". This comes from FormaRL's abstract ("syntax check from Lean compiler and consistency check from large language model") and ReForm's method section (PassesLean and IsConsistent). The earlier draft's FormaRL "little labeled data" was wrong: the paper says "unlabeled data".
+    - BetterTogether "work best combined" became "work better combined": the abstract says they "outperform" each alone.
+    - Beyond Compilation "compiling overstates faithfulness by up to 29.5 points" became "the gap between compiling and passing its two-judge faithfulness check reaches 29.5 points" across eight systems. The 29.5 is the top of a 1.3 to 29.5 range, from the paper's own agent (87.2% compiled vs 57.7% accepted), measured with two LLM judges, not human labels. The figure is from v4 of the abstract.
+- **Pramaana email** re-angled to the cheap judge's steady lenience on ReForm-8B: all 31 candidates above truth, about 6.1 points, no growth over iterations. On the test set, the judge gain minus truth gain was -0.9 [-5.9, 4.0] points. No hand-label numbers. The Axiom email is unchanged.
+- **Checks:** `scripts.chunk7 check` ok (numbers, em dashes, history secret scan).
+- **Cost:** $0.
+- **Next:** Neel's review; the transcript PDF.
 
 ### 2026-10-25 · chunk 7 · gap slope, prompt-name check, writeup cut to about 600 words (Neel's three asks)
 
