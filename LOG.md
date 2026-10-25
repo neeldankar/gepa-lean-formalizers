@@ -2,23 +2,12 @@
 
 ## Now
 
-- **Chunk:** 7 of 7 in progress, waiting on Neel's review (2026-10-25). `prereg.md` frozen at e631bdb; Deviations 1 to 5
-- **Finished in chunk 7:**
-  - Exploratory: candidate truth and its figure (now with the gap slope and seed-pass caveat in the caption), the gap slope, the Mathlib name check of the six prompts, the compile-error breakdown for A and B, and the GEPA rules list.
-  - The writeup, shortened to about 600 words, with `numbers.json`; `README.md`; both email drafts (not sent).
-  - `scripts.chunk7 check` passes: numbers, em dashes, secret scan of the full history.
-- **Left for chunk 7:**
-  1. Provenance: read, scan and store `chatgpt_labels_transcript.pdf` and the labels-only extract, and confirm the typed calls match `labels.csv`. Until then the writeup's "the transcript is in the repo" is not yet true.
-  2. Neel's review of the revised writeup and the re-angled Pramaana email. Rerun `check` after any edit.
-  3. Neel signs off. The repo stays private until he says otherwise.
-- **Spent so far:** $62.29 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $1.78 (cap $30)
-- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop; review the revised `writeup/writeup.md` and `writeup/email_pramaana.md`.
-- **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
-- **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
-- **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
-  - Compile-error taxonomy: classify Lean compile failures per arm (unknown identifier, parse error, type error, ...).
-  - Judge vs truth over GEPA iterations: a figure from the saved candidate outputs in `runs/<run_id>/candidates/` (item 2 data).
-  - ReForm-8B training-data contamination: note whether ProofNet-style statements could be in ReForm-8B's training data.
+- **Status:** study complete, approved by Neel 2026-10-25 (last content commit 91fcd02). `prereg.md` frozen at e631bdb; Deviations 1 to 5.
+- **One item open:** the label transcript (`chatgpt_labels_transcript.pdf`) is not on the laptop yet. The writeup's provenance line says "the transcript is in the repo", which is not true until it is added to `runs/handcheck/provenance/`, scanned for secrets and personal info, and its typed calls are counted against `labels.csv`.
+- **Repo:** private. Neel makes it public himself, after the transcript is in. No email has been sent; both are drafts in `writeup/`.
+- **Spent:** $62.29 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $1.78 (cap $30).
+- **Pod rule (Neel):** never terminate; stop only; push before any stop. No pod is running.
+- **Parked, not done:** whether ProofNet-style statements could be in ReForm-8B's training data. The compile-error breakdown and the judge-vs-truth-over-iterations figure, parked earlier, are done.
 
 ## Entries
 
@@ -34,6 +23,18 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-25 · chunk 7 · final checks, study marked complete
+
+- **Did:** Neel approved the writeup and both email drafts. Final checks before marking the study complete:
+  - `scripts.chunk7 check` ok: every number in `writeup.md`, `email_axiom.md` and `email_pramaana.md` matches its JSON source; 0 em dashes in the 71 authored files it scans; secret scan of the full git history clean.
+  - Repo-wide em dash scan: none outside `runs/`. The ones inside `runs/` are raw model output (GEPA-written prompts and candidates, glosses on the labeling pages, quoted in `runs/chunk7/prompt_names.json`), left as generated.
+  - `chunk6_reviewed.html`: never committed. No file with "reviewed", "chatgpt" or "transcript" in its name appears anywhere in the history; the only mention is this LOG's chunk 6 entry.
+  - Personal info: no IP addresses, pod ids or keys in tracked files. Commit author email on 71 commits is Neel's personal address, and a few logged paths contain the laptop username; both become visible if the repo is public.
+  - Transcript: not scanned, because the PDF is not on the laptop.
+- **Numbers:** none new.
+- **Cost:** $0 this entry, $62.29 total.
+- **Next:** the transcript; then Neel makes the repo public.
 
 ### 2026-10-25 · chunk 7 · Neel's writeup revisions, citation check, Pramaana email re-angled
 
