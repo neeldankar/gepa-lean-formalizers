@@ -1,0 +1,543 @@
+{
+ "note": "exploratory",
+ "evaluations": 4480,
+ "compiled": 1939,
+ "certified": 711,
+ "truth_missing": 0,
+ "reasked": 16,
+ "usd": 1.067967,
+ "runs": {
+  "B_s0": [
+   {
+    "candidate": 0,
+    "n": 70,
+    "judge": 4.285714285714286,
+    "truth": 4.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 1,
+    "n": 70,
+    "judge": 4.285714285714286,
+    "truth": 1.4285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 2,
+    "n": 70,
+    "judge": 8.571428571428571,
+    "truth": 4.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 3,
+    "n": 70,
+    "judge": 2.857142857142857,
+    "truth": 1.4285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 4,
+    "n": 70,
+    "judge": 5.714285714285714,
+    "truth": 4.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 5,
+    "n": 70,
+    "judge": 10.0,
+    "truth": 5.714285714285714,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 6,
+    "n": 70,
+    "judge": 7.142857142857143,
+    "truth": 5.714285714285714,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 7,
+    "n": 70,
+    "judge": 5.714285714285714,
+    "truth": 5.714285714285714,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 8,
+    "n": 70,
+    "judge": 2.857142857142857,
+    "truth": 1.4285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 9,
+    "n": 70,
+    "judge": 8.571428571428571,
+    "truth": 5.714285714285714,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 10,
+    "n": 70,
+    "judge": 8.571428571428571,
+    "truth": 10.0,
+    "truth_missing": 0,
+    "outages": 0
+   }
+  ],
+  "B_s1": [
+   {
+    "candidate": 0,
+    "n": 70,
+    "judge": 4.285714285714286,
+    "truth": 4.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 1,
+    "n": 70,
+    "judge": 11.428571428571429,
+    "truth": 8.571428571428571,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 2,
+    "n": 70,
+    "judge": 11.428571428571429,
+    "truth": 10.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 3,
+    "n": 70,
+    "judge": 11.428571428571429,
+    "truth": 8.571428571428571,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 4,
+    "n": 70,
+    "judge": 15.714285714285714,
+    "truth": 14.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 5,
+    "n": 70,
+    "judge": 12.857142857142858,
+    "truth": 12.857142857142858,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 6,
+    "n": 70,
+    "judge": 11.428571428571429,
+    "truth": 8.571428571428571,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 7,
+    "n": 70,
+    "judge": 11.428571428571429,
+    "truth": 10.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 8,
+    "n": 70,
+    "judge": 14.285714285714286,
+    "truth": 15.714285714285714,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 9,
+    "n": 70,
+    "judge": 14.285714285714286,
+    "truth": 11.428571428571429,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 10,
+    "n": 70,
+    "judge": 15.714285714285714,
+    "truth": 11.428571428571429,
+    "truth_missing": 0,
+    "outages": 0
+   }
+  ],
+  "B_s2": [
+   {
+    "candidate": 0,
+    "n": 70,
+    "judge": 4.285714285714286,
+    "truth": 4.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 1,
+    "n": 70,
+    "judge": 4.285714285714286,
+    "truth": 2.857142857142857,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 2,
+    "n": 70,
+    "judge": 7.142857142857143,
+    "truth": 8.571428571428571,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 3,
+    "n": 70,
+    "judge": 4.285714285714286,
+    "truth": 4.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 4,
+    "n": 70,
+    "judge": 4.285714285714286,
+    "truth": 4.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 5,
+    "n": 70,
+    "judge": 11.428571428571429,
+    "truth": 12.857142857142858,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 6,
+    "n": 70,
+    "judge": 12.857142857142858,
+    "truth": 12.857142857142858,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 7,
+    "n": 70,
+    "judge": 15.714285714285714,
+    "truth": 17.142857142857142,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 8,
+    "n": 70,
+    "judge": 11.428571428571429,
+    "truth": 11.428571428571429,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 9,
+    "n": 70,
+    "judge": 12.857142857142858,
+    "truth": 14.285714285714286,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 10,
+    "n": 70,
+    "judge": 15.714285714285714,
+    "truth": 15.714285714285714,
+    "truth_missing": 0,
+    "outages": 0
+   }
+  ],
+  "D_s0": [
+   {
+    "candidate": 0,
+    "n": 70,
+    "judge": 55.714285714285715,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 1,
+    "n": 70,
+    "judge": 61.42857142857143,
+    "truth": 51.42857142857143,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 2,
+    "n": 70,
+    "judge": 57.142857142857146,
+    "truth": 47.142857142857146,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 3,
+    "n": 70,
+    "judge": 54.285714285714285,
+    "truth": 47.142857142857146,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 4,
+    "n": 70,
+    "judge": 57.142857142857146,
+    "truth": 52.857142857142854,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 5,
+    "n": 70,
+    "judge": 54.285714285714285,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 6,
+    "n": 70,
+    "judge": 55.714285714285715,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 7,
+    "n": 70,
+    "judge": 58.57142857142857,
+    "truth": 48.57142857142857,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 8,
+    "n": 70,
+    "judge": 57.142857142857146,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 9,
+    "n": 70,
+    "judge": 55.714285714285715,
+    "truth": 52.857142857142854,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 10,
+    "n": 70,
+    "judge": 57.142857142857146,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   }
+  ],
+  "D_s1": [
+   {
+    "candidate": 0,
+    "n": 70,
+    "judge": 55.714285714285715,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 1,
+    "n": 70,
+    "judge": 54.285714285714285,
+    "truth": 48.57142857142857,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 2,
+    "n": 70,
+    "judge": 61.42857142857143,
+    "truth": 54.285714285714285,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 3,
+    "n": 70,
+    "judge": 52.857142857142854,
+    "truth": 44.285714285714285,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 4,
+    "n": 70,
+    "judge": 54.285714285714285,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 5,
+    "n": 70,
+    "judge": 55.714285714285715,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 6,
+    "n": 70,
+    "judge": 51.42857142857143,
+    "truth": 47.142857142857146,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 7,
+    "n": 70,
+    "judge": 50.0,
+    "truth": 40.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 8,
+    "n": 70,
+    "judge": 57.142857142857146,
+    "truth": 55.714285714285715,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 9,
+    "n": 70,
+    "judge": 55.714285714285715,
+    "truth": 54.285714285714285,
+    "truth_missing": 0,
+    "outages": 0
+   }
+  ],
+  "D_s2": [
+   {
+    "candidate": 0,
+    "n": 70,
+    "judge": 55.714285714285715,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 1,
+    "n": 70,
+    "judge": 50.0,
+    "truth": 45.714285714285715,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 2,
+    "n": 70,
+    "judge": 50.0,
+    "truth": 44.285714285714285,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 3,
+    "n": 70,
+    "judge": 58.57142857142857,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 4,
+    "n": 70,
+    "judge": 58.57142857142857,
+    "truth": 52.857142857142854,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 5,
+    "n": 70,
+    "judge": 57.142857142857146,
+    "truth": 50.0,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 6,
+    "n": 70,
+    "judge": 54.285714285714285,
+    "truth": 47.142857142857146,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 7,
+    "n": 70,
+    "judge": 58.57142857142857,
+    "truth": 52.857142857142854,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 8,
+    "n": 70,
+    "judge": 60.0,
+    "truth": 54.285714285714285,
+    "truth_missing": 0,
+    "outages": 0
+   },
+   {
+    "candidate": 9,
+    "n": 70,
+    "judge": 44.285714285714285,
+    "truth": 40.0,
+    "truth_missing": 0,
+    "outages": 0
+   }
+  ]
+ },
+ "judge_matches_gepa": {
+  "B_s0": false,
+  "B_s1": false,
+  "B_s2": true,
+  "D_s0": false,
+  "D_s1": false,
+  "D_s2": false
+ }
+}

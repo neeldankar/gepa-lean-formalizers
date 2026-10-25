@@ -6,5 +6,15 @@
   "minif2f": 1
  },
  "gepa_saved_evaluations": 4480,
- "gepa_opt_judge_missing": 96
+ "gepa_opt_judge_missing": 96,
+ "candidates_B": {
+  "candidates": 33,
+  "judge_above_truth": 17,
+  "judge_equals_truth": 10
+ },
+ "candidates_D": {
+  "candidates": 31,
+  "judge_above_truth": 31,
+  "judge_equals_truth": 0
+ }
 }

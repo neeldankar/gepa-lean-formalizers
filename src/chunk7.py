@@ -74,10 +74,11 @@ def candidate_summary(rows):
 # --- compile errors for arms A and B ---------------------------------------------------------------
 
 BUCKETS = (
-    ("unknown name", r"unknown (identifier|constant)|unknownIdentifier|unknownConstant"),
+    ("unknown name", r"unknown (identifier|constant)|unknownIdentifier|unknownConstant|invalid field"),
     ("type mismatch", r"type mismatch"),
-    ("failed to synthesize instance", r"failed to synthesize"),
-    ("syntax", r"unexpected token|expected '|unexpected end of input|unterminated"),
+    ("type or function expected", r"type expected|function expected"),
+    ("failed to synthesize instance", r"failed to synthesize|typeclass instance problem is stuck"),
+    ("syntax", r"unexpected token|expected '|expected token|unexpected end of input|unterminated"),
 )
 
 
@@ -104,12 +105,14 @@ def compile_errors(rows, checker, items):
         agree = [(r, res) for r, res in mine if res.status == r["compile_status"]]
         buckets = Counter(error_bucket(res.status, res.errors) for _, res in agree)
         n = sum(buckets.values())
-        out[arm] = {"outputs": sum(r["arm"] == arm for r in rows if r["dataset"] == "test"),
+        outputs = sum(r["arm"] == arm for r in rows if r["dataset"] == "test")
+        out[arm] = {"outputs": outputs,
                     "not_compiled": sum(r["arm"] == arm for r in failed),
                     "format_failures": sum(r["arm"] == arm and not r["normalized"] for r in failed),
                     "rechecked": len(mine), "recheck_status_differs": len(mine) - len(agree),
                     "recheck_outages": sum(res.status == OUTAGE for _, res in mine),
-                    "buckets": {k: {"count": v, "share": 100 * v / n} for k, v in buckets.most_common()}}
+                    "buckets": {k: {"count": v, "share": 100 * v / n, "share_of_outputs": 100 * v / outputs}
+                                for k, v in buckets.most_common()}}
     return out
 
 

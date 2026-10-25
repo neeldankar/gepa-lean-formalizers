@@ -25,6 +25,9 @@ def test_error_buckets():
     assert error_bucket("lean_error", ["-:7:77: error: Application type mismatch: The argument"]) == "type mismatch"
     assert error_bucket("lean_error", ["error: failed to synthesize\n  HAdd"]) == "failed to synthesize instance"
     assert error_bucket("lean_error", ["error: unexpected token ','; expected '↦', '=>'"]) == "syntax"
+    assert error_bucket("lean_error", ["error(lean.invalidField): Invalid field `norm`: The environment"]) == "unknown name"
+    assert error_bucket("lean_error", ["-:3:4: error: type expected, got"]) == "type or function expected"
+    assert error_bucket("lean_error", ["-:3:4: error: expected token"]) == "syntax"
     assert error_bucket("lean_error", ["error: something else"]) == "other"
     assert error_bucket("timeout", []) == "timeout"
 
@@ -40,7 +43,7 @@ def test_compile_errors_counts_format_failures_and_status_changes():
             {"arm": "A", "dataset": "test", "item_id": "i1", "compiled": True, "normalized": "x", "compile_status": "ok"}]
     a = compile_errors(rows, Checker(), items)["A"]
     assert (a["outputs"], a["not_compiled"], a["format_failures"], a["rechecked"], a["recheck_status_differs"]) == (4, 3, 1, 2, 1)
-    assert a["buckets"] == {"unknown name": {"count": 1, "share": 100.0}}
+    assert a["buckets"] == {"unknown name": {"count": 1, "share": 100.0, "share_of_outputs": 25.0}}
 
 
 def test_number_check_catches_wrong_unlisted_and_precision():

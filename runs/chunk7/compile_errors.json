@@ -1,0 +1,83 @@
+{
+ "note": "exploratory",
+ "A": {
+  "outputs": 247,
+  "not_compiled": 218,
+  "format_failures": 2,
+  "rechecked": 216,
+  "recheck_status_differs": 0,
+  "recheck_outages": 0,
+  "buckets": {
+   "unknown name": {
+    "count": 103,
+    "share": 47.68518518518518,
+    "share_of_outputs": 41.70040485829959
+   },
+   "syntax": {
+    "count": 52,
+    "share": 24.074074074074073,
+    "share_of_outputs": 21.05263157894737
+   },
+   "failed to synthesize instance": {
+    "count": 29,
+    "share": 13.425925925925926,
+    "share_of_outputs": 11.740890688259109
+   },
+   "type or function expected": {
+    "count": 20,
+    "share": 9.25925925925926,
+    "share_of_outputs": 8.097165991902834
+   },
+   "type mismatch": {
+    "count": 10,
+    "share": 4.62962962962963,
+    "share_of_outputs": 4.048582995951417
+   },
+   "other": {
+    "count": 2,
+    "share": 0.9259259259259259,
+    "share_of_outputs": 0.8097165991902834
+   }
+  }
+ },
+ "B": {
+  "outputs": 741,
+  "not_compiled": 590,
+  "format_failures": 5,
+  "rechecked": 585,
+  "recheck_status_differs": 0,
+  "recheck_outages": 0,
+  "buckets": {
+   "unknown name": {
+    "count": 304,
+    "share": 51.965811965811966,
+    "share_of_outputs": 41.02564102564103
+   },
+   "syntax": {
+    "count": 105,
+    "share": 17.94871794871795,
+    "share_of_outputs": 14.17004048582996
+   },
+   "failed to synthesize instance": {
+    "count": 79,
+    "share": 13.504273504273504,
+    "share_of_outputs": 10.661268556005398
+   },
+   "type mismatch": {
+    "count": 53,
+    "share": 9.05982905982906,
+    "share_of_outputs": 7.152496626180837
+   },
+   "type or function expected": {
+    "count": 39,
+    "share": 6.666666666666667,
+    "share_of_outputs": 5.2631578947368425
+   },
+   "other": {
+    "count": 5,
+    "share": 0.8547008547008547,
+    "share_of_outputs": 0.6747638326585695
+   }
+  }
+ }
+}

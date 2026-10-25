@@ -1,6 +1,6 @@
 """Chunk 7: exploratory analyses and the writeup checks.
 
-Usage: python -m scripts.chunk7 candidate-truth | compile-errors | prompt-lengths | facts | check
+Usage: python -m scripts.chunk7 candidate-truth | compile-errors | prompt-lengths | facts | seed-check | check
 
 candidate-truth (exploratory): truth labels for the compiled outputs GEPA saved on the 70 validation items
 (certificate first, then the reference judge, Deviation 4's re-ask for missing verdicts), cached and
@@ -12,9 +12,13 @@ bucketed by first Lean error, into runs/chunk7/compile_errors.json.
 
 prompt-lengths: word counts of the seed and optimized prompts, into runs/chunk7/prompt_lengths.json.
 
-facts: derived counts the writeup cites (Deviation 4 totals), into runs/chunk7/writeup_facts.json.
+seed-check: per run, the items where the saved seed-candidate outputs differ from the seed scores in GEPA's
+state (GEPA re-evaluates the seed on every launch; before the no-overwrite fix that pass replaced the saved
+file), into runs/chunk7/seed_pass_check.json.
 
-check: every number in writeup/writeup.md against writeup/numbers.json and its JSON sources, an em dash
+facts: derived counts the writeup cites (Deviation 4 totals; judge vs truth over GEPA's candidates), into runs/chunk7/writeup_facts.json.
+
+check: every number in writeup/writeup.md and the email drafts against writeup/numbers.json and its JSON sources, an em dash
 scan, and a secret scan of the whole git history, into runs/chunk7/check.json.
 """
 import json
@@ -67,10 +71,10 @@ def figure(summary, path):
             cands = summary["runs"][run_id]
             x = [c["candidate"] for c in cands]
             color = f"C{k}"
-            ax.plot(x, [c["judge"] for c in cands], "-o", color=color, ms=3, label=f"seed {run_id[-1]} judge")
-            ax.plot(x, [c["truth"] for c in cands], "--s", color=color, ms=3, label=f"seed {run_id[-1]} truth")
+            ax.plot(x, [c["judge"] for c in cands], "-o", color=color, ms=3, label=f"{run_id} judge")
+            ax.plot(x, [c["truth"] for c in cands], "--s", color=color, ms=3, label=f"{run_id} truth")
         ax.set_title(model)
-        ax.set_xlabel("candidate, in the order GEPA found it")
+        ax.set_xlabel("candidate, in the order GEPA found it (0 = seed prompt)")
         ax.set_ylabel("score on the 70 validation items (%)")
         ax.legend(fontsize=7, ncol=2)
     fig.suptitle("Exploratory: judge score (solid) vs truth score (dashed) over GEPA's candidates")
@@ -88,14 +92,15 @@ def compile_error_breakdown(cfg):
 def check():
     w = ROOT / "writeup"
     entries = json.loads((w / "numbers.json").read_text())
-    numbers = check_numbers((w / "writeup.md").read_text(), entries, lambda s: json.loads((ROOT / s).read_text()))
+    load = lambda s: json.loads((ROOT / s).read_text())
+    numbers = {p.name: check_numbers(p.read_text(), entries, load) for p in [w / "writeup.md", *sorted(w.glob("email_*.md"))]}
     files = [p for p in [*w.glob("*.md"), ROOT / "README.md", ROOT / "LOG.md", *ROOT.glob("src/**/*.py"),
                          *ROOT.glob("scripts/*.py"), *ROOT.glob("tests/*.py")] if p.exists()]
     dashes = em_dashes(files)
     scan = subprocess.run([sys.executable, str(ROOT / "scripts/secret_scan.py"), "--history"], capture_output=True, text=True)
     out = {"numbers": numbers, "em_dashes": dashes, "files_scanned_for_em_dashes": len(files),
            "secret_scan_history": {"ok": scan.returncode == 0, "output": scan.stdout.strip().splitlines()[-1:]}}
-    out["ok"] = numbers["ok"] and not dashes and out["secret_scan_history"]["ok"]
+    out["ok"] = all(n["ok"] for n in numbers.values()) and not dashes and out["secret_scan_history"]["ok"]
     return out
 
 
@@ -124,7 +129,28 @@ def main(argv):
                "ref_still_missing": {ds: sum(r["ref_missing"] for r in rows if r["dataset"] == ds) for ds in ("test", "minif2f")},
                "gepa_saved_evaluations": sum(v["saved_evaluations"] for v in d4["gepa_opt_judge_missing"].values()),
                "gepa_opt_judge_missing": sum(v["missing"] for v in d4["gepa_opt_judge_missing"].values())}
+        cands = json.loads((OUT / "candidate_truth_summary.json").read_text())["runs"]
+        for prefix in ("B", "D"):  # exploratory: GEPA's saved candidates, judge vs truth on the 70 validation items
+            cs = [c for run_id, v in cands.items() if run_id.startswith(prefix) for c in v]
+            out[f"candidates_{prefix}"] = {"candidates": len(cs), "judge_above_truth": sum(c["judge"] > c["truth"] for c in cs),
+                                           "judge_equals_truth": sum(c["judge"] == c["truth"] for c in cs)}
         (OUT / "writeup_facts.json").write_text(json.dumps(out, indent=1) + "\n")
+        print(json.dumps(out, indent=1))
+    elif mode == ["seed-check"]:
+        import pickle
+        val = [it["id"] for it in gepa_items("val")]
+        out = {"note": "exploratory"}
+        for run_id in GEPA_RUNS:
+            state = pickle.loads((ROOT / "runs" / run_id / "gepa/gepa_state.bin").read_bytes())
+            gepa = state["prog_candidate_val_subscores"]
+            files = dict(candidate_files(ROOT / "runs" / run_id))
+            out[run_id] = {}
+            for cand, rows in files.items():
+                saved = {r["item_id"]: r["score"] for r in rows}
+                out[run_id][cand] = sorted(val[k] for k, v in gepa[cand].items() if saved[val[k]] != v)
+            out[run_id] = {"candidates_with_differences": {c: len(v) for c, v in out[run_id].items() if v},
+                           "items": {c: v for c, v in out[run_id].items() if v}}
+        (OUT / "seed_pass_check.json").write_text(json.dumps(out, indent=1) + "\n")
         print(json.dumps(out, indent=1))
     elif mode == ["check"]:
         out = check()

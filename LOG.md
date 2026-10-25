@@ -2,11 +2,17 @@
 
 ## Now
 
-- **Chunk:** 7 of 7 in progress, paused by Neel 2026-10-24. Resume with "Continue chunk 7". `prereg.md` frozen at e631bdb; Deviations 1 to 5
-- **Finished in chunk 7:** chunk 7 code and tests (`scripts/chunk7.py`, `src/chunk7.py`); the GEPA rules list (`writeup/gepa_rules.md`); a first writeup draft (`writeup/writeup.md`, not yet shown to Neel); prompt lengths and Deviation 4 facts JSON; chunk 7 cap raised to $30.
-- **Left for chunk 7:** (1) provenance: read, scan and store `chatgpt_labels_transcript.pdf` and the labels-only extract; (2) rerun `scripts.chunk7 candidate-truth` (paused, $0.71 spent, resumes from the cache) and `compile-errors`; (3) `writeup/numbers.json` and `scripts.chunk7 check`, then show Neel the draft; (4) README, repo cleanup, email drafts, final checks. The repo stays private.
-- **Spent so far:** $61.23 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $0.71 (cap $30)
-- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop (macOS blocks this terminal from Downloads).
+- **Chunk:** 7 of 7 in progress, waiting on Neel's review (2026-10-24). `prereg.md` frozen at e631bdb; Deviations 1 to 5
+- **Finished in chunk 7:**
+  - Exploratory: candidate truth and its figure, the compile-error breakdown for A and B, and the GEPA rules list.
+  - The writeup draft with `numbers.json`, `README.md`, and both email drafts (not sent).
+  - `scripts.chunk7 check` passes: numbers, em dashes, secret scan of the full history.
+- **Left for chunk 7:**
+  1. Provenance: read, scan and store `chatgpt_labels_transcript.pdf` and the labels-only extract, and confirm the typed calls match `labels.csv`.
+  2. Neel's edits to the writeup (it is long for one page) and the emails, then rerun `check`.
+  3. Neel signs off. The repo stays private until he says otherwise.
+- **Spent so far:** $62.29 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $1.78 (cap $30)
+- **Waiting on Neel:** put `chatgpt_labels_transcript.pdf` on the Desktop; read `writeup/writeup.md` and the two email drafts.
 - **At the freeze (Neel's item 7):** a list of at most 15 lines, every component added since the Oct 17 design doc, one line each on why; nothing removed.
 - **Pod rule (Neel):** never terminate; keep it running for the pilot; stop only after the queue ends or if idle more than about 30 min; push before any stop.
 - **Parked ideas** (chunk 7 only, exploratory; older ones in the chunk 1 to 4 entries):
@@ -28,6 +34,30 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-24 · chunk 7 · exploratory runs, writeup draft and checks, README, email drafts (waiting on Neel)
+
+- **Candidate truth** (`python -m scripts.chunk7 candidate-truth`, resumed from cache; `runs/chunk7/candidate_truth_summary.json`, exploratory):
+  - 4,480 saved validation evaluations, 1,939 compiled, 711 certified, 0 truth labels missing after 16 re-asks.
+  - $1.07 for this run.
+  - Figure: `figures/exploratory_judge_vs_truth_iterations.png`.
+- **Seed-pass mismatch** (`runs/chunk7/seed_pass_check.json`):
+  - The judge scores of the saved seed-candidate outputs (candidate 0) differ from GEPA's own seed scores in B_s0 (1 item), B_s1 (1), D_s0 (6), D_s1 (3) and D_s2 (7). B_s2 has none, and every other candidate matches item by item.
+  - Cause: GEPA 0.1.4 re-evaluates the seed on each launch before loading its state, and before the no-overwrite fix that pass replaced the saved file. GEPA kept its first pass.
+  - So the 2026-10-22 note that the relaunch's seed outputs "were identical" was wrong for these items. The figure uses the saved outputs, which are the ones with truth labels. This affects nothing confirmatory.
+- **Compile errors** (`runs/chunk7/compile_errors.json`, exploratory): arms A and B's non-compiling test outputs, re-checked through AXLE and bucketed by their first Lean error.
+  - 0 rechecks changed status and 0 outages.
+  - The buckets were refined once before writing, after reading the "other" bucket's errors: invalid field counts as an unknown name, "expected token" as syntax, plus a new "type or function expected" bucket.
+- **Writeup and checks:**
+  - `writeup/writeup.md` draft, plus `writeup/numbers.json`, which maps every number to its JSON source.
+  - `README.md` with reproduction steps.
+  - `writeup/email_axiom.md` and `writeup/email_pramaana.md`, drafts only and not sent.
+  - `python -m scripts.chunk7 check` (`runs/chunk7/check.json`): every number in the writeup and both emails matches its source, 0 em dashes, and the secret scan of the full history is clean.
+  - New `seed-check` and `facts` additions to `scripts/chunk7.py`.
+- **Repo cleanup:** nothing removed. Every top-level file and `runs/` path is cited in this log or the README.
+- **Not done:** label provenance. `~/Desktop/chatgpt_labels_transcript.pdf` is still not on the Desktop, so it has not been read, scanned or stored, and the writeup's provenance line rests on Neel's account until then.
+- **Cost:** $1.78 chunk 7 total (cap $30); $62.29 logged overall.
+- **Next:** Neel reads the writeup draft (it runs about 1,100 words, longer than one page, so he may want cuts) and the email drafts, and puts the transcript PDF on the Desktop. The repo stays private.
 
 ### 2026-10-24 · chunk 7 · started, paused by Neel (provenance step waiting on the transcript PDF)
 

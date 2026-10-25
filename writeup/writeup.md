@@ -50,6 +50,16 @@ All three are **inconclusive**: each interval includes 0 and also reaches past 5
 - Four copy complete worked statements of problems GEPA saw during optimization.
 - Details are in `writeup/gepa_rules.md`.
 
+**Compile errors (exploratory).**
+- Each Qwen3-8B test output that failed to compile was put in a bucket by its first Lean error.
+- An unknown name (a Mathlib identifier or field that does not exist) was the first error in 41.7% of all outputs with the seed prompt and 41.0% after GEPA. So the optimized prompts' lists of nonexistent names did not lower this rate.
+- Syntax errors fell from 21.1% to 14.2% of outputs.
+- Details are in `runs/chunk7/compile_errors.json`.
+
+**Judge vs truth during optimization (exploratory).** Every candidate prompt GEPA saved was given truth labels on the 70 validation items (`figures/exploratory_judge_vs_truth_iterations.png`).
+- For ReForm-8B, the judge score was above the truth score for all 31 candidates.
+- For Qwen3-8B, the judge score was above the truth score for 17 of 33 candidates and equal for 10.
+
 ## Limitations
 
 - **Qwen3-8B sits near the floor.**

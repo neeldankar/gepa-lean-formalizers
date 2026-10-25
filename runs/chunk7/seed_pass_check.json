@@ -1,0 +1,70 @@
+{
+ "note": "exploratory",
+ "B_s0": {
+  "candidates_with_differences": {
+   "0": 1
+  },
+  "items": {
+   "0": [
+    "pnv_140"
+   ]
+  }
+ },
+ "B_s1": {
+  "candidates_with_differences": {
+   "0": 1
+  },
+  "items": {
+   "0": [
+    "pnv_140"
+   ]
+  }
+ },
+ "B_s2": {
+  "candidates_with_differences": {},
+  "items": {}
+ },
+ "D_s0": {
+  "candidates_with_differences": {
+   "0": 6
+  },
+  "items": {
+   "0": [
+    "pnv_092",
+    "pnv_148",
+    "pnv_258",
+    "pnv_261",
+    "pnv_278",
+    "pnv_285"
+   ]
+  }
+ },
+ "D_s1": {
+  "candidates_with_differences": {
+   "0": 3
+  },
+  "items": {
+   "0": [
+    "pnv_001",
+    "pnv_179",
+    "pnv_261"
+   ]
+  }
+ },
+ "D_s2": {
+  "candidates_with_differences": {
+   "0": 7
+  },
+  "items": {
+   "0": [
+    "pnv_001",
+    "pnv_008",
+    "pnv_148",
+    "pnv_219",
+    "pnv_260",
+    "pnv_278",
+    "pnv_285"
+   ]
+  }
+ }
+}

@@ -1,0 +1,424 @@
+[
+ {
+  "value": "2.8",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q1.estimate"
+ },
+ {
+  "value": "-0.4",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q1.ci.0"
+ },
+ {
+  "value": "6.6",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q1.ci.1"
+ },
+ {
+  "value": "-2.7",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q2.estimate"
+ },
+ {
+  "value": "-8.9",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q2.ci.0"
+ },
+ {
+  "value": "3.2",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q2.ci.1"
+ },
+ {
+  "value": "10.4",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q3_qwen3-8b.estimate"
+ },
+ {
+  "value": "-1.9",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q3_qwen3-8b.ci.0"
+ },
+ {
+  "value": "21.8",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q3_qwen3-8b.ci.1"
+ },
+ {
+  "value": "-1.4",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q3_reform-8b.estimate"
+ },
+ {
+  "value": "-6.7",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q3_reform-8b.ci.0"
+ },
+ {
+  "value": "4.1",
+  "source": "results.json",
+  "path": "confirmatory.contrasts.Q3_reform-8b.ci.1"
+ },
+ {
+  "value": "4.5",
+  "source": "results.json",
+  "path": "confirmatory.per_arm_intervals.A:truth.estimate"
+ },
+ {
+  "value": "7.3",
+  "source": "results.json",
+  "path": "confirmatory.per_arm_intervals.B:truth.estimate"
+ },
+ {
+  "value": "51.0",
+  "source": "results.json",
+  "path": "confirmatory.per_arm_intervals.C:truth.estimate"
+ },
+ {
+  "value": "51.1",
+  "source": "results.json",
+  "path": "confirmatory.per_arm_intervals.D:truth.estimate"
+ },
+ {
+  "value": "3.3",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.A_to_B.compile_part.estimate"
+ },
+ {
+  "value": "1.1",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.A_to_B.compile_part.ci.0"
+ },
+ {
+  "value": "6.3",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.A_to_B.compile_part.ci.1"
+ },
+ {
+  "value": "-0.4",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.A_to_B.meaning_part.estimate"
+ },
+ {
+  "value": "-4.2",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.A_to_B.meaning_part.ci.0"
+ },
+ {
+  "value": "3.5",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.A_to_B.meaning_part.ci.1"
+ },
+ {
+  "value": "0.1",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.C_to_D.total.estimate"
+ },
+ {
+  "value": "-4.9",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.C_to_D.total.ci.0"
+ },
+ {
+  "value": "5.1",
+  "source": "results.json",
+  "path": "alongside.truth_gain_split.C_to_D.total.ci.1"
+ },
+ {
+  "value": "11.7",
+  "source": "results.json",
+  "path": "alongside.compile_and_memorization.A.compile_rate"
+ },
+ {
+  "value": "20.4",
+  "source": "results.json",
+  "path": "alongside.compile_and_memorization.B.compile_rate"
+ },
+ {
+  "value": "67.2",
+  "source": "results.json",
+  "path": "alongside.compile_and_memorization.C.compile_rate"
+ },
+ {
+  "value": "66.4",
+  "source": "results.json",
+  "path": "alongside.compile_and_memorization.D.compile_rate"
+ },
+ {
+  "value": "37.9",
+  "source": "results.json",
+  "path": "alongside.compile_and_memorization.A.faithful_given_compiled"
+ },
+ {
+  "value": "35.8",
+  "source": "results.json",
+  "path": "alongside.compile_and_memorization.B.faithful_given_compiled"
+ },
+ {
+  "value": "2.4",
+  "source": "results.json",
+  "path": "confirmatory.descriptive.judge_gain_minus_truth_gain_qwen3-8b.estimate"
+ },
+ {
+  "value": "0.4",
+  "source": "results.json",
+  "path": "confirmatory.descriptive.judge_gain_minus_truth_gain_qwen3-8b.ci.0"
+ },
+ {
+  "value": "4.9",
+  "source": "results.json",
+  "path": "confirmatory.descriptive.judge_gain_minus_truth_gain_qwen3-8b.ci.1"
+ },
+ {
+  "value": "101",
+  "source": "runs/handcheck/labels_check.json",
+  "path": "rows"
+ },
+ {
+  "value": "89",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.all.agree"
+ },
+ {
+  "value": "99",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.all.n"
+ },
+ {
+  "value": "2",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_errors_random_part.all.false_positive"
+ },
+ {
+  "value": "8",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_errors_random_part.all.false_negative"
+ },
+ {
+  "value": "4",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.A.agree"
+ },
+ {
+  "value": "7",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.A.n"
+ },
+ {
+  "value": "13",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.B.agree"
+ },
+ {
+  "value": "16",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.B.n"
+ },
+ {
+  "value": "36",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.C.agree"
+ },
+ {
+  "value": "38",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.C.n"
+ },
+ {
+  "value": "36",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.D.agree"
+ },
+ {
+  "value": "38",
+  "source": "results.json",
+  "path": "alongside.hand_check.judge_agreement_random_part.D.n"
+ },
+ {
+  "value": "3.6",
+  "source": "results.json",
+  "path": "alongside.hand_check.contrasts_random_part_hand_labels.Q1.estimate"
+ },
+ {
+  "value": "-3.6",
+  "source": "results.json",
+  "path": "alongside.hand_check.contrasts_random_part_hand_labels.Q1.ci.0"
+ },
+ {
+  "value": "10.9",
+  "source": "results.json",
+  "path": "alongside.hand_check.contrasts_random_part_hand_labels.Q1.ci.1"
+ },
+ {
+  "value": "30",
+  "source": "runs/chunk7/prompt_lengths.json",
+  "path": "seed.A"
+ },
+ {
+  "value": "19",
+  "source": "runs/chunk7/prompt_lengths.json",
+  "path": "seed.C"
+ },
+ {
+  "value": "1,677",
+  "source": "runs/chunk7/prompt_lengths.json",
+  "path": "optimized.B_s0"
+ },
+ {
+  "value": "4,632",
+  "source": "runs/chunk7/prompt_lengths.json",
+  "path": "optimized.B_s2"
+ },
+ {
+  "value": "561",
+  "source": "runs/chunk7/prompt_lengths.json",
+  "path": "optimized.D_s0"
+ },
+ {
+  "value": "2,432",
+  "source": "runs/chunk7/prompt_lengths.json",
+  "path": "optimized.D_s2"
+ },
+ {
+  "value": "6.7",
+  "source": "runs/chunk4/summary.json",
+  "path": "go.0.value"
+ },
+ {
+  "value": "160",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "ref_verdicts_missing_before"
+ },
+ {
+  "value": "159",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "ref_verdicts_filled"
+ },
+ {
+  "value": "1",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "ref_still_missing.minif2f"
+ },
+ {
+  "value": "96",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "gepa_opt_judge_missing"
+ },
+ {
+  "value": "4,480",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "gepa_saved_evaluations"
+ },
+ {
+  "value": "247",
+  "source": "results.json",
+  "path": "confirmatory.items"
+ },
+ {
+  "value": "10,000",
+  "source": "results.json",
+  "path": "bootstrap_resamples"
+ },
+ {
+  "value": "5",
+  "source": "results.json",
+  "path": "threshold_points"
+ },
+ {
+  "value": "0",
+  "why": "zero as a score or an interval end ('scores 0', 'includes 0')"
+ },
+ {
+  "value": "1",
+  "why": "the judge score's definition (1 if the statement compiles and the judge says faithful)"
+ },
+ {
+  "value": "2",
+  "why": "Deviation 2 (a name)"
+ },
+ {
+  "value": "4",
+  "why": "Lean 4 and Deviation 4 (names)"
+ },
+ {
+  "value": "3",
+  "why": "GEPA seeds per arm (prereg design)"
+ },
+ {
+  "value": "50",
+  "why": "train items (prereg design, data/splits.json)"
+ },
+ {
+  "value": "70",
+  "why": "validation items (prereg design, data/splits.json)"
+ },
+ {
+  "value": "95",
+  "why": "interval level"
+ },
+ {
+  "value": "10",
+  "why": "the go criterion's floor of about 10% (prereg text)"
+ },
+ {
+  "value": "29.5",
+  "why": "cited from the Beyond Compilation abstract (arXiv 2606.31002)"
+ },
+ {
+  "value": "2024",
+  "why": "citation year"
+ },
+ {
+  "value": "2025",
+  "why": "citation year"
+ },
+ {
+  "value": "2026",
+  "why": "citation year"
+ },
+ {
+  "value": "41.7",
+  "source": "runs/chunk7/compile_errors.json",
+  "path": "A.buckets.unknown name.share_of_outputs"
+ },
+ {
+  "value": "41.0",
+  "source": "runs/chunk7/compile_errors.json",
+  "path": "B.buckets.unknown name.share_of_outputs"
+ },
+ {
+  "value": "21.1",
+  "source": "runs/chunk7/compile_errors.json",
+  "path": "A.buckets.syntax.share_of_outputs"
+ },
+ {
+  "value": "14.2",
+  "source": "runs/chunk7/compile_errors.json",
+  "path": "B.buckets.syntax.share_of_outputs"
+ },
+ {
+  "value": "31",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "candidates_D.judge_above_truth"
+ },
+ {
+  "value": "31",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "candidates_D.candidates"
+ },
+ {
+  "value": "17",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "candidates_B.judge_above_truth"
+ },
+ {
+  "value": "33",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "candidates_B.candidates"
+ },
+ {
+  "value": "10",
+  "source": "runs/chunk7/writeup_facts.json",
+  "path": "candidates_B.judge_equals_truth"
+ }
+]

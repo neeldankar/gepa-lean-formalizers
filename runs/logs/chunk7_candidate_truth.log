@@ -1,0 +1,17 @@
+{
+ "note": "exploratory",
+ "evaluations": 4480,
+ "compiled": 1939,
+ "certified": 711,
+ "truth_missing": 0,
+ "reasked": 16,
+ "usd": 1.067967,
+ "judge_matches_gepa": {
+  "B_s0": false,
+  "B_s1": false,
+  "B_s2": true,
+  "D_s0": false,
+  "D_s1": false,
+  "D_s2": false
+ }
+}
