@@ -24,6 +24,18 @@ Template:
 - Next:
 ```
 
+### 2026-10-25 · chunk 7 · dataset licences checked, data/NOTICE.md
+
+- **Did:** checked the licences of both datasets at the pinned versions, from their repo and dataset pages (GitHub API, Hugging Face API):
+  - ProofNet-Verified (marcusm117/ProofNet-Verified at 1604143): Apache 2.0.
+    - Its upstreams are ProofNet (MIT), ProofNet-lean4 (MIT) and ProofNet# (MIT, dataset card only).
+  - miniF2F (AI-MO/minif2f_test at 5def318): Apache 2.0 on the dataset card.
+    - Its upstreams are DeepSeek-Prover-V1.5 (MIT) and openai/miniF2F (Lean folder Apache 2.0).
+  - All allow redistribution with the licence and attribution, so nothing was removed from `data/`.
+- **Added:** `data/NOTICE.md` (source, pinned version, licence, citation, and which files are unchanged, converted, modified or derived), plus licence texts in `data/licenses/`. The four raw ProofNet files match upstream at the pinned commit byte for byte (sha256).
+- **Git:** this repo's `user.email` is now Neel's GitHub noreply address, for new commits. The 71 earlier commits keep the old address; changing them would rewrite history and the `prereg-frozen` tag.
+- **Cost:** $0.
+
 ### 2026-10-25 · chunk 7 · final checks, study marked complete
 
 - **Did:** Neel approved the writeup and both email drafts. Final checks before marking the study complete:

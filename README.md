@@ -23,7 +23,7 @@ The plan is `prereg.md`, frozen at tag `prereg-frozen` before any test output ex
 | `runs/handcheck/` | The blind hand-check: `sample.jsonl` (the hidden mapping), `labeling.html` (the page), `labels.csv` (Neel's labels), `provenance/` (how the labels were recorded; to be added) |
 | `results.json`, `figures/` | Output of the frozen analysis (`scripts/analyze.py`) and the two preregistered figures; `figures/exploratory_*` are exploratory |
 | `runs/chunk7/` | Exploratory analyses and the writeup checks |
-| `data/` | ProofNet-Verified and miniF2F as loaded (`proofnet_verified.jsonl`, `minif2f.jsonl`), the train/validation/test split, the memorization index |
+| `data/` | ProofNet-Verified and miniF2F as loaded (`proofnet_verified.jsonl`, `minif2f.jsonl`), the train/validation/test split, the memorization index. Sources, licences and attribution: `data/NOTICE.md` |
 | `src/`, `scripts/`, `tests/` | Library code, one entry script per chunk, pytest tests |
 
 ## Setup
