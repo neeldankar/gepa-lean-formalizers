@@ -37,7 +37,7 @@ Truth by arm (%): A 4.5, B 7.3, C 51.0, D 51.1, E 6.5, F 71.7. E is a hand-writt
 
 - **Qwen3-8B near the floor:** 6.7% pilot truth against a go criterion of about 10%; the study went ahead with the reason recorded.
 - **Deviations,** all dated in `prereg.md`: the reflection model (Kimi-K3) moved to OpenRouter, pinned to Together's serving, without the sampling `seed` (Deviation 2); a re-ask fixed before scores were seen filled 159 of 160 missing reference-judge verdicts (Deviation 4).
-- **Label provenance.** The author recorded hand labels in a ChatGPT conversation, which formatted them into the export file; the transcript is in the repo.
+- **Label provenance.** The author recorded hand labels in a ChatGPT conversation, which formatted them into the export file; the transcript will be added to the repo.
 - **One optimization judge,** so gaming results may be judge-specific.
 - **Small samples.** One labeler, labeling by hand; one sample per item, wide intervals.
 - **Seed outputs.** Saved seed-candidate outputs differ from what GEPA scored on up to 7 of 70 items.

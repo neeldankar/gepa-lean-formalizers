@@ -2,9 +2,9 @@
 
 ## Now
 
-- **Status:** study complete, approved by Neel 2026-10-25 (last content commit 91fcd02). `prereg.md` frozen at e631bdb; Deviations 1 to 5.
-- **One item open:** the label transcript (`chatgpt_labels_transcript.pdf`) is not on the laptop yet. The writeup's provenance line says "the transcript is in the repo", which is not true until it is added to `runs/handcheck/provenance/`, scanned for secrets and personal info, and its typed calls are counted against `labels.csv`.
-- **Repo:** private. Neel makes it public himself, after the transcript is in. No email has been sent; both are drafts in `writeup/`.
+- **Status:** study complete (2026-10-26); repo made public by Neel's instruction the same day. `prereg.md` frozen at e631bdb; Deviations 1 to 5.
+- **One item open:** the label transcript (`chatgpt_labels_transcript.pdf`) is not on the laptop yet. The writeup says it "will be added to the repo"; when it arrives, add it to `runs/handcheck/provenance/`, scan it for secrets and personal info, count its typed calls against `labels.csv`, and change the writeup back to "the transcript is in the repo".
+- **Repo:** public at https://github.com/neeldankar/gepa-lean-formalizers. No email has been sent; both are drafts in `writeup/`.
 - **Spent:** $62.29 logged of $300; chunk 5 $47.88 (cap $180); chunk 6 $0.09 (cap $5); chunk 7 $1.78 (cap $30).
 - **Pod rule (Neel):** never terminate; stop only; push before any stop. No pod is running.
 - **Parked, not done:** whether ProofNet-style statements could be in ReForm-8B's training data. The compile-error breakdown and the judge-vs-truth-over-iterations figure, parked earlier, are done.
@@ -23,6 +23,16 @@ Template:
 - Problems:
 - Next:
 ```
+
+### 2026-10-26 · chunk 7 · study complete, repo made public
+
+- **Did:** final checks rerun before going public:
+  - `scripts.chunk7 check` ok: every number in `writeup.md` and both emails matches its JSON source; 0 em dashes in the 71 files it scans; full-history secret scan clean.
+  - pytest: 261 passed.
+- **Provenance line:** the transcript PDF is still not on the laptop, so at Neel's choice (2026-10-26) the writeup's provenance line now ends "the transcript will be added to the repo" instead of "the transcript is in the repo". The rest of the line is unchanged.
+- **Study marked complete.** Neel told me to make the repo public (`gh repo edit --visibility public`) after this commit is pushed.
+- **Cost:** $0 this entry, $62.29 total.
+- **Next:** add the transcript when Neel provides it. The emails stay drafts.
 
 ### 2026-10-26 · chunk 7 · hand labeling stated in public-facing text
 
