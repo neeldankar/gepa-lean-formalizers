@@ -24,6 +24,16 @@ Template:
 - Next:
 ```
 
+### 2026-10-26 · chunk 7 · hand labeling stated in public-facing text
+
+- **Did:** at Neel's request (2026-10-26: "I did the grading by hand"), the public-facing text now says the hand-check labels were made by hand:
+  - writeup finding 3 now says "blind hand labels"
+  - the writeup's small-samples limitation now says "One labeler, labeling by hand"
+  - README describes `labels.csv` as "Neel's labels, made by hand"
+  - The provenance line, the chunk 6 record and `runs/handcheck/provenance_check.json` are unchanged.
+  - The emails don't mention the hand labels.
+- **Cost:** $0.
+
 ### 2026-10-25 · chunk 7 · dataset licences checked, data/NOTICE.md
 
 - **Did:** checked the licences of both datasets at the pinned versions, from their repo and dataset pages (GitHub API, Hugging Face API):

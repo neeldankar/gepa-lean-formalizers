@@ -27,7 +27,7 @@ Truth by arm (%): A 4.5, B 7.3, C 51.0, D 51.1, E 6.5, F 71.7. E is a hand-writt
 
 1. **Qwen3-8B's gain is compiling, not meaning.** It splits into a compile part of +3.3 [1.1, 6.3] and a meaning part of -0.4 [-4.2, 3.5]. The compile rate rose from 11.7% to 20.4% through fewer syntax errors (21.1% to 14.2% of outputs), not fewer invented names (41.7% to 41.0%; exploratory, by first Lean error).
 2. **ReForm-8B: no detectable gain.** The difference is 0.1 [-4.9, 5.1]. The upper end just passes 5, so by the frozen rule this is inconclusive, not "no meaningful effect".
-3. **The reference judge agrees with the author's blind labels on 89 of 99 outputs.** It errs mostly toward "unfaithful" (8 against 2), so truth rates, if anything, understate faithfulness. With hand labels as truth, Q1 is +3.6 [-3.6, 10.9].
+3. **The reference judge agrees with the author's blind hand labels on 89 of 99 outputs.** It errs mostly toward "unfaithful" (8 against 2), so truth rates, if anything, understate faithfulness. With hand labels as truth, Q1 is +3.6 [-3.6, 10.9].
 4. **What GEPA wrote (exploratory).**
    - The prompts grew from 30 or 19 words to between 561 and 4,632: compile rules, warnings, and worked statements of items GEPA saw.
    - Of 158 Mathlib-style names they mention, all 14 called nonexistent are absent from AXLE's Mathlib, but so are 4 of the 124 presented only as usable (for example `Complex.abs`).
@@ -39,7 +39,7 @@ Truth by arm (%): A 4.5, B 7.3, C 51.0, D 51.1, E 6.5, F 71.7. E is a hand-writt
 - **Deviations,** all dated in `prereg.md`: the reflection model (Kimi-K3) moved to OpenRouter, pinned to Together's serving, without the sampling `seed` (Deviation 2); a re-ask fixed before scores were seen filled 159 of 160 missing reference-judge verdicts (Deviation 4).
 - **Label provenance.** The author recorded hand labels in a ChatGPT conversation, which formatted them into the export file; the transcript is in the repo.
 - **One optimization judge,** so gaming results may be judge-specific.
-- **Small samples.** One labeler, one sample per item, wide intervals.
+- **Small samples.** One labeler, labeling by hand; one sample per item, wide intervals.
 - **Seed outputs.** Saved seed-candidate outputs differ from what GEPA scored on up to 7 of 70 items.
 
 ## Related work

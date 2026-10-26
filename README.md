@@ -20,7 +20,7 @@ The plan is `prereg.md`, frozen at tag `prereg-frozen` before any test output ex
 | `prompts/` | Seed prompts (`arm_A.txt`, `arm_C.txt`, `arm_E.txt`), the few-shot block, both judge prompts, the gloss prompt |
 | `runs/{B,D}_s{0,1,2}/best_prompt.txt` | The six GEPA-optimized prompts; `candidates/` holds every candidate GEPA saved, with its validation outputs and judge scores |
 | `runs/final/{A..F}.jsonl.gz` | Every final-eval output (test and miniF2F): raw output, normalized statement, compile status, judge verdict, certificate, reference verdict, truth label |
-| `runs/handcheck/` | The blind hand-check: `sample.jsonl` (the hidden mapping), `labeling.html` (the page), `labels.csv` (Neel's labels), `provenance/` (how the labels were recorded; to be added) |
+| `runs/handcheck/` | The blind hand-check: `sample.jsonl` (the hidden mapping), `labeling.html` (the page), `labels.csv` (Neel's labels, made by hand), `provenance/` (how the labels were recorded; to be added) |
 | `results.json`, `figures/` | Output of the frozen analysis (`scripts/analyze.py`) and the two preregistered figures; `figures/exploratory_*` are exploratory |
 | `runs/chunk7/` | Exploratory analyses and the writeup checks |
 | `data/` | ProofNet-Verified and miniF2F as loaded (`proofnet_verified.jsonl`, `minif2f.jsonl`), the train/validation/test split, the memorization index. Sources, licences and attribution: `data/NOTICE.md` |
